@@ -1,0 +1,48 @@
+[
+  {
+    "name": "Oxford_Mindfulness",
+    "homepage": "https://podcasts.ox.ac.uk/guided-meditation",
+    "licence": "CC BY-NC-SA 2.0 UK",
+    "tracks": [
+      {
+        "title": "Three-Minute Breathing Space",
+        "url": "https://www.oxfordmindfulness.org/app/uploads/2025/03/Claire-Kelly-IM-Responsive-breathing-space.mp3"
+      },
+      {
+        "title": "Sitting Practice (14 min)",
+        "url": "https://www.oxfordmindfulness.org/app/uploads/2025/03/Bianca-Browne-MBSR-Sitting-practice-1.mp3"
+      }
+    ]
+  },
+  {
+    "name": "Free_Mindfulness_Project",
+    "homepage": "https://www.freemindfulness.org/download",
+    "licence": "CC non-commercial (various)",
+    "tracks": [
+      {
+        "title": "Four-Minute Body Scan",
+        "url": "https://drive.google.com/uc?export=download&id=1JZ6NgU55LvekM5ZlZDc1nl8NGTxH8MtZ"
+      },
+      {
+        "title": "Three-Step Breathing Space",
+        "url": "https://drive.google.com/uc?export=download&id=1fg9QdGzP6t87tQIo8bE1WKM8gsbjsYho"
+      }
+    ]
+  },
+  {
+    "name": "NHS_Clinical_Relaxation",
+    "homepage": "https://www.dpt.nhs.uk/resources/recovery-and-wellbeing/psychology-and-psychological-therapies-audio-relaxation-and-mindfulness-tracks",
+    "licence": "Open Government Licence v3.0",
+    "tracks": [
+      {
+        "title": "Deep Relaxation (female)",
+        "url": "https://www.dpt.nhs.uk/uploads/attachments/Audio/05%20Relaxation.mp3"
+      },
+      {
+        "title": "Mindfulness of Breathing",
+        "url": "https://www.dpt.nhs.uk/uploads/attachments/Audio/07%20Mindfulness%20of%20Breathing.mp3",
+        "alternative_url": "https://example.com/alternative-mindfulness.mp3"
+      }
+    ]
+  }
+]

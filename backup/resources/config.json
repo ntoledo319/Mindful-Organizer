@@ -1,0 +1,36 @@
+{
+    "optimization": {
+        "auto_optimize": true,
+        "optimization_interval": 300,
+        "resource_threshold": 80
+    },
+    "mindfulness": {
+        "break_interval": 1800,
+        "meditation_reminder": true,
+        "breathing_reminder": true,
+        "daily_prompts": true
+    },
+    "ui": {
+        "theme": "light",
+        "font_size": 12,
+        "show_system_tray": true,
+        "start_minimized": false
+    },
+    "data": {
+        "backup_enabled": true,
+        "backup_interval": 86400,
+        "max_history": 365,
+        "auto_cleanup": true
+    },
+    "features": {
+        "system_optimization": true,
+        "mindfulness": true,
+        "mental_health": true,
+        "task_management": true,
+        "energy_tracking": true,
+        "anxiety_support": true,
+        "meditation": true,
+        "gratitude": true,
+        "journaling": true
+    }
+}

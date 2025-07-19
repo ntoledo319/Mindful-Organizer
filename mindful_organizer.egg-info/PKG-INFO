@@ -1,0 +1,72 @@
+Metadata-Version: 2.1
+Name: mindful-organizer
+Version: 1.0.0
+Summary: An AI-powered mindfulness and system optimization application
+Home-page: https://github.com/yourusername/mindful_organizer
+Author: Nicholas Toledo
+Author-email: your.email@example.com
+License: UNKNOWN
+Keywords: mindfulness,system optimization,mental health,productivity
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Topic :: Office/Business :: Scheduling
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+
+# Mindful Organizer
+
+A mental health-focused task and energy management application.
+
+## Setup
+
+1. Create a virtual environment:
+```bash
+python3 -m venv venv
+```
+
+2. Activate the virtual environment:
+```bash
+source venv/bin/activate  # On macOS/Linux
+```
+
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+## Running the Application
+
+```bash
+python3 run_app.py
+```
+
+## Features
+
+- Task Management with energy-based prioritization
+- Energy and Mood Tracking
+- Adaptive Interface based on mental health profile
+- Break suggestions based on energy levels
+- Multiple themes (Light, Dark, Calm)
+
+## Project Structure
+
+```
+mindful_organizer/
+├── src/
+│   ├── core/           # Core functionality
+│   ├── gui/            # User interface
+│   ├── profile/        # Mental health profiles
+│   ├── security/       # Security features
+│   └── file_organization/  # File management
+├── tests/              # Test files
+├── resources/          # Application resources
+├── docs/              # Documentation
+├── requirements.txt    # Dependencies
+└── run_app.py         # Application entry point
+```
+
+

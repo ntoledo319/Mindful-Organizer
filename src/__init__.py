@@ -1,0 +1,3 @@
+"""
+Mindful Optimizer package initialization.
+"""
