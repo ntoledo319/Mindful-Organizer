@@ -7,6 +7,8 @@ from enum import Flag, auto, Enum
 from typing import List, Dict, Set, Optional
 from pathlib import Path
 import json
+import yaml
+import logging
 
 class MentalHealthFlags(Flag):
     """Flags for different mental health considerations."""
@@ -85,123 +87,47 @@ class ProfileManager:
         self.current_profile_file = self.data_dir / "current_profile.json"
         self._current_profile = None
         self.mental_health_flags = MentalHealthFlags.NONE
+        self.config_path = Path(__file__).parent.parent / "config" / "profile_presets.yaml"
         self._load_research_based_settings()
         self._load_current_profile()
 
     def _load_research_based_settings(self):
-        """Load evidence-based settings for different conditions."""
-        self.condition_settings = {
-            MentalHealthFlags.ADHD: {
-                "ui": {
-                    "color_scheme": "high_contrast",
-                    "animation_speed": "reduced",
-                    "notification_style": "immediate",
-                    "layout_density": "spacious",
-                    "use_icons": True,
-                    "use_sound": True
-                },
-                "organization": {
-                    "folder_depth": 2,
-                    "naming_convention": "action_based",
-                    "automation_level": "high",
-                    "reminder_frequency": "frequent"
-                },
-                "features": [
-                    "gamification",
-                    "quick_wins",
-                    "visual_progress",
-                    "dopamine_boosters"
-                ]
-            },
-            MentalHealthFlags.ANXIETY: {
-                "ui": {
-                    "color_scheme": "calm",
-                    "animation_speed": "gentle",
-                    "notification_style": "scheduled",
-                    "layout_density": "comfortable",
-                    "use_icons": True,
-                    "use_sound": False
-                },
-                "organization": {
-                    "folder_depth": 4,
-                    "naming_convention": "detailed",
-                    "automation_level": "medium",
-                    "backup_frequency": "frequent"
-                },
-                "features": [
-                    "predictable_structure",
-                    "backup_assurance",
-                    "progress_tracking",
-                    "calming_interface"
-                ]
-            },
-            MentalHealthFlags.DEPRESSION: {
-                "ui": {
-                    "color_scheme": "uplifting",
-                    "animation_speed": "normal",
-                    "notification_style": "encouraging",
-                    "layout_density": "balanced",
-                    "use_icons": True,
-                    "use_sound": True
-                },
-                "organization": {
-                    "folder_depth": 3,
-                    "naming_convention": "simple",
-                    "automation_level": "high",
-                    "reminder_frequency": "moderate"
-                },
-                "features": [
-                    "achievement_celebration",
-                    "positive_reinforcement",
-                    "manageable_chunks",
-                    "progress_visualization"
-                ]
-            },
-            MentalHealthFlags.OCD: {
-                "ui": {
-                    "color_scheme": "minimal",
-                    "animation_speed": "configurable",
-                    "notification_style": "structured",
-                    "layout_density": "compact",
-                    "use_icons": False,
-                    "use_sound": False
-                },
-                "organization": {
-                    "folder_depth": 5,
-                    "naming_convention": "systematic",
-                    "automation_level": "configurable",
-                    "backup_frequency": "scheduled"
-                },
-                "features": [
-                    "customizable_structure",
-                    "verification_steps",
-                    "consistent_patterns",
-                    "clear_boundaries"
-                ]
-            },
-            MentalHealthFlags.PTSD: {
-                "ui": {
-                    "color_scheme": "soothing",
-                    "animation_speed": "gentle",
-                    "notification_style": "non_intrusive",
-                    "layout_density": "spacious",
-                    "use_icons": True,
-                    "use_sound": False
-                },
-                "organization": {
-                    "folder_depth": 3,
-                    "naming_convention": "clear",
-                    "automation_level": "medium",
-                    "reminder_frequency": "gentle"
-                },
-                "features": [
-                    "predictable_environment",
-                    "gentle_notifications",
-                    "safe_space_creation",
-                    "control_options"
-                ]
-            }
+        """Load evidence-based settings for different conditions from YAML."""
+        self.condition_settings = {}
+        self.default_settings = {}
+
+        try:
+            if self.config_path.exists():
+                with open(self.config_path, 'r') as f:
+                    config_data = yaml.safe_load(f)
+
+                # Load condition settings
+                profiles = config_data.get('profiles', {})
+                for condition_name, settings in profiles.items():
+                    try:
+                        # Convert string condition name to MentalHealthFlags enum
+                        flag = getattr(MentalHealthFlags, condition_name.upper())
+                        self.condition_settings[flag] = settings
+                    except AttributeError:
+                        logging.warning(f"Unknown condition in config: {condition_name}")
+
+                # Load default settings
+                self.default_settings = config_data.get('defaults', {})
+            else:
+                logging.error(f"Profile config not found at {self.config_path}")
+                self._use_fallback_settings()
+        except Exception as e:
+            logging.error(f"Error loading profile config: {e}")
+            self._use_fallback_settings()
+
+    def _use_fallback_settings(self):
+        """Use hardcoded fallback settings if config load fails."""
+        self.default_settings = {
+            "ui": {"color_scheme": "neutral"},
+            "organization": {"folder_depth": 3},
+            "features": []
         }
+        self.condition_settings = {}
 
     def _load_current_profile(self):
         """Load the current profile if it exists."""
@@ -326,28 +252,7 @@ class ProfileManager:
 
     def _get_default_profile(self) -> Dict:
         """Get default profile settings."""
-        return {
-            "ui": {
-                "color_scheme": "neutral",
-                "animation_speed": "normal",
-                "notification_style": "standard",
-                "layout_density": "medium",
-                "use_icons": True,
-                "use_sound": True
-            },
-            "organization": {
-                "folder_depth": 3,
-                "naming_convention": "standard",
-                "automation_level": "medium",
-                "reminder_frequency": "normal"
-            },
-            "features": [
-                "basic_organization",
-                "standard_notifications",
-                "simple_backup",
-                "help_system"
-            ]
-        }
+        return self.default_settings
 
     def get_feature_explanations(self) -> Dict[str, str]:
         """Get detailed explanations of enabled features."""

@@ -8,7 +8,8 @@ from PyQt6.QtWidgets import (QMainWindow, QTabWidget, QWidget, QVBoxLayout,
                            QCalendarWidget, QTimeEdit, QTextEdit, QListWidget,
                            QListWidgetItem, QDialog, QDialogButtonBox,
                            QGridLayout, QRadioButton, QButtonGroup, QFileDialog,
-                           QGroupBox)
+                           QGroupBox, QMessageBox, QTableWidget, QTableWidgetItem,
+                           QHeaderView)
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal, QDateTime, QDate
 from PyQt6.QtGui import QColor, QPalette, QIcon, QFont
 import json
@@ -18,10 +19,51 @@ from datetime import datetime, time
 import logging
 
 from core.task_manager import TaskManager, Task, TaskPriority, TaskCategory
-from core.system_optimizer import SystemOptimizer
-from core.ai_optimizer import AISystemOptimizer
+# Removed SystemOptimizer and AISystemOptimizer
 from profile.mental_health_profile_builder import ProfileManager, Profile, Condition, TherapyType, TherapySkill
 from core.file_organizer import FileOrganizer
+
+class PlanPreviewDialog(QDialog):
+    """Dialog to preview file organization plan."""
+    def __init__(self, plan: Dict, parent=None):
+        super().__init__(parent)
+        self.plan = plan
+        self.setWindowTitle("Organization Plan Preview")
+        self.setMinimumSize(800, 600)
+
+        layout = QVBoxLayout(self)
+
+        # Summary
+        summary_label = QLabel(f"Plan for: {plan['source_dir']}")
+        summary_label.setFont(QFont("Arial", 12, QFont.Weight.Bold))
+        layout.addWidget(summary_label)
+
+        stats_label = QLabel(f"Files to move: {len(plan['moves'])} | Skipped: {len(plan['skipped'])}")
+        layout.addWidget(stats_label)
+
+        # Table
+        self.table = QTableWidget()
+        self.table.setColumnCount(3)
+        self.table.setHorizontalHeaderLabels(["Original File", "New Category", "Destination Path"])
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+
+        self.table.setRowCount(len(plan['moves']))
+        for i, move in enumerate(plan['moves']):
+            self.table.setItem(i, 0, QTableWidgetItem(Path(move['source']).name))
+            self.table.setItem(i, 1, QTableWidgetItem(move['category']))
+            self.table.setItem(i, 2, QTableWidgetItem(move['target']))
+
+        layout.addWidget(self.table)
+
+        # Buttons
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Ok |
+            QDialogButtonBox.StandardButton.Cancel
+        )
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+
 
 class AdaptiveMainWindow(QMainWindow):
     """Main window with adaptive features based on user's mental health profile."""
@@ -39,14 +81,11 @@ class AdaptiveMainWindow(QMainWindow):
         self.profile_manager = ProfileManager(self.data_dir)
         self.task_manager = TaskManager(self.data_dir)
         self.file_organizer = FileOrganizer(self.data_dir)
-        self.system_optimizer = SystemOptimizer(self.data_dir)
-        self.ai_optimizer = AISystemOptimizer(self.data_dir)
         
-        # Start system monitoring
-        self.monitor_timer = QTimer()
-        self.monitor_timer.timeout.connect(self._update_system_state)
-        self.monitor_timer.start(60000)  # Update every minute
-        
+        # Load mood history
+        self.mood_file = self.data_dir / "mood_history.json"
+        self.mood_history = self._load_mood_history()
+
         # Create central widget with scroll area
         self.scroll_area = QScrollArea()
         self.setCentralWidget(self.scroll_area)
@@ -172,7 +211,7 @@ class AdaptiveMainWindow(QMainWindow):
             
             # Initialize file organizer
             root_dir = Path(root_dir_input.text())
-            self.file_organizer = FileOrganizer(root_dir, profile)
+            # self.file_organizer = FileOrganizer(root_dir, profile) # Refactored FileOrganizer init
             
             # Save organization preferences
             profile.organization_preferences = {
@@ -187,14 +226,6 @@ class AdaptiveMainWindow(QMainWindow):
             
     def _initialize_with_profile(self, profile: Profile):
         """Initialize the application with the given profile."""
-        # Initialize file organizer if not already done
-        if not self.file_organizer:
-            root_dir = Path(self.data_dir) / "files"
-            self.file_organizer = FileOrganizer(root_dir, profile)
-            
-        # Create folder structure
-        self.file_organizer.setup_folder_structure()
-        
         # Setup UI
         self.setup_ui()
         
@@ -411,67 +442,6 @@ class AdaptiveMainWindow(QMainWindow):
         suggestions_layout.addWidget(suggestions_list)
         
         layout.addWidget(suggestions_frame)
-        
-        # System status section
-        system_group = QGroupBox("AI System Optimization")
-        system_group.setFont(QFont("Arial", 12))
-        system_layout = QGridLayout(system_group)
-        
-        # CPU Usage
-        self.cpu_label = QLabel("CPU Usage:")
-        self.cpu_label.setFont(QFont("Arial", 11))
-        self.cpu_progress = QProgressBar()
-        self.cpu_progress.setRange(0, 100)
-        system_layout.addWidget(self.cpu_label, 0, 0)
-        system_layout.addWidget(self.cpu_progress, 0, 1)
-        
-        # Memory Usage
-        self.memory_label = QLabel("Memory Usage:")
-        self.memory_label.setFont(QFont("Arial", 11))
-        self.memory_progress = QProgressBar()
-        self.memory_progress.setRange(0, 100)
-        system_layout.addWidget(self.memory_label, 1, 0)
-        system_layout.addWidget(self.memory_progress, 1, 1)
-        
-        # Disk Usage
-        self.disk_label = QLabel("Disk Usage:")
-        self.disk_label.setFont(QFont("Arial", 11))
-        self.disk_progress = QProgressBar()
-        self.disk_progress.setRange(0, 100)
-        system_layout.addWidget(self.disk_label, 2, 0)
-        system_layout.addWidget(self.disk_progress, 2, 1)
-        
-        # Battery Status
-        self.battery_label = QLabel("Battery:")
-        self.battery_label.setFont(QFont("Arial", 11))
-        self.battery_progress = QProgressBar()
-        self.battery_progress.setRange(0, 100)
-        system_layout.addWidget(self.battery_label, 3, 0)
-        system_layout.addWidget(self.battery_progress, 3, 1)
-        
-        # Anomaly Score
-        self.anomaly_label = QLabel("System Health:")
-        self.anomaly_label.setFont(QFont("Arial", 11))
-        self.anomaly_progress = QProgressBar()
-        self.anomaly_progress.setRange(-100, 0)  # Anomaly scores are negative
-        system_layout.addWidget(self.anomaly_label, 4, 0)
-        system_layout.addWidget(self.anomaly_progress, 4, 1)
-        
-        # AI Suggestions
-        self.system_suggestions = QTextEdit()
-        self.system_suggestions.setReadOnly(True)
-        self.system_suggestions.setFont(QFont("Arial", 11))
-        self.system_suggestions.setMinimumHeight(150)
-        system_layout.addWidget(QLabel("AI Optimization Suggestions:"), 5, 0)
-        system_layout.addWidget(self.system_suggestions, 5, 1)
-        
-        # Optimize button
-        optimize_btn = QPushButton("Run AI Optimization")
-        optimize_btn.setFont(QFont("Arial", 11))
-        optimize_btn.clicked.connect(self._optimize_system)
-        system_layout.addWidget(optimize_btn, 6, 1)
-        
-        layout.addWidget(system_group)
         
         return tab
         
@@ -941,20 +911,23 @@ class AdaptiveMainWindow(QMainWindow):
         # File actions
         actions_layout = QHBoxLayout()
         
-        import_btn = QPushButton("Import Files")
-        import_btn.setFont(QFont("Arial", 12))
-        import_btn.clicked.connect(self._import_files)
+        # Removed Import Files button as it was ambiguous.
+        # Organization is about folders.
         
-        organize_btn = QPushButton("Organize Files")
+        organize_btn = QPushButton("Organize Folder")
         organize_btn.setFont(QFont("Arial", 12))
         organize_btn.clicked.connect(self._organize_files)
         
+        undo_btn = QPushButton("Undo Last Move")
+        undo_btn.setFont(QFont("Arial", 12))
+        undo_btn.clicked.connect(self._undo_organization)
+
         backup_btn = QPushButton("Create Backup")
         backup_btn.setFont(QFont("Arial", 12))
-        backup_btn.clicked.connect(lambda: self.file_organizer.create_backup())
+        backup_btn.clicked.connect(self._create_backup)
         
-        actions_layout.addWidget(import_btn)
         actions_layout.addWidget(organize_btn)
+        actions_layout.addWidget(undo_btn)
         actions_layout.addWidget(backup_btn)
         manage_layout.addLayout(actions_layout)
         
@@ -967,15 +940,16 @@ class AdaptiveMainWindow(QMainWindow):
         categories_list.setFont(QFont("Arial", 12))
         
         # Add categories from profile
-        for category, subfolders in self.profile_manager.current_profile.folder_structure.items():
-            category_item = QListWidgetItem(category)
-            category_item.setFont(QFont("Arial", 12, QFont.Weight.Bold))
-            categories_list.addItem(category_item)
-            
-            for subfolder in subfolders:
-                subfolder_item = QListWidgetItem(f"  • {subfolder}")
-                subfolder_item.setFont(QFont("Arial", 12))
-                categories_list.addItem(subfolder_item)
+        if self.profile_manager.current_profile and hasattr(self.profile_manager.current_profile, 'folder_structure'):
+            for category, subfolders in self.profile_manager.current_profile.folder_structure.items():
+                category_item = QListWidgetItem(category)
+                category_item.setFont(QFont("Arial", 12, QFont.Weight.Bold))
+                categories_list.addItem(category_item)
+
+                for subfolder in subfolders:
+                    subfolder_item = QListWidgetItem(f"  • {subfolder}")
+                    subfolder_item.setFont(QFont("Arial", 12))
+                    categories_list.addItem(subfolder_item)
                 
         manage_layout.addWidget(categories_list)
         
@@ -995,11 +969,25 @@ class AdaptiveMainWindow(QMainWindow):
         search_btn = QPushButton("Search")
         search_btn.setFont(QFont("Arial", 12))
         
+        results_list = QListWidget()
+        results_list.setFont(QFont("Arial", 12))
+
         def perform_search():
-            results = self.file_organizer.search_files(search_input.text())
+            # For simplicity, searching the data dir or we can ask for a dir
+            # But let's just search the last organized dir if possible,
+            # or maybe just prompt if we haven't organized yet?
+            # For V1 demo, let's ask for a dir to search if we want to be useful
+            dir_path = QFileDialog.getExistingDirectory(
+                self, "Select Directory to Search", str(Path.home())
+            )
+            if not dir_path:
+                return
+
+            results = self.file_organizer.search_files(search_input.text(), Path(dir_path))
             results_list.clear()
             for result in results:
-                item = QListWidgetItem(str(result))
+                item = QListWidgetItem(str(result.name))
+                item.setToolTip(str(result))
                 item.setFont(QFont("Arial", 12))
                 results_list.addItem(item)
                 
@@ -1007,9 +995,6 @@ class AdaptiveMainWindow(QMainWindow):
         
         search_layout.addWidget(search_input)
         search_layout.addWidget(search_btn)
-        
-        results_list = QListWidget()
-        results_list.setFont(QFont("Arial", 12))
         search_layout.addWidget(results_list)
         
         # Add frames to layout
@@ -1066,11 +1051,8 @@ class AdaptiveMainWindow(QMainWindow):
         
     def _update_energy_pattern(self):
         """Update the energy pattern display."""
-        self.pattern_display.clear()
-        pattern = self.energy_tracker.get_daily_pattern()
-        
-        for period, energy in pattern.items():
-            self.pattern_display.addItem(f"{period}: {energy:.1f}%")
+        # TODO: Implement energy tracker
+        pass
             
     def _energy_changed(self, value: int):
         """Handle energy level changes."""
@@ -1082,16 +1064,8 @@ class AdaptiveMainWindow(QMainWindow):
         
     def _update_suggestions(self):
         """Update task and break suggestions."""
-        # Update task suggestions
-        self.task_suggestions.clear()
-        current_energy = self.energy_slider.value()
-        for task in self.task_manager.get_task_suggestions(current_energy):
-            self.task_suggestions.addItem(f"{task.title} (Energy: {task.energy_required})")
-            
-        # Update break suggestions
-        self.break_suggestions.clear()
-        for suggestion in self.energy_tracker.get_break_suggestions(current_energy):
-            self.break_suggestions.addItem(suggestion)
+        # TODO: Implement suggestion logic
+        pass
             
     def _save_settings(self):
         """Save user settings."""
@@ -1114,6 +1088,12 @@ class AdaptiveMainWindow(QMainWindow):
         
     def apply_theme(self, theme_name: str):
         """Apply the selected theme to the application."""
+        # Placeholder for theme logic
+        self.themes = {
+            "light": {"background": "#FFFFFF", "text": "#000000", "accent": "#E0E0E0"},
+            "dark": {"background": "#333333", "text": "#FFFFFF", "accent": "#555555"}
+        }
+
         if theme_name not in self.themes:
             return
             
@@ -1331,7 +1311,7 @@ class AdaptiveMainWindow(QMainWindow):
         layout.addWidget(pattern_label)
         
         pattern_list = QListWidget()
-        pattern = self.energy_tracker.get_daily_pattern()
+        pattern = self.energy_tracker.get_daily_pattern() if hasattr(self, 'energy_tracker') else {}
         for period, energy in pattern.items():
             pattern_list.addItem(f"{period}: {energy:.1f}%")
         layout.addWidget(pattern_list)
@@ -1342,7 +1322,7 @@ class AdaptiveMainWindow(QMainWindow):
         layout.addWidget(hours_label)
         
         hours_list = QListWidget()
-        optimal_hours = self.energy_tracker.get_optimal_work_hours()
+        optimal_hours = self.energy_tracker.get_optimal_work_hours() if hasattr(self, 'energy_tracker') else []
         for hour in optimal_hours:
             hours_list.addItem(f"{hour.strftime('%I:%M %p')}")
         layout.addWidget(hours_list)
@@ -1497,14 +1477,15 @@ class AdaptiveMainWindow(QMainWindow):
             active_skills = [s for s, c in skill_checks.items() if c.isChecked()]
             
             record = {
-                'timestamp': datetime.combine(QDate.currentDate(), time_edit.time().toPyTime()),
+                'timestamp': datetime.combine(QDate.currentDate(), time_edit.time().toPyTime()).isoformat(),
                 'mood': mood_combo.currentText(),
                 'symptoms': active_symptoms,
                 'skills_used': active_skills,
                 'notes': notes_edit.toPlainText()
             }
             
-            # TODO: Save record to database
+            self.mood_history.append(record)
+            self._save_mood_history()
             self._update_mood_displays()
 
     def _show_dbt_skills_dialog(self):
@@ -1571,29 +1552,24 @@ class AdaptiveMainWindow(QMainWindow):
         
         dialog.exec()
 
+    def _load_mood_history(self) -> List[Dict]:
+        if self.mood_file.exists():
+            try:
+                with open(self.mood_file, 'r') as f:
+                    return json.load(f)
+            except:
+                return []
+        return []
+
+    def _save_mood_history(self):
+        with open(self.mood_file, 'w') as f:
+            json.dump(self.mood_history, f, indent=2)
+
     def _update_mood_displays(self):
         """Update all mood-related displays."""
-        # TODO: Implement mood history chart and statistics
+        # For V1, we just refresh the dashboard if it's visible or update internal state
         pass
 
-    def _import_files(self):
-        """Import files to be organized."""
-        files, _ = QFileDialog.getOpenFileNames(
-            self,
-            "Select Files to Import",
-            str(Path.home()),
-            "All Files (*.*)"
-        )
-        
-        if files:
-            for file_path in files:
-                src_path = Path(file_path)
-                if src_path.exists():
-                    self.file_organizer.categorize_file(src_path)
-                    
-            # Update the file organizer tab
-            self.tabs.setCurrentWidget(self._create_file_organizer_tab())
-            
     def _organize_files(self):
         """Organize files in the selected directory."""
         dir_path = QFileDialog.getExistingDirectory(
@@ -1605,48 +1581,43 @@ class AdaptiveMainWindow(QMainWindow):
         if dir_path:
             src_dir = Path(dir_path)
             if src_dir.exists():
-                for file_path in src_dir.glob("*"):
-                    if file_path.is_file():
-                        self.file_organizer.categorize_file(file_path)
-                        
+                # 1. Generate Plan (Dry Run)
+                plan = self.file_organizer.organize_files(src_dir, dry_run=True)
+
+                # 2. Show Preview
+                dialog = PlanPreviewDialog(plan, self)
+                if dialog.exec() == QDialog.DialogCode.Accepted:
+                    # 3. Execute
+                    result = self.file_organizer.execute_plan(plan)
+                    QMessageBox.information(self, "Success",
+                        f"Organization complete!\nMoved: {result['files_moved']}\nErrors: {result['errors']}")
+
             # Update the file organizer tab
             self.tabs.setCurrentWidget(self._create_file_organizer_tab())
 
-    def _update_system_state(self):
-        """Update system status displays with AI analysis."""
-        try:
-            # Get system stats with AI analysis
-            stats = self.ai_optimizer.get_system_stats()
+    def _undo_organization(self):
+        """Undo the last organization run."""
+        reply = QMessageBox.question(self, "Undo Organization",
+            "Are you sure you want to undo the last file organization? This will move files back to their original locations.",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
             
-            # Update progress bars
-            self.cpu_progress.setValue(int(stats['cpu_percent']))
-            self.memory_progress.setValue(int(stats['memory_percent']))
-            self.disk_progress.setValue(int(stats['disk_percent']))
+        if reply == QMessageBox.StandardButton.Yes:
+            result = self.file_organizer.undo_last_transaction()
             
-            if stats.get('battery_percent') is not None:
-                self.battery_progress.setValue(int(stats['battery_percent']))
-                self.battery_progress.setVisible(True)
-                self.battery_label.setVisible(True)
+            if 'error' in result:
+                QMessageBox.warning(self, "Undo Failed", result['message'])
             else:
-                self.battery_progress.setVisible(False)
-                self.battery_label.setVisible(False)
-                
-            # Update anomaly score
-            anomaly_score = int(stats['anomaly_score'] * 100)  # Convert to percentage
-            self.anomaly_progress.setValue(anomaly_score)
-            
-            # Update AI suggestions
-            suggestions = self.ai_optimizer.get_ai_suggestions()
-            self.system_suggestions.setText("\n".join(suggestions))
-            
-        except Exception as e:
-            logging.error(f"Error updating system state: {str(e)}")
-            
-    def _optimize_system(self):
-        """Run AI-powered system optimization."""
-        try:
-            actions = self.ai_optimizer.optimize_system()
-            self.system_suggestions.setText("AI Optimization complete!\n\n" + "\n".join(actions))
-        except Exception as e:
-            logging.error(f"Error optimizing system: {str(e)}")
-            self.system_suggestions.setText(f"Error during optimization: {str(e)}")
+                QMessageBox.information(self, "Undo Complete",
+                    f"Restored: {result['restored']}\nErrors: {len(result['errors'])}")
+
+    def _create_backup(self):
+        """Create a backup of a directory."""
+        dir_path = QFileDialog.getExistingDirectory(
+            self, "Select Directory to Backup", str(Path.home())
+        )
+        if dir_path:
+            backup_path = self.file_organizer.create_backup(Path(dir_path))
+            if backup_path:
+                QMessageBox.information(self, "Backup Created", f"Backup saved to:\n{backup_path}")
+            else:
+                QMessageBox.warning(self, "Backup Failed", "Could not create backup. Check logs.")

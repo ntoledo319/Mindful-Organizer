@@ -1,0 +1,116 @@
+profiles:
+  ADHD:
+    ui:
+      color_scheme: vibrant
+      animation_speed: fast
+      notification_style: insistent
+      layout_density: high
+      use_icons: true
+      use_sound: true
+    organization:
+      folder_depth: 2
+      naming_convention: descriptive
+      automation_level: high
+      reminder_frequency: frequent
+    features:
+      - gamification_badges
+      - pomodoro_timer
+      - quick_actions
+      - visual_cues
+
+  ANXIETY:
+    ui:
+      color_scheme: calm
+      animation_speed: slow
+      notification_style: gentle
+      layout_density: low
+      use_icons: true
+      use_sound: false
+    organization:
+      folder_depth: 4
+      naming_convention: detailed
+      automation_level: medium
+      backup_assurance: true
+      progress_tracking: true
+      calming_interface: true
+    features:
+      - mindfulness_prompts
+      - backup_assurance
+      - progress_tracking
+      - calming_interface
+
+  DEPRESSION:
+    ui:
+      color_scheme: uplifting
+      animation_speed: normal
+      notification_style: encouraging
+      layout_density: balanced
+      use_icons: true
+      use_sound: true
+    organization:
+      folder_depth: 3
+      naming_convention: simple
+      automation_level: high
+      reminder_frequency: moderate
+    features:
+      - achievement_celebration
+      - positive_reinforcement
+      - manageable_chunks
+      - progress_visualization
+
+  OCD:
+    ui:
+      color_scheme: minimal
+      animation_speed: configurable
+      notification_style: structured
+      layout_density: compact
+      use_icons: false
+      use_sound: false
+    organization:
+      folder_depth: 5
+      naming_convention: systematic
+      automation_level: configurable
+      backup_frequency: scheduled
+    features:
+      - customizable_structure
+      - verification_steps
+      - consistent_patterns
+      - clear_boundaries
+
+  PTSD:
+    ui:
+      color_scheme: soothing
+      animation_speed: gentle
+      notification_style: non_intrusive
+      layout_density: spacious
+      use_icons: true
+      use_sound: false
+    organization:
+      folder_depth: 3
+      naming_convention: clear
+      automation_level: medium
+      reminder_frequency: gentle
+    features:
+      - predictable_environment
+      - gentle_notifications
+      - safe_space_creation
+      - control_options
+
+defaults:
+  ui:
+    color_scheme: neutral
+    animation_speed: normal
+    notification_style: standard
+    layout_density: medium
+    use_icons: true
+    use_sound: true
+  organization:
+    folder_depth: 3
+    naming_convention: standard
+    automation_level: medium
+    reminder_frequency: normal
+  features:
+    - basic_organization
+    - standard_notifications
+    - simple_backup
+    - help_system
