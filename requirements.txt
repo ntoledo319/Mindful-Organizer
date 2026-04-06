@@ -1,24 +1,39 @@
-# Core dependencies
+# Core GUI Framework
+PyQt6>=6.4.0
+
+# Data Processing
 numpy>=1.21.0
-sentence-transformers>=2.2.0
+pandas>=1.4.0
 python-dateutil>=2.8.2
 
-# Database and file handling
-sqlite3>=3.35.0  # Built-in
-python-magic>=0.4.24
-
-# Clustering and ML
+# Machine Learning & AI
 scikit-learn>=1.0.0
+joblib>=1.1.0
+
+# Clustering & Dimensionality Reduction (smart file system)
 hdbscan>=0.8.28
 umap-learn>=0.5.3
+
+# NLP / Embeddings (smart file system)
+sentence-transformers>=2.2.0
 
 # Visualization
 matplotlib>=3.5.0
 seaborn>=0.11.2
 
-# Development and testing
+# Encryption & Security
+cryptography>=38.0.0
+
+# System Monitoring
+psutil>=5.9.0
+
+# File Type Detection
+python-magic>=0.4.24
+
+# Development & Testing
 pytest>=7.0.0
 pytest-cov>=3.0.0
+pytest-qt>=4.2.0
 black>=22.3.0
 flake8>=4.0.0
 mypy>=0.910
@@ -26,3 +41,7 @@ mypy>=0.910
 # Documentation
 sphinx>=4.4.0
 sphinx-rtd-theme>=1.0.0
+
+# Windows-specific (optional)
+# pyinstaller>=5.0  # For building Windows executable
+# win10toast>=0.9   # For Windows notifications (optional)

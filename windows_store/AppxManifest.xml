@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+  xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap uap3 uap5 mp desktop rescap">
+
+  <!-- ================================================================
+       Package Identity
+       ================================================================ -->
+  <Identity
+    Name="MindfulOrganizer"
+    Publisher="CN=NicholasToledo"
+    Version="1.0.0.0"
+    ProcessorArchitecture="x64" />
+
+  <mp:PhoneIdentity PhoneProductId="a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                    PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+
+  <!-- ================================================================
+       Package Properties
+       ================================================================ -->
+  <Properties>
+    <DisplayName>Mindful Organizer</DisplayName>
+    <PublisherDisplayName>Nicholas Toledo</PublisherDisplayName>
+    <Logo>assets\StoreLogo.png</Logo>
+    <Description>Mental health-aware productivity and task management application that helps you stay organized while respecting your well-being.</Description>
+  </Properties>
+
+  <!-- ================================================================
+       Target Device Family and OS Version
+       ================================================================ -->
+  <Dependencies>
+    <TargetDeviceFamily
+      Name="Windows.Desktop"
+      MinVersion="10.0.17763.0"
+      MaxVersionTested="10.0.22621.0" />
+  </Dependencies>
+
+  <!-- ================================================================
+       Resources (Languages)
+       ================================================================ -->
+  <Resources>
+    <Resource Language="en-us" />
+  </Resources>
+
+  <!-- ================================================================
+       Application Definition
+       ================================================================ -->
+  <Applications>
+    <Application
+      Id="MindfulOrganizer"
+      Executable="MindfulOrganizer\mindful-organizer.exe"
+      EntryPoint="Windows.FullTrustApplication">
+
+      <!-- Visual Elements -->
+      <uap:VisualElements
+        DisplayName="Mindful Organizer"
+        Description="Mental health-aware productivity and task management"
+        BackgroundColor="#3A7CA5"
+        Square150x150Logo="assets\Square150x150Logo.png"
+        Square44x44Logo="assets\Square44x44Logo.png">
+
+        <uap:DefaultTile
+          Wide310x150Logo="assets\Wide310x150Logo.png"
+          Square310x310Logo="assets\Square310x310Logo.png"
+          Square71x71Logo="assets\Square71x71Logo.png"
+          ShortName="Mindful">
+          <uap:ShowNameOnTiles>
+            <uap:ShowOn Tile="square150x150Logo" />
+            <uap:ShowOn Tile="wide310x150Logo" />
+            <uap:ShowOn Tile="square310x310Logo" />
+          </uap:ShowNameOnTiles>
+        </uap:DefaultTile>
+
+        <uap:SplashScreen Image="assets\SplashScreen.png" BackgroundColor="#3A7CA5" />
+        <uap:LockScreen Notification="badge" BadgeLogo="assets\BadgeLogo.png" />
+      </uap:VisualElements>
+
+      <!-- ============================================================
+           Extensions
+           ============================================================ -->
+      <Extensions>
+
+        <!-- App Execution Alias: allows launching via "mindful-organizer" from Run/Terminal -->
+        <uap5:Extension Category="windows.appExecutionAlias">
+          <uap5:AppExecutionAlias>
+            <uap5:ExecutionAlias Alias="mindful-organizer.exe" />
+          </uap5:AppExecutionAlias>
+        </uap5:Extension>
+
+        <!-- File Type Association: .mindful project files -->
+        <uap:Extension Category="windows.fileTypeAssociation">
+          <uap:FileTypeAssociation Name="mindfulproject">
+            <uap:SupportedFileTypes>
+              <uap:FileType ContentType="application/x-mindful">.mindful</uap:FileType>
+            </uap:SupportedFileTypes>
+            <uap:DisplayName>Mindful Organizer Project</uap:DisplayName>
+            <uap:Logo>assets\FileTypeLogo.png</uap:Logo>
+            <uap:InfoTip>Mindful Organizer project file</uap:InfoTip>
+            <uap:EditFlags OpenIsSafe="true" />
+          </uap:FileTypeAssociation>
+        </uap:Extension>
+
+        <!-- Background Tasks: notification reminders -->
+        <Extension Category="windows.backgroundTasks" EntryPoint="MindfulOrganizer.BackgroundTask">
+          <BackgroundTasks>
+            <Task Type="timer" />
+            <Task Type="systemEvent" />
+            <Task Type="pushNotification" />
+          </BackgroundTasks>
+        </Extension>
+
+      </Extensions>
+
+    </Application>
+  </Applications>
+
+  <!-- ================================================================
+       Capabilities
+       ================================================================ -->
+  <Capabilities>
+    <Capability Name="internetClient" />
+    <uap:Capability Name="removableStorage" />
+  </Capabilities>
+
+</Package>
