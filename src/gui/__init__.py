@@ -1,3 +1,1 @@
-"""
-GUI package initialization.
-"""
+"""GUI module for Mindful Organizer."""

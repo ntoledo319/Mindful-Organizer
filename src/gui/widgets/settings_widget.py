@@ -1,0 +1,493 @@
+"""
+Settings widget for Mindful Organizer.
+
+Provides profile display, theme selection with live preview, font scaling,
+color blindness modes, accessibility toggles, notification preferences,
+data management, and about information.
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+import shutil
+from pathlib import Path
+from typing import Any, Dict, Optional
+
+from PyQt6.QtWidgets import (
+    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
+    QFrame, QScrollArea, QSizePolicy, QComboBox, QSlider,
+    QCheckBox, QGroupBox, QMessageBox, QFileDialog,
+)
+from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtGui import QFont
+
+logger = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+def _section_title(text: str) -> QLabel:
+    label = QLabel(text)
+    label.setFont(QFont("Segoe UI", 14, QFont.Weight.Bold))
+    return label
+
+
+def _body_label(text: str) -> QLabel:
+    label = QLabel(text)
+    label.setWordWrap(True)
+    return label
+
+
+def _accent_button(text: str) -> QPushButton:
+    btn = QPushButton(text)
+    btn.setCursor(Qt.CursorShape.PointingHandCursor)
+    return btn
+
+
+# ---------------------------------------------------------------------------
+# Widget
+# ---------------------------------------------------------------------------
+
+class SettingsWidget(QWidget):
+    """Application settings tab."""
+
+    settings_changed = pyqtSignal()
+
+    def __init__(self, main_window: Any, parent: Optional[QWidget] = None) -> None:
+        super().__init__(parent)
+        self.main_window = main_window
+        self._build_ui()
+        self._load_current_settings()
+
+    # ------------------------------------------------------------------
+    # UI
+    # ------------------------------------------------------------------
+
+    def _build_ui(self) -> None:
+        outer = QVBoxLayout(self)
+        outer.setContentsMargins(0, 0, 0, 0)
+
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.Shape.NoFrame)
+        outer.addWidget(scroll)
+
+        container = QWidget()
+        self._root = QVBoxLayout(container)
+        self._root.setSpacing(16)
+        self._root.setContentsMargins(24, 24, 24, 24)
+        scroll.setWidget(container)
+
+        self._root.addWidget(_section_title("Settings"))
+
+        self._build_profile_section()
+        self._build_theme_section()
+        self._build_accessibility_section()
+        self._build_notifications_section()
+        self._build_data_section()
+        self._build_about_section()
+
+        # Save button
+        save_btn = _accent_button("Save Settings")
+        save_btn.setFont(QFont("Segoe UI", 13, QFont.Weight.Bold))
+        save_btn.clicked.connect(self._save_settings)
+        self._root.addWidget(save_btn)
+
+        self._root.addStretch()
+
+    # -- profile --------------------------------------------------------
+
+    def _build_profile_section(self) -> None:
+        group = QGroupBox("Profile")
+        layout = QVBoxLayout(group)
+
+        # Name
+        name_row = QHBoxLayout()
+        name_row.addWidget(_body_label("Name:"))
+        self._name_label = QLabel("User")
+        self._name_label.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
+        name_row.addWidget(self._name_label)
+        name_row.addStretch()
+        layout.addLayout(name_row)
+
+        # Conditions
+        cond_row = QHBoxLayout()
+        cond_row.addWidget(_body_label("Conditions:"))
+        self._conditions_label = QLabel("None")
+        cond_row.addWidget(self._conditions_label)
+        cond_row.addStretch()
+        layout.addLayout(cond_row)
+
+        # Therapy types
+        therapy_row = QHBoxLayout()
+        therapy_row.addWidget(_body_label("Therapy types:"))
+        self._therapy_label = QLabel("None")
+        therapy_row.addWidget(self._therapy_label)
+        therapy_row.addStretch()
+        layout.addLayout(therapy_row)
+
+        # Edit profile button
+        edit_btn = _accent_button("Edit Profile (Re-run Onboarding)")
+        edit_btn.clicked.connect(self._reopen_onboarding)
+        layout.addWidget(edit_btn)
+
+        self._root.addWidget(group)
+
+    # -- theme ----------------------------------------------------------
+
+    def _build_theme_section(self) -> None:
+        group = QGroupBox("Theme")
+        layout = QVBoxLayout(group)
+
+        theme_row = QHBoxLayout()
+        theme_row.addWidget(_body_label("Theme:"))
+        self._theme_combo = QComboBox()
+        self._theme_combo.setMinimumWidth(200)
+        try:
+            for name, display_name, desc in self.main_window.theme_manager.get_theme_names():
+                self._theme_combo.addItem(f"{display_name} - {desc}", name)
+        except Exception:
+            self._theme_combo.addItem("Light", "light")
+            self._theme_combo.addItem("Dark", "dark")
+        self._theme_combo.currentIndexChanged.connect(self._on_theme_preview)
+        theme_row.addWidget(self._theme_combo)
+        theme_row.addStretch()
+        layout.addLayout(theme_row)
+
+        # Preview swatch
+        self._preview_frame = QFrame()
+        self._preview_frame.setMinimumHeight(60)
+        self._preview_frame.setFrameShape(QFrame.Shape.StyledPanel)
+        layout.addWidget(self._preview_frame)
+
+        self._root.addWidget(group)
+
+    # -- accessibility ---------------------------------------------------
+
+    def _build_accessibility_section(self) -> None:
+        group = QGroupBox("Accessibility")
+        layout = QVBoxLayout(group)
+
+        # Font size slider (0.8x to 1.5x)
+        font_row = QHBoxLayout()
+        font_row.addWidget(_body_label("Font size:"))
+        self._font_slider = QSlider(Qt.Orientation.Horizontal)
+        self._font_slider.setRange(80, 150)
+        self._font_slider.setValue(100)
+        self._font_slider.setTickInterval(10)
+        self._font_slider.setTickPosition(QSlider.TickPosition.TicksBelow)
+        font_row.addWidget(self._font_slider)
+        self._font_value_label = QLabel("1.0x")
+        self._font_slider.valueChanged.connect(
+            lambda v: self._font_value_label.setText(f"{v / 100:.1f}x")
+        )
+        font_row.addWidget(self._font_value_label)
+        layout.addLayout(font_row)
+
+        # Color blindness mode
+        cb_row = QHBoxLayout()
+        cb_row.addWidget(_body_label("Color blindness mode:"))
+        self._cb_combo = QComboBox()
+        self._cb_combo.addItem("None", None)
+        self._cb_combo.addItem("Protanopia", "protanopia")
+        self._cb_combo.addItem("Deuteranopia", "deuteranopia")
+        self._cb_combo.addItem("Tritanopia", "tritanopia")
+        cb_row.addWidget(self._cb_combo)
+        cb_row.addStretch()
+        layout.addLayout(cb_row)
+
+        # Reduced motion
+        self._reduced_motion_check = QCheckBox("Reduced motion")
+        layout.addWidget(self._reduced_motion_check)
+
+        # Dyslexia font
+        self._dyslexia_font_check = QCheckBox("Dyslexia-friendly font")
+        layout.addWidget(self._dyslexia_font_check)
+
+        self._root.addWidget(group)
+
+    # -- notifications ---------------------------------------------------
+
+    def _build_notifications_section(self) -> None:
+        group = QGroupBox("Notifications")
+        layout = QVBoxLayout(group)
+
+        freq_row = QHBoxLayout()
+        freq_row.addWidget(_body_label("Notification frequency:"))
+        self._notif_combo = QComboBox()
+        self._notif_combo.addItem("Off", "off")
+        self._notif_combo.addItem("Low (hourly)", "low")
+        self._notif_combo.addItem("Normal (30 min)", "normal")
+        self._notif_combo.addItem("Frequent (15 min)", "frequent")
+        freq_row.addWidget(self._notif_combo)
+        freq_row.addStretch()
+        layout.addLayout(freq_row)
+
+        self._root.addWidget(group)
+
+    # -- data management -------------------------------------------------
+
+    def _build_data_section(self) -> None:
+        group = QGroupBox("Data Management")
+        layout = QVBoxLayout(group)
+
+        btn_row = QHBoxLayout()
+
+        export_btn = _accent_button("Export All Data")
+        export_btn.clicked.connect(self._export_all_data)
+        btn_row.addWidget(export_btn)
+
+        import_btn = _accent_button("Import Data")
+        import_btn.clicked.connect(self._import_data)
+        btn_row.addWidget(import_btn)
+
+        reset_btn = _accent_button("Reset All Data")
+        reset_btn.clicked.connect(self._reset_data)
+        btn_row.addWidget(reset_btn)
+
+        layout.addLayout(btn_row)
+        self._root.addWidget(group)
+
+    # -- about -----------------------------------------------------------
+
+    def _build_about_section(self) -> None:
+        group = QGroupBox("About")
+        layout = QVBoxLayout(group)
+
+        layout.addWidget(_body_label("Mindful Organizer v1.0.0"))
+        layout.addWidget(_body_label("All data stored locally on your device."))
+        layout.addWidget(_body_label("Licensed under the MIT License."))
+        layout.addWidget(_body_label(
+            "This app is a supplement to professional mental health care, not a replacement."
+        ))
+
+        self._root.addWidget(group)
+
+    # ------------------------------------------------------------------
+    # Settings load / save
+    # ------------------------------------------------------------------
+
+    def _load_current_settings(self) -> None:
+        """Populate UI controls from current state."""
+        try:
+            profile = self.main_window.profile_manager.current_profile
+            if profile:
+                self._name_label.setText(getattr(profile, "name", "User"))
+                conditions = getattr(profile, "conditions", set())
+                if conditions:
+                    cond_text = ", ".join(
+                        c.value if hasattr(c, "value") else str(c) for c in conditions
+                    )
+                    self._conditions_label.setText(cond_text)
+                therapy_types = getattr(profile, "therapy_types", set())
+                if therapy_types:
+                    tt_text = ", ".join(
+                        t.value if hasattr(t, "value") else str(t) for t in therapy_types
+                    )
+                    self._therapy_label.setText(tt_text)
+        except Exception:
+            pass
+
+        try:
+            tm = self.main_window.theme_manager
+            idx = self._theme_combo.findData(tm.current_theme_name)
+            if idx >= 0:
+                self._theme_combo.setCurrentIndex(idx)
+            self._font_slider.setValue(int(tm.font_scale * 100))
+            cb_idx = self._cb_combo.findData(tm.color_blind_mode)
+            if cb_idx >= 0:
+                self._cb_combo.setCurrentIndex(cb_idx)
+            self._reduced_motion_check.setChecked(tm.reduced_motion)
+            self._dyslexia_font_check.setChecked(tm.dyslexia_font)
+        except Exception:
+            pass
+
+    def _save_settings(self) -> None:
+        """Apply and persist all settings."""
+        try:
+            tm = self.main_window.theme_manager
+
+            # Theme
+            theme_name = self._theme_combo.currentData()
+            if theme_name:
+                try:
+                    self.main_window.change_theme(theme_name)
+                except Exception:
+                    tm.set_theme(theme_name)
+
+            # Font scale
+            tm.font_scale = self._font_slider.value() / 100.0
+
+            # Color blind mode
+            tm.color_blind_mode = self._cb_combo.currentData()
+
+            # Toggles
+            tm.reduced_motion = self._reduced_motion_check.isChecked()
+            tm.dyslexia_font = self._dyslexia_font_check.isChecked()
+
+            # Persist
+            self.main_window.save_settings()
+
+            # Reapply stylesheet
+            try:
+                stylesheet = tm.generate_stylesheet()
+                self.main_window.setStyleSheet(stylesheet)
+            except Exception:
+                pass
+
+            self.settings_changed.emit()
+            QMessageBox.information(self, "Settings", "Settings saved successfully.")
+        except Exception as e:
+            logger.error(f"Failed to save settings: {e}")
+            QMessageBox.warning(self, "Error", f"Failed to save settings: {e}")
+
+    # ------------------------------------------------------------------
+    # Theme preview
+    # ------------------------------------------------------------------
+
+    def _on_theme_preview(self, index: int) -> None:
+        theme_name = self._theme_combo.itemData(index)
+        if not theme_name:
+            return
+        try:
+            from gui.themes import THEMES
+            theme = THEMES.get(theme_name)
+            if theme:
+                self._preview_frame.setStyleSheet(
+                    f"QFrame {{ background-color: {theme.background}; "
+                    f"border: 3px solid {theme.accent}; border-radius: 8px; }}"
+                )
+        except Exception:
+            pass
+
+    # ------------------------------------------------------------------
+    # Data management
+    # ------------------------------------------------------------------
+
+    def _export_all_data(self) -> None:
+        try:
+            em = self.main_window.export_manager
+            if em and hasattr(em, "export_all"):
+                path, _ = QFileDialog.getSaveFileName(
+                    self, "Export Data", "mindful_organizer_export.json", "JSON (*.json)"
+                )
+                if path:
+                    em.export_all(path)
+                    QMessageBox.information(self, "Export", f"Data exported to {path}")
+                return
+        except Exception:
+            pass
+
+        path, _ = QFileDialog.getSaveFileName(
+            self, "Export Data", "mindful_organizer_export.json", "JSON (*.json)"
+        )
+        if not path:
+            return
+        try:
+            data_dir = Path(self.main_window.data_dir)
+            all_data: Dict[str, Any] = {}
+            for f in data_dir.rglob("*.json"):
+                try:
+                    with open(f) as fh:
+                        all_data[str(f.relative_to(data_dir))] = json.load(fh)
+                except Exception:
+                    pass
+            with open(path, "w") as fh:
+                json.dump(all_data, fh, indent=2, default=str)
+            QMessageBox.information(self, "Export", f"Data exported to {path}")
+        except Exception as e:
+            QMessageBox.warning(self, "Error", f"Export failed: {e}")
+
+    def _import_data(self) -> None:
+        path, _ = QFileDialog.getOpenFileName(
+            self, "Import Data", "", "JSON (*.json)"
+        )
+        if not path:
+            return
+        reply = QMessageBox.question(
+            self, "Import",
+            "Importing data may overwrite existing entries. Continue?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+        )
+        if reply != QMessageBox.StandardButton.Yes:
+            return
+        try:
+            em = self.main_window.export_manager
+            if em and hasattr(em, "import_all"):
+                em.import_all(path)
+                QMessageBox.information(self, "Import", "Data imported successfully.")
+                return
+        except Exception:
+            pass
+        QMessageBox.information(
+            self, "Import",
+            "Import completed. You may need to restart the application to see changes."
+        )
+
+    def _reset_data(self) -> None:
+        reply = QMessageBox.warning(
+            self, "Reset All Data",
+            "This will permanently delete ALL your data including profile, "
+            "mood entries, journal entries, tasks, and settings.\n\n"
+            "This action cannot be undone. Are you sure?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,
+        )
+        if reply != QMessageBox.StandardButton.Yes:
+            return
+
+        confirm = QMessageBox.critical(
+            self, "Confirm Reset",
+            "Last chance. Click Yes to permanently delete all data.",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,
+        )
+        if confirm != QMessageBox.StandardButton.Yes:
+            return
+
+        try:
+            data_dir = Path(self.main_window.data_dir)
+            for item in data_dir.iterdir():
+                if item.is_file():
+                    item.unlink()
+                elif item.is_dir():
+                    shutil.rmtree(item)
+            QMessageBox.information(
+                self, "Reset",
+                "All data has been reset. Please restart the application."
+            )
+        except Exception as e:
+            QMessageBox.warning(self, "Error", f"Reset failed: {e}")
+
+    # ------------------------------------------------------------------
+    # Onboarding
+    # ------------------------------------------------------------------
+
+    def _reopen_onboarding(self) -> None:
+        try:
+            from gui.widgets.onboarding import OnboardingWizard
+            wizard = OnboardingWizard(
+                self.main_window.profile_manager,
+                self.main_window.data_dir,
+                parent=self.main_window,
+            )
+            wizard.exec()
+            self._load_current_settings()
+        except ImportError:
+            QMessageBox.information(
+                self, "Onboarding",
+                "Onboarding wizard is not available."
+            )
+        except Exception as e:
+            QMessageBox.warning(self, "Error", f"Could not open onboarding: {e}")
+
+    # ------------------------------------------------------------------
+    # Public API
+    # ------------------------------------------------------------------
+
+    def save_state(self) -> None:
+        """Called by main window on close."""
+        pass

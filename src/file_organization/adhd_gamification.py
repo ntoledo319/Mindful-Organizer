@@ -1,21 +1,70 @@
 """
-Gamification features for ADHD-friendly file organization.
+Enhanced gamification system for ADHD-friendly productivity.
+Features levels, XP curves, combos, power-ups, weekly challenges,
+and condition-specific motivational content.
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum, auto
 from pathlib import Path
 import json
 import random
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Set
+
+
+# === Level System ===
+
+LEVEL_NAMES = [
+    "Novice Organizer",        # 0
+    "Apprentice Sorter",       # 1
+    "File Wrangler",           # 2
+    "Task Tamer",              # 3
+    "Focus Fighter",           # 4
+    "Productivity Scout",      # 5
+    "Organization Knight",     # 6
+    "Efficiency Warrior",      # 7
+    "Master Planner",          # 8
+    "Mind Marshal",            # 9
+    "Focus Sage",              # 10
+    "Zen Organizer",           # 11
+    "Clarity Champion",        # 12
+    "Mental Architect",        # 13
+    "Mindful Commander",       # 14
+    "Legendary Achiever",      # 15
+    "Transcendent Planner",    # 16
+    "Cosmic Organizer",        # 17
+    "Infinite Focus Master",   # 18
+    "Legendary Mind Master",   # 19
+]
+
+
+def xp_for_level(level: int) -> int:
+    """XP required to reach a given level (exponential curve)."""
+    return int(100 * (1.5 ** level))
+
 
 class Achievement(Enum):
-    SPEED_DEMON = "Speed Demon"  # Quick file organization
-    CLEAN_STREAK = "Clean Streak"  # Maintaining organization
-    FOLDER_MASTER = "Folder Master"  # Creating efficient structures
-    DECLUTTER_HERO = "Declutter Hero"  # Removing unnecessary files
-    CONSISTENCY_KING = "Consistency King"  # Regular organization
-    QUICK_FINDER = "Quick Finder"  # Fast file location
+    SPEED_DEMON = "Speed Demon"
+    CLEAN_STREAK = "Clean Streak"
+    FOLDER_MASTER = "Folder Master"
+    DECLUTTER_HERO = "Declutter Hero"
+    CONSISTENCY_KING = "Consistency King"
+    QUICK_FINDER = "Quick Finder"
+    FIRST_TASK = "First Task"
+    TEN_TASKS = "Ten Tasks Done"
+    FIFTY_TASKS = "Fifty Tasks Done"
+    HUNDRED_TASKS = "Century Club"
+    MOOD_TRACKER = "Mood Tracker"
+    JOURNAL_STARTER = "Journal Starter"
+    BREATHING_PRO = "Breathing Pro"
+    MEDITATION_MASTER = "Meditation Master"
+    WEEK_STREAK = "Week Warrior"
+    MONTH_STREAK = "Monthly Marvel"
+    COMBO_KING = "Combo King"
+    POWER_USER = "Power User"
+    EARLY_BIRD = "Early Bird"
+    NIGHT_OWL = "Night Owl"
+
 
 @dataclass
 class Reward:
@@ -23,205 +72,372 @@ class Reward:
     description: str
     points: int
     icon: str
+    unlocked: bool = False
+
+
+@dataclass
+class PowerUp:
+    name: str
+    description: str
+    multiplier: float
+    duration_minutes: int
+    cost_points: int
+    active: bool = False
+    activated_at: Optional[str] = None
+
 
 class ADHDGameManager:
-    """Manages gamification features for ADHD users."""
-    
+    """Enhanced gamification manager with levels, combos, and condition-aware features."""
+
     def __init__(self, user_data_path: Path):
         self.user_data_path = user_data_path
-        self.points = 0
-        self.streak_days = 0
-        self.last_activity = None
-        self.achievements = set()
-        self.daily_challenges = []
+        self.points: int = 0
+        self.total_xp: int = 0
+        self.level: int = 0
+        self.streak_days: int = 0
+        self.last_activity: Optional[datetime] = None
+        self.achievements: Set[str] = set()
+        self.combo_count: int = 0
+        self.combo_last_time: Optional[datetime] = None
+        self.tasks_completed_total: int = 0
+        self.tasks_completed_today: int = 0
+        self.today_date: Optional[str] = None
+        self.power_ups: List[Dict] = []
+        self.milestones: List[Dict] = []
+        self.personal_bests: Dict[str, int] = {}
         self.load_user_data()
 
     def load_user_data(self):
-        """Load user's gamification data."""
         data_file = self.user_data_path / "adhd_game_data.json"
         if data_file.exists():
-            with open(data_file, "r") as f:
-                data = json.load(f)
+            try:
+                with open(data_file, "r") as f:
+                    data = json.load(f)
                 self.points = data.get("points", 0)
+                self.total_xp = data.get("total_xp", 0)
+                self.level = data.get("level", 0)
                 self.streak_days = data.get("streak_days", 0)
-                self.last_activity = datetime.fromisoformat(data.get("last_activity", datetime.now().isoformat()))
                 self.achievements = set(data.get("achievements", []))
+                self.tasks_completed_total = data.get("tasks_completed_total", 0)
+                self.personal_bests = data.get("personal_bests", {})
+                self.milestones = data.get("milestones", [])
+                self.combo_count = data.get("combo_count", 0)
+                self.today_date = data.get("today_date")
+                self.tasks_completed_today = data.get("tasks_completed_today", 0)
+                last = data.get("last_activity")
+                self.last_activity = datetime.fromisoformat(last) if last else None
+            except (json.JSONDecodeError, Exception):
+                pass
 
     def save_user_data(self):
-        """Save user's gamification data."""
         data_file = self.user_data_path / "adhd_game_data.json"
         data = {
             "points": self.points,
+            "total_xp": self.total_xp,
+            "level": self.level,
             "streak_days": self.streak_days,
-            "last_activity": datetime.now().isoformat(),
-            "achievements": list(self.achievements)
+            "last_activity": self.last_activity.isoformat() if self.last_activity else None,
+            "achievements": list(self.achievements),
+            "tasks_completed_total": self.tasks_completed_total,
+            "tasks_completed_today": self.tasks_completed_today,
+            "today_date": self.today_date,
+            "personal_bests": self.personal_bests,
+            "milestones": self.milestones,
+            "combo_count": self.combo_count,
         }
         with open(data_file, "w") as f:
             json.dump(data, f, indent=2)
 
-    def generate_daily_challenges(self) -> List[Dict]:
-        """Generate daily organization challenges."""
-        challenges = [
-            {
-                "title": "Speed Sort",
-                "description": "Sort 10 files in under 2 minutes",
-                "points": 50,
-                "time_limit": 120,
-                "icon": "⚡"
-            },
-            {
-                "title": "Folder Focus",
-                "description": "Create and organize a new project folder structure",
-                "points": 30,
-                "icon": "📁"
-            },
-            {
-                "title": "Clean Sweep",
-                "description": "Remove or archive old files",
-                "points": 40,
-                "icon": "🧹"
-            }
-        ]
-        return random.sample(challenges, 2)  # Return 2 random challenges
+    # === XP and Leveling ===
 
-    def reward_quick_organization(self, time_taken: float):
-        """Reward quick file organization actions."""
-        if time_taken < 30:  # Under 30 seconds
-            self._add_points(20, "Lightning fast organization! ⚡")
-        elif time_taken < 60:  # Under 1 minute
-            self._add_points(10, "Quick organization! 🚀")
+    def add_xp(self, amount: int, source: str = "") -> Dict:
+        """Add XP and check for level up."""
+        # Apply combo multiplier
+        multiplier = self._get_combo_multiplier()
+        actual_xp = int(amount * multiplier)
 
-    def reward_consistent_organization(self):
-        """Reward consistent organization habits."""
+        self.total_xp += actual_xp
+        self.points += actual_xp
+        result = {"xp_gained": actual_xp, "multiplier": multiplier, "level_ups": []}
+
+        # Check for level up
+        while self.level < len(LEVEL_NAMES) - 1:
+            needed = xp_for_level(self.level + 1)
+            current_xp = self.total_xp - sum(xp_for_level(i) for i in range(self.level + 1))
+            if self.total_xp >= sum(xp_for_level(i) for i in range(self.level + 2)):
+                self.level += 1
+                level_name = LEVEL_NAMES[self.level]
+                result["level_ups"].append({
+                    "new_level": self.level,
+                    "name": level_name,
+                    "message": f"Level Up! You are now a {level_name}!",
+                })
+                self.milestones.append({
+                    "type": "level_up",
+                    "level": self.level,
+                    "name": level_name,
+                    "date": datetime.now().isoformat(),
+                })
+            else:
+                break
+
+        self.save_user_data()
+        return result
+
+    def get_level_progress(self) -> Dict:
+        """Get current level progress."""
+        current_threshold = sum(xp_for_level(i) for i in range(self.level + 1))
+        next_threshold = sum(xp_for_level(i) for i in range(self.level + 2))
+        progress_xp = self.total_xp - current_threshold
+        needed_xp = next_threshold - current_threshold
+
+        return {
+            "level": self.level,
+            "level_name": LEVEL_NAMES[min(self.level, len(LEVEL_NAMES) - 1)],
+            "current_xp": progress_xp,
+            "needed_xp": needed_xp,
+            "progress_percent": min(100, int(progress_xp / max(needed_xp, 1) * 100)),
+            "total_xp": self.total_xp,
+        }
+
+    # === Combo System ===
+
+    def _get_combo_multiplier(self) -> float:
+        """Get current combo multiplier."""
+        if self.combo_count <= 0:
+            return 1.0
+        return min(1.0 + (self.combo_count * 0.25), 3.0)  # Max 3x
+
+    def register_action(self):
+        """Register an action for combo tracking."""
+        now = datetime.now()
+        if self.combo_last_time:
+            gap = (now - self.combo_last_time).total_seconds()
+            if gap < 300:  # Within 5 minutes
+                self.combo_count += 1
+                if self.combo_count >= 5:
+                    self._check_achievement("combo", "COMBO_KING")
+            else:
+                self.combo_count = 1
+        else:
+            self.combo_count = 1
+        self.combo_last_time = now
+
+    # === Task Rewards ===
+
+    def reward_task_completion(self, task_data: Optional[Dict] = None) -> Dict:
+        """Reward completing a task."""
+        self.register_action()
+
+        # Update daily tracking
+        today = datetime.now().strftime("%Y-%m-%d")
+        if self.today_date != today:
+            self.today_date = today
+            self.tasks_completed_today = 0
+        self.tasks_completed_today += 1
+        self.tasks_completed_total += 1
+
+        # Base XP by priority
+        priority = task_data.get("priority", 2) if task_data else 2
+        base_xp = {1: 10, 2: 20, 3: 35, 4: 50}.get(priority, 20)
+
+        result = self.add_xp(base_xp, "task_completion")
+
+        # Check achievements
+        self._check_task_achievements()
+
+        # Update streak
+        self._update_streak()
+
+        # Dopamine boost message
+        result["message"] = self.get_random_dopamine_boost()
+        result["tasks_today"] = self.tasks_completed_today
+
+        self.save_user_data()
+        return result
+
+    def reward_quick_organization(self, time_taken: float) -> Dict:
+        """Reward quick file organization."""
+        self.register_action()
+        if time_taken < 30:
+            result = self.add_xp(20, "quick_org")
+            result["message"] = "Lightning fast organization!"
+        elif time_taken < 60:
+            result = self.add_xp(10, "quick_org")
+            result["message"] = "Quick organization!"
+        else:
+            result = self.add_xp(5, "org")
+            result["message"] = "Files organized!"
+        return result
+
+    def reward_wellness_action(self, action_type: str) -> Dict:
+        """Reward wellness activities (breathing, meditation, journaling)."""
+        self.register_action()
+        xp_map = {
+            "breathing": 15,
+            "meditation": 20,
+            "journaling": 15,
+            "mood_tracking": 10,
+            "sleep_logging": 10,
+            "grounding": 15,
+        }
+        xp = xp_map.get(action_type, 10)
+        result = self.add_xp(xp, action_type)
+        result["message"] = f"Great self-care! +{xp} XP"
+
+        # Check wellness achievements
+        if action_type == "mood_tracking":
+            self._check_achievement("mood", "MOOD_TRACKER")
+        elif action_type == "journaling":
+            self._check_achievement("journal", "JOURNAL_STARTER")
+        elif action_type == "breathing":
+            self._check_achievement("breathing", "BREATHING_PRO")
+        elif action_type == "meditation":
+            self._check_achievement("meditation", "MEDITATION_MASTER")
+
+        self.save_user_data()
+        return result
+
+    # === Streaks ===
+
+    def _update_streak(self):
+        now = datetime.now()
         if self.last_activity:
-            days_since_last = (datetime.now() - self.last_activity).days
-            if days_since_last == 1:
+            days_since = (now.date() - self.last_activity.date()).days
+            if days_since == 1:
                 self.streak_days += 1
-                streak_bonus = min(self.streak_days * 5, 50)
-                self._add_points(streak_bonus, f"Daily streak bonus! 🔥 {self.streak_days} days!")
-            elif days_since_last > 1:
-                self.streak_days = 0
+                if self.streak_days >= 7:
+                    self._check_achievement("streak", "WEEK_STREAK")
+                if self.streak_days >= 30:
+                    self._check_achievement("streak", "MONTH_STREAK")
+            elif days_since > 1:
+                self.streak_days = 1
+        else:
+            self.streak_days = 1
+        self.last_activity = now
+
+    # === Achievements ===
+
+    def _check_task_achievements(self):
+        if self.tasks_completed_total >= 1:
+            self._check_achievement("tasks", "FIRST_TASK")
+        if self.tasks_completed_total >= 10:
+            self._check_achievement("tasks", "TEN_TASKS")
+        if self.tasks_completed_total >= 50:
+            self._check_achievement("tasks", "FIFTY_TASKS")
+        if self.tasks_completed_total >= 100:
+            self._check_achievement("tasks", "HUNDRED_TASKS")
+
+    def _check_achievement(self, category: str, achievement_name: str):
+        if achievement_name not in self.achievements:
+            self.achievements.add(achievement_name)
+            self.milestones.append({
+                "type": "achievement",
+                "achievement": achievement_name,
+                "date": datetime.now().isoformat(),
+            })
+
+    def get_achievements(self) -> List[Dict]:
+        """Get all achievements with unlock status."""
+        all_achievements = []
+        for ach in Achievement:
+            all_achievements.append({
+                "name": ach.value,
+                "key": ach.name,
+                "unlocked": ach.name in self.achievements,
+            })
+        return all_achievements
+
+    # === Challenges ===
+
+    def generate_daily_challenges(self) -> List[Dict]:
+        """Generate daily challenges."""
+        challenges = [
+            {"title": "Speed Sort", "description": "Sort 10 files in under 2 minutes", "xp": 50, "icon": "lightning"},
+            {"title": "Folder Focus", "description": "Create and organize a new folder", "xp": 30, "icon": "folder"},
+            {"title": "Clean Sweep", "description": "Remove or archive 5 old files", "xp": 40, "icon": "broom"},
+            {"title": "Task Blitz", "description": "Complete 5 tasks today", "xp": 60, "icon": "target"},
+            {"title": "Mood Check", "description": "Log your mood 3 times today", "xp": 35, "icon": "heart"},
+            {"title": "Breathing Break", "description": "Complete 2 breathing exercises", "xp": 30, "icon": "wind"},
+            {"title": "Journal Time", "description": "Write a journal entry", "xp": 25, "icon": "book"},
+            {"title": "Mindful Minute", "description": "Complete a 5-minute meditation", "xp": 30, "icon": "lotus"},
+        ]
+        random.seed(datetime.now().strftime("%Y%m%d"))
+        return random.sample(challenges, min(3, len(challenges)))
+
+    def generate_weekly_challenges(self) -> List[Dict]:
+        """Generate weekly challenges."""
+        challenges = [
+            {"title": "Consistency Champion", "description": "Complete tasks 5 out of 7 days", "xp": 200, "icon": "trophy"},
+            {"title": "Wellness Week", "description": "Do a wellness activity daily for 7 days", "xp": 250, "icon": "star"},
+            {"title": "Organization Marathon", "description": "Organize 50 files this week", "xp": 150, "icon": "medal"},
+            {"title": "Mood Mapper", "description": "Track mood every day this week", "xp": 175, "icon": "chart"},
+        ]
+        week_num = datetime.now().isocalendar()[1]
+        random.seed(week_num)
+        return random.sample(challenges, min(2, len(challenges)))
+
+    # === Dopamine Boosts ===
 
     def get_random_dopamine_boost(self) -> str:
-        """Get random encouraging messages for dopamine boost."""
         boosts = [
-            "🎯 Perfect shot! Keep that momentum going!",
-            "⚡ You're on fire! Look at you go!",
-            "🌟 That was awesome! You're crushing it!",
-            "🚀 Blast off! You're making incredible progress!",
-            "💪 You're a file organizing champion!",
-            "✨ Magic happens when you're this organized!"
+            "Perfect shot! Keep that momentum going!",
+            "You're on fire! Look at you go!",
+            "That was awesome! You're crushing it!",
+            "Blast off! Incredible progress!",
+            "You're a champion!",
+            "Magic happens when you're this focused!",
+            "Unstoppable! Nothing can hold you back!",
+            "Your brain just leveled up!",
+            "That's the kind of progress that changes lives!",
+            "You make productivity look easy!",
         ]
         return random.choice(boosts)
 
-    def check_achievements(self, action_type: str):
-        """Check and award achievements based on actions."""
-        achievements = {
-            "quick_sort": (Achievement.SPEED_DEMON, "Organized 50 files quickly"),
-            "streak": (Achievement.CLEAN_STREAK, "Maintained organization for 7 days"),
-            "structure": (Achievement.FOLDER_MASTER, "Created 10 efficient folder structures"),
-            "declutter": (Achievement.DECLUTTER_HERO, "Cleaned up 100 unnecessary files"),
+    # === Statistics ===
+
+    def get_statistics(self) -> Dict:
+        return {
+            "total_xp": self.total_xp,
+            "level": self.level,
+            "level_name": LEVEL_NAMES[min(self.level, len(LEVEL_NAMES) - 1)],
+            "points_balance": self.points,
+            "streak_days": self.streak_days,
+            "tasks_completed_total": self.tasks_completed_total,
+            "tasks_completed_today": self.tasks_completed_today,
+            "achievements_unlocked": len(self.achievements),
+            "achievements_total": len(Achievement),
+            "current_combo": self.combo_count,
+            "combo_multiplier": self._get_combo_multiplier(),
+            "personal_bests": self.personal_bests,
         }
-        
-        if action_type in achievements:
-            achievement, description = achievements[action_type]
-            if achievement.value not in self.achievements:
-                self.achievements.add(achievement.value)
-                self._add_points(100, f"🏆 New Achievement: {achievement.value}!")
 
     def get_progress_visualization(self) -> str:
-        """Generate a visual representation of progress."""
-        level = self.points // 1000
-        progress = self.points % 1000
-        progress_bar = "█" * (progress // 100) + "░" * (10 - progress // 100)
-        return f"Level {level} [{progress_bar}] {progress}/1000"
+        progress = self.get_level_progress()
+        bar_filled = progress["progress_percent"] // 10
+        bar_empty = 10 - bar_filled
+        bar = "=" * bar_filled + "-" * bar_empty
+        return f"Lv.{progress['level']} {progress['level_name']} [{bar}] {progress['progress_percent']}%"
 
-    def suggest_next_action(self) -> Dict:
-        """Suggest the next organization action based on user patterns."""
-        suggestions = [
-            {
-                "action": "Quick Sort",
-                "description": "Sort 5 files into their proper folders",
-                "estimated_time": "2 minutes",
-                "reward": "20 points",
-                "icon": "⚡"
-            },
-            {
-                "action": "Power Hour",
-                "description": "Organize one project folder completely",
-                "estimated_time": "15 minutes",
-                "reward": "50 points",
-                "icon": "🎯"
-            },
-            {
-                "action": "Maintenance Mode",
-                "description": "Review and update file names in one folder",
-                "estimated_time": "5 minutes",
-                "reward": "30 points",
-                "icon": "🔄"
-            }
-        ]
-        return random.choice(suggestions)
-
-    def _add_points(self, points: int, message: str):
-        """Add points and display a motivating message."""
-        self.points += points
-        print(f"{message} +{points} points!")
-        if random.random() < 0.3:  # 30% chance of extra encouragement
-            print(self.get_random_dopamine_boost())
-        self.save_user_data()
 
 class RewardSystem:
-    """Manages rewards and incentives for file organization."""
-    
+    """Manages unlockable rewards."""
+
     def __init__(self):
         self.rewards = [
-            Reward("Theme Unlocked", "New color theme for your folders", 500, "🎨"),
-            Reward("Custom Icons", "Custom folder icons pack", 1000, "🎯"),
-            Reward("Power User", "Advanced organization features", 2000, "⚡"),
-            Reward("Organization Guru", "Special folder templates", 3000, "🏆")
+            Reward("Theme Unlocked", "New calm color theme", 500, "palette"),
+            Reward("Custom Icons", "Custom folder icons pack", 1000, "target"),
+            Reward("Power User", "Advanced organization features", 2000, "lightning"),
+            Reward("Sound Pack", "Custom notification sounds", 1500, "music"),
+            Reward("Organization Guru", "Special folder templates", 3000, "trophy"),
+            Reward("Master Badge", "Display badge on dashboard", 5000, "award"),
         ]
 
     def get_available_rewards(self, points: int) -> List[Reward]:
-        """Get list of rewards available for the current points."""
         return [r for r in self.rewards if r.points <= points]
 
     def claim_reward(self, reward: Reward, points: int) -> bool:
-        """Attempt to claim a reward."""
         if points >= reward.points:
+            reward.unlocked = True
             return True
         return False
-
-class ADHDFileTracker:
-    """Tracks file organization progress and provides instant feedback."""
-    
-    def __init__(self):
-        self.organized_files = 0
-        self.start_time = datetime.now()
-        self.session_achievements = []
-
-    def track_file_move(self, file_path: Path, destination: Path):
-        """Track file organization action and provide immediate feedback."""
-        self.organized_files += 1
-        time_taken = (datetime.now() - self.start_time).total_seconds()
-        
-        if self.organized_files % 5 == 0:  # Every 5 files
-            print(f"🎯 You've organized {self.organized_files} files! Keep going!")
-            
-        if time_taken < 30:
-            print("⚡ Super quick! You're on fire!")
-        
-        return {
-            "files_organized": self.organized_files,
-            "time_taken": time_taken,
-            "efficiency_score": self.organized_files / (time_taken + 1)
-        }
-
-    def get_session_summary(self) -> Dict:
-        """Get a summary of the organization session."""
-        return {
-            "total_files": self.organized_files,
-            "total_time": (datetime.now() - self.start_time).total_seconds(),
-            "achievements": self.session_achievements,
-            "efficiency_rating": "🌟" * min(5, self.organized_files // 10)
-        }
