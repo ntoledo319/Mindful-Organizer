@@ -10,4 +10,4 @@ def test_main_imports():
     import src.gui.main_window
     import src.core.task_manager
     import src.core.system_optimizer
-    import src.profile.mental_health_profile_builder
+    import src.profiles.mental_health_profile_builder

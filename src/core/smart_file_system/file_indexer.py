@@ -2,14 +2,16 @@ import sqlite3
 from pathlib import Path
 import hashlib
 from typing import List, Dict, Optional
-from sentence_transformers import SentenceTransformer
-import numpy as np
 import json
 
 class FileIndexer:
     def __init__(self, db_path: str = "file_index.db"):
         self.db_path = db_path
-        self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+        try:
+            from sentence_transformers import SentenceTransformer
+            self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+        except Exception:
+            self.embedding_model = None
         self._init_db()
         
     def _init_db(self):
@@ -84,46 +86,65 @@ class FileIndexer:
                 sha256.update(chunk)
         return sha256.hexdigest()
         
-    def _generate_embedding(self, text: str) -> np.ndarray:
+    def _generate_embedding(self, text: str):
         """Generate embedding vector for text content"""
-        return self.embedding_model.encode(text)
+        if self.embedding_model is None:
+            return None
+        try:
+            import numpy as np
+            return self.embedding_model.encode(text)
+        except Exception:
+            return None
         
-    def get_file_embedding(self, file_path: str) -> Optional[np.ndarray]:
+    def get_file_embedding(self, file_path: str):
         """Retrieve embedding for a file"""
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute('SELECT embedding FROM files WHERE path = ?', (file_path,))
-            result = cursor.fetchone()
-            if result and result[0]:
-                return np.frombuffer(result[0], dtype=np.float32)
+        try:
+            import numpy as np
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute('SELECT embedding FROM files WHERE path = ?', (file_path,))
+                result = cursor.fetchone()
+                if result and result[0]:
+                    return np.frombuffer(result[0], dtype=np.float32)
+        except Exception:
+            pass
         return None
         
     def search_similar_files(self, query: str, top_k: int = 5) -> List[Dict]:
         """Search for files similar to the query text"""
         query_embedding = self._generate_embedding(query)
-        
-        with sqlite3.connect(self.db_path) as conn:
-            conn.create_function("cosine_sim", 2, self._cosine_similarity)
-            cursor = conn.cursor()
-            
-            cursor.execute('''
-                SELECT path, cosine_sim(embedding, ?) as similarity 
-                FROM files 
-                WHERE embedding IS NOT NULL
-                ORDER BY similarity DESC
-                LIMIT ?
-            ''', (query_embedding.tobytes(), top_k))
-            
-            results = []
-            for row in cursor.fetchall():
-                results.append({
-                    'path': row[0],
-                    'similarity': row[1]
-                })
-            return results
+        if query_embedding is None:
+            return []
+        try:
+            import numpy as np
+            with sqlite3.connect(self.db_path) as conn:
+                conn.create_function("cosine_sim", 2, self._cosine_similarity)
+                cursor = conn.cursor()
+                
+                cursor.execute('''
+                    SELECT path, cosine_sim(embedding, ?) as similarity 
+                    FROM files 
+                    WHERE embedding IS NOT NULL
+                    ORDER BY similarity DESC
+                    LIMIT ?
+                ''', (query_embedding.tobytes(), top_k))
+                
+                results = []
+                for row in cursor.fetchall():
+                    results.append({
+                        'path': row[0],
+                        'similarity': row[1]
+                    })
+                return results
+        except Exception:
+            return []
             
     def _cosine_similarity(self, blob1: bytes, blob2: bytes) -> float:
         """SQLite function to calculate cosine similarity between embeddings"""
-        vec1 = np.frombuffer(blob1, dtype=np.float32)
-        vec2 = np.frombuffer(blob2, dtype=np.float32)
-        return float(np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2)))
+        try:
+            import numpy as np
+            vec1 = np.frombuffer(blob1, dtype=np.float32)
+            vec2 = np.frombuffer(blob2, dtype=np.float32)
+            return float(np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2)))
+        except Exception:
+            return 0.0

@@ -249,7 +249,7 @@ class OnboardingWizard(QDialog):
 
         # Create profile via profile_manager
         try:
-            from profile.mental_health_profile_builder import (
+            from profiles.mental_health_profile_builder import (
                 Condition, TherapyType, Profile, UIPreference, OrganizationPreference,
             )
 

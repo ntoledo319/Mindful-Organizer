@@ -21,7 +21,7 @@ from core.task_manager import TaskManager
 from core.system_optimizer import SystemOptimizer
 from core.ai_optimizer import AISystemOptimizer
 from core.file_organizer import FileOrganizer
-from profile.mental_health_profile_builder import (
+from profiles.mental_health_profile_builder import (
     ProfileManager, Condition, TherapyType,
 )
 
@@ -220,7 +220,7 @@ class AdaptiveMainWindow(QMainWindow):
     def spoon_manager(self):
         if self._spoon_manager is None:
             try:
-                from profile.spoon_theory import SpoonManager
+                from profiles.spoon_theory import SpoonManager
                 conditions = set()
                 if self.profile_manager.current_profile:
                     conditions = self.profile_manager.current_profile.conditions

@@ -1,7 +1,6 @@
 from typing import Dict, List, Optional
 import json
 from pathlib import Path
-import matplotlib.pyplot as plt
 from datetime import datetime
 
 class OutputGenerator:
@@ -75,6 +74,12 @@ class OutputGenerator:
         
     def generate_cluster_visualization(self, save_path: Optional[str] = None):
         """Generate and optionally save a visualization of clusters"""
+        try:
+            import numpy as np
+            from sklearn.manifold import TSNE
+            import matplotlib.pyplot as plt
+        except Exception:
+            return
         if 'reduced_embeddings' not in self.clustering_results:
             raise ValueError("Clustering results do not contain reduced embeddings")
             
