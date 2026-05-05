@@ -8,21 +8,34 @@ disclaimer, and export-for-doctor functionality.
 
 from __future__ import annotations
 
+import contextlib
 import json
 import logging
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QFrame, QScrollArea, QSizePolicy, QListWidget, QListWidgetItem,
-    QLineEdit, QSpinBox, QComboBox, QTextEdit, QTimeEdit,
-    QCheckBox, QDialog, QDialogButtonBox, QGroupBox,
-    QMessageBox, QFileDialog,
-)
 from PyQt6.QtCore import Qt, QTime, pyqtSignal
 from PyQt6.QtGui import QFont
+from PyQt6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QDialog,
+    QDialogButtonBox,
+    QFileDialog,
+    QFrame,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QListWidget,
+    QMessageBox,
+    QPushButton,
+    QScrollArea,
+    QTimeEdit,
+    QVBoxLayout,
+    QWidget,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -58,8 +71,8 @@ class _MedicationDialog(QDialog):
 
     def __init__(
         self,
-        med: Optional[Dict[str, Any]] = None,
-        parent: Optional[QWidget] = None,
+        med: dict[str, Any] | None = None,
+        parent: QWidget | None = None,
     ) -> None:
         super().__init__(parent)
         self.setWindowTitle("Medication" if not med else f"Edit: {med.get('name', '')}")
@@ -114,7 +127,7 @@ class _MedicationDialog(QDialog):
         buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
 
-    def get_data(self) -> Dict[str, Any]:
+    def get_data(self) -> dict[str, Any]:
         return {
             "name": self._name.text().strip(),
             "dosage": self._dosage.text().strip(),
@@ -133,18 +146,16 @@ class MedicationWidget(QWidget):
     medication_taken = pyqtSignal(str)  # med name
     medication_updated = pyqtSignal()
 
-    def __init__(self, main_window: Any, parent: Optional[QWidget] = None) -> None:
+    def __init__(self, main_window: Any, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.main_window = main_window
 
         self._medication_tracker = None
-        try:
+        with contextlib.suppress(Exception):
             self._medication_tracker = main_window.medication_tracker
-        except Exception:
-            pass
 
-        self._medications: List[Dict[str, Any]] = []
-        self._adherence: Dict[str, Dict[str, str]] = {}  # date -> {med_name: status}
+        self._medications: list[dict[str, Any]] = []
+        self._adherence: dict[str, dict[str, str]] = {}  # date -> {med_name: status}
 
         self._load_data()
         self._build_ui()
@@ -157,7 +168,7 @@ class MedicationWidget(QWidget):
     def _data_dir(self) -> Path:
         try:
             base = Path(self.main_window.data_dir)
-        except Exception:
+        except (AttributeError, TypeError):
             base = Path.home() / ".mindful_optimizer"
         p = base / "medication"
         p.mkdir(parents=True, exist_ok=True)
@@ -172,15 +183,15 @@ class MedicationWidget(QWidget):
             try:
                 with open(meds_file) as fh:
                     self._medications = json.load(fh)
-            except Exception:
-                pass
+            except (json.JSONDecodeError, OSError) as exc:
+                logger.debug(f"Medication load error: {exc}")
 
         if adherence_file.exists():
             try:
                 with open(adherence_file) as fh:
                     self._adherence = json.load(fh)
-            except Exception:
-                pass
+            except (json.JSONDecodeError, OSError) as exc:
+                logger.debug(f"Adherence load error: {exc}")
 
     def _save_data(self) -> None:
         dd = self._data_dir()
@@ -241,7 +252,7 @@ class MedicationWidget(QWidget):
         self._root.addLayout(body)
 
         # Export
-        export_btn = _accent_button("Export for Doctor")
+        export_btn = _accent_button("Export for Healthcare Provider")
         export_btn.clicked.connect(self._export_for_doctor)
         self._root.addWidget(export_btn)
 
@@ -319,6 +330,8 @@ class MedicationWidget(QWidget):
         # Clear existing schedule widgets
         while self._schedule_layout.count():
             item = self._schedule_layout.takeAt(0)
+            if item is None:
+                continue
             w = item.widget()
             if w:
                 w.deleteLater()
@@ -326,8 +339,11 @@ class MedicationWidget(QWidget):
             if sub:
                 while sub.count():
                     child = sub.takeAt(0)
-                    if child.widget():
-                        child.widget().deleteLater()
+                    if child is None:
+                        continue
+                    cw = child.widget()
+                    if cw:
+                        cw.deleteLater()
 
         today_str = date.today().isoformat()
         today_adherence = self._adherence.get(today_str, {})
@@ -450,7 +466,7 @@ class MedicationWidget(QWidget):
             return
 
         # Compute adherence per medication
-        adherence_summary: Dict[str, Any] = {}
+        adherence_summary: dict[str, Any] = {}
         for med in self._medications:
             name = med.get("name", "?")
             med_total = 0

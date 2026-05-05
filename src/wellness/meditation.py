@@ -6,13 +6,12 @@ streaks, statistics, personalized recommendations, favorites, and optional
 guided meditation library loading.
 """
 
-from dataclasses import dataclass, field
-from datetime import datetime, date, timedelta
-from enum import Enum
-from typing import Dict, List, Optional, Set
-from pathlib import Path
 import json
 import uuid
+from dataclasses import dataclass, field
+from datetime import date, datetime, timedelta
+from enum import Enum
+from pathlib import Path
 
 
 class MeditationType(Enum):
@@ -27,7 +26,7 @@ class MeditationType(Enum):
 
 
 # Descriptions for each meditation type used in recommendations and display.
-_MEDITATION_DESCRIPTIONS: Dict[MeditationType, Dict[str, str]] = {
+_MEDITATION_DESCRIPTIONS: dict[MeditationType, dict[str, str]] = {
     MeditationType.MINDFULNESS: {
         "name": "Mindfulness Meditation",
         "description": (
@@ -97,7 +96,7 @@ class TimerConfig:
         preparation_seconds: Countdown before meditation starts.
     """
     duration_minutes: int = 10
-    interval_bell_minutes: Optional[int] = None
+    interval_bell_minutes: int | None = None
     preparation_seconds: int = 10
 
     def __post_init__(self) -> None:
@@ -108,7 +107,7 @@ class TimerConfig:
         if self.preparation_seconds < 0:
             raise ValueError("preparation_seconds must be non-negative")
 
-    def get_bell_times(self) -> List[int]:
+    def get_bell_times(self) -> list[int]:
         """Return the times (in minutes) when interval bells should sound.
 
         Returns:
@@ -116,14 +115,14 @@ class TimerConfig:
         """
         if self.interval_bell_minutes is None:
             return []
-        times: List[int] = []
+        times: list[int] = []
         t = self.interval_bell_minutes
         while t < self.duration_minutes:
             times.append(t)
             t += self.interval_bell_minutes
         return times
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         return {
             "duration_minutes": self.duration_minutes,
             "interval_bell_minutes": self.interval_bell_minutes,
@@ -131,7 +130,7 @@ class TimerConfig:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict) -> "TimerConfig":
+    def from_dict(cls, data: dict) -> "TimerConfig":
         return cls(
             duration_minutes=data.get("duration_minutes", 10),
             interval_bell_minutes=data.get("interval_bell_minutes"),
@@ -159,9 +158,9 @@ class MeditationSession:
     meditation_type: MeditationType = MeditationType.MINDFULNESS
     duration_minutes: int = 10
     guided: bool = False
-    source: Optional[str] = None
-    mood_before: Optional[int] = None
-    mood_after: Optional[int] = None
+    source: str | None = None
+    mood_before: int | None = None
+    mood_after: int | None = None
     notes: str = ""
     date: str = field(default_factory=lambda: datetime.now().isoformat())
     completed: bool = False
@@ -173,13 +172,13 @@ class MeditationSession:
             raise ValueError("mood_after must be between 1 and 10")
 
     @property
-    def mood_improvement(self) -> Optional[int]:
+    def mood_improvement(self) -> int | None:
         """Mood change from before to after the session."""
         if self.mood_before is not None and self.mood_after is not None:
             return self.mood_after - self.mood_before
         return None
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         return {
             "session_id": self.session_id,
             "meditation_type": self.meditation_type.value,
@@ -194,7 +193,7 @@ class MeditationSession:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict) -> "MeditationSession":
+    def from_dict(cls, data: dict) -> "MeditationSession":
         return cls(
             session_id=data["session_id"],
             meditation_type=MeditationType(data["meditation_type"]),
@@ -228,9 +227,9 @@ class GuidedMeditation:
     duration_minutes: int = 10
     description: str = ""
     source: str = ""
-    condition_suitability: List[str] = field(default_factory=list)
+    condition_suitability: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         return {
             "guided_id": self.guided_id,
             "title": self.title,
@@ -242,7 +241,7 @@ class GuidedMeditation:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict) -> "GuidedMeditation":
+    def from_dict(cls, data: dict) -> "GuidedMeditation":
         return cls(
             guided_id=data.get("guided_id", ""),
             title=data.get("title", ""),
@@ -267,10 +266,10 @@ class MeditationManager:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self._data_file = self.data_dir / "meditation_data.json"
-        self._sessions: List[MeditationSession] = []
-        self._favorites: List[str] = []  # meditation type values
-        self._guided_library: List[GuidedMeditation] = []
-        self._active_session: Optional[MeditationSession] = None
+        self._sessions: list[MeditationSession] = []
+        self._favorites: list[str] = []  # meditation type values
+        self._guided_library: list[GuidedMeditation] = []
+        self._active_session: MeditationSession | None = None
         self._load()
 
     # ── persistence ──────────────────────────────────────────────
@@ -279,7 +278,7 @@ class MeditationManager:
         """Load all meditation data from disk."""
         if self._data_file.exists():
             try:
-                with open(self._data_file, "r") as fh:
+                with open(self._data_file) as fh:
                     data = json.load(fh)
                 self._sessions = [
                     MeditationSession.from_dict(s) for s in data.get("sessions", [])
@@ -299,13 +298,13 @@ class MeditationManager:
 
     # ── meditation types ─────────────────────────────────────────
 
-    def get_meditation_types(self) -> List[Dict[str, str]]:
+    def get_meditation_types(self) -> list[dict[str, str]]:
         """Return all meditation types with descriptions.
 
         Returns:
             List of dicts with type, name, description, and best_for.
         """
-        result: List[Dict[str, str]] = []
+        result: list[dict[str, str]] = []
         for med_type, info in _MEDITATION_DESCRIPTIONS.items():
             result.append({
                 "type": med_type.value,
@@ -322,8 +321,8 @@ class MeditationManager:
         meditation_type: MeditationType,
         duration_minutes: int = 10,
         guided: bool = False,
-        source: Optional[str] = None,
-        mood_before: Optional[int] = None,
+        source: str | None = None,
+        mood_before: int | None = None,
     ) -> MeditationSession:
         """Start a new meditation session.
 
@@ -349,10 +348,10 @@ class MeditationManager:
 
     def complete_session(
         self,
-        session: Optional[MeditationSession] = None,
-        mood_after: Optional[int] = None,
+        session: MeditationSession | None = None,
+        mood_after: int | None = None,
         notes: str = "",
-        actual_duration: Optional[int] = None,
+        actual_duration: int | None = None,
     ) -> MeditationSession:
         """Mark a session as completed and persist it.
 
@@ -391,9 +390,9 @@ class MeditationManager:
 
     def cancel_session(
         self,
-        session: Optional[MeditationSession] = None,
+        session: MeditationSession | None = None,
         notes: str = "",
-    ) -> Optional[MeditationSession]:
+    ) -> MeditationSession | None:
         """Cancel an in-progress session. Records it as incomplete.
 
         Args:
@@ -419,9 +418,9 @@ class MeditationManager:
 
     def get_session_history(
         self,
-        meditation_type: Optional[MeditationType] = None,
+        meditation_type: MeditationType | None = None,
         completed_only: bool = False,
-    ) -> List[MeditationSession]:
+    ) -> list[MeditationSession]:
         """Return session history, optionally filtered.
 
         Args:
@@ -438,7 +437,7 @@ class MeditationManager:
             results = [s for s in results if s.completed]
         return sorted(results, key=lambda s: s.date, reverse=True)
 
-    def get_statistics(self) -> Dict:
+    def get_statistics(self) -> dict:
         """Compute aggregate meditation statistics.
 
         Returns:
@@ -473,7 +472,7 @@ class MeditationManager:
         )
 
         # Most practiced type
-        type_counts: Dict[str, int] = {}
+        type_counts: dict[str, int] = {}
         for s in self._sessions:
             key = s.meditation_type.value
             type_counts[key] = type_counts.get(key, 0) + 1
@@ -502,7 +501,7 @@ class MeditationManager:
         if not completed:
             return 0
 
-        session_dates: Set[date] = set()
+        session_dates: set[date] = set()
         for s in completed:
             try:
                 dt = datetime.fromisoformat(s.date)
@@ -528,10 +527,10 @@ class MeditationManager:
 
     def get_recommendation(
         self,
-        mood: Optional[int] = None,
-        energy: Optional[int] = None,
-        conditions: Optional[List[str]] = None,
-    ) -> List[Dict]:
+        mood: int | None = None,
+        energy: int | None = None,
+        conditions: list[str] | None = None,
+    ) -> list[dict]:
         """Suggest meditation types based on current state.
 
         Scoring considers mood level, energy level, condition suitability,
@@ -547,7 +546,7 @@ class MeditationManager:
         """
         conditions = conditions or []
         cond_lower = {c.lower() for c in conditions}
-        scored: List[tuple] = []
+        scored: list[tuple] = []
 
         for med_type, info in _MEDITATION_DESCRIPTIONS.items():
             score = 0.0
@@ -608,7 +607,7 @@ class MeditationManager:
             ]
             if past:
                 avg_imp = sum(
-                    s.mood_improvement for s in past  # type: ignore[arg-type]
+                    s.mood_improvement for s in past  # type: ignore[misc]
                 ) / len(past)
                 score += avg_imp * 3
 
@@ -632,7 +631,7 @@ class MeditationManager:
 
     # ── favorites ────────────────────────────────────────────────
 
-    def get_favorites(self) -> List[str]:
+    def get_favorites(self) -> list[str]:
         """Return the list of favorited meditation type values.
 
         Returns:
@@ -668,8 +667,8 @@ class MeditationManager:
     # ── guided library ───────────────────────────────────────────
 
     def load_guided_library(
-        self, resources_path: Optional[Path] = None
-    ) -> List[GuidedMeditation]:
+        self, resources_path: Path | None = None
+    ) -> list[GuidedMeditation]:
         """Load guided meditations from a JSON resource file.
 
         Looks for resources/guideds.json relative to the package, or at
@@ -693,7 +692,7 @@ class MeditationManager:
         for path in candidates:
             if path.exists():
                 try:
-                    with open(path, "r") as fh:
+                    with open(path) as fh:
                         data = json.load(fh)
                     self._guided_library = [
                         GuidedMeditation.from_dict(g) for g in data
@@ -705,8 +704,8 @@ class MeditationManager:
         return []
 
     def get_guided_library(
-        self, meditation_type: Optional[MeditationType] = None
-    ) -> List[GuidedMeditation]:
+        self, meditation_type: MeditationType | None = None
+    ) -> list[GuidedMeditation]:
         """Return the loaded guided meditation library, optionally filtered.
 
         Args:
@@ -723,11 +722,11 @@ class MeditationManager:
         return list(self._guided_library)
 
     @property
-    def sessions(self) -> List[MeditationSession]:
+    def sessions(self) -> list[MeditationSession]:
         """Read-only access to session history."""
         return list(self._sessions)
 
     @property
-    def active_session(self) -> Optional[MeditationSession]:
+    def active_session(self) -> MeditationSession | None:
         """The currently active session, if any."""
         return self._active_session

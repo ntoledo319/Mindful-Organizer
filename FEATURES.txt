@@ -1,0 +1,180 @@
+Comments and edits to be taken as needed updates and fixes-
+
+
+MINDFUL ORGANIZER — FEATURE LIST
+==================================
+Last updated: 2026-05-02
+
+IMPORTANT: Mindful Organizer is a personal wellness tracking tool. It is not
+a medical device, does not provide medical advice, diagnosis, or treatment,
+and is not a substitute for professional healthcare.
+
+---
+
+TIER OVERVIEW
+-------------
+Free    — Core tracking and therapeutic tools. Unlimited, forever.
+Pro     — $4.99/mo or $39.99/yr. Insights, trends, sync, personalization.
+Premium — $9.99/mo or $79.99/yr. Advanced reports, visualizations, sharing.
+
+All tiers include a 14-day free trial of Premium features. No credit card
+required.
+
+---
+
+FREE TIER FEATURES
+------------------
+
+Core Tracking (all unlimited)
+  • Mood Logging — Log mood scores (1-10) with condition-specific symptoms,
+    therapy skills, and notes. Data persists to SQLite.
+
+  • DBT Diary Card — Daily structured card: emotions felt, urges (0-5),
+    skills used with effectiveness rating (1-5), target behaviors counted,
+    medication adherence, and substances. Content adapts to your conditions.
+
+  • Sleep Logging — 3-tap entry: bedtime, wake time, quality (Poor/Okay/Good).
+    Automatic duration calculation.
+
+  • Medication Logging — Track medications, dosages, schedules, and adherence.
+
+  • Task Management — Create, edit, complete, and delete tasks with due dates
+    and priorities.
+
+  • Journal Entries — Rich-text journaling with condition-aware prompts
+    (General, Anxiety, Depression, ADHD, OCD, PTSD).
+
+  • Panic Attack Logging — Log panic attacks with peak distress, triggers,
+    symptoms, and coping strategies used.
+
+  • ERP Exposure Tracking — Track exposure exercises for OCD with hierarchy
+    levels, anxiety ratings, and duration.
+
+Therapeutic Tools
+  • Breathing Exercises — Box breathing, 4-7-8, and other guided techniques
+    with animated visual circle. Supports reduced motion.
+  • Grounding Exercises — 5-4-3-2-1 senses grounding and trauma-informed
+    techniques.
+  • Crisis Plan — Create and edit a personalized crisis plan with contacts,
+    warning signs, and coping strategies.
+  • Guided Meditations — Built-in guided meditation library with play/pause/
+    stop and timer.
+  • Medication Reminders — Up to 3 scheduled reminders.
+
+Organization
+  • File Organizer — Condition-aware file organization. ADHD mode uses
+    action-based emoji folders; OCD mode uses numbered predictable structure;
+    Depression mode uses energy-tiered folders; Anxiety mode uses detailed
+    hierarchy. Includes dry-run preview, undo, duplicate detection, and
+    batch rename.
+
+Dashboard & UI
+  • Basic Dashboard — Today's mood, tasks, and welcome message.
+  • 7-Day History View — Last week of mood and sleep data.
+  • 2 Themes — Default light + one alternate theme.
+  • StateBus — Reactive pub/sub system; widgets auto-refresh on data changes.
+  • Accessibility Suite — Screen reader auto-detect, font scaling, color-blind
+    modes, reduced motion, dyslexia-friendly font, keyboard navigation.
+  • Onboarding Wizard — Multi-step profile setup with condition selection,
+    therapy types, and theme preferences.
+
+Security & Data
+  • Local-First Storage — SQLite on-device. No cloud required.
+  • Encrypted Vault — Secure folder encryption using Fernet + scrypt.
+  • Migration Manager — JSON to SQLite migration wizard with progress dialog.
+  • Database Manager — Thread-safe SQLite with WAL mode and migrations.
+
+---
+
+PRO TIER FEATURES ($4.99/mo or $39.99/yr)
+------------------------------------------
+
+Dashboard & Overview
+  • Full Dashboard — Adds daily briefing, wellness banner, values card,
+    energy forecast, and gamification.
+  • Daily Briefing — Energy forecast + prioritized task suggestions + coping
+    skill recommendation.
+  • Wellness Signal Banner — Automatic check-ins based on mood and sleep
+    patterns.
+  • Trial Banner — One-click 14-day trial start for free users.
+  • Trial Countdown — Shows days remaining during active trial.
+
+Analytics & Insights
+  • Unlimited History — View 30/90/365-day trends and historical data.
+  • Mood Analytics — Trend detection (improving/declining/stable) with moving
+    averages.
+  • Energy Predictor — Predict current and rest-of-day energy based on sleep,
+    mood, and task history. Fully automatic — no manual logging required.
+  • Journal Sentiment Analysis — Lexicon-based polarity scoring (-1 to +1)
+    for journal entries.
+  • Cognitive Distortion Detection — Identifies all-or-nothing thinking,
+    catastrophizing, mind-reading, should-statements, labeling, and emotional
+    reasoning.
+  • Distortion Trend Alerts — Flags when distortion density exceeds 2x
+    baseline over 14 days.
+  • Values Tracker — ACT weekly review tracking time and energy per personal
+    value, with neglect alerts.
+  • Weekly Insights Report — Auto-generated HTML summary with week-over-week
+    deltas and personalized suggestions.
+
+Notifications
+  • Smart Notifications — Context-aware nudges: energy peak alerts, sleep
+    debt warnings, behavioral activation nudges, ADHD afternoon slump alerts,
+    missed medication reminders.
+  • Unlimited Medication Reminders — No cap on scheduled reminders.
+
+Personalization
+  • All 8 Condition-Aware Themes — Focus (ADHD), Gentle (PTSD), Calm
+    (Anxiety), Structured (OCD), Energetic (Bipolar), Soft (Depression),
+    Balanced (General), High-Contrast (Accessibility). Each has unique layout
+    density, animation speed, border radius, and chrome visibility.
+  • Gamification — XP, levels, streaks, and unlockable achievements.
+
+Export & Sync
+  • Data Export (JSON/CSV) — Full backup and portability.
+  • Calendar Sync (ICS) — Export tasks with energy levels to calendar apps.
+  • Auto-Updater — Checks GitHub releases every 24 hours.
+
+---
+
+PREMIUM TIER FEATURES ($9.99/mo or $79.99/yr)
+----------------------------------------------
+
+Reports & Visualizations
+  • Shareable Web Reports — Self-contained HTML with embedded Chart.js:
+    mood timelines, diary card summaries, sleep charts, journal highlights.
+    Open in any browser, share via cloud storage, or paste into Notion.
+  • Medication Adherence Heatmap — Visual calendar of medication consistency.
+  • Values Alignment Radar — Polar chart of time and energy distribution
+    across personal values.
+
+Sharing
+  • Support Network Sharing — Share personal reports with trusted support
+    networks.
+  • Onboarding Analytics — Privacy-respecting funnel metrics (step names and
+    timestamps only, no health data).
+
+---
+
+SUBSCRIPTION SYSTEM
+-------------------
+  • 14-Day Free Trial — Full Premium access. No credit card required.
+    Single-use per device.
+  • Offline License Keys — HMAC-validated keys that work without internet.
+  • In-App Subscription Management — View tier, start trial, enter license
+    key, or deactivate from Settings.
+  • Feature Gating — Clean upsell dialogs with trial CTA. No popups or
+    pressure tactics.
+
+---
+
+ARCHITECTURE
+------------
+  • 67 source files, ~27K lines, 565+ tests
+  • Python 3.11+ / PyQt6 / SQLite (WAL mode)
+  • Cross-platform: macOS, Linux, Windows
+  • Component library — CardFrame, AccentButton, SectionTitle, ScrollContainer,
+    ThemedProgressBar
+  • Unified Condition enum across all modules
+  • Safety-conscious design — 14-day minimum data thresholds, observation
+    language, never implies diagnosis

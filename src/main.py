@@ -7,9 +7,9 @@ helping you stay organized while prioritizing your well-being.
 
 All data is stored locally on your device. No cloud sync. No telemetry.
 """
-import sys
-import os
 import logging
+import os
+import sys
 import traceback
 from pathlib import Path
 
@@ -94,14 +94,14 @@ def check_single_instance(data_dir: Path) -> bool:
     else:
         try:
             import fcntl
-            lock_fd = open(lock_file, "w")
+            lock_fd = open(lock_file, "w")  # noqa: SIM115
             fcntl.flock(lock_fd.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
             lock_fd.write(str(os.getpid()))
             lock_fd.flush()
             # Keep fd open for lock duration
             globals()["_lock_fd"] = lock_fd
             return True
-        except (IOError, OSError):
+        except OSError:
             return False
         except ImportError:
             return True
@@ -136,8 +136,8 @@ def main() -> int:
     try:
         configure_high_dpi()
 
-        from PyQt6.QtWidgets import QApplication
         from PyQt6.QtGui import QFont
+        from PyQt6.QtWidgets import QApplication
 
         app = QApplication(sys.argv)
         app.setApplicationName("Mindful Organizer")

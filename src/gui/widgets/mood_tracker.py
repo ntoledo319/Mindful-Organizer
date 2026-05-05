@@ -7,59 +7,34 @@ tracking, therapy skill logging, history browsing, and analytics display.
 
 from __future__ import annotations
 
-from datetime import datetime, date
-from typing import Any, Dict, List, Optional
+import logging
+from datetime import datetime
+from typing import Any
 
-from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QFrame, QScrollArea, QSizePolicy, QSlider, QTextEdit,
-    QCalendarWidget, QTimeEdit, QListWidget, QListWidgetItem,
-    QCheckBox, QGridLayout, QGroupBox, QComboBox, QProgressBar,
-    QMessageBox, QFileDialog,
-)
 from PyQt6.QtCore import Qt, QTime, pyqtSignal
-from PyQt6.QtGui import QFont
+from PyQt6.QtWidgets import (
+    QCalendarWidget,
+    QCheckBox,
+    QFileDialog,
+    QFrame,
+    QGridLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QListWidget,
+    QListWidgetItem,
+    QMessageBox,
+    QScrollArea,
+    QSlider,
+    QTextEdit,
+    QTimeEdit,
+    QVBoxLayout,
+    QWidget,
+)
 
+from gui.components import AccentButton, BodyLabel, CardFrame, SectionTitle
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-def _card_frame(theme: Dict[str, str]) -> QFrame:
-    frame = QFrame()
-    frame.setFrameShape(QFrame.Shape.StyledPanel)
-    frame.setStyleSheet(
-        f"QFrame {{ background-color: {theme.get('card_bg', '#ffffff')}; "
-        f"border-radius: 12px; padding: 16px; }}"
-    )
-    frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
-    return frame
-
-
-def _section_title(text: str, theme: Dict[str, str]) -> QLabel:
-    label = QLabel(text)
-    label.setFont(QFont("Segoe UI", 13, QFont.Weight.Bold))
-    label.setStyleSheet(f"color: {theme.get('text', '#333333')}; padding-bottom: 4px;")
-    return label
-
-
-def _body_label(text: str, theme: Dict[str, str]) -> QLabel:
-    label = QLabel(text)
-    label.setWordWrap(True)
-    label.setStyleSheet(f"color: {theme.get('text', '#555555')};")
-    return label
-
-
-def _accent_button(text: str, theme: Dict[str, str]) -> QPushButton:
-    btn = QPushButton(text)
-    btn.setCursor(Qt.CursorShape.PointingHandCursor)
-    btn.setStyleSheet(
-        f"QPushButton {{ background-color: {theme.get('accent', '#4a90d9')}; "
-        f"color: #ffffff; border: none; border-radius: 8px; padding: 10px 18px; "
-        f"font-weight: bold; font-size: 13px; }}"
-        f"QPushButton:hover {{ background-color: {theme.get('secondary', '#357abd')}; }}"
-    )
-    return btn
+logger = logging.getLogger(__name__)
 
 
 _MOOD_LABELS = {
@@ -79,18 +54,18 @@ class MoodTrackerWidget(QWidget):
 
     def __init__(
         self,
-        theme: Dict[str, str],
+        theme: dict[str, str],
         mood_manager: Any = None,
         profile_manager: Any = None,
-        parent: Optional[QWidget] = None,
+        parent: QWidget | None = None,
     ) -> None:
         super().__init__(parent)
         self._theme = theme
         self._mood_manager = mood_manager
         self._profile_manager = profile_manager
 
-        self._symptom_checks: List[QCheckBox] = []
-        self._skill_checks: List[QCheckBox] = []
+        self._symptom_checks: list[QCheckBox] = []
+        self._skill_checks: list[QCheckBox] = []
 
         self._build_ui()
         self._refresh_history()
@@ -118,7 +93,7 @@ class MoodTrackerWidget(QWidget):
         self._root.setContentsMargins(24, 24, 24, 24)
         scroll.setWidget(container)
 
-        self._root.addWidget(_section_title("Mood Tracker", self._theme))
+        self._root.addWidget(SectionTitle("Mood Tracker", self._theme))
 
         body = QHBoxLayout()
         body.setSpacing(16)
@@ -145,9 +120,9 @@ class MoodTrackerWidget(QWidget):
     # -- calendar -------------------------------------------------------
 
     def _build_calendar(self, parent_layout: QVBoxLayout) -> None:
-        card = _card_frame(self._theme)
+        card = CardFrame(self._theme)
         layout = QVBoxLayout(card)
-        layout.addWidget(_section_title("Select Date", self._theme))
+        layout.addWidget(SectionTitle("Select Date", self._theme))
 
         self._calendar = QCalendarWidget()
         self._calendar.setGridVisible(True)
@@ -160,14 +135,14 @@ class MoodTrackerWidget(QWidget):
     # -- entry form -----------------------------------------------------
 
     def _build_entry_form(self, parent_layout: QVBoxLayout) -> None:
-        card = _card_frame(self._theme)
+        card = CardFrame(self._theme)
         layout = QVBoxLayout(card)
         layout.setSpacing(10)
-        layout.addWidget(_section_title("New Mood Entry", self._theme))
+        layout.addWidget(SectionTitle("New Mood Entry", self._theme))
 
         # Time
         time_row = QHBoxLayout()
-        time_row.addWidget(_body_label("Time:", self._theme))
+        time_row.addWidget(BodyLabel("Time:", self._theme))
         self._time_edit = QTimeEdit()
         self._time_edit.setTime(QTime.currentTime())
         self._time_edit.setDisplayFormat("HH:mm")
@@ -178,8 +153,8 @@ class MoodTrackerWidget(QWidget):
         # Mood level
         mood_row = QVBoxLayout()
         mood_header = QHBoxLayout()
-        mood_header.addWidget(_body_label("Mood Level:", self._theme))
-        self._mood_value_label = _body_label("5 - Okay", self._theme)
+        mood_header.addWidget(BodyLabel("Mood Level:", self._theme))
+        self._mood_value_label = BodyLabel("5 - Okay", self._theme)
         mood_header.addWidget(self._mood_value_label)
         mood_header.addStretch()
         mood_row.addLayout(mood_header)
@@ -192,26 +167,6 @@ class MoodTrackerWidget(QWidget):
         self._mood_slider.valueChanged.connect(self._on_mood_slider_changed)
         mood_row.addWidget(self._mood_slider)
         layout.addLayout(mood_row)
-
-        # Energy level
-        energy_row = QVBoxLayout()
-        energy_header = QHBoxLayout()
-        energy_header.addWidget(_body_label("Energy Level:", self._theme))
-        self._energy_value_label = _body_label("50 / 100", self._theme)
-        energy_header.addWidget(self._energy_value_label)
-        energy_header.addStretch()
-        energy_row.addLayout(energy_header)
-
-        self._energy_slider = QSlider(Qt.Orientation.Horizontal)
-        self._energy_slider.setRange(0, 100)
-        self._energy_slider.setValue(50)
-        self._energy_slider.setTickPosition(QSlider.TickPosition.TicksBelow)
-        self._energy_slider.setTickInterval(10)
-        self._energy_slider.valueChanged.connect(
-            lambda v: self._energy_value_label.setText(f"{v} / 100")
-        )
-        energy_row.addWidget(self._energy_slider)
-        layout.addLayout(energy_row)
 
         # Condition-specific symptoms
         self._symptoms_group = QGroupBox("Symptoms")
@@ -232,7 +187,7 @@ class MoodTrackerWidget(QWidget):
         layout.addWidget(self._skills_group)
 
         # Notes
-        layout.addWidget(_body_label("Notes:", self._theme))
+        layout.addWidget(BodyLabel("Notes:", self._theme))
         self._notes_edit = QTextEdit()
         self._notes_edit.setMaximumHeight(100)
         self._notes_edit.setPlaceholderText("How are you feeling? Any triggers or context...")
@@ -244,7 +199,7 @@ class MoodTrackerWidget(QWidget):
         layout.addWidget(self._notes_edit)
 
         # Save button
-        save_btn = _accent_button("Save Entry", self._theme)
+        save_btn = AccentButton("Save Entry", self._theme)
         save_btn.clicked.connect(self._save_entry)
         layout.addWidget(save_btn)
 
@@ -257,7 +212,7 @@ class MoodTrackerWidget(QWidget):
             "Panic", "Intrusive Thoughts", "Flashback", "Dissociation",
             "Compulsions", "Avoidance", "Hopelessness", "Numbness",
         ]
-        conditions_symptoms: Dict[str, List[str]] = {
+        conditions_symptoms: dict[str, list[str]] = {
             "ADHD": ["Hyperfocus", "Difficulty Starting", "Time Blindness", "Impulsivity"],
             "Anxiety": ["Worry", "Tension", "Dread", "Nausea"],
             "Depression": ["Anhedonia", "Guilt", "Worthlessness", "Suicidal Ideation"],
@@ -288,7 +243,7 @@ class MoodTrackerWidget(QWidget):
             "Deep Breathing", "Grounding", "Mindfulness", "Journaling",
             "Cognitive Restructuring", "Progressive Relaxation",
         ]
-        therapy_skills: Dict[str, List[str]] = {
+        therapy_skills: dict[str, list[str]] = {
             "Cognitive Behavioral Therapy": [
                 "Thought Record", "Behavioral Activation", "Exposure", "Cognitive Defusion",
             ],
@@ -325,9 +280,9 @@ class MoodTrackerWidget(QWidget):
     # -- history --------------------------------------------------------
 
     def _build_history(self, parent_layout: QVBoxLayout) -> None:
-        card = _card_frame(self._theme)
+        card = CardFrame(self._theme)
         layout = QVBoxLayout(card)
-        layout.addWidget(_section_title("Mood History", self._theme))
+        layout.addWidget(SectionTitle("Mood History", self._theme))
 
         self._history_list = QListWidget()
         self._history_list.setMinimumHeight(200)
@@ -340,7 +295,7 @@ class MoodTrackerWidget(QWidget):
         )
         layout.addWidget(self._history_list)
 
-        export_btn = _accent_button("Export Mood Data", self._theme)
+        export_btn = AccentButton("Export Mood Data", self._theme)
         export_btn.clicked.connect(self._export_data)
         layout.addWidget(export_btn)
 
@@ -349,14 +304,14 @@ class MoodTrackerWidget(QWidget):
     # -- analytics ------------------------------------------------------
 
     def _build_analytics(self, parent_layout: QVBoxLayout) -> None:
-        card = _card_frame(self._theme)
+        card = CardFrame(self._theme)
         layout = QVBoxLayout(card)
-        layout.addWidget(_section_title("Mood Analytics", self._theme))
+        layout.addWidget(SectionTitle("Mood Analytics", self._theme))
 
-        self._avg_7_label = _body_label("7-day average: --", self._theme)
-        self._trend_30_label = _body_label("30-day trend: --", self._theme)
-        self._volatility_label = _body_label("Mood volatility: --", self._theme)
-        self._triggers_label = _body_label("Top triggers: --", self._theme)
+        self._avg_7_label = BodyLabel("7-day average: --", self._theme)
+        self._trend_30_label = BodyLabel("30-day trend: --", self._theme)
+        self._volatility_label = BodyLabel("Mood volatility: --", self._theme)
+        self._triggers_label = BodyLabel("Top triggers: --", self._theme)
 
         for w in (self._avg_7_label, self._trend_30_label,
                   self._volatility_label, self._triggers_label):
@@ -397,10 +352,9 @@ class MoodTrackerWidget(QWidget):
         symptoms = [cb.text() for cb in self._symptom_checks if cb.isChecked()]
         skills = [cb.text() for cb in self._skill_checks if cb.isChecked()]
 
-        entry: Dict[str, Any] = {
+        entry: dict[str, Any] = {
             "timestamp": timestamp.isoformat(),
             "mood_score": self._mood_slider.value(),
-            "energy_score": self._energy_slider.value(),
             "symptoms": symptoms,
             "therapy_skills": skills,
             "notes": self._notes_edit.toPlainText().strip(),
@@ -415,20 +369,19 @@ class MoodTrackerWidget(QWidget):
                     me = MoodEntry(
                         timestamp=timestamp,
                         mood_score=float(entry["mood_score"]),
-                        energy_score=float(entry["energy_score"]),
+                        energy_score=50.0,
                         symptoms=symptoms,
                         notes=entry["notes"],
                         activities=skills,
                     )
                     self._mood_manager._entries.append(me)
-            except Exception:
-                pass
+            except (AttributeError, TypeError) as exc:
+                logger.debug(f"Mood save error: {exc}")
 
         self.mood_saved.emit(entry)
 
         # Reset form
         self._mood_slider.setValue(5)
-        self._energy_slider.setValue(50)
         self._notes_edit.clear()
         for cb in self._symptom_checks:
             cb.setChecked(False)
@@ -453,9 +406,8 @@ class MoodTrackerWidget(QWidget):
             for entry in entries[:50]:
                 ts = entry.timestamp.strftime("%Y-%m-%d %H:%M")
                 mood = entry.mood_score
-                energy = entry.energy_score
                 mood_label = _MOOD_LABELS.get(int(mood), "")
-                text = f"{ts}  |  Mood: {mood:.0f} ({mood_label})  |  Energy: {energy:.0f}"
+                text = f"{ts}  |  Mood: {mood:.0f} ({mood_label})"
                 item = QListWidgetItem(text)
                 if mood <= 3:
                     item.setForeground(
@@ -464,8 +416,8 @@ class MoodTrackerWidget(QWidget):
                         )
                     )
                 self._history_list.addItem(item)
-        except Exception:
-            pass
+        except (AttributeError, TypeError) as exc:
+            logger.debug(f"History refresh error: {exc}")
 
     def _refresh_analytics(self) -> None:
         if not self._mood_manager:
@@ -486,8 +438,8 @@ class MoodTrackerWidget(QWidget):
                 if triggers:
                     names = [t.trigger for t in triggers]
                     self._triggers_label.setText(f"Top triggers: {', '.join(names)}")
-        except Exception:
-            pass
+        except (AttributeError, TypeError) as exc:
+            logger.debug(f"Analytics refresh error: {exc}")
 
     def _export_data(self) -> None:
         path, _ = QFileDialog.getSaveFileName(
@@ -503,7 +455,7 @@ class MoodTrackerWidget(QWidget):
                     entries.append({
                         "timestamp": e.timestamp.isoformat(),
                         "mood_score": e.mood_score,
-                        "energy_score": e.energy_score,
+                        "energy_score": 50,
                         "symptoms": e.symptoms,
                         "notes": e.notes,
                     })
@@ -517,5 +469,5 @@ class MoodTrackerWidget(QWidget):
     # Theme
     # ------------------------------------------------------------------
 
-    def apply_theme(self, theme: Dict[str, str]) -> None:
+    def apply_theme(self, theme: dict[str, str]) -> None:
         self._theme = theme

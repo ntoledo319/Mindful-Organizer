@@ -12,19 +12,20 @@ import logging
 import shutil
 import sqlite3
 import threading
+from collections.abc import Generator, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Generator, List, Optional, Sequence, Tuple, Union
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
 DATA_DIR = Path.home() / ".mindful_optimizer"
 DB_FILE = DATA_DIR / "mindful_organizer.db"
 
-CURRENT_SCHEMA_VERSION = 1
+CURRENT_SCHEMA_VERSION = 2
 
 _SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS schema_version (
@@ -44,6 +45,22 @@ CREATE TABLE IF NOT EXISTS mood_entries (
     notes           TEXT,
     context         TEXT,
     created_at      TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS diary_cards (
+    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    date                TEXT    NOT NULL UNIQUE,
+    mood_score          INTEGER NOT NULL CHECK (mood_score BETWEEN 1 AND 10),
+    emotions            TEXT,
+    urges_json          TEXT,
+    skills_used_json    TEXT,
+    skills_effectiveness INTEGER CHECK (skills_effectiveness BETWEEN 1 AND 5),
+    target_behaviors_json TEXT,
+    substances_used     TEXT,
+    medications_taken   INTEGER CHECK (medications_taken IN (0,1)),
+    notes               TEXT,
+    created_at          TEXT    NOT NULL DEFAULT (datetime('now')),
+    updated_at          TEXT    NOT NULL DEFAULT (datetime('now'))
 );
 
 CREATE TABLE IF NOT EXISTS tasks (
@@ -171,6 +188,74 @@ CREATE TABLE IF NOT EXISTS breathing_sessions (
     created_at      TEXT    NOT NULL DEFAULT (datetime('now'))
 );
 
+CREATE TABLE IF NOT EXISTS meditation_sessions (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp       TEXT    NOT NULL DEFAULT (datetime('now')),
+    type            TEXT    NOT NULL,
+    duration_minutes INTEGER NOT NULL,
+    pre_mood        INTEGER CHECK (pre_mood BETWEEN 1 AND 10),
+    post_mood       INTEGER CHECK (post_mood BETWEEN 1 AND 10),
+    notes           TEXT,
+    created_at      TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS erp_exposures (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp       TEXT    NOT NULL DEFAULT (datetime('now')),
+    hierarchy_item  TEXT    NOT NULL,
+    predicted_suds  INTEGER CHECK (predicted_suds BETWEEN 0 AND 100),
+    peak_suds       INTEGER CHECK (peak_suds BETWEEN 0 AND 100),
+    final_suds      INTEGER CHECK (final_suds BETWEEN 0 AND 100),
+    duration_minutes INTEGER,
+    compulsions_resisted INTEGER DEFAULT 0,
+    notes           TEXT,
+    created_at      TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS grounding_sessions (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp       TEXT    NOT NULL DEFAULT (datetime('now')),
+    technique       TEXT    NOT NULL,
+    duration_seconds INTEGER,
+    pre_distress    INTEGER CHECK (pre_distress BETWEEN 0 AND 10),
+    post_distress   INTEGER CHECK (post_distress BETWEEN 0 AND 10),
+    trigger         TEXT,
+    notes           TEXT,
+    created_at      TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS spoon_entries (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    date            TEXT    NOT NULL,
+    activity        TEXT    NOT NULL,
+    activity_type   TEXT,
+    spoon_cost      REAL    NOT NULL DEFAULT 0,
+    note            TEXT,
+    created_at      TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS panic_logs (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp       TEXT    NOT NULL DEFAULT (datetime('now')),
+    onset_time      TEXT,
+    peak_distress   INTEGER CHECK (peak_distress BETWEEN 0 AND 10),
+    symptoms        TEXT,
+    trigger         TEXT,
+    resolution_time TEXT,
+    techniques_used TEXT,
+    notes           TEXT,
+    created_at      TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS wellness_events (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp       TEXT    NOT NULL DEFAULT (datetime('now')),
+    event_type      TEXT    NOT NULL,
+    module_ref      TEXT    NOT NULL,
+    data_json       TEXT    NOT NULL,
+    created_at      TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
 CREATE TABLE IF NOT EXISTS settings (
     key             TEXT PRIMARY KEY,
     value           TEXT    NOT NULL,
@@ -187,17 +272,37 @@ CREATE INDEX IF NOT EXISTS idx_journal_timestamp ON journal_entries(timestamp);
 CREATE INDEX IF NOT EXISTS idx_energy_timestamp ON energy_readings(timestamp);
 CREATE INDEX IF NOT EXISTS idx_notifications_scheduled ON notifications(scheduled_at);
 CREATE INDEX IF NOT EXISTS idx_breathing_timestamp ON breathing_sessions(timestamp);
+CREATE INDEX IF NOT EXISTS idx_meditation_timestamp ON meditation_sessions(timestamp);
+CREATE INDEX IF NOT EXISTS idx_erp_timestamp ON erp_exposures(timestamp);
+CREATE INDEX IF NOT EXISTS idx_grounding_timestamp ON grounding_sessions(timestamp);
+CREATE INDEX IF NOT EXISTS idx_spoon_date ON spoon_entries(date);
+CREATE INDEX IF NOT EXISTS idx_panic_timestamp ON panic_logs(timestamp);
+CREATE INDEX IF NOT EXISTS idx_wellness_events_timestamp ON wellness_events(timestamp);
+CREATE INDEX IF NOT EXISTS idx_wellness_events_type ON wellness_events(event_type);
 CREATE INDEX IF NOT EXISTS idx_settings_category ON settings(category);
 """
 
 # Migration definitions: each key is the target version,
 # value is a list of SQL statements to run.
-_MIGRATIONS: Dict[int, List[str]] = {
-    # Version 1 is the initial schema created by _SCHEMA_SQL.
-    # Future migrations go here, e.g.:
-    # 2: [
-    #     "ALTER TABLE mood_entries ADD COLUMN location TEXT;",
-    # ],
+_MIGRATIONS: dict[int, list[str]] = {
+    2: [
+        """CREATE TABLE IF NOT EXISTS diary_cards (
+            id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+            date                TEXT    NOT NULL UNIQUE,
+            mood_score          INTEGER NOT NULL CHECK (mood_score BETWEEN 1 AND 10),
+            emotions            TEXT,
+            urges_json          TEXT,
+            skills_used_json    TEXT,
+            skills_effectiveness INTEGER CHECK (skills_effectiveness BETWEEN 1 AND 5),
+            target_behaviors_json TEXT,
+            substances_used     TEXT,
+            medications_taken   INTEGER CHECK (medications_taken IN (0,1)),
+            notes               TEXT,
+            created_at          TEXT    NOT NULL DEFAULT (datetime('now')),
+            updated_at          TEXT    NOT NULL DEFAULT (datetime('now'))
+        );""",
+        "CREATE INDEX IF NOT EXISTS idx_diary_cards_date ON diary_cards(date);",
+    ],
 }
 
 
@@ -213,15 +318,22 @@ class TableName(Enum):
     NOTIFICATIONS = "notifications"
     CRISIS_PLANS = "crisis_plans"
     BREATHING_SESSIONS = "breathing_sessions"
+    MEDITATION_SESSIONS = "meditation_sessions"
+    ERP_EXPOSURES = "erp_exposures"
+    GROUNDING_SESSIONS = "grounding_sessions"
+    SPOON_ENTRIES = "spoon_entries"
+    PANIC_LOGS = "panic_logs"
+    WELLNESS_EVENTS = "wellness_events"
     SETTINGS = "settings"
+    DIARY_CARDS = "diary_cards"
 
 
 @dataclass
 class QueryResult:
     """Container for query results."""
-    rows: List[Dict[str, Any]] = field(default_factory=list)
+    rows: list[dict[str, Any]] = field(default_factory=list)
     row_count: int = 0
-    last_row_id: Optional[int] = None
+    last_row_id: int | None = None
 
 
 class DatabaseManager:
@@ -245,7 +357,7 @@ class DatabaseManager:
         db.close()
     """
 
-    def __init__(self, db_path: Optional[Path] = None) -> None:
+    def __init__(self, db_path: Path | None = None) -> None:
         self._db_path = db_path or DB_FILE
         self._db_path.parent.mkdir(parents=True, exist_ok=True)
         self._local = threading.local()
@@ -257,7 +369,7 @@ class DatabaseManager:
 
     def _get_connection(self) -> sqlite3.Connection:
         """Return a thread-local connection, creating one if necessary."""
-        conn: Optional[sqlite3.Connection] = getattr(self._local, "conn", None)
+        conn: sqlite3.Connection | None = getattr(self._local, "conn", None)
         if conn is None:
             conn = sqlite3.connect(str(self._db_path), timeout=30)
             conn.row_factory = sqlite3.Row
@@ -374,7 +486,7 @@ class DatabaseManager:
             conn.commit()
             return cursor.rowcount
 
-    def get_by_id(self, table: TableName, row_id: int) -> Optional[Dict[str, Any]]:
+    def get_by_id(self, table: TableName, row_id: int) -> dict[str, Any] | None:
         """Fetch a single row by id."""
         sql = f"SELECT * FROM {table.value} WHERE id = ?"
         conn = self._get_connection()
@@ -388,22 +500,34 @@ class DatabaseManager:
         where: str = "",
         params: Sequence[Any] = (),
         order_by: str = "",
-        limit: Optional[int] = None,
+        limit: int | None = None,
         offset: int = 0,
     ) -> QueryResult:
-        """Flexible query builder returning a QueryResult."""
+        """Flexible query builder returning a QueryResult.
+
+        *Security note*: ``where`` must contain a *parameterised* clause
+        (e.g. ``"mood_score >= ?"``).  Raw user input must **never** be
+        interpolated into ``where``.
+        """
         sql = f"SELECT {columns} FROM {table.value}"
         if where:
             sql += f" WHERE {where}"
         if order_by:
             sql += f" ORDER BY {order_by}"
         if limit is not None:
-            sql += f" LIMIT {limit}"
+            sql += " LIMIT ?"
         if offset:
-            sql += f" OFFSET {offset}"
+            sql += " OFFSET ?"
 
         conn = self._get_connection()
-        rows = conn.execute(sql, params).fetchall()
+        # Build param tuple safely – limit/offset are integers controlled by
+        # the caller, never user input.
+        query_params: tuple[Any, ...] = tuple(params)
+        if limit is not None:
+            query_params += (limit,)
+        if offset:
+            query_params += (offset,)
+        rows = conn.execute(sql, query_params).fetchall()
         return QueryResult(
             rows=[dict(r) for r in rows],
             row_count=len(rows),
@@ -430,19 +554,22 @@ class DatabaseManager:
             return result
 
     def count(self, table: TableName, where: str = "", params: Sequence[Any] = ()) -> int:
-        """Return row count for a table, optionally filtered."""
+        """Return row count for a table, optionally filtered.
+
+        *Security note*: ``where`` must be a parameterised clause.
+        """
         sql = f"SELECT COUNT(*) AS cnt FROM {table.value}"
         if where:
             sql += f" WHERE {where}"
         conn = self._get_connection()
-        row = conn.execute(sql, params).fetchone()
+        row = conn.execute(sql, tuple(params)).fetchone()
         return int(row["cnt"]) if row else 0
 
     # ------------------------------------------------------------------
     # Settings convenience
     # ------------------------------------------------------------------
 
-    def get_setting(self, key: str, default: Optional[str] = None) -> Optional[str]:
+    def get_setting(self, key: str, default: str | None = None) -> str | None:
         """Retrieve a setting value by key."""
         conn = self._get_connection()
         row = conn.execute(
@@ -468,7 +595,7 @@ class DatabaseManager:
     # Backup & restore
     # ------------------------------------------------------------------
 
-    def backup(self, backup_path: Optional[Path] = None) -> Path:
+    def backup(self, backup_path: Path | None = None) -> Path:
         """Create a backup of the database file.
 
         Returns the path to the backup file.
@@ -520,7 +647,7 @@ class DatabaseManager:
 
     def export_all_to_json(self) -> str:
         """Export all tables to a single JSON string."""
-        data: Dict[str, Any] = {
+        data: dict[str, Any] = {
             "exported_at": datetime.now().isoformat(),
             "schema_version": CURRENT_SCHEMA_VERSION,
         }
@@ -569,7 +696,7 @@ class DatabaseManager:
 
     def close(self) -> None:
         """Close the thread-local connection if open."""
-        conn: Optional[sqlite3.Connection] = getattr(self._local, "conn", None)
+        conn: sqlite3.Connection | None = getattr(self._local, "conn", None)
         if conn is not None:
             conn.close()
             self._local.conn = None

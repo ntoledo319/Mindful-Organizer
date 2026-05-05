@@ -8,16 +8,24 @@ double-click navigation to the relevant tab.
 
 from __future__ import annotations
 
+import contextlib
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from PyQt6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QFrame, QSizePolicy, QLineEdit, QListWidget, QListWidgetItem,
-    QCheckBox, QWidget,
-)
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal
-from PyQt6.QtGui import QFont, QColor, QKeyEvent
+from PyQt6.QtGui import QFont, QKeyEvent
+from PyQt6.QtWidgets import (
+    QCheckBox,
+    QDialog,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QListWidget,
+    QListWidgetItem,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -50,13 +58,13 @@ class SearchWidget(QDialog):
 
     _DEBOUNCE_MS = 300
 
-    def __init__(self, main_window: Any, parent: Optional[QWidget] = None) -> None:
+    def __init__(self, main_window: Any, parent: QWidget | None = None) -> None:
         super().__init__(parent or main_window)
         self.main_window = main_window
         self.setWindowTitle("Search")
         self.setMinimumSize(600, 500)
 
-        self._current_results: List[Dict[str, Any]] = []
+        self._current_results: list[dict[str, Any]] = []
 
         self._debounce_timer = QTimer(self)
         self._debounce_timer.setSingleShot(True)
@@ -84,7 +92,7 @@ class SearchWidget(QDialog):
         # Filters
         filter_row = QHBoxLayout()
         filter_row.addWidget(QLabel("Search in:"))
-        self._filter_checks: Dict[str, QCheckBox] = {}
+        self._filter_checks: dict[str, QCheckBox] = {}
         for cat_label, cat_key in [("Tasks", "tasks"), ("Journal", "journal"), ("Mood Entries", "mood")]:
             cb = QCheckBox(cat_label)
             cb.setChecked(True)
@@ -115,8 +123,8 @@ class SearchWidget(QDialog):
     # Key handling
     # ------------------------------------------------------------------
 
-    def keyPressEvent(self, event: QKeyEvent) -> None:
-        if event.key() == Qt.Key.Key_Escape:
+    def keyPressEvent(self, event: QKeyEvent | None) -> None:  # noqa: N802
+        if event is not None and event.key() == Qt.Key.Key_Escape:
             self.close()
         else:
             super().keyPressEvent(event)
@@ -139,7 +147,7 @@ class SearchWidget(QDialog):
             self._current_results.clear()
             return
 
-        results: List[Dict[str, Any]] = []
+        results: list[dict[str, Any]] = []
 
         if self._filter_checks.get("tasks", QCheckBox()).isChecked():
             results.extend(self._search_tasks(query))
@@ -153,8 +161,8 @@ class SearchWidget(QDialog):
         self._current_results = results
         self._display_results(results)
 
-    def _search_tasks(self, query: str) -> List[Dict[str, Any]]:
-        results: List[Dict[str, Any]] = []
+    def _search_tasks(self, query: str) -> list[dict[str, Any]]:
+        results: list[dict[str, Any]] = []
         try:
             tm = self.main_window.task_manager
             if not tm:
@@ -171,12 +179,12 @@ class SearchWidget(QDialog):
                                   f"Due: {getattr(task, 'due_date', 'N/A')}",
                         "ref": task,
                     })
-        except Exception:
-            pass
+        except (AttributeError, TypeError) as exc:
+            logger.debug(f"Task search error: {exc}")
         return results
 
-    def _search_journal(self, query: str) -> List[Dict[str, Any]]:
-        results: List[Dict[str, Any]] = []
+    def _search_journal(self, query: str) -> list[dict[str, Any]]:
+        results: list[dict[str, Any]] = []
         try:
             jm = self.main_window.journaling_manager
             if not jm:
@@ -205,12 +213,12 @@ class SearchWidget(QDialog):
                         "detail": preview,
                         "ref": entry,
                     })
-        except Exception:
-            pass
+        except (AttributeError, TypeError) as exc:
+            logger.debug(f"Journal search error: {exc}")
         return results
 
-    def _search_mood(self, query: str) -> List[Dict[str, Any]]:
-        results: List[Dict[str, Any]] = []
+    def _search_mood(self, query: str) -> list[dict[str, Any]]:
+        results: list[dict[str, Any]] = []
         try:
             mm = self.main_window.mood_analytics
             if not mm:
@@ -243,18 +251,18 @@ class SearchWidget(QDialog):
                         "detail": f"Score: {score} | {notes[:60]}",
                         "ref": entry,
                     })
-        except Exception:
-            pass
+        except (AttributeError, TypeError) as exc:
+            logger.debug(f"Mood search error: {exc}")
         return results
 
-    def _display_results(self, results: List[Dict[str, Any]]) -> None:
+    def _display_results(self, results: list[dict[str, Any]]) -> None:
         self._results_list.clear()
         if not results:
             self._results_list.addItem("No results found.")
             return
 
         # Group by category
-        grouped: Dict[str, List[Dict[str, Any]]] = {}
+        grouped: dict[str, list[dict[str, Any]]] = {}
         for r in results:
             cat = r["category"]
             grouped.setdefault(cat, []).append(r)
@@ -284,13 +292,11 @@ class SearchWidget(QDialog):
             return
         tab_name = _CATEGORY_TAB_NAMES.get(result["category"])
         if tab_name:
-            try:
+            with contextlib.suppress(Exception):
                 self.main_window._switch_to_tab(tab_name)
-            except Exception:
-                pass
         self.close()
 
-    def _get_selected_result(self) -> Optional[Dict[str, Any]]:
+    def _get_selected_result(self) -> dict[str, Any] | None:
         row = self._results_list.currentRow()
         if row < 0:
             return None
@@ -299,9 +305,8 @@ class SearchWidget(QDialog):
             item = self._results_list.item(i)
             if item and item.flags() != Qt.ItemFlag.NoItemFlags:
                 result_idx += 1
-                if i == row:
-                    if result_idx < len(self._current_results):
-                        return self._current_results[result_idx]
+                if i == row and result_idx < len(self._current_results):
+                    return self._current_results[result_idx]
         return None
 
     # ------------------------------------------------------------------

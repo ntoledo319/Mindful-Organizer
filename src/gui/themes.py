@@ -2,13 +2,12 @@
 Theme management system for Mindful Organizer.
 Provides condition-aware themes with accessibility support.
 """
-from typing import Dict, Optional
 from dataclasses import dataclass, field
 
 
 @dataclass
 class Theme:
-    """Complete theme definition."""
+    """Complete theme definition with behavioral tokens."""
     name: str
     display_name: str
     description: str
@@ -29,8 +28,13 @@ class Theme:
     scrollbar: str
     shadow: str
     condition_suitability: list = field(default_factory=list)
+    # Behavioral tokens -- make themes structurally different, not just color swaps
+    layout_density: float = 1.0   # 0.8 = airy/spacious, 1.2 = compact/information-dense
+    animation_speed_ms: int = 200
+    border_radius_scale: float = 1.0
+    chrome_visibility: str = "full"  # "full" | "reduced" | "minimal"
 
-    def to_dict(self) -> Dict[str, str]:
+    def to_dict(self) -> dict[str, str]:
         return {
             "background": self.background,
             "text": self.text,
@@ -53,7 +57,7 @@ class Theme:
 
 # === Theme Definitions ===
 
-THEMES: Dict[str, Theme] = {
+THEMES: dict[str, Theme] = {
     "light": Theme(
         name="light",
         display_name="Light",
@@ -185,6 +189,9 @@ THEMES: Dict[str, Theme] = {
         scrollbar="#FF6B35",
         shadow="rgba(255,107,53,0.1)",
         condition_suitability=["adhd"],
+        layout_density=1.2,
+        animation_speed_ms=150,
+        chrome_visibility="reduced",
     ),
     "gentle": Theme(
         name="gentle",
@@ -198,6 +205,9 @@ THEMES: Dict[str, Theme] = {
         warning="#E8D5A3",
         danger="#D4A0A0",
         card_bg="#F5F2EF",
+        layout_density=0.9,
+        animation_speed_ms=400,
+        border_radius_scale=1.2,
         border="#E0DBD5",
         hover="#EEEAE5",
         disabled="#C8C3BD",
@@ -229,6 +239,10 @@ THEMES: Dict[str, Theme] = {
         scrollbar="#5C6BC0",
         shadow="rgba(92,107,192,0.1)",
         condition_suitability=["ocd"],
+        layout_density=1.0,
+        animation_speed_ms=100,
+        border_radius_scale=0.5,
+        chrome_visibility="full",
     ),
 }
 
@@ -260,7 +274,7 @@ class ThemeManager:
 
     def __init__(self):
         self.current_theme_name: str = "light"
-        self.color_blind_mode: Optional[str] = None
+        self.color_blind_mode: str | None = None
         self.font_scale: float = 1.0
         self.reduced_motion: bool = False
         self.dyslexia_font: bool = False
@@ -303,7 +317,9 @@ class ThemeManager:
         header_font = int(20 * self.font_scale)
 
         font_family = "OpenDyslexic, Arial, sans-serif" if self.dyslexia_font else "Segoe UI, Arial, sans-serif"
-        animation = "0" if self.reduced_motion else "200ms"
+        density = theme.layout_density
+        radius = int(6 * theme.border_radius_scale)
+        int(12 * theme.border_radius_scale)
 
         return f"""
             * {{
@@ -334,8 +350,8 @@ class ThemeManager:
                 background-color: {t['accent']};
                 color: white;
                 border: none;
-                padding: 8px 16px;
-                border-radius: 6px;
+                padding: {int(8 * density)}px {int(16 * density)}px;
+                border-radius: {radius}px;
                 font-size: {base_font_size}px;
                 font-weight: 500;
                 min-height: 32px;
@@ -370,8 +386,8 @@ class ThemeManager:
                 background-color: {t['input_bg']};
                 color: {t['text']};
                 border: 1px solid {t['border']};
-                padding: 6px 12px;
-                border-radius: 6px;
+                padding: {int(6 * density)}px {int(12 * density)}px;
+                border-radius: {radius}px;
                 min-height: 28px;
             }}
             QComboBox::drop-down {{
@@ -388,16 +404,16 @@ class ThemeManager:
             QTabWidget::pane {{
                 border: 1px solid {t['border']};
                 background-color: {t['background']};
-                border-radius: 6px;
+                border-radius: {radius}px;
             }}
             QTabBar::tab {{
                 background-color: {t['tab_inactive']};
                 color: {t['text']};
-                padding: 10px 20px;
+                padding: {int(10 * density)}px {int(20 * density)}px;
                 border: 1px solid {t['border']};
                 border-bottom: none;
-                border-top-left-radius: 6px;
-                border-top-right-radius: 6px;
+                border-top-left-radius: {radius}px;
+                border-top-right-radius: {radius}px;
                 margin-right: 2px;
                 font-size: {base_font_size}px;
             }}
@@ -413,14 +429,14 @@ class ThemeManager:
                 background-color: {t['card_bg']};
                 color: {t['text']};
                 border: 1px solid {t['border']};
-                border-radius: 6px;
+                border-radius: {radius}px;
                 padding: 4px;
                 outline: none;
             }}
             QListWidget::item {{
-                padding: 8px;
+                padding: {int(8 * density)}px;
                 border-bottom: 1px solid {t['border']};
-                border-radius: 4px;
+                border-radius: {max(1, radius - 2)}px;
                 margin: 2px;
             }}
             QListWidget::item:selected {{
@@ -434,16 +450,16 @@ class ThemeManager:
                 background-color: {t['input_bg']};
                 color: {t['text']};
                 border: 1px solid {t['border']};
-                border-radius: 6px;
-                padding: 8px;
+                border-radius: {radius}px;
+                padding: {int(8 * density)}px;
                 font-size: {base_font_size}px;
             }}
             QLineEdit {{
                 background-color: {t['input_bg']};
                 color: {t['text']};
                 border: 1px solid {t['border']};
-                padding: 8px 12px;
-                border-radius: 6px;
+                padding: {int(8 * density)}px {int(12 * density)}px;
+                border-radius: {radius}px;
                 min-height: 28px;
                 font-size: {base_font_size}px;
             }}
@@ -452,7 +468,7 @@ class ThemeManager:
             }}
             QProgressBar {{
                 border: 1px solid {t['border']};
-                border-radius: 6px;
+                border-radius: {radius}px;
                 text-align: center;
                 min-height: 20px;
                 background-color: {t['card_bg']};
@@ -460,7 +476,7 @@ class ThemeManager:
             }}
             QProgressBar::chunk {{
                 background-color: {t['accent']};
-                border-radius: 5px;
+                border-radius: {max(1, radius - 1)}px;
             }}
             QSlider::groove:horizontal {{
                 border: 1px solid {t['border']};
@@ -626,7 +642,7 @@ class ThemeManager:
             base += f" border-left: 4px solid {t['danger']};"
         return base
 
-    def get_colors(self) -> Dict[str, str]:
+    def get_colors(self) -> dict[str, str]:
         """Get current theme colors as a dict."""
         t = self.current_theme.to_dict()
         if self.color_blind_mode and self.color_blind_mode in COLOR_BLIND_OVERRIDES:

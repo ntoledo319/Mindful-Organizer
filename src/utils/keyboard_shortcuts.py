@@ -5,13 +5,15 @@ Provides customizable, platform-aware shortcuts with conflict detection,
 context-aware bindings, an overlay display, and persistent configuration.
 """
 
+import contextlib
 import json
 import logging
 import platform
-from dataclasses import dataclass, field
+from collections.abc import Callable
+from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -55,10 +57,10 @@ class ShortcutAction:
     label: str
     description: str
     default_key: str                                # e.g. "Ctrl+N"
-    current_key: Optional[str] = None               # user-customised key
+    current_key: str | None = None               # user-customised key
     context: ShortcutContext = ShortcutContext.GLOBAL
     enabled: bool = True
-    callback: Optional[Callable[[], None]] = None
+    callback: Callable[[], None] | None = None
 
     @property
     def effective_key(self) -> str:
@@ -97,7 +99,7 @@ class ShortcutConflict:
 # Default shortcuts
 # ---------------------------------------------------------------------------
 
-_DEFAULT_SHORTCUTS: List[ShortcutAction] = [
+_DEFAULT_SHORTCUTS: list[ShortcutAction] = [
     ShortcutAction(
         action_id="new_task",
         label="New Task",
@@ -124,13 +126,6 @@ _DEFAULT_SHORTCUTS: List[ShortcutAction] = [
         label="Search",
         description="Open global search",
         default_key="Ctrl+F",
-        context=ShortcutContext.GLOBAL,
-    ),
-    ShortcutAction(
-        action_id="energy_checkin",
-        label="Energy Check-in",
-        description="Log current energy level",
-        default_key="Ctrl+E",
         context=ShortcutContext.GLOBAL,
     ),
     ShortcutAction(
@@ -244,8 +239,8 @@ class ShortcutManager:
     """
 
     def __init__(self) -> None:
-        self._actions: Dict[str, ShortcutAction] = {}
-        self._qt_shortcuts: List[Any] = []  # QShortcut references
+        self._actions: dict[str, ShortcutAction] = {}
+        self._qt_shortcuts: list[Any] = []  # QShortcut references
         self._active_context: ShortcutContext = ShortcutContext.GLOBAL
 
         # Populate defaults
@@ -264,15 +259,15 @@ class ShortcutManager:
     # Access
     # ------------------------------------------------------------------
 
-    def get_action(self, action_id: str) -> Optional[ShortcutAction]:
+    def get_action(self, action_id: str) -> ShortcutAction | None:
         return self._actions.get(action_id)
 
-    def get_all_actions(self) -> List[ShortcutAction]:
+    def get_all_actions(self) -> list[ShortcutAction]:
         return list(self._actions.values())
 
     def get_actions_for_context(
         self, context: ShortcutContext,
-    ) -> List[ShortcutAction]:
+    ) -> list[ShortcutAction]:
         """Return shortcuts active in the given context.
 
         Always includes ``GLOBAL`` shortcuts.
@@ -311,7 +306,7 @@ class ShortcutManager:
             try:
                 action.callback()
                 return True
-            except Exception:
+            except Exception:  # noqa: BLE001
                 logger.exception("Error executing shortcut '%s'", action_id)
         return False
 
@@ -319,7 +314,7 @@ class ShortcutManager:
     # Remapping
     # ------------------------------------------------------------------
 
-    def remap(self, action_id: str, new_key: str) -> List[ShortcutConflict]:
+    def remap(self, action_id: str, new_key: str) -> list[ShortcutConflict]:
         """Change the key binding for an action.
 
         Returns a list of conflicts (empty if none).
@@ -349,11 +344,11 @@ class ShortcutManager:
     # Conflict detection
     # ------------------------------------------------------------------
 
-    def detect_conflicts(self) -> List[ShortcutConflict]:
+    def detect_conflicts(self) -> list[ShortcutConflict]:
         """Scan all shortcuts and return any conflicts."""
-        conflicts: List[ShortcutConflict] = []
+        conflicts: list[ShortcutConflict] = []
         # Group by (effective_key, context)
-        seen: Dict[Tuple[str, ShortcutContext], str] = {}
+        seen: dict[tuple[str, ShortcutContext], str] = {}
         for action in self._actions.values():
             if not action.enabled:
                 continue
@@ -375,8 +370,8 @@ class ShortcutManager:
 
     def _find_conflicts_for(
         self, key: str, context: ShortcutContext, exclude: str = "",
-    ) -> List[ShortcutConflict]:
-        conflicts: List[ShortcutConflict] = []
+    ) -> list[ShortcutConflict]:
+        conflicts: list[ShortcutConflict] = []
         key_lower = key.lower()
         for action in self._actions.values():
             if action.action_id == exclude or not action.enabled:
@@ -404,8 +399,8 @@ class ShortcutManager:
         key: str,
         description: str = "",
         context: ShortcutContext = ShortcutContext.GLOBAL,
-        callback: Optional[Callable[[], None]] = None,
-    ) -> List[ShortcutConflict]:
+        callback: Callable[[], None] | None = None,
+    ) -> list[ShortcutConflict]:
         """Register a new shortcut action. Returns any conflicts."""
         conflicts = self._find_conflicts_for(key, context, exclude=action_id)
         self._actions[action_id] = ShortcutAction(
@@ -425,13 +420,13 @@ class ShortcutManager:
     # PyQt6 integration
     # ------------------------------------------------------------------
 
-    def bind_to_widget(self, widget: Any, context: Optional[ShortcutContext] = None) -> None:
+    def bind_to_widget(self, widget: Any, context: ShortcutContext | None = None) -> None:
         """Create QShortcut objects on *widget* for matching actions.
 
         If *context* is None, binds all enabled actions.
         """
         try:
-            from PyQt6.QtGui import QShortcut, QKeySequence
+            from PyQt6.QtGui import QKeySequence, QShortcut
         except ImportError:
             logger.warning("PyQt6 not available; shortcuts not bound")
             return
@@ -452,11 +447,9 @@ class ShortcutManager:
     def unbind_all(self) -> None:
         """Remove all QShortcut bindings."""
         for qs in self._qt_shortcuts:
-            try:
+            with contextlib.suppress(Exception):
                 qs.setEnabled(False)
                 qs.deleteLater()
-            except Exception:
-                pass
         self._qt_shortcuts.clear()
 
     @staticmethod
@@ -473,20 +466,17 @@ class ShortcutManager:
     # Overlay (text representation)
     # ------------------------------------------------------------------
 
-    def overlay_text(self, context: Optional[ShortcutContext] = None) -> str:
+    def overlay_text(self, context: ShortcutContext | None = None) -> str:
         """Generate a human-readable summary of all shortcuts.
 
         Suitable for display in an overlay or help dialog.
         """
-        lines: List[str] = []
+        lines: list[str] = []
         lines.append("Keyboard Shortcuts")
         lines.append("=" * 40)
 
-        contexts_to_show: List[ShortcutContext]
-        if context:
-            contexts_to_show = [ShortcutContext.GLOBAL, context]
-        else:
-            contexts_to_show = list(ShortcutContext)
+        contexts_to_show: list[ShortcutContext]
+        contexts_to_show = [ShortcutContext.GLOBAL, context] if context else list(ShortcutContext)
 
         for ctx in contexts_to_show:
             actions = [
@@ -506,16 +496,13 @@ class ShortcutManager:
         return "\n".join(lines)
 
     def overlay_data(
-        self, context: Optional[ShortcutContext] = None,
-    ) -> List[Dict[str, str]]:
+        self, context: ShortcutContext | None = None,
+    ) -> list[dict[str, str]]:
         """Return structured data for building a shortcuts overlay UI."""
-        contexts_to_show: List[ShortcutContext]
-        if context:
-            contexts_to_show = [ShortcutContext.GLOBAL, context]
-        else:
-            contexts_to_show = list(ShortcutContext)
+        contexts_to_show: list[ShortcutContext]
+        contexts_to_show = [ShortcutContext.GLOBAL, context] if context else list(ShortcutContext)
 
-        data: List[Dict[str, str]] = []
+        data: list[dict[str, str]] = []
         for ctx in contexts_to_show:
             for action in self._actions.values():
                 if action.context == ctx and action.enabled:
@@ -534,7 +521,7 @@ class ShortcutManager:
 
     def save(self, db: Any) -> None:
         """Save current shortcut configuration to the database."""
-        config: Dict[str, Dict[str, Any]] = {}
+        config: dict[str, dict[str, Any]] = {}
         for action in self._actions.values():
             if action.current_key is not None or not action.enabled:
                 config[action.action_id] = {
@@ -570,13 +557,13 @@ class ShortcutManager:
 
         logger.info("Loaded shortcut config; %d overrides applied", len(config))
 
-    def save_to_file(self, path: Optional[Path] = None) -> Path:
+    def save_to_file(self, path: Path | None = None) -> Path:
         """Export shortcut configuration to a JSON file."""
         if path is None:
             path = DATA_DIR / "shortcuts.json"
         path.parent.mkdir(parents=True, exist_ok=True)
 
-        config: Dict[str, Dict[str, Any]] = {}
+        config: dict[str, dict[str, Any]] = {}
         for action in self._actions.values():
             config[action.action_id] = {
                 "label": action.label,

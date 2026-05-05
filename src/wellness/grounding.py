@@ -6,13 +6,14 @@ panic attacks, and flashbacks. Includes sensory grounding, body scan,
 object focus, temperature, movement, and safe place visualization techniques.
 """
 
+import json
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional, Set
 from pathlib import Path
-import json
-import uuid
+
+from core.constants import Condition
 
 
 class GroundingType(Enum):
@@ -23,20 +24,6 @@ class GroundingType(Enum):
     TEMPERATURE = "temperature"
     MOVEMENT = "movement"
     SAFE_PLACE_VISUALIZATION = "safe_place_visualization"
-
-
-class Condition(Enum):
-    """Mental health conditions for suitability mapping."""
-    ADHD = "ADHD"
-    ANXIETY = "Anxiety"
-    DEPRESSION = "Depression"
-    OCD = "OCD"
-    PTSD = "PTSD"
-    PANIC = "Panic Disorder"
-    INSOMNIA = "Insomnia"
-    GENERAL = "General Wellness"
-    DISSOCIATION = "Dissociation"
-    BPD = "BPD"
 
 
 class WhenToUse(Enum):
@@ -67,12 +54,12 @@ class GroundingTechnique:
     grounding_type: GroundingType
     name: str
     description: str
-    steps: List[str]
+    steps: list[str]
     duration_minutes: float
-    condition_suitability: Set[Condition]
-    when_to_use: Set[WhenToUse]
+    condition_suitability: set[Condition]
+    when_to_use: set[WhenToUse]
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Serialize technique to a dictionary."""
         return {
             "grounding_type": self.grounding_type.value,
@@ -102,15 +89,15 @@ class GroundingSession:
     """
     session_id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
     grounding_type: GroundingType = GroundingType.SENSORY_5_4_3_2_1
-    started_at: Optional[str] = None
-    ended_at: Optional[str] = None
+    started_at: str | None = None
+    ended_at: str | None = None
     completed: bool = False
-    effectiveness_rating: Optional[int] = None
-    distress_before: Optional[int] = None
-    distress_after: Optional[int] = None
-    notes: Optional[str] = None
+    effectiveness_rating: int | None = None
+    distress_before: int | None = None
+    distress_after: int | None = None
+    notes: str | None = None
 
-    def start(self, distress_before: Optional[int] = None) -> None:
+    def start(self, distress_before: int | None = None) -> None:
         """Mark the session as started.
 
         Args:
@@ -125,8 +112,8 @@ class GroundingSession:
     def end(
         self,
         completed: bool = True,
-        effectiveness_rating: Optional[int] = None,
-        distress_after: Optional[int] = None,
+        effectiveness_rating: int | None = None,
+        distress_after: int | None = None,
     ) -> None:
         """Mark the session as ended.
 
@@ -147,13 +134,13 @@ class GroundingSession:
             self.distress_after = distress_after
 
     @property
-    def distress_reduction(self) -> Optional[int]:
+    def distress_reduction(self) -> int | None:
         """Calculate distress reduction from before to after the session."""
         if self.distress_before is not None and self.distress_after is not None:
             return self.distress_before - self.distress_after
         return None
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Serialize session to a dictionary for JSON storage."""
         return {
             "session_id": self.session_id,
@@ -168,7 +155,7 @@ class GroundingSession:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict) -> "GroundingSession":
+    def from_dict(cls, data: dict) -> "GroundingSession":
         """Deserialize a session from a dictionary."""
         return cls(
             session_id=data["session_id"],
@@ -183,9 +170,9 @@ class GroundingSession:
         )
 
 
-def _build_technique_library() -> Dict[GroundingType, GroundingTechnique]:
+def _build_technique_library() -> dict[GroundingType, GroundingTechnique]:
     """Build the full library of grounding techniques."""
-    techniques: Dict[GroundingType, GroundingTechnique] = {}
+    techniques: dict[GroundingType, GroundingTechnique] = {}
 
     techniques[GroundingType.SENSORY_5_4_3_2_1] = GroundingTechnique(
         grounding_type=GroundingType.SENSORY_5_4_3_2_1,
@@ -381,7 +368,7 @@ class GroundingManager:
         data_dir: Directory to persist session history.
     """
 
-    TECHNIQUE_LIBRARY: Dict[GroundingType, GroundingTechnique] = (
+    TECHNIQUE_LIBRARY: dict[GroundingType, GroundingTechnique] = (
         _build_technique_library()
     )
 
@@ -389,7 +376,7 @@ class GroundingManager:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self._sessions_file = self.data_dir / "grounding_sessions.json"
-        self._sessions: List[GroundingSession] = []
+        self._sessions: list[GroundingSession] = []
         self._load_sessions()
 
     # -- persistence ----------------------------------------------------------
@@ -398,7 +385,7 @@ class GroundingManager:
         """Load session history from disk."""
         if self._sessions_file.exists():
             try:
-                with open(self._sessions_file, "r") as fh:
+                with open(self._sessions_file) as fh:
                     data = json.load(fh)
                 self._sessions = [GroundingSession.from_dict(s) for s in data]
             except (json.JSONDecodeError, KeyError):
@@ -427,7 +414,7 @@ class GroundingManager:
             raise KeyError(f"Unknown grounding type: {grounding_type}")
         return self.TECHNIQUE_LIBRARY[grounding_type]
 
-    def list_techniques(self) -> List[GroundingTechnique]:
+    def list_techniques(self) -> list[GroundingTechnique]:
         """Return all available grounding techniques."""
         return list(self.TECHNIQUE_LIBRARY.values())
 
@@ -436,7 +423,7 @@ class GroundingManager:
     def create_session(
         self,
         grounding_type: GroundingType,
-        distress_before: Optional[int] = None,
+        distress_before: int | None = None,
     ) -> GroundingSession:
         """Create and start a new grounding session.
 
@@ -456,8 +443,8 @@ class GroundingManager:
         self,
         session: GroundingSession,
         completed: bool = True,
-        effectiveness_rating: Optional[int] = None,
-        distress_after: Optional[int] = None,
+        effectiveness_rating: int | None = None,
+        distress_after: int | None = None,
     ) -> GroundingSession:
         """End a session, record it, and persist.
 
@@ -479,10 +466,10 @@ class GroundingManager:
 
     def recommend(
         self,
-        situation: Optional[WhenToUse] = None,
-        conditions: Optional[Set[Condition]] = None,
-        max_duration_minutes: Optional[float] = None,
-    ) -> List[GroundingTechnique]:
+        situation: WhenToUse | None = None,
+        conditions: set[Condition] | None = None,
+        max_duration_minutes: float | None = None,
+    ) -> list[GroundingTechnique]:
         """Recommend techniques based on the current situation.
 
         Scoring favours techniques matching the current situation, overlapping
@@ -496,7 +483,7 @@ class GroundingManager:
         Returns:
             Techniques sorted by relevance (best first).
         """
-        scored: List[tuple] = []
+        scored: list[tuple] = []
         conditions = conditions or set()
 
         for technique in self.TECHNIQUE_LIBRARY.values():
@@ -529,7 +516,7 @@ class GroundingManager:
             ]
             if past:
                 avg_effectiveness = sum(
-                    s.effectiveness_rating for s in past  # type: ignore[arg-type]
+                    s.effectiveness_rating for s in past  # type: ignore[misc]
                 ) / len(past)
                 score += avg_effectiveness * 3
 
@@ -541,7 +528,7 @@ class GroundingManager:
             ]
             if past_reduction:
                 avg_reduction = sum(
-                    s.distress_reduction for s in past_reduction  # type: ignore[arg-type]
+                    s.distress_reduction for s in past_reduction  # type: ignore[misc]
                 ) / len(past_reduction)
                 score += avg_reduction * 0.2
 
@@ -552,7 +539,7 @@ class GroundingManager:
 
     # -- statistics -----------------------------------------------------------
 
-    def get_statistics(self) -> Dict:
+    def get_statistics(self) -> dict:
         """Compute aggregate statistics across all grounding sessions.
 
         Returns:
@@ -572,7 +559,7 @@ class GroundingManager:
         completed = [s for s in self._sessions if s.completed]
 
         # Favourite technique by frequency
-        type_counts: Dict[str, int] = {}
+        type_counts: dict[str, int] = {}
         for s in self._sessions:
             key = s.grounding_type.value
             type_counts[key] = type_counts.get(key, 0) + 1
@@ -605,6 +592,6 @@ class GroundingManager:
         }
 
     @property
-    def sessions(self) -> List[GroundingSession]:
+    def sessions(self) -> list[GroundingSession]:
         """Read-only access to the session history."""
         return list(self._sessions)

@@ -1,278 +1,150 @@
-# Mindful Organizer 🧘‍♀️
+# Mindful Organizer
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.9+-blue.svg" alt="Python">
-  <img src="https://img.shields.io/badge/PyQt6-6.4.0+-green.svg" alt="PyQt6">
-  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
-  <img src="https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-informational.svg" alt="Platform">
-</p>
+A mental health-aware productivity and task management desktop application.
+Built with Python and PyQt6. All data is stored locally — no cloud sync, no telemetry.
 
-## 🌟 Overview
+![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)
+![PyQt6](https://img.shields.io/badge/PyQt6-6.4.0%2B-green.svg)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-informational.svg)
 
-Mindful Organizer is a revolutionary mental health-focused task and energy management application that adapts to your unique psychological needs. Unlike traditional productivity apps that push for maximum output, Mindful Organizer prioritizes your mental well-being while helping you stay organized and productive.
+## What It Is
 
-### 🎯 Mission Statement
+Mindful Organizer is a single-user, offline-first desktop application that helps users manage tasks and track wellness while accounting for mental health conditions such as ADHD, Anxiety, Depression, OCD, PTSD, and Bipolar Disorder.
 
-Our mission is to create a productivity tool that doesn't just manage tasks, but actively supports mental health through adaptive interfaces, energy-aware scheduling, and evidence-based therapeutic techniques.
+**Confirmed capabilities (from source):**
 
-## ✨ Key Features
+- **Task management** — CRUD, subtasks, dependencies, recurring tasks, templates, undo/redo, energy-based filtering and sorting. Persists to JSON (`tasks.json`) with a migration path to SQLite.
+- **Mood tracker** — 1–10 mood scores with condition-specific symptoms. Persists to SQLite (`mood_entries` table).
+- **Sleep tracker** — Bedtime, wake time, quality (1–10), duration. Persists to SQLite (`sleep_logs` table).
+- **DBT Diary Card** — Daily structured tracking of emotions, urges, skills, effectiveness, target behaviors, substances, and medication adherence. Added in schema v2.
+- **Energy predictor** — Forecasts from sleep + mood + task history. Optional ML deps (`scikit-learn`) enable smarter ranking; graceful degradation without them.
+- **Wellness orchestrator** — Cross-module intelligence that produces `WellnessSnapshot`, detects crisis heuristics (mood crash + sleep deprivation, rapid mood drop, medication miss streak), and generates daily briefings.
+- **Therapeutic tools** — Breathing exercises, grounding techniques, guided meditation metadata, journaling with prompts, ERP exposure tracking, crisis plan with contacts.
+- **File organizer** — Condition-aware organization modes (ADHD/OCD/Depression/Anxiety). Includes smart file system with optional ML clustering (`sentence-transformers`, `hdbscan`).
+- **Secure content folders** — Passcode-protected folders using Fernet encryption + scrypt. Keys are stored locally alongside data (see security caveats in `docs/security.md`).
+- **Shareable reports** — Self-contained HTML reports with Chart.js (loaded from CDN). No runtime dependency.
+- **Subscription tiers** — Free / Pro / Premium with offline HMAC license key validation and a 14-day trial.
 
-### 🧠 Mental Health Profile System
-- **Adaptive Interface**: UI automatically adjusts based on your mental health profile
-- **Clinical Combinations**: Support for ADHD, Anxiety, Depression, OCD, PTSD, and combinations
-- **Personalized Recommendations**: Task scheduling that respects your energy patterns
-- **Therapy Integration**: Built-in CBT, DBT, ACT, and mindfulness techniques
+**Partial / stub implementations:**
+- `voice_journal.py` — Creates silent WAV placeholders; transcription depends on macOS Shortcuts.
+- `calendar_sync.py` — Stubbed ICS integration.
+- `auto_updater.py` — Checks GitHub releases but does not auto-install.
+- `wearable_sync` — Listed as a Premium feature but has no implementation.
 
-### 📋 Intelligent Task Management
-- **Energy-Based Prioritization**: Tasks are scheduled based on your available mental energy
-- **Smart Categorization**: Work, Personal, Health, Learning, Social, and custom categories
-- **Adaptive Scheduling**: Automatically adjusts deadlines based on your current state
-- **Break Suggestions**: Intelligent break reminders based on energy depletion
+## Tech Stack
 
-### 🎨 Customizable Themes
-- **Light Mode**: Clean and energizing for high-energy periods
-- **Dark Mode**: Reduces eye strain during low-energy times
-- **Calm Mode**: Soothing colors for anxiety management
-- **High Contrast**: Accessibility-focused for better focus
+| Layer | Technology |
+|-------|------------|
+| Language | Python 3.11+ |
+| GUI | PyQt6 |
+| Persistence | SQLite (WAL mode, schema v2) + JSON for legacy task data |
+| Optional ML | scikit-learn, pandas, matplotlib |
+| Optional NLP / clustering | sentence-transformers, hdbscan, umap-learn |
+| Encryption | cryptography (Fernet + scrypt) |
+| Build | setuptools (`pyproject.toml`) + PyInstaller (`mindful_organizer.spec`) |
+| CI | GitHub Actions (`pytest`, `flake8`) |
 
-### 🤖 AI-Powered Features
-- **Quantum-Enhanced Optimization**: Uses Qiskit for advanced task scheduling
-- **Machine Learning**: Learns your patterns to better predict energy levels
-- **Natural Language Processing**: Understands task descriptions contextually
-- **Predictive Analytics**: Anticipates energy crashes before they happen
+## Prerequisites
 
-### 🗂️ Smart File Organization
-- **Auto-Categorization**: Files are automatically sorted based on content
-- **Mental State Folders**: Organize work based on required mental energy
-- **Quick Access**: Frequently needed files surface when you need them
-- **Backup System**: Automatic backups to prevent anxiety about data loss
+- Python 3.11, 3.12, or 3.13
+- pip
+- Git
 
-### 🧘 Wellness Features
-- **Guided Meditations**: Curated collection from UCLA MARC, Oxford Mindfulness, NHS
-- **Breathing Exercises**: Quick stress relief techniques
-- **Mood Tracking**: Daily mood and energy level monitoring
-- **Progress Visualization**: See your mental health journey over time
-
-## 🚀 Installation
-
-### Prerequisites
-- Python 3.9 or higher
-- pip package manager
-- Git (for cloning the repository)
-
-### Quick Start
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/ntoledo319/Mindful-Organizer.git
-   cd Mindful-Organizer
-   ```
-
-2. **Create a virtual environment**
-   ```bash
-   python3 -m venv venv
-   ```
-
-3. **Activate the virtual environment**
-   ```bash
-   # On macOS/Linux:
-   source venv/bin/activate
-   
-   # On Windows:
-   venv\Scripts\activate
-   ```
-
-4. **Install the application**
-   ```bash
-   pip install -e .
-   ```
-
-### Alternative Installation Methods
-
-#### Using the install script (macOS/Linux):
-```bash
-chmod +x install.sh
-./install.sh
-```
-
-#### Building from source:
-```bash
-chmod +x build.sh
-./build.sh
-```
-
-## 📖 Usage
-
-### Starting the Application
+## Installation
 
 ```bash
-mindful-organizer
+git clone https://github.com/ntoledo319/Mindful-Organizer.git
+cd Mindful-Organizer
+python3 -m venv venv312
+source venv312/bin/activate  # Windows: venv312\Scripts\activate
+pip install -e ".[dev]"
 ```
 
-Or use the launch script:
+Optional ML features:
 ```bash
-./launch.sh
+pip install -e ".[ml,nlp]"
 ```
 
-### First-Time Setup
+## Local Development
 
-1. **Mental Health Profile**: Complete the initial assessment to customize your experience
-2. **Energy Baseline**: Set your typical energy patterns throughout the day
-3. **Therapy Preferences**: Select which therapeutic techniques you'd like integrated
-4. **Theme Selection**: Choose your preferred visual theme
+```bash
+# Run the app
+python src/main.py
 
-### Core Workflows
+# Run tests (excludes GUI tests)
+pytest -m "not gui and not slow"
 
-#### Adding Tasks
-1. Click the "Add Task" button or press `Ctrl+N`
-2. Enter task details including title, category, and estimated energy requirement
-3. Set priority based on importance and urgency
-4. The app will suggest optimal scheduling based on your energy patterns
+# Run with coverage
+pytest -m "not gui and not slow" --cov=src --cov-report=term-missing
 
-#### Energy Tracking
-- Update your current energy level using the slider (0-100)
-- The app adapts task suggestions based on your energy
-- Low energy? The app suggests simpler tasks and break activities
+# Linting
+ruff check src/ tests/
 
-#### Using Therapeutic Tools
-- Access breathing exercises via the wellness menu
-- Start guided meditations from the meditation library
-- Use grounding techniques during high-anxiety moments
-- Journal directly within the app for CBT exercises
+# Formatting
+ruff format src/ tests/
 
-## 🏗️ Architecture
+# Type checking
+mypy src/
+```
 
-### Project Structure
+## Build
+
+### macOS / Linux (PyInstaller)
+```bash
+bash build.sh
+```
+
+### Windows (PyInstaller)
+```batch
+build_windows.bat
+```
+
+The canonical spec is `mindful_organizer.spec`. The `build.sh` script uses PyInstaller; the older manual `.app` bundle logic has been removed.
+
+## Repository Structure
 
 ```
-mindful_organizer/
 ├── src/
-│   ├── core/                    # Core business logic
-│   │   ├── task_manager.py      # Task management system
-│   │   ├── ai_optimizer.py      # AI/ML optimization
-│   │   ├── file_organizer.py    # File management
-│   │   └── system_optimizer.py  # System performance
-│   ├── gui/                     # User interface
-│   │   └── main_window.py       # PyQt6 main application
-│   ├── profile/                 # Mental health profiles
-│   │   ├── mental_health_profile_builder.py
-│   │   └── clinical_combinations.py
-│   ├── security/                # Security features
-│   └── file_organization/       # File management system
+│   ├── main.py                 # Application entry point
+│   ├── core/                   # Business logic & data access
+│   ├── gui/                    # PyQt6 UI layer
+│   ├── profiles/               # Mental health profile system
+│   ├── wellness/               # Therapeutic modules
+│   ├── security/               # Encryption & access control
+│   ├── utils/                  # Shared helpers
+│   └── windows/                # Platform-specific utilities
 ├── tests/
-│   ├── unit/                    # Unit tests
-│   └── integration/             # Integration tests
-├── resources/
-│   ├── meditations/             # Guided meditation library
-│   └── guideds.json            # Meditation metadata
-├── scripts/                     # Utility scripts
-├── docs/                        # Additional documentation
-└── .github/workflows/           # CI/CD pipelines
+│   ├── unit/                   # Isolated tests
+│   └── integration/            # Cross-module workflow tests
+├── docs/                       # Documentation suite
+├── resources/                  # Meditations and assets
+├── scripts/                    # Utility scripts
+└── pyproject.toml              # Build, dependencies, tool config
 ```
 
-### Technology Stack
+## Documentation
 
-- **Frontend**: PyQt6 for cross-platform native UI
-- **Backend**: Python 3.9+ with async support
-- **AI/ML**: TensorFlow, Keras, scikit-learn
-- **Quantum**: Qiskit for quantum-enhanced optimization
-- **Data**: Pandas for data manipulation, NumPy for calculations
-- **System**: psutil for system monitoring
+See [`docs/DOCS_INDEX.md`](docs/DOCS_INDEX.md) for the full documentation suite.
 
-## 🧪 Testing
+Quick pointers:
+- [Architecture](docs/architecture.md)
+- [Security Review](docs/security.md)
+- [Tech Debt & Gaps](docs/tech-debt-and-gaps.md)
+- [Onboarding](docs/onboarding.md)
 
-### Running Tests
+## Known Caveats
 
-```bash
-# Run all tests
-pytest
+1. **Data directory naming quirk** — The app uses `.mindful_optimizer` (a legacy typo) as the data directory name. This is consistent across all running code, but it differs from the product name.
+2. **TaskManager uses JSON, not SQLite** — Tasks are stored in `tasks.json` while mood, sleep, medications, etc. use SQLite. `MigrationManager` can migrate legacy JSON to SQLite but the app does not do this automatically on boot.
+3. **CI runs `flake8`, not `ruff`** — The GitHub Actions workflow still uses `flake8` for legacy reasons. Local development uses `ruff`.
+4. **Windows Store assets missing** — `windows_store/assets/` contains no PNG images; store submission would fail without them.
+5. **Hardcoded license secret** — `subscription_manager.py` contains an offline HMAC secret. This is acceptable for offline-only validation but must be replaced before any commercial distribution.
 
-# Run with coverage report
-pytest --cov=src
+## License
 
-# Run specific test categories
-pytest tests/unit/
-pytest tests/integration/
+MIT License — see [LICENSE](LICENSE) for details.
 
-# Run with verbose output
-pytest -v
-```
+## Disclaimer
 
-### Test Coverage Goals
-- Unit tests: >80% coverage
-- Integration tests: Critical user workflows
-- Performance tests: Ensure responsive UI
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details on:
-- Code of Conduct
-- Development workflow
-- Coding standards
-- Testing requirements
-- PR process
-
-## 📋 Roadmap
-
-### Version 1.1 (Q2 2024)
-- [ ] Mobile companion app
-- [ ] Cloud sync capabilities
-- [ ] Advanced analytics dashboard
-- [ ] Integration with calendar apps
-
-### Version 1.2 (Q3 2024)
-- [ ] Wearable device integration
-- [ ] Voice commands
-- [ ] Collaborative features
-- [ ] Therapist portal
-
-### Future Features
-- AR/VR meditation experiences
-- Biometric integration
-- AI therapist chat
-- Community support features
-
-## 🆘 Support
-
-### Getting Help
-- **Documentation**: Check our [comprehensive docs](docs/)
-- **Issues**: Report bugs on [GitHub Issues](https://github.com/ntoledo319/Mindful-Organizer/issues)
-- **Discussions**: Join our [community discussions](https://github.com/ntoledo319/Mindful-Organizer/discussions)
-- **Email**: support@mindfulorganizer.app
-
-### FAQ
-
-**Q: Is my mental health data private?**
-A: Absolutely. All data is stored locally on your device. We never transmit personal information.
-
-**Q: Can I use this alongside therapy?**
-A: Yes! Mindful Organizer complements professional therapy but doesn't replace it.
-
-**Q: What if I have multiple mental health conditions?**
-A: Our clinical combinations system supports multiple conditions and adapts accordingly.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **UCLA MARC** for meditation content
-- **Oxford Mindfulness Centre** for mindfulness resources
-- **NHS** for clinical relaxation techniques
-- **Free Mindfulness Project** for open meditation resources
-- Our amazing community of users and contributors
-
-## 📊 Stats & Badges
-
-![GitHub stars](https://img.shields.io/github/stars/ntoledo319/Mindful-Organizer?style=social)
-![GitHub forks](https://img.shields.io/github/forks/ntoledo319/Mindful-Organizer?style=social)
-![GitHub issues](https://img.shields.io/github/issues/ntoledo319/Mindful-Organizer)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/ntoledo319/Mindful-Organizer)
-
----
-
-<p align="center">
-  Made with ❤️ for mental health awareness<br>
-  © 2024 Nicholas Toledo
-</p>
+Mindful Organizer is a personal wellness tracking tool. It is **not** a medical device, does not provide medical advice, diagnosis, or treatment, and is **not** a substitute for professional healthcare. If you are in crisis, call 988 (US) or your local emergency number.

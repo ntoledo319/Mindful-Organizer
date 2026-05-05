@@ -5,18 +5,17 @@ Covers adding medications, tracking adherence, refill reminders,
 and side-effect logging.
 """
 
-from datetime import datetime, date, timedelta
+from datetime import datetime
 
 import pytest
 
 try:
+    from src.core.database import DatabaseManager
     from src.core.medication_tracker import (
-        MedicationTracker,
-        MedicationStatus,
-        Medication,
         Frequency,
+        Medication,
+        MedicationTracker,
     )
-    from src.core.database import DatabaseManager, TableName
     _HAS_MODULE = True
 except ImportError:
     _HAS_MODULE = False

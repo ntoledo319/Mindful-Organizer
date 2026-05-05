@@ -13,10 +13,10 @@ import json
 import logging
 import statistics
 from dataclasses import dataclass, field
-from datetime import datetime, date, timedelta, time
+from datetime import date, datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ DATA_DIR = Path.home() / ".mindful_optimizer"
 MEDICAL_DISCLAIMER = (
     "DISCLAIMER: This is a personal tracking tool only. It does NOT provide "
     "medical advice, diagnosis, or treatment recommendations. Always consult "
-    "your prescribing physician or pharmacist for medical guidance."
+    "your healthcare provider or pharmacist for medical guidance."
 )
 
 
@@ -77,26 +77,26 @@ class Medication:
     dosage: str
     frequency: str          # Frequency.value or free-form text
     scheduled_time: str     # HH:MM or ISO time
-    prescriber: Optional[str] = None
-    supply_count: Optional[int] = None
-    notes: Optional[str] = None
+    prescriber: str | None = None
+    supply_count: int | None = None
+    notes: str | None = None
 
 
 @dataclass
 class MedicationLogEntry:
     """A single log of taking (or missing) a medication."""
-    id: Optional[int] = None
+    id: int | None = None
     medication_name: str = ""
     dosage: str = ""
     frequency: str = ""
     scheduled_time: str = ""
-    taken_time: Optional[str] = None
+    taken_time: str | None = None
     status: str = MedicationStatus.PENDING.value
-    side_effects: Optional[str] = None
-    notes: Optional[str] = None
-    supply_count: Optional[int] = None
-    prescriber: Optional[str] = None
-    created_at: Optional[str] = None
+    side_effects: str | None = None
+    notes: str | None = None
+    supply_count: int | None = None
+    prescriber: str | None = None
+    created_at: str | None = None
 
 
 @dataclass
@@ -117,7 +117,7 @@ class SideEffectSummary:
     """Aggregated side-effect information for one medication."""
     medication_name: str = ""
     total_reports: int = 0
-    effects: Dict[str, int] = field(default_factory=dict)  # effect -> count
+    effects: dict[str, int] = field(default_factory=dict)  # effect -> count
 
 
 @dataclass
@@ -149,7 +149,7 @@ class MedicationTracker:
 
         # Check adherence
         stats = mt.adherence("Sertraline", days=30)
-        print(f"Adherence: {stats.adherence_percent}%")
+        # stats.adherence_percent contains the adherence rate.
     """
 
     DISCLAIMER = MEDICAL_DISCLAIMER
@@ -172,12 +172,12 @@ class MedicationTracker:
         frequency: str,
         scheduled_time: str,
         *,
-        taken_time: Optional[str] = None,
+        taken_time: str | None = None,
         status: str = "pending",
-        side_effects: Optional[str] = None,
-        notes: Optional[str] = None,
-        supply_count: Optional[int] = None,
-        prescriber: Optional[str] = None,
+        side_effects: str | None = None,
+        notes: str | None = None,
+        supply_count: int | None = None,
+        prescriber: str | None = None,
     ) -> int:
         """Record a medication event. Returns the new row id."""
         # Normalise status
@@ -200,56 +200,56 @@ class MedicationTracker:
             prescriber=prescriber,
         )
         logger.info("Logged %s dose: %s (%s)", medication_name, status, dosage)
-        return row_id
+        return int(row_id)
 
     def mark_taken(
         self,
         log_id: int,
-        taken_time: Optional[str] = None,
+        taken_time: str | None = None,
     ) -> int:
         """Mark an existing pending log as taken."""
         now = taken_time or datetime.now().isoformat()
-        return self._db.update(
+        return int(self._db.update(
             self._table(), log_id, status=MedicationStatus.TAKEN.value, taken_time=now,
-        )
+        ))
 
     def mark_missed(self, log_id: int) -> int:
-        return self._db.update(
+        return int(self._db.update(
             self._table(), log_id, status=MedicationStatus.MISSED.value,
-        )
+        ))
 
-    def mark_late(self, log_id: int, taken_time: Optional[str] = None) -> int:
+    def mark_late(self, log_id: int, taken_time: str | None = None) -> int:
         now = taken_time or datetime.now().isoformat()
-        return self._db.update(
+        return int(self._db.update(
             self._table(), log_id, status=MedicationStatus.LATE.value, taken_time=now,
-        )
+        ))
 
-    def mark_skipped(self, log_id: int, notes: Optional[str] = None) -> int:
-        kwargs: Dict[str, Any] = {"status": MedicationStatus.SKIPPED.value}
+    def mark_skipped(self, log_id: int, notes: str | None = None) -> int:
+        kwargs: dict[str, Any] = {"status": MedicationStatus.SKIPPED.value}
         if notes:
             kwargs["notes"] = notes
-        return self._db.update(self._table(), log_id, **kwargs)
+        return int(self._db.update(self._table(), log_id, **kwargs))
 
-    def get_log(self, log_id: int) -> Optional[MedicationLogEntry]:
+    def get_log(self, log_id: int) -> MedicationLogEntry | None:
         row = self._db.get_by_id(self._table(), log_id)
         return self._row_to_entry(row) if row else None
 
     def update_log(self, log_id: int, **kwargs: Any) -> int:
-        return self._db.update(self._table(), log_id, **kwargs)
+        return int(self._db.update(self._table(), log_id, **kwargs))
 
     def delete_log(self, log_id: int) -> int:
-        return self._db.delete(self._table(), log_id)
+        return int(self._db.delete(self._table(), log_id))
 
     def get_logs(
         self,
-        medication_name: Optional[str] = None,
-        days: Optional[int] = None,
-        status: Optional[str] = None,
-        limit: Optional[int] = None,
-    ) -> List[MedicationLogEntry]:
+        medication_name: str | None = None,
+        days: int | None = None,
+        status: str | None = None,
+        limit: int | None = None,
+    ) -> list[MedicationLogEntry]:
         """Retrieve medication logs with optional filters."""
-        where_parts: List[str] = []
-        params: List[Any] = []
+        where_parts: list[str] = []
+        params: list[Any] = []
         if medication_name:
             where_parts.append("medication_name = ?")
             params.append(medication_name)
@@ -270,7 +270,7 @@ class MedicationTracker:
         )
         return [self._row_to_entry(r) for r in result.rows]
 
-    def get_medications(self) -> List[str]:
+    def get_medications(self) -> list[str]:
         """Return distinct medication names currently being tracked."""
         result = self._db.query(
             self._table(), columns="DISTINCT medication_name",
@@ -282,7 +282,7 @@ class MedicationTracker:
     # ------------------------------------------------------------------
 
     def adherence(
-        self, medication_name: Optional[str] = None, days: int = 30,
+        self, medication_name: str | None = None, days: int = 30,
     ) -> AdherenceStats:
         """Calculate adherence statistics for one or all medications."""
         logs = self.get_logs(medication_name=medication_name, days=days)
@@ -315,7 +315,7 @@ class MedicationTracker:
 
     def adherence_trend(
         self, medication_name: str, days: int = 30, window: int = 7,
-    ) -> List[Tuple[str, float]]:
+    ) -> list[tuple[str, float]]:
         """Return a rolling-window adherence trend.
 
         Returns list of (date_label, adherence_percent) tuples.
@@ -325,14 +325,14 @@ class MedicationTracker:
             return []
 
         # Group by date
-        by_date: Dict[str, List[str]] = {}
+        by_date: dict[str, list[str]] = {}
         for log in logs:
             d = (log.created_at or "")[:10]
             if d:
                 by_date.setdefault(d, []).append(log.status)
 
         sorted_dates = sorted(by_date.keys())
-        trend: List[Tuple[str, float]] = []
+        trend: list[tuple[str, float]] = []
 
         for i, d in enumerate(sorted_dates):
             window_start = max(0, i - window + 1)
@@ -365,7 +365,7 @@ class MedicationTracker:
         frequency: str,
         scheduled_time: str,
         side_effects: str,
-        notes: Optional[str] = None,
+        notes: str | None = None,
     ) -> int:
         """Convenience: log a dose entry focused on side effects."""
         return self.log_dose(
@@ -402,7 +402,7 @@ class MedicationTracker:
     def correlate_with_mood(
         self,
         medication_name: str,
-        mood_data: List[Dict[str, Any]],
+        mood_data: list[dict[str, Any]],
         days: int = 30,
     ) -> MoodCorrelation:
         """Compare average mood on taken vs. missed days.
@@ -426,15 +426,15 @@ class MedicationTracker:
                 missed_dates.add(d)
 
         # Map mood to dates
-        mood_by_date: Dict[str, List[float]] = {}
+        mood_by_date: dict[str, list[float]] = {}
         for m in mood_data:
             d = (m.get("timestamp") or m.get("date", ""))[:10]
             score = m.get("mood_score")
             if d and score is not None:
                 mood_by_date.setdefault(d, []).append(float(score))
 
-        taken_moods: List[float] = []
-        missed_moods: List[float] = []
+        taken_moods: list[float] = []
+        missed_moods: list[float] = []
         for d, scores in mood_by_date.items():
             avg = statistics.mean(scores)
             if d in taken_dates:
@@ -484,8 +484,8 @@ class MedicationTracker:
     # ------------------------------------------------------------------
 
     def days_until_refill(
-        self, medication_name: str, current_supply: Optional[int] = None,
-    ) -> Optional[int]:
+        self, medication_name: str, current_supply: int | None = None,
+    ) -> int | None:
         """Estimate days until the medication supply runs out.
 
         Uses the most recent ``supply_count`` from logs if *current_supply*
@@ -528,10 +528,10 @@ class MedicationTracker:
             return False
         return remaining <= threshold_days
 
-    def get_refill_alerts(self, threshold_days: int = 7) -> List[Dict[str, Any]]:
+    def get_refill_alerts(self, threshold_days: int = 7) -> list[dict[str, Any]]:
         """Return a list of medications that need refilling soon."""
         meds = self.get_medications()
-        alerts: List[Dict[str, Any]] = []
+        alerts: list[dict[str, Any]] = []
         for name in meds:
             remaining = self.days_until_refill(name)
             if remaining is not None and remaining <= threshold_days:
@@ -548,9 +548,9 @@ class MedicationTracker:
 
     def export_history(
         self,
-        medication_name: Optional[str] = None,
+        medication_name: str | None = None,
         days: int = 90,
-        output_path: Optional[Path] = None,
+        output_path: Path | None = None,
     ) -> Path:
         """Export medication history to a JSON file for doctor visits.
 
@@ -559,7 +559,7 @@ class MedicationTracker:
         logs = self.get_logs(medication_name=medication_name, days=days)
         meds = [medication_name] if medication_name else self.get_medications()
 
-        report: Dict[str, Any] = {
+        report: dict[str, Any] = {
             "disclaimer": MEDICAL_DISCLAIMER,
             "generated_at": datetime.now().isoformat(),
             "period_days": days,
@@ -567,7 +567,7 @@ class MedicationTracker:
         }
 
         for med in meds:
-            med_logs = [l for l in logs if l.medication_name == med]
+            med_logs = [entry for entry in logs if entry.medication_name == med]
             stats = self.adherence(medication_name=med, days=days)
             effects = self.side_effect_summary(med, days=days)
             report["medications"][med] = {
@@ -585,13 +585,13 @@ class MedicationTracker:
                 },
                 "logs": [
                     {
-                        "date": (l.created_at or "")[:10],
-                        "status": l.status,
-                        "taken_time": l.taken_time,
-                        "side_effects": l.side_effects,
-                        "notes": l.notes,
+                        "date": (entry.created_at or "")[:10],
+                        "status": entry.status,
+                        "taken_time": entry.taken_time,
+                        "side_effects": entry.side_effects,
+                        "notes": entry.notes,
                     }
-                    for l in med_logs
+                    for entry in med_logs
                 ],
             }
 
@@ -609,7 +609,7 @@ class MedicationTracker:
     # Scheduling helpers
     # ------------------------------------------------------------------
 
-    def get_todays_schedule(self) -> List[MedicationLogEntry]:
+    def get_todays_schedule(self) -> list[MedicationLogEntry]:
         """Return today's medication schedule (pending and completed)."""
         today = date.today().isoformat()
         result = self._db.query(
@@ -620,7 +620,7 @@ class MedicationTracker:
         )
         return [self._row_to_entry(r) for r in result.rows]
 
-    def get_pending_doses(self) -> List[MedicationLogEntry]:
+    def get_pending_doses(self) -> list[MedicationLogEntry]:
         """Return all pending doses for today."""
         today = date.today().isoformat()
         result = self._db.query(
@@ -632,13 +632,13 @@ class MedicationTracker:
         return [self._row_to_entry(r) for r in result.rows]
 
     def create_daily_schedule(
-        self, medications: List[Medication],
-    ) -> List[int]:
+        self, medications: list[Medication],
+    ) -> list[int]:
         """Create pending log entries for today for each medication.
 
         Returns list of new row ids.
         """
-        ids: List[int] = []
+        ids: list[int] = []
         for med in medications:
             row_id = self.log_dose(
                 medication_name=med.name,
@@ -658,7 +658,7 @@ class MedicationTracker:
     # ------------------------------------------------------------------
 
     @staticmethod
-    def _row_to_entry(row: Dict[str, Any]) -> MedicationLogEntry:
+    def _row_to_entry(row: dict[str, Any]) -> MedicationLogEntry:
         return MedicationLogEntry(
             id=row.get("id"),
             medication_name=row.get("medication_name", ""),

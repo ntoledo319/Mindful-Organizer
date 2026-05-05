@@ -3,14 +3,13 @@ Enhanced gamification system for ADHD-friendly productivity.
 Features levels, XP curves, combos, power-ups, weekly challenges,
 and condition-specific motivational content.
 """
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from enum import Enum, auto
-from pathlib import Path
 import json
 import random
-from typing import List, Dict, Optional, Set
-
+from dataclasses import dataclass
+from datetime import datetime
+from enum import Enum
+from pathlib import Path
+from typing import Any
 
 # === Level System ===
 
@@ -83,7 +82,7 @@ class PowerUp:
     duration_minutes: int
     cost_points: int
     active: bool = False
-    activated_at: Optional[str] = None
+    activated_at: str | None = None
 
 
 class ADHDGameManager:
@@ -95,23 +94,23 @@ class ADHDGameManager:
         self.total_xp: int = 0
         self.level: int = 0
         self.streak_days: int = 0
-        self.last_activity: Optional[datetime] = None
-        self.achievements: Set[str] = set()
+        self.last_activity: datetime | None = None
+        self.achievements: set[str] = set()
         self.combo_count: int = 0
-        self.combo_last_time: Optional[datetime] = None
+        self.combo_last_time: datetime | None = None
         self.tasks_completed_total: int = 0
         self.tasks_completed_today: int = 0
-        self.today_date: Optional[str] = None
-        self.power_ups: List[Dict] = []
-        self.milestones: List[Dict] = []
-        self.personal_bests: Dict[str, int] = {}
+        self.today_date: str | None = None
+        self.power_ups: list[dict] = []
+        self.milestones: list[dict] = []
+        self.personal_bests: dict[str, int] = {}
         self.load_user_data()
 
     def load_user_data(self):
         data_file = self.user_data_path / "adhd_game_data.json"
         if data_file.exists():
             try:
-                with open(data_file, "r") as f:
+                with open(data_file) as f:
                     data = json.load(f)
                 self.points = data.get("points", 0)
                 self.total_xp = data.get("total_xp", 0)
@@ -120,7 +119,7 @@ class ADHDGameManager:
                 self.achievements = set(data.get("achievements", []))
                 self.tasks_completed_total = data.get("tasks_completed_total", 0)
                 self.personal_bests = data.get("personal_bests", {})
-                self.milestones = data.get("milestones", [])
+                self.milestones: list[dict] = data.get("milestones", [])
                 self.combo_count = data.get("combo_count", 0)
                 self.today_date = data.get("today_date")
                 self.tasks_completed_today = data.get("tasks_completed_today", 0)
@@ -150,7 +149,7 @@ class ADHDGameManager:
 
     # === XP and Leveling ===
 
-    def add_xp(self, amount: int, source: str = "") -> Dict:
+    def add_xp(self, amount: int, source: str = "") -> dict:
         """Add XP and check for level up."""
         # Apply combo multiplier
         multiplier = self._get_combo_multiplier()
@@ -158,12 +157,10 @@ class ADHDGameManager:
 
         self.total_xp += actual_xp
         self.points += actual_xp
-        result = {"xp_gained": actual_xp, "multiplier": multiplier, "level_ups": []}
+        result: dict[str, Any] = {"xp_gained": actual_xp, "multiplier": multiplier, "level_ups": []}
 
         # Check for level up
         while self.level < len(LEVEL_NAMES) - 1:
-            needed = xp_for_level(self.level + 1)
-            current_xp = self.total_xp - sum(xp_for_level(i) for i in range(self.level + 1))
             if self.total_xp >= sum(xp_for_level(i) for i in range(self.level + 2)):
                 self.level += 1
                 level_name = LEVEL_NAMES[self.level]
@@ -184,7 +181,7 @@ class ADHDGameManager:
         self.save_user_data()
         return result
 
-    def get_level_progress(self) -> Dict:
+    def get_level_progress(self) -> dict:
         """Get current level progress."""
         current_threshold = sum(xp_for_level(i) for i in range(self.level + 1))
         next_threshold = sum(xp_for_level(i) for i in range(self.level + 2))
@@ -225,7 +222,7 @@ class ADHDGameManager:
 
     # === Task Rewards ===
 
-    def reward_task_completion(self, task_data: Optional[Dict] = None) -> Dict:
+    def reward_task_completion(self, task_data: dict | None = None) -> dict:
         """Reward completing a task."""
         self.register_action()
 
@@ -256,7 +253,7 @@ class ADHDGameManager:
         self.save_user_data()
         return result
 
-    def reward_quick_organization(self, time_taken: float) -> Dict:
+    def reward_quick_organization(self, time_taken: float) -> dict:
         """Reward quick file organization."""
         self.register_action()
         if time_taken < 30:
@@ -270,7 +267,7 @@ class ADHDGameManager:
             result["message"] = "Files organized!"
         return result
 
-    def reward_wellness_action(self, action_type: str) -> Dict:
+    def reward_wellness_action(self, action_type: str) -> dict:
         """Reward wellness activities (breathing, meditation, journaling)."""
         self.register_action()
         xp_map = {
@@ -337,7 +334,7 @@ class ADHDGameManager:
                 "date": datetime.now().isoformat(),
             })
 
-    def get_achievements(self) -> List[Dict]:
+    def get_achievements(self) -> list[dict]:
         """Get all achievements with unlock status."""
         all_achievements = []
         for ach in Achievement:
@@ -350,7 +347,7 @@ class ADHDGameManager:
 
     # === Challenges ===
 
-    def generate_daily_challenges(self) -> List[Dict]:
+    def generate_daily_challenges(self) -> list[dict]:
         """Generate daily challenges."""
         challenges = [
             {"title": "Speed Sort", "description": "Sort 10 files in under 2 minutes", "xp": 50, "icon": "lightning"},
@@ -362,10 +359,10 @@ class ADHDGameManager:
             {"title": "Journal Time", "description": "Write a journal entry", "xp": 25, "icon": "book"},
             {"title": "Mindful Minute", "description": "Complete a 5-minute meditation", "xp": 30, "icon": "lotus"},
         ]
-        random.seed(datetime.now().strftime("%Y%m%d"))
-        return random.sample(challenges, min(3, len(challenges)))
+        rng = random.Random(datetime.now().strftime("%Y%m%d"))
+        return rng.sample(challenges, min(3, len(challenges)))
 
-    def generate_weekly_challenges(self) -> List[Dict]:
+    def generate_weekly_challenges(self) -> list[dict]:
         """Generate weekly challenges."""
         challenges = [
             {"title": "Consistency Champion", "description": "Complete tasks 5 out of 7 days", "xp": 200, "icon": "trophy"},
@@ -374,8 +371,8 @@ class ADHDGameManager:
             {"title": "Mood Mapper", "description": "Track mood every day this week", "xp": 175, "icon": "chart"},
         ]
         week_num = datetime.now().isocalendar()[1]
-        random.seed(week_num)
-        return random.sample(challenges, min(2, len(challenges)))
+        rng = random.Random(week_num)
+        return rng.sample(challenges, min(2, len(challenges)))
 
     # === Dopamine Boosts ===
 
@@ -396,7 +393,7 @@ class ADHDGameManager:
 
     # === Statistics ===
 
-    def get_statistics(self) -> Dict:
+    def get_statistics(self) -> dict:
         return {
             "total_xp": self.total_xp,
             "level": self.level,
@@ -433,7 +430,7 @@ class RewardSystem:
             Reward("Master Badge", "Display badge on dashboard", 5000, "award"),
         ]
 
-    def get_available_rewards(self, points: int) -> List[Reward]:
+    def get_available_rewards(self, points: int) -> list[Reward]:
         return [r for r in self.rewards if r.points <= points]
 
     def claim_reward(self, reward: Reward, points: int) -> bool:

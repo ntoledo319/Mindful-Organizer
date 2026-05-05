@@ -2,16 +2,21 @@
 Enhanced adaptive profile builder with support for all conditions,
 sensory profiles, values, emergency contacts, and profile switching.
 """
-from dataclasses import dataclass, field
-from enum import Flag, auto, Enum
-from typing import List, Dict, Set, Optional
-from pathlib import Path
-from datetime import datetime
 import json
 import uuid
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Flag, auto
+from pathlib import Path
+
+from core.constants import Condition, TherapySkill, TherapyType
 
 
 class MentalHealthFlags(Flag):
+    """Legacy bit-field flags – retained for backward compatibility.
+
+    New code should prefer the canonical :class:`core.constants.Condition`.
+    """
     NONE = 0
     ADHD = auto()
     ANXIETY = auto()
@@ -19,31 +24,6 @@ class MentalHealthFlags(Flag):
     OCD = auto()
     PTSD = auto()
     BIPOLAR = auto()
-
-
-class Condition(Enum):
-    ADHD = "ADHD"
-    ANXIETY = "Anxiety"
-    DEPRESSION = "Depression"
-    OCD = "OCD"
-    PTSD = "PTSD"
-    BIPOLAR = "Bipolar Disorder"
-
-
-class TherapyType(Enum):
-    CBT = "Cognitive Behavioral Therapy"
-    DBT = "Dialectical Behavior Therapy"
-    ACT = "Acceptance and Commitment Therapy"
-    MINDFULNESS = "Mindfulness-Based Therapy"
-    ERP = "Exposure and Response Prevention"
-
-
-class TherapySkill(Enum):
-    BREATHING = "Deep Breathing"
-    GROUNDING = "Grounding Techniques"
-    MEDITATION = "Meditation"
-    JOURNALING = "Journaling"
-    VISUALIZATION = "Visualization"
 
 
 @dataclass
@@ -55,7 +35,7 @@ class SensoryProfile:
     texture_sensitivity: int = 5    # 1-10
     color_preference: str = "neutral"  # warm, cool, neutral
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         return {
             "noise_sensitivity": self.noise_sensitivity,
             "light_sensitivity": self.light_sensitivity,
@@ -65,7 +45,7 @@ class SensoryProfile:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict) -> "SensoryProfile":
+    def from_dict(cls, data: dict) -> "SensoryProfile":
         return cls(**{k: v for k, v in data.items() if k in cls.__dataclass_fields__})
 
 
@@ -76,11 +56,11 @@ class EmergencyContact:
     phone: str
     relationship: str
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         return {"name": self.name, "phone": self.phone, "relationship": self.relationship}
 
     @classmethod
-    def from_dict(cls, data: Dict) -> "EmergencyContact":
+    def from_dict(cls, data: dict) -> "EmergencyContact":
         return cls(name=data["name"], phone=data["phone"], relationship=data.get("relationship", ""))
 
 
@@ -95,7 +75,7 @@ class UIPreference:
     use_icons: bool = True
     use_sound: bool = True
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         return {
             "color_scheme": self.color_scheme,
             "contrast_level": self.contrast_level,
@@ -108,7 +88,7 @@ class UIPreference:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict) -> "UIPreference":
+    def from_dict(cls, data: dict) -> "UIPreference":
         return cls(**{k: v for k, v in data.items() if k in cls.__dataclass_fields__})
 
 
@@ -116,12 +96,12 @@ class UIPreference:
 class OrganizationPreference:
     folder_depth: int = 3
     naming_convention: str = "standard"
-    sort_priority: List[str] = field(default_factory=lambda: ["priority", "due_date"])
+    sort_priority: list[str] = field(default_factory=lambda: ["priority", "due_date"])
     automation_level: str = "medium"
     backup_frequency: str = "daily"
     reminder_frequency: str = "normal"
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         return {
             "folder_depth": self.folder_depth,
             "naming_convention": self.naming_convention,
@@ -132,7 +112,7 @@ class OrganizationPreference:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict) -> "OrganizationPreference":
+    def from_dict(cls, data: dict) -> "OrganizationPreference":
         fields = cls.__dataclass_fields__
         return cls(**{k: v for k, v in data.items() if k in fields})
 
@@ -142,25 +122,25 @@ class Profile:
     """User mental health profile with all preferences and settings."""
     id: str = ""
     name: str = ""
-    conditions: Set[Condition] = field(default_factory=set)
-    therapy_types: Set[TherapyType] = field(default_factory=set)
-    therapy_skills: Set[TherapySkill] = field(default_factory=set)
+    conditions: set[Condition] = field(default_factory=set)
+    therapy_types: set[TherapyType] = field(default_factory=set)
+    therapy_skills: set[TherapySkill] = field(default_factory=set)
     ui_preferences: UIPreference = field(default_factory=UIPreference)
     organization_preferences: OrganizationPreference = field(default_factory=OrganizationPreference)
     sensory_profile: SensoryProfile = field(default_factory=SensoryProfile)
-    personal_values: List[str] = field(default_factory=list)
-    emergency_contacts: List[EmergencyContact] = field(default_factory=list)
+    personal_values: list[str] = field(default_factory=list)
+    emergency_contacts: list[EmergencyContact] = field(default_factory=list)
     therapist_name: str = ""
     therapist_phone: str = ""
     daily_spoons: int = 12
     created_at: str = ""
     updated_at: str = ""
-    notes: Optional[str] = None
-    folder_structure: Dict = field(default_factory=dict)
-    organization_preferences_dict: Dict = field(default_factory=dict)
+    notes: str | None = None
+    folder_structure: dict = field(default_factory=dict)
+    organization_preferences_dict: dict = field(default_factory=dict)
     version: int = 1
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         return {
             "id": self.id,
             "name": self.name,
@@ -182,7 +162,7 @@ class Profile:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict) -> "Profile":
+    def from_dict(cls, data: dict) -> "Profile":
         """Deserialize a profile from dict with backward compatibility."""
         conditions = set()
         for c in data.get("conditions", []):
@@ -267,7 +247,7 @@ class ProfileManager:
         self.profiles_dir = data_dir / "profiles"
         self.profiles_dir.mkdir(exist_ok=True, parents=True)
         self.current_profile_file = self.data_dir / "current_profile.json"
-        self._current_profile: Optional[Profile] = None
+        self._current_profile: Profile | None = None
         self.mental_health_flags = MentalHealthFlags.NONE
         self._load_research_based_settings()
         self._load_current_profile()
@@ -315,10 +295,10 @@ class ProfileManager:
     def _load_current_profile(self):
         if self.current_profile_file.exists():
             try:
-                with open(self.current_profile_file, "r") as f:
+                with open(self.current_profile_file) as f:
                     data = json.load(f)
                 self._current_profile = Profile.from_dict(data)
-            except (json.JSONDecodeError, Exception):
+            except (json.JSONDecodeError, OSError, TypeError, ValueError):
                 self._current_profile = None
 
     def _save_current_profile(self):
@@ -327,7 +307,7 @@ class ProfileManager:
                 json.dump(self._current_profile.to_dict(), f, indent=2)
 
     @property
-    def current_profile(self) -> Optional[Profile]:
+    def current_profile(self) -> Profile | None:
         return self._current_profile
 
     @current_profile.setter
@@ -335,7 +315,7 @@ class ProfileManager:
         self._current_profile = profile
         self._save_current_profile()
 
-    def create_profile(self, name: str, conditions: Set[Condition], therapy_types: Optional[Set[TherapyType]] = None, **kwargs) -> Profile:
+    def create_profile(self, name: str, conditions: set[Condition], therapy_types: set[TherapyType] | None = None, **kwargs) -> Profile:
         """Create a new profile with sensible defaults based on conditions."""
         now = datetime.now().isoformat()
         profile_id = str(uuid.uuid4())
@@ -392,12 +372,12 @@ class ProfileManager:
             with open(profile_file, "w") as f:
                 json.dump(self._current_profile.to_dict(), f, indent=2)
 
-    def list_profiles(self) -> List[Dict]:
+    def list_profiles(self) -> list[dict]:
         """List all saved profiles."""
         profiles = []
         for profile_file in self.profiles_dir.glob("*.json"):
             try:
-                with open(profile_file, "r") as f:
+                with open(profile_file) as f:
                     data = json.load(f)
                 profiles.append({
                     "id": data.get("id", ""),
@@ -405,21 +385,21 @@ class ProfileManager:
                     "conditions": data.get("conditions", []),
                     "created_at": data.get("created_at", ""),
                 })
-            except (json.JSONDecodeError, Exception):
+            except (json.JSONDecodeError, OSError, TypeError, ValueError):
                 continue
         return profiles
 
-    def switch_profile(self, profile_id: str) -> Optional[Profile]:
+    def switch_profile(self, profile_id: str) -> Profile | None:
         """Switch to a different profile by ID."""
         profile_file = self.profiles_dir / f"{profile_id}.json"
         if profile_file.exists():
             try:
-                with open(profile_file, "r") as f:
+                with open(profile_file) as f:
                     data = json.load(f)
                 self._current_profile = Profile.from_dict(data)
                 self._save_current_profile()
                 return self._current_profile
-            except (json.JSONDecodeError, Exception):
+            except (json.JSONDecodeError, OSError, TypeError, ValueError):
                 return None
         return None
 
@@ -433,13 +413,13 @@ class ProfileManager:
             return True
         return False
 
-    def export_profile(self) -> Dict:
+    def export_profile(self) -> dict:
         """Export current profile as dict."""
         if self._current_profile:
             return self._current_profile.to_dict()
         return {}
 
-    def import_profile(self, data: Dict) -> Profile:
+    def import_profile(self, data: dict) -> Profile:
         """Import a profile from dict."""
         profile = Profile.from_dict(data)
         profile.id = str(uuid.uuid4())
@@ -449,7 +429,7 @@ class ProfileManager:
         self.save_profile(profile)
         return profile
 
-    def get_profile_completeness(self) -> Dict:
+    def get_profile_completeness(self) -> dict:
         """Check how complete the current profile is."""
         if not self._current_profile:
             return {"score": 0, "missing": ["No profile created"]}
@@ -476,7 +456,7 @@ class ProfileManager:
             "missing": missing,
         }
 
-    def get_recommended_features(self) -> List[str]:
+    def get_recommended_features(self) -> list[str]:
         """Get feature recommendations based on profile."""
         if not self._current_profile:
             return ["Complete your profile to get personalized recommendations"]
@@ -502,30 +482,33 @@ class ProfileManager:
 
     # === Profile Building (Legacy Compatibility) ===
 
-    def set_conditions(self, conditions: List[str]):
+    def set_conditions(self, conditions: list[str]):
         self.mental_health_flags = MentalHealthFlags.NONE
         for condition in conditions:
             if hasattr(MentalHealthFlags, condition.upper()):
                 self.mental_health_flags |= getattr(MentalHealthFlags, condition.upper())
 
-    def build_profile(self) -> Dict:
+    def build_profile(self) -> dict:
         if self.mental_health_flags == MentalHealthFlags.NONE:
             return self._get_default_profile()
 
-        combined = {"ui": {}, "organization": {}, "features": set()}
+        combined: dict[str, dict | set] = {"ui": {}, "organization": {}, "features": set()}
         for flag in MentalHealthFlags:
-            if flag in self.mental_health_flags and flag != MentalHealthFlags.NONE:
-                if flag in self.condition_settings:
-                    settings = self.condition_settings[flag]
-                    combined["ui"].update(settings["ui"])
-                    combined["organization"].update(settings["organization"])
-                    combined["features"].update(settings["features"])
+            if (
+                flag != MentalHealthFlags.NONE
+                and flag in self.mental_health_flags  # type: ignore[operator]
+                and flag in self.condition_settings
+            ):
+                settings = self.condition_settings[flag]
+                combined["ui"].update(settings["ui"])
+                combined["organization"].update(settings["organization"])
+                combined["features"].update(settings["features"])
 
         resolved = self._resolve_conflicts(combined)
         resolved["features"] = list(resolved.get("features", set()))
         return resolved
 
-    def _resolve_conflicts(self, settings: Dict) -> Dict:
+    def _resolve_conflicts(self, settings: dict) -> dict:
         if (MentalHealthFlags.ADHD in self.mental_health_flags and
                 MentalHealthFlags.ANXIETY in self.mental_health_flags):
             settings.update({"animation_speed": "moderate", "notification_style": "structured_immediate"})
@@ -534,14 +517,14 @@ class ProfileManager:
             settings.update({"color_scheme": "calming_positive", "notification_style": "gentle_encouraging"})
         return settings
 
-    def _get_default_profile(self) -> Dict:
+    def _get_default_profile(self) -> dict:
         return {
             "ui": {"color_scheme": "neutral", "animation_speed": "normal", "notification_style": "standard", "layout_density": "medium", "use_icons": True, "use_sound": True},
             "organization": {"folder_depth": 3, "naming_convention": "standard", "automation_level": "medium", "reminder_frequency": "normal"},
             "features": ["basic_organization", "standard_notifications", "simple_backup", "help_system"],
         }
 
-    def get_feature_explanations(self) -> Dict[str, str]:
+    def get_feature_explanations(self) -> dict[str, str]:
         all_features = {
             "gamification": "Game elements to boost motivation and engagement",
             "quick_wins": "Small, achievable tasks to build momentum",
@@ -562,5 +545,5 @@ class ProfileManager:
         return {f: all_features[f] for f in profile.get("features", []) if f in all_features}
 
     def load_profile(self, filepath: Path):
-        with open(filepath, "r") as f:
+        with open(filepath) as f:
             return json.load(f)

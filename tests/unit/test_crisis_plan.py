@@ -8,7 +8,6 @@ and persistence.
 """
 
 import json
-from datetime import datetime
 
 import pytest
 
@@ -145,7 +144,8 @@ class TestPlanValidation:
 
     def test_plan_requires_name(self, db):
         """The crisis_plans table requires a name (NOT NULL)."""
-        with pytest.raises(Exception):
+        import sqlite3
+        with pytest.raises(sqlite3.IntegrityError):
             db.insert(TableName.CRISIS_PLANS, coping_strategies="Breathing")
 
     def test_multiple_plans_allowed(self, db):

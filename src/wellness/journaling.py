@@ -5,14 +5,15 @@ Provides condition-specific journal prompts, entry management, mood tracking,
 streak tracking, search capabilities, and writing pattern analysis.
 """
 
-from dataclasses import dataclass, field
-from datetime import datetime, date, timedelta
-from enum import Enum
-from typing import Dict, List, Optional, Set
-from pathlib import Path
 import json
 import re
 import uuid
+from dataclasses import dataclass, field
+from datetime import date, datetime, timedelta
+from enum import Enum
+from pathlib import Path
+
+from core.constants import Condition
 
 
 class PromptCategory(Enum):
@@ -29,19 +30,6 @@ class PromptCategory(Enum):
     CRISIS_PROCESSING = "crisis_processing"
 
 
-class Condition(Enum):
-    """Mental health conditions for suitability mapping."""
-    ADHD = "ADHD"
-    ANXIETY = "Anxiety"
-    DEPRESSION = "Depression"
-    OCD = "OCD"
-    PTSD = "PTSD"
-    PANIC = "Panic Disorder"
-    INSOMNIA = "Insomnia"
-    GENERAL = "General Wellness"
-    BPD = "BPD"
-
-
 @dataclass
 class JournalPrompt:
     """A journaling prompt with follow-up questions.
@@ -56,10 +44,10 @@ class JournalPrompt:
     prompt_id: str
     category: PromptCategory
     text: str
-    follow_up_questions: List[str]
-    condition_suitability: Set[Condition]
+    follow_up_questions: list[str]
+    condition_suitability: set[Condition]
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Serialize prompt to a dictionary."""
         return {
             "prompt_id": self.prompt_id,
@@ -86,11 +74,11 @@ class JournalEntry:
     """
     entry_id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
     entry_date: str = field(default_factory=lambda: date.today().isoformat())
-    prompt_id: Optional[str] = None
+    prompt_id: str | None = None
     entry_text: str = ""
-    mood_before: Optional[int] = None
-    mood_after: Optional[int] = None
-    tags: List[str] = field(default_factory=list)
+    mood_before: int | None = None
+    mood_after: int | None = None
+    tags: list[str] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
     @property
@@ -99,13 +87,13 @@ class JournalEntry:
         return len(self.entry_text.split()) if self.entry_text.strip() else 0
 
     @property
-    def mood_improvement(self) -> Optional[int]:
+    def mood_improvement(self) -> int | None:
         """Calculate mood change from before to after writing."""
         if self.mood_before is not None and self.mood_after is not None:
             return self.mood_after - self.mood_before
         return None
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Serialize entry to a dictionary for JSON storage."""
         return {
             "entry_id": self.entry_id,
@@ -119,7 +107,7 @@ class JournalEntry:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict) -> "JournalEntry":
+    def from_dict(cls, data: dict) -> "JournalEntry":
         """Deserialize an entry from a dictionary."""
         return cls(
             entry_id=data["entry_id"],
@@ -132,7 +120,7 @@ class JournalEntry:
             created_at=data.get("created_at", ""),
         )
 
-    def to_formatted_text(self, prompt_text: Optional[str] = None) -> str:
+    def to_formatted_text(self, prompt_text: str | None = None) -> str:
         """Export the entry as human-readable formatted text.
 
         Args:
@@ -162,9 +150,9 @@ class JournalEntry:
         return "\n".join(lines)
 
 
-def _build_prompt_library() -> List[JournalPrompt]:
+def _build_prompt_library() -> list[JournalPrompt]:
     """Build the full library of journal prompts."""
-    prompts: List[JournalPrompt] = []
+    prompts: list[JournalPrompt] = []
 
     # -- Gratitude --
     prompts.append(JournalPrompt(
@@ -437,8 +425,8 @@ class JournalingManager:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self._entries_file = self.data_dir / "journal_entries.json"
-        self._entries: List[JournalEntry] = []
-        self._prompts: List[JournalPrompt] = _build_prompt_library()
+        self._entries: list[JournalEntry] = []
+        self._prompts: list[JournalPrompt] = _build_prompt_library()
         self._load_entries()
 
     # -- persistence ----------------------------------------------------------
@@ -447,7 +435,7 @@ class JournalingManager:
         """Load journal entries from disk."""
         if self._entries_file.exists():
             try:
-                with open(self._entries_file, "r") as fh:
+                with open(self._entries_file) as fh:
                     data = json.load(fh)
                 self._entries = [JournalEntry.from_dict(e) for e in data]
             except (json.JSONDecodeError, KeyError):
@@ -460,7 +448,7 @@ class JournalingManager:
 
     # -- prompt access --------------------------------------------------------
 
-    def get_prompts_by_category(self, category: PromptCategory) -> List[JournalPrompt]:
+    def get_prompts_by_category(self, category: PromptCategory) -> list[JournalPrompt]:
         """Retrieve all prompts in a given category.
 
         Args:
@@ -471,7 +459,7 @@ class JournalingManager:
         """
         return [p for p in self._prompts if p.category == category]
 
-    def get_prompt_by_id(self, prompt_id: str) -> Optional[JournalPrompt]:
+    def get_prompt_by_id(self, prompt_id: str) -> JournalPrompt | None:
         """Retrieve a specific prompt by its ID.
 
         Args:
@@ -487,10 +475,10 @@ class JournalingManager:
 
     def recommend_prompts(
         self,
-        mood: Optional[int] = None,
-        conditions: Optional[Set[Condition]] = None,
+        mood: int | None = None,
+        conditions: set[Condition] | None = None,
         limit: int = 3,
-    ) -> List[JournalPrompt]:
+    ) -> list[JournalPrompt]:
         """Recommend prompts based on current mood and conditions.
 
         Low mood favours self-compassion, depression activation, and gratitude.
@@ -505,7 +493,7 @@ class JournalingManager:
         Returns:
             Prompts sorted by relevance (best first), limited to `limit`.
         """
-        scored: List[tuple] = []
+        scored: list[tuple] = []
         conditions = conditions or set()
 
         for prompt in self._prompts:
@@ -536,24 +524,29 @@ class JournalingManager:
                         PromptCategory.MOOD_EXPLORATION,
                     ):
                         score += 15
-                elif mood >= 7:
-                    # Good mood: values, daily review, gratitude
-                    if prompt.category in (
+                elif (
+                    mood >= 7
+                    and prompt.category
+                    in (
                         PromptCategory.VALUES_CLARIFICATION,
                         PromptCategory.DAILY_REVIEW,
                         PromptCategory.GRATITUDE,
-                    ):
-                        score += 10
+                    )
+                ):
+                    score += 10
 
             # Anxiety-specific boost
-            if Condition.ANXIETY in conditions or Condition.PANIC in conditions:
-                if prompt.category == PromptCategory.ANXIETY_CHALLENGE:
-                    score += 10
+            if (
+                Condition.ANXIETY in conditions or Condition.PANIC in conditions
+            ) and prompt.category == PromptCategory.ANXIETY_CHALLENGE:
+                score += 10
 
             # ADHD-specific boost
-            if Condition.ADHD in conditions:
-                if prompt.category == PromptCategory.ADHD_REFLECTION:
-                    score += 10
+            if (
+                Condition.ADHD in conditions
+                and prompt.category == PromptCategory.ADHD_REFLECTION
+            ):
+                score += 10
 
             # Avoid recently used prompts
             recent_prompt_ids = {
@@ -573,10 +566,10 @@ class JournalingManager:
     def create_entry(
         self,
         entry_text: str,
-        prompt_id: Optional[str] = None,
-        mood_before: Optional[int] = None,
-        mood_after: Optional[int] = None,
-        tags: Optional[List[str]] = None,
+        prompt_id: str | None = None,
+        mood_before: int | None = None,
+        mood_after: int | None = None,
+        tags: list[str] | None = None,
     ) -> JournalEntry:
         """Create and save a new journal entry.
 
@@ -612,10 +605,10 @@ class JournalingManager:
     def update_entry(
         self,
         entry_id: str,
-        entry_text: Optional[str] = None,
-        mood_after: Optional[int] = None,
-        tags: Optional[List[str]] = None,
-    ) -> Optional[JournalEntry]:
+        entry_text: str | None = None,
+        mood_after: int | None = None,
+        tags: list[str] | None = None,
+    ) -> JournalEntry | None:
         """Update an existing journal entry.
 
         Args:
@@ -662,8 +655,8 @@ class JournalingManager:
     def search_by_date(
         self,
         start_date: str,
-        end_date: Optional[str] = None,
-    ) -> List[JournalEntry]:
+        end_date: str | None = None,
+    ) -> list[JournalEntry]:
         """Search entries within a date range.
 
         Args:
@@ -679,7 +672,7 @@ class JournalingManager:
             key=lambda e: e.entry_date,
         )
 
-    def search_by_tag(self, tag: str) -> List[JournalEntry]:
+    def search_by_tag(self, tag: str) -> list[JournalEntry]:
         """Search entries by tag (case-insensitive).
 
         Args:
@@ -696,7 +689,7 @@ class JournalingManager:
         min_mood: int = 1,
         max_mood: int = 10,
         field: str = "mood_before",
-    ) -> List[JournalEntry]:
+    ) -> list[JournalEntry]:
         """Search entries by mood range.
 
         Args:
@@ -707,14 +700,14 @@ class JournalingManager:
         Returns:
             Matching entries.
         """
-        results: List[JournalEntry] = []
+        results: list[JournalEntry] = []
         for entry in self._entries:
             value = getattr(entry, field, None)
             if value is not None and min_mood <= value <= max_mood:
                 results.append(entry)
         return results
 
-    def search_by_keyword(self, keyword: str) -> List[JournalEntry]:
+    def search_by_keyword(self, keyword: str) -> list[JournalEntry]:
         """Search entries by keyword in text (case-insensitive).
 
         Args:
@@ -777,7 +770,7 @@ class JournalingManager:
 
     # -- analytics ------------------------------------------------------------
 
-    def get_writing_statistics(self) -> Dict:
+    def get_writing_statistics(self) -> dict:
         """Compute writing pattern statistics.
 
         Returns:
@@ -811,7 +804,7 @@ class JournalingManager:
         )
 
         # Entries by prompt category
-        category_counts: Dict[str, int] = {}
+        category_counts: dict[str, int] = {}
         for entry in self._entries:
             if entry.prompt_id:
                 prompt = self.get_prompt_by_id(entry.prompt_id)
@@ -820,7 +813,7 @@ class JournalingManager:
                     category_counts[cat] = category_counts.get(cat, 0) + 1
 
         # Most used tags
-        tag_counts: Dict[str, int] = {}
+        tag_counts: dict[str, int] = {}
         for entry in self._entries:
             for tag in entry.tags:
                 tag_lower = tag.lower()
@@ -842,8 +835,8 @@ class JournalingManager:
 
     def export_entries(
         self,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
     ) -> str:
         """Export entries as formatted text.
 
@@ -876,11 +869,11 @@ class JournalingManager:
         return "\n".join(parts)
 
     @property
-    def entries(self) -> List[JournalEntry]:
+    def entries(self) -> list[JournalEntry]:
         """Read-only access to the entry list."""
         return list(self._entries)
 
     @property
-    def prompts(self) -> List[JournalPrompt]:
+    def prompts(self) -> list[JournalPrompt]:
         """Read-only access to the prompt library."""
         return list(self._prompts)

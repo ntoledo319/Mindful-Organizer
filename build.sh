@@ -1,6 +1,13 @@
 #!/bin/bash
+# Build script for Mindful Organizer (macOS / Linux)
+#
+# Uses PyInstaller with the existing mindful_organizer.spec.
+# For Windows, use build_windows.bat instead.
+#
+# CONFIRMED: This script builds from src/ using pyproject.toml dependencies.
 
-# Colors for output
+set -euo pipefail
+
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 RED='\033[0;31m'
@@ -9,9 +16,10 @@ NC='\033[0m'
 echo -e "${BLUE}Building Mindful Organizer...${NC}"
 
 # Check Python version
-python_version=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
-if (( $(echo "$python_version < 3.9" | bc -l) )); then
-    echo -e "${RED}Error: Python 3.9 or higher is required (found $python_version)${NC}"
+python_version=$(python3 -c 'import sys; v=sys.version_info; print(f"{v.major}.{v.minor}")')
+min_version="3.11"
+if [ "$(printf '%s\n' "$min_version" "$python_version" | sort -V | head -n1)" != "$min_version" ]; then
+    echo -e "${RED}Error: Python 3.11+ is required (found $python_version)${NC}"
     exit 1
 fi
 
@@ -21,65 +29,26 @@ if ! command -v pip3 &> /dev/null; then
     exit 1
 fi
 
-# Clean previous builds
-echo -e "${BLUE}Cleaning previous builds...${NC}"
-rm -rf build/ dist/ *.egg-info/
-
-# Create optimized Python bytecode
-echo -e "${BLUE}Compiling Python bytecode...${NC}"
-python3 -m compileall mindful_organizer/
-
-# Build the package
-echo -e "${BLUE}Building package...${NC}"
-python3 setup.py sdist bdist_wheel
-
-# Run tests if they exist
-if [ -d "tests" ]; then
-    echo -e "${BLUE}Running tests...${NC}"
-    python3 -m pytest tests/
+if ! python3 -c "import PyInstaller" 2>/dev/null; then
+    echo -e "${RED}Error: PyInstaller is required. Install with: pip install pyinstaller${NC}"
+    exit 1
 fi
 
-# Create application bundle for macOS
-echo -e "${BLUE}Creating application bundle...${NC}"
-mkdir -p "dist/Mindful Organizer.app/Contents/"{MacOS,Resources}
+# Clean previous builds
+echo -e "${BLUE}Cleaning previous builds...${NC}"
+rm -rf build/ dist/*.app dist/*.exe dist/*.dmg
 
-# Create Info.plist
-cat > "dist/Mindful Organizer.app/Contents/Info.plist" << EOL
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>CFBundleExecutable</key>
-    <string>MindfulOrganizer</string>
-    <key>CFBundleIdentifier</key>
-    <string>com.mindfulorganizer.app</string>
-    <key>CFBundleName</key>
-    <string>Mindful Organizer</string>
-    <key>CFBundlePackageType</key>
-    <string>APPL</string>
-    <key>CFBundleShortVersionString</key>
-    <string>1.0.0</string>
-    <key>LSMinimumSystemVersion</key>
-    <string>10.15</string>
-    <key>NSHighResolutionCapable</key>
-    <true/>
-</dict>
-</plist>
-EOL
+# Install / verify dependencies
+echo -e "${BLUE}Installing dependencies...${NC}"
+pip3 install -e ".[dev]"
 
-# Create launcher script
-cat > "dist/Mindful Organizer.app/Contents/MacOS/MindfulOrganizer" << EOL
-#!/bin/bash
-cd "\$(dirname "\$0")"
-source ../Resources/venv/bin/activate
-mindful-organizer
-EOL
+# Run tests
+echo -e "${BLUE}Running tests...${NC}"
+python3 -m pytest -m "not gui and not slow" --tb=short
 
-chmod +x "dist/Mindful Organizer.app/Contents/MacOS/MindfulOrganizer"
-
-# Copy resources
-cp -r venv "dist/Mindful Organizer.app/Contents/Resources/"
-cp -r mindful_organizer/resources/* "dist/Mindful Organizer.app/Contents/Resources/"
+# Build with PyInstaller
+echo -e "${BLUE}Building executable with PyInstaller...${NC}"
+python3 -m PyInstaller mindful_organizer.spec --clean
 
 echo -e "${GREEN}Build complete!${NC}"
-echo -e "${GREEN}You can find the application bundle in the dist directory${NC}"
+echo -e "${GREEN}Artifacts are in the dist/ directory.${NC}"

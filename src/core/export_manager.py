@@ -1,8 +1,8 @@
 """
-Data portability and clinical report generation for Mindful Organizer.
+Data portability and wellness report generation for Mindful Organizer.
 
 Supports JSON/CSV/PDF export, selective date-range export, settings
-import/export, data anonymization, and clinical report building.
+import/export, data anonymization, and wellness report building.
 """
 
 import csv
@@ -10,14 +10,12 @@ import hashlib
 import io
 import json
 import logging
-import re
 import statistics
-import textwrap
 from dataclasses import dataclass, field
-from datetime import datetime, date, timedelta
+from datetime import date, datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -52,12 +50,12 @@ class DataCategory(Enum):
 class ExportOptions:
     """Controls what gets exported and how."""
     format: ExportFormat = ExportFormat.JSON
-    categories: List[DataCategory] = field(default_factory=lambda: list(DataCategory))
-    start_date: Optional[date] = None
-    end_date: Optional[date] = None
+    categories: list[DataCategory] = field(default_factory=lambda: list(DataCategory))
+    start_date: date | None = None
+    end_date: date | None = None
     anonymize: bool = False
     include_settings: bool = True
-    output_path: Optional[Path] = None
+    output_path: Path | None = None
 
     @property
     def effective_output_path(self) -> Path:
@@ -72,17 +70,17 @@ class ExportOptions:
 class ImportValidation:
     """Result of validating an import file before applying."""
     is_valid: bool = False
-    errors: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
-    record_counts: Dict[str, int] = field(default_factory=dict)
-    schema_version: Optional[int] = None
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+    record_counts: dict[str, int] = field(default_factory=dict)
+    schema_version: int | None = None
 
 
 @dataclass
-class ClinicalReportSection:
+class WellnessReportSection:
     title: str
     content: str
-    data: Optional[Dict[str, Any]] = None
+    data: dict[str, Any] | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -104,8 +102,8 @@ class _Anonymizer:
     def _hash(self, value: str) -> str:
         return hashlib.sha256((self._salt + value).encode()).hexdigest()[:12]
 
-    def anonymize_row(self, row: Dict[str, Any]) -> Dict[str, Any]:
-        cleaned: Dict[str, Any] = {}
+    def anonymize_row(self, row: dict[str, Any]) -> dict[str, Any]:
+        cleaned: dict[str, Any] = {}
         for key, value in row.items():
             if key in self._SENSITIVE_KEYS:
                 cleaned[key] = "[REDACTED]"
@@ -126,7 +124,7 @@ class _Anonymizer:
 # ---------------------------------------------------------------------------
 
 class ExportManager:
-    """Handles data export, import, and clinical report generation.
+    """Handles data export, import, and wellness report generation.
 
     Usage::
 
@@ -147,8 +145,8 @@ class ExportManager:
         )
         path = em.export(opts)
 
-        # Clinical report
-        report = em.generate_clinical_report(days=90)
+        # Wellness report
+        report = em.generate_wellness_report(days=90)
     """
 
     def __init__(self, db: Any) -> None:
@@ -158,7 +156,7 @@ class ExportManager:
     # Date-column mapping per table
     # ------------------------------------------------------------------
 
-    _DATE_COLUMN: Dict[str, str] = {
+    _DATE_COLUMN: dict[str, str] = {
         "mood_entries": "timestamp",
         "tasks": "created_at",
         "sleep_logs": "date",
@@ -179,17 +177,17 @@ class ExportManager:
     def _fetch_table(
         self,
         table_name: str,
-        start_date: Optional[date] = None,
-        end_date: Optional[date] = None,
-    ) -> List[Dict[str, Any]]:
+        start_date: date | None = None,
+        end_date: date | None = None,
+    ) -> list[dict[str, Any]]:
         """Fetch rows from a table, optionally filtered by date range."""
         from src.core.database import TableName
 
         table_enum = TableName(table_name)
         date_col = self._DATE_COLUMN.get(table_name)
 
-        where_parts: List[str] = []
-        params: List[Any] = []
+        where_parts: list[str] = []
+        params: list[Any] = []
 
         if start_date and date_col:
             where_parts.append(f"{date_col} >= ?")
@@ -200,13 +198,14 @@ class ExportManager:
 
         where = " AND ".join(where_parts)
         result = self._db.query(table_enum, where=where, params=params)
-        return result.rows
+        rows: list[dict[str, Any]] = result.rows
+        return rows
 
     # ------------------------------------------------------------------
     # Export
     # ------------------------------------------------------------------
 
-    def export(self, options: Optional[ExportOptions] = None) -> Path:
+    def export(self, options: ExportOptions | None = None) -> Path:
         """Export data according to the supplied options.
 
         Returns the path to the exported file or directory.
@@ -228,9 +227,9 @@ class ExportManager:
         else:
             raise ValueError(f"Unsupported format: {options.format}")
 
-    def _collect_data(self, options: ExportOptions) -> Dict[str, Any]:
+    def _collect_data(self, options: ExportOptions) -> dict[str, Any]:
         anonymizer = _Anonymizer() if options.anonymize else None
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "exported_at": datetime.now().isoformat(),
             "anonymized": options.anonymize,
         }
@@ -248,7 +247,7 @@ class ExportManager:
         return payload
 
     def _export_json(
-        self, data: Dict[str, Any], output: Path, options: ExportOptions,
+        self, data: dict[str, Any], output: Path, options: ExportOptions,
     ) -> Path:
         from src.core.database import CURRENT_SCHEMA_VERSION
         data["schema_version"] = CURRENT_SCHEMA_VERSION
@@ -256,7 +255,7 @@ class ExportManager:
         logger.info("Exported JSON to %s", output)
         return output
 
-    def _export_csv(self, data: Dict[str, Any], output: Path) -> Path:
+    def _export_csv(self, data: dict[str, Any], output: Path) -> Path:
         """Write one CSV file per table into a directory."""
         output.mkdir(parents=True, exist_ok=True)
         for key, rows in data.items():
@@ -271,13 +270,13 @@ class ExportManager:
         logger.info("Exported CSV files to %s", output)
         return output
 
-    def _export_pdf_text(self, data: Dict[str, Any], output: Path) -> Path:
+    def _export_pdf_text(self, data: dict[str, Any], output: Path) -> Path:
         """Generate a plain-text report formatted for printing / PDF conversion.
 
         If ``reportlab`` is available, a real PDF is created; otherwise
         a ``.txt`` file is written that can be converted externally.
         """
-        lines: List[str] = []
+        lines: list[str] = []
         lines.append("=" * 60)
         lines.append("MINDFUL ORGANIZER DATA EXPORT")
         lines.append(f"Generated: {data.get('exported_at', '')}")
@@ -357,8 +356,7 @@ class ExportManager:
         # Schema version
         validation.schema_version = data.get("schema_version")
         from src.core.database import CURRENT_SCHEMA_VERSION
-        if validation.schema_version is not None:
-            if validation.schema_version > CURRENT_SCHEMA_VERSION:
+        if validation.schema_version is not None and validation.schema_version > CURRENT_SCHEMA_VERSION:
                 validation.errors.append(
                     f"Import schema version {validation.schema_version} is newer "
                     f"than current {CURRENT_SCHEMA_VERSION}"
@@ -398,7 +396,7 @@ class ExportManager:
         *,
         merge: bool = True,
         validate_first: bool = True,
-    ) -> Dict[str, int]:
+    ) -> dict[str, int]:
         """Import data from a JSON backup file.
 
         Args:
@@ -421,7 +419,7 @@ class ExportManager:
         from src.core.database import TableName
 
         valid_tables = {cat.value for cat in DataCategory}
-        counts: Dict[str, int] = {}
+        counts: dict[str, int] = {}
 
         for key, rows in data.items():
             if key not in valid_tables or not isinstance(rows, list):
@@ -457,7 +455,7 @@ class ExportManager:
     # Settings export / import
     # ------------------------------------------------------------------
 
-    def export_settings(self, output_path: Optional[Path] = None) -> Path:
+    def export_settings(self, output_path: Path | None = None) -> Path:
         """Export all settings to a JSON file."""
         from src.core.database import TableName
         result = self._db.query(TableName.SETTINGS)
@@ -490,28 +488,28 @@ class ExportManager:
         return count
 
     # ------------------------------------------------------------------
-    # Clinical report
+    # wellness report
     # ------------------------------------------------------------------
 
-    def generate_clinical_report(
+    def generate_wellness_report(
         self,
         days: int = 90,
         anonymize: bool = False,
-    ) -> List[ClinicalReportSection]:
-        """Generate a structured clinical report for therapy sessions.
+    ) -> list[WellnessReportSection]:
+        """Generate a structured wellness report for personal reflection.
 
         The report summarizes mood trends, sleep patterns, medication
         adherence, and symptom correlations over the requested period.
         """
         end = date.today()
         start = end - timedelta(days=days)
-        sections: List[ClinicalReportSection] = []
+        sections: list[WellnessReportSection] = []
 
         # -- Header --
-        sections.append(ClinicalReportSection(
+        sections.append(WellnessReportSection(
             title="Report Overview",
             content=(
-                f"Clinical summary for the period {start.isoformat()} to "
+                f"Wellness summary for the period {start.isoformat()} to "
                 f"{end.isoformat()} ({days} days)."
             ),
             data={"start_date": start.isoformat(), "end_date": end.isoformat()},
@@ -522,7 +520,7 @@ class ExportManager:
         if mood_rows:
             scores = [r["mood_score"] for r in mood_rows if r.get("mood_score") is not None]
             anxiety = [r["anxiety_level"] for r in mood_rows if r.get("anxiety_level") is not None]
-            mood_data: Dict[str, Any] = {
+            mood_data: dict[str, Any] = {
                 "total_entries": len(mood_rows),
             }
             if scores:
@@ -545,7 +543,7 @@ class ExportManager:
                     f"Average anxiety: {mood_data['mean_anxiety']}/10."
                 )
 
-            sections.append(ClinicalReportSection(
+            sections.append(WellnessReportSection(
                 title="Mood Trends",
                 content=" ".join(summary_parts),
                 data=mood_data,
@@ -562,7 +560,7 @@ class ExportManager:
                 r["quality"] for r in sleep_rows
                 if r.get("quality") is not None
             ]
-            sleep_data: Dict[str, Any] = {"total_entries": len(sleep_rows)}
+            sleep_data: dict[str, Any] = {"total_entries": len(sleep_rows)}
             if durations:
                 sleep_data["mean_duration_hours"] = round(statistics.mean(durations), 2)
                 sleep_data["total_sleep_hours"] = round(sum(durations), 1)
@@ -575,7 +573,7 @@ class ExportManager:
             if qualities:
                 parts.append(f"Average quality: {sleep_data['mean_quality']}/10.")
 
-            sections.append(ClinicalReportSection(
+            sections.append(WellnessReportSection(
                 title="Sleep Patterns",
                 content=" ".join(parts),
                 data=sleep_data,
@@ -590,7 +588,7 @@ class ExportManager:
             late = statuses.count("late")
             total = len(statuses)
             adherence_pct = round((taken / total) * 100, 1) if total else 0.0
-            med_data = {
+            med_data: dict[str, Any] = {
                 "total_logs": total,
                 "taken": taken,
                 "missed": missed,
@@ -599,7 +597,7 @@ class ExportManager:
             }
 
             # Group by medication
-            by_med: Dict[str, Dict[str, int]] = {}
+            by_med: dict[str, dict[str, int]] = {}
             for r in med_rows:
                 name = r.get("medication_name", "Unknown")
                 if anonymize:
@@ -611,7 +609,7 @@ class ExportManager:
                     by_med[name][status] += 1
             med_data["by_medication"] = by_med
 
-            sections.append(ClinicalReportSection(
+            sections.append(WellnessReportSection(
                 title="Medication Adherence",
                 content=(
                     f"Overall adherence: {adherence_pct}% "
@@ -625,9 +623,9 @@ class ExportManager:
         if breath_rows:
             pre = [r["pre_anxiety"] for r in breath_rows if r.get("pre_anxiety") is not None]
             post = [r["post_anxiety"] for r in breath_rows if r.get("post_anxiety") is not None]
-            breath_data: Dict[str, Any] = {"total_sessions": len(breath_rows)}
+            breath_data: dict[str, Any] = {"total_sessions": len(breath_rows)}
             if pre and post and len(pre) == len(post):
-                reductions = [p - q for p, q in zip(pre, post)]
+                reductions = [p - q for p, q in zip(pre, post, strict=False)]
                 breath_data["mean_anxiety_reduction"] = round(statistics.mean(reductions), 2)
 
             parts = [f"Total breathing sessions: {len(breath_rows)}."]
@@ -636,7 +634,7 @@ class ExportManager:
                     f"Average anxiety reduction: "
                     f"{breath_data['mean_anxiety_reduction']} points."
                 )
-            sections.append(ClinicalReportSection(
+            sections.append(WellnessReportSection(
                 title="Coping Activities (Breathing)",
                 content=" ".join(parts),
                 data=breath_data,
@@ -649,11 +647,11 @@ class ExportManager:
                 r["energy_level"] for r in energy_rows
                 if r.get("energy_level") is not None
             ]
-            energy_data: Dict[str, Any] = {"total_entries": len(energy_rows)}
+            energy_data: dict[str, Any] = {"total_entries": len(energy_rows)}
             if levels:
                 energy_data["mean_energy"] = round(statistics.mean(levels), 2)
                 energy_data["energy_range"] = [min(levels), max(levels)]
-            sections.append(ClinicalReportSection(
+            sections.append(WellnessReportSection(
                 title="Energy Trends",
                 content=(
                     f"Total energy readings: {len(energy_rows)}. "
@@ -663,24 +661,24 @@ class ExportManager:
             ))
 
         # -- Disclaimer --
-        sections.append(ClinicalReportSection(
+        sections.append(WellnessReportSection(
             title="Disclaimer",
             content=(
                 "This report is auto-generated from self-reported data and is "
-                "intended as a supplementary tool for clinical discussions. It "
+                "intended for personal reflection only. It "
                 "does not constitute a diagnosis or medical advice."
             ),
         ))
 
         return sections
 
-    def clinical_report_to_text(
-        self, sections: List[ClinicalReportSection],
+    def wellness_report_to_text(
+        self, sections: list[WellnessReportSection],
     ) -> str:
-        """Render clinical report sections to a plain-text string."""
-        lines: List[str] = []
+        """Render wellness report sections to a plain-text string."""
+        lines: list[str] = []
         lines.append("=" * 60)
-        lines.append("MINDFUL ORGANIZER - CLINICAL REPORT")
+        lines.append("MINDFUL ORGANIZER - WELLNESS REPORT")
         lines.append("=" * 60)
         lines.append("")
         for section in sections:
@@ -689,19 +687,19 @@ class ExportManager:
             lines.append("")
         return "\n".join(lines)
 
-    def export_clinical_report(
+    def export_wellness_report(
         self,
         days: int = 90,
-        output_path: Optional[Path] = None,
+        output_path: Path | None = None,
         anonymize: bool = False,
     ) -> Path:
-        """Generate and save a clinical report to a file."""
-        sections = self.generate_clinical_report(days=days, anonymize=anonymize)
-        text = self.clinical_report_to_text(sections)
+        """Generate and save a wellness report to a file."""
+        sections = self.generate_wellness_report(days=days, anonymize=anonymize)
+        text = self.wellness_report_to_text(sections)
         if output_path is None:
             ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-            output_path = DATA_DIR / "exports" / f"clinical_report_{ts}.txt"
+            output_path = DATA_DIR / "exports" / f"wellness_report_{ts}.txt"
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(text, encoding="utf-8")
-        logger.info("Clinical report saved to %s", output_path)
+        logger.info("Wellness report saved to %s", output_path)
         return output_path

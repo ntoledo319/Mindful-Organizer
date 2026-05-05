@@ -6,16 +6,15 @@ transactions, migration bookkeeping, backup/restore, and export.
 """
 
 import json
-from pathlib import Path
 
 import pytest
 
 try:
     from src.core.database import (
-        DatabaseManager,
-        TableName,
-        QueryResult,
         CURRENT_SCHEMA_VERSION,
+        DatabaseManager,
+        QueryResult,
+        TableName,
     )
     _HAS_MODULE = True
 except ImportError:
@@ -104,7 +103,8 @@ class TestInsert:
             db.insert(TableName.MOOD_ENTRIES)
 
     def test_insert_constraint_violation(self, db):
-        with pytest.raises(Exception):
+        import sqlite3
+        with pytest.raises(sqlite3.IntegrityError):
             db.insert(TableName.MOOD_ENTRIES, mood_score=99)  # CHECK constraint 1-10
 
     def test_insert_task(self, db):

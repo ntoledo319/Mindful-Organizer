@@ -7,68 +7,40 @@ sliders, tag entry, search, streak display, and export capability.
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import json
+import logging
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QFrame, QScrollArea, QSizePolicy, QTextEdit, QSlider,
-    QLineEdit, QListWidget, QListWidgetItem, QComboBox,
-    QGroupBox, QMessageBox, QFileDialog,
-)
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QFont
+from PyQt6.QtWidgets import (
+    QComboBox,
+    QFileDialog,
+    QFrame,
+    QHBoxLayout,
+    QLineEdit,
+    QListWidget,
+    QMessageBox,
+    QScrollArea,
+    QSlider,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
+)
 
+from gui.components import AccentButton, BodyLabel, CardFrame, SectionTitle
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-def _card_frame(theme: Dict[str, str]) -> QFrame:
-    frame = QFrame()
-    frame.setFrameShape(QFrame.Shape.StyledPanel)
-    frame.setStyleSheet(
-        f"QFrame {{ background-color: {theme.get('card_bg', '#ffffff')}; "
-        f"border-radius: 12px; padding: 16px; }}"
-    )
-    frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
-    return frame
-
-
-def _section_title(text: str, theme: Dict[str, str]) -> QLabel:
-    label = QLabel(text)
-    label.setFont(QFont("Segoe UI", 13, QFont.Weight.Bold))
-    label.setStyleSheet(f"color: {theme.get('text', '#333333')}; padding-bottom: 4px;")
-    return label
-
-
-def _body_label(text: str, theme: Dict[str, str]) -> QLabel:
-    label = QLabel(text)
-    label.setWordWrap(True)
-    label.setStyleSheet(f"color: {theme.get('text', '#555555')};")
-    return label
-
-
-def _accent_button(text: str, theme: Dict[str, str]) -> QPushButton:
-    btn = QPushButton(text)
-    btn.setCursor(Qt.CursorShape.PointingHandCursor)
-    btn.setStyleSheet(
-        f"QPushButton {{ background-color: {theme.get('accent', '#4a90d9')}; "
-        f"color: #ffffff; border: none; border-radius: 8px; padding: 10px 18px; "
-        f"font-weight: bold; font-size: 13px; }}"
-        f"QPushButton:hover {{ background-color: {theme.get('secondary', '#357abd')}; }}"
-    )
-    return btn
-
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Prompt database (condition-aware)
 # ---------------------------------------------------------------------------
 
-_PROMPTS: Dict[str, List[str]] = {
+_PROMPTS: dict[str, list[str]] = {
     "General": [
         "What are you most grateful for today?",
         "Describe a moment of peace you experienced recently.",
@@ -117,11 +89,11 @@ _PROMPTS: Dict[str, List[str]] = {
 }
 
 
-def _daily_prompt(conditions: List[str]) -> str:
+def _daily_prompt(conditions: list[str]) -> str:
     """Pick a deterministic prompt based on today's date and conditions."""
     today_str = date.today().isoformat()
     seed = int(hashlib.md5(today_str.encode()).hexdigest(), 16)
-    pool: List[str] = list(_PROMPTS.get("General", []))
+    pool: list[str] = list(_PROMPTS.get("General", []))
     for cond in conditions:
         pool.extend(_PROMPTS.get(cond, []))
     if not pool:
@@ -140,10 +112,10 @@ class JournalingWidget(QWidget):
 
     def __init__(
         self,
-        theme: Dict[str, str],
+        theme: dict[str, str],
         journal_manager: Any = None,
         profile_manager: Any = None,
-        parent: Optional[QWidget] = None,
+        parent: QWidget | None = None,
     ) -> None:
         super().__init__(parent)
         self._theme = theme
@@ -151,7 +123,7 @@ class JournalingWidget(QWidget):
         self._profile_manager = profile_manager
 
         # In-memory entries if no manager
-        self._entries: List[Dict[str, Any]] = []
+        self._entries: list[dict[str, Any]] = []
         self._load_entries()
 
         self._build_ui()
@@ -163,7 +135,7 @@ class JournalingWidget(QWidget):
     # Persistence fallback
     # ------------------------------------------------------------------
 
-    def _data_file(self) -> Optional[Path]:
+    def _data_file(self) -> Path | None:
         if self._journal_manager and hasattr(self._journal_manager, "data_dir"):
             return Path(self._journal_manager.data_dir) / "journal_entries.json"
         home = Path.home() / ".mindful_optimizer" / "journal_entries.json"
@@ -179,7 +151,7 @@ class JournalingWidget(QWidget):
             try:
                 with open(path) as fh:
                     self._entries = json.load(fh)
-            except Exception:
+            except (json.JSONDecodeError, OSError):
                 self._entries = []
 
     def _save_entries(self) -> None:
@@ -190,8 +162,8 @@ class JournalingWidget(QWidget):
             try:
                 with open(path, "w") as fh:
                     json.dump(self._entries, fh, indent=2, default=str)
-            except Exception:
-                pass
+            except (OSError, TypeError) as exc:
+                logger.warning(f"Failed to save journal entries: {exc}")
 
     # ------------------------------------------------------------------
     # UI
@@ -215,7 +187,7 @@ class JournalingWidget(QWidget):
         self._root.setContentsMargins(24, 24, 24, 24)
         scroll.setWidget(container)
 
-        self._root.addWidget(_section_title("Journal", self._theme))
+        self._root.addWidget(SectionTitle("Journal", self._theme))
 
         body = QHBoxLayout()
         body.setSpacing(16)
@@ -241,11 +213,11 @@ class JournalingWidget(QWidget):
     # -- prompt ---------------------------------------------------------
 
     def _build_prompt_section(self, parent: QVBoxLayout) -> None:
-        card = _card_frame(self._theme)
+        card = CardFrame(self._theme)
         layout = QVBoxLayout(card)
-        layout.addWidget(_section_title("Prompt of the Day", self._theme))
+        layout.addWidget(SectionTitle("Prompt of the Day", self._theme))
 
-        self._prompt_label = _body_label("", self._theme)
+        self._prompt_label = BodyLabel("", self._theme)
         self._prompt_label.setFont(QFont("Segoe UI", 12, QFont.Weight.Normal))
         self._prompt_label.setMinimumHeight(50)
         layout.addWidget(self._prompt_label)
@@ -255,7 +227,7 @@ class JournalingWidget(QWidget):
         self._prompt_category.addItems(list(_PROMPTS.keys()))
         row.addWidget(self._prompt_category)
 
-        new_prompt_btn = _accent_button("Get New Prompt", self._theme)
+        new_prompt_btn = AccentButton("Get New Prompt", self._theme)
         new_prompt_btn.clicked.connect(self._new_prompt)
         row.addWidget(new_prompt_btn)
         row.addStretch()
@@ -266,17 +238,17 @@ class JournalingWidget(QWidget):
     # -- editor ---------------------------------------------------------
 
     def _build_editor(self, parent: QVBoxLayout) -> None:
-        card = _card_frame(self._theme)
+        card = CardFrame(self._theme)
         layout = QVBoxLayout(card)
-        layout.addWidget(_section_title("Write Entry", self._theme))
+        layout.addWidget(SectionTitle("Write Entry", self._theme))
 
         # Mood before
         mood_row = QHBoxLayout()
-        mood_row.addWidget(_body_label("Mood before:", self._theme))
+        mood_row.addWidget(BodyLabel("Mood before:", self._theme))
         self._mood_before_slider = QSlider(Qt.Orientation.Horizontal)
         self._mood_before_slider.setRange(1, 10)
         self._mood_before_slider.setValue(5)
-        self._mood_before_val = _body_label("5", self._theme)
+        self._mood_before_val = BodyLabel("5", self._theme)
         self._mood_before_slider.valueChanged.connect(
             lambda v: self._mood_before_val.setText(str(v))
         )
@@ -298,16 +270,16 @@ class JournalingWidget(QWidget):
         layout.addWidget(self._editor)
 
         # Word count
-        self._word_count_label = _body_label("Words: 0", self._theme)
+        self._word_count_label = BodyLabel("Words: 0", self._theme)
         layout.addWidget(self._word_count_label)
 
         # Mood after
         mood_after_row = QHBoxLayout()
-        mood_after_row.addWidget(_body_label("Mood after:", self._theme))
+        mood_after_row.addWidget(BodyLabel("Mood after:", self._theme))
         self._mood_after_slider = QSlider(Qt.Orientation.Horizontal)
         self._mood_after_slider.setRange(1, 10)
         self._mood_after_slider.setValue(5)
-        self._mood_after_val = _body_label("5", self._theme)
+        self._mood_after_val = BodyLabel("5", self._theme)
         self._mood_after_slider.valueChanged.connect(
             lambda v: self._mood_after_val.setText(str(v))
         )
@@ -317,7 +289,7 @@ class JournalingWidget(QWidget):
 
         # Tags
         tags_row = QHBoxLayout()
-        tags_row.addWidget(_body_label("Tags (comma-separated):", self._theme))
+        tags_row.addWidget(BodyLabel("Tags (comma-separated):", self._theme))
         self._tags_input = QLineEdit()
         self._tags_input.setPlaceholderText("e.g. gratitude, morning, therapy")
         self._tags_input.setStyleSheet(
@@ -330,11 +302,11 @@ class JournalingWidget(QWidget):
 
         # Buttons
         btn_row = QHBoxLayout()
-        save_btn = _accent_button("Save Entry", self._theme)
+        save_btn = AccentButton("Save Entry", self._theme)
         save_btn.clicked.connect(self._save_entry)
         btn_row.addWidget(save_btn)
 
-        export_btn = _accent_button("Export Entries", self._theme)
+        export_btn = AccentButton("Export Entries", self._theme)
         export_btn.clicked.connect(self._export_entries)
         btn_row.addWidget(export_btn)
         btn_row.addStretch()
@@ -345,10 +317,10 @@ class JournalingWidget(QWidget):
     # -- streak ---------------------------------------------------------
 
     def _build_streak_card(self, parent: QVBoxLayout) -> None:
-        card = _card_frame(self._theme)
+        card = CardFrame(self._theme)
         layout = QVBoxLayout(card)
-        layout.addWidget(_section_title("Streak", self._theme))
-        self._streak_label = _body_label("Current streak: 0 days", self._theme)
+        layout.addWidget(SectionTitle("Streak", self._theme))
+        self._streak_label = BodyLabel("Current streak: 0 days", self._theme)
         self._streak_label.setFont(QFont("Segoe UI", 16, QFont.Weight.Bold))
         layout.addWidget(self._streak_label)
         parent.addWidget(card)
@@ -356,9 +328,9 @@ class JournalingWidget(QWidget):
     # -- search ---------------------------------------------------------
 
     def _build_search(self, parent: QVBoxLayout) -> None:
-        card = _card_frame(self._theme)
+        card = CardFrame(self._theme)
         layout = QVBoxLayout(card)
-        layout.addWidget(_section_title("Search Entries", self._theme))
+        layout.addWidget(SectionTitle("Search Entries", self._theme))
 
         row = QHBoxLayout()
         self._search_input = QLineEdit()
@@ -376,9 +348,9 @@ class JournalingWidget(QWidget):
     # -- history --------------------------------------------------------
 
     def _build_history_list(self, parent: QVBoxLayout) -> None:
-        card = _card_frame(self._theme)
+        card = CardFrame(self._theme)
         layout = QVBoxLayout(card)
-        layout.addWidget(_section_title("Journal History", self._theme))
+        layout.addWidget(SectionTitle("Journal History", self._theme))
 
         self._history_list = QListWidget()
         self._history_list.setMinimumHeight(300)
@@ -408,8 +380,8 @@ class JournalingWidget(QWidget):
         import random
         self._prompt_label.setText(random.choice(pool))
 
-    def _get_conditions(self) -> List[str]:
-        conditions: List[str] = []
+    def _get_conditions(self) -> list[str]:
+        conditions: list[str] = []
         if self._profile_manager and hasattr(self._profile_manager, "current_profile"):
             profile = self._profile_manager.current_profile
             if profile and hasattr(profile, "conditions") and profile.conditions:
@@ -429,7 +401,7 @@ class JournalingWidget(QWidget):
             return
 
         tags = [t.strip() for t in self._tags_input.text().split(",") if t.strip()]
-        entry: Dict[str, Any] = {
+        entry: dict[str, Any] = {
             "timestamp": datetime.now().isoformat(),
             "date": date.today().isoformat(),
             "text": text,
@@ -441,10 +413,8 @@ class JournalingWidget(QWidget):
         }
 
         if self._journal_manager and hasattr(self._journal_manager, "save_entry"):
-            try:
+            with contextlib.suppress(Exception):
                 self._journal_manager.save_entry(entry)
-            except Exception:
-                pass
 
         self._entries.append(entry)
         self._save_entries()
@@ -470,7 +440,7 @@ class JournalingWidget(QWidget):
             mood_b = entry.get("mood_before", "?")
             mood_a = entry.get("mood_after", "?")
             mood_change = ""
-            if isinstance(mood_b, (int, float)) and isinstance(mood_a, (int, float)):
+            if isinstance(mood_b, int | float) and isinstance(mood_a, int | float):
                 diff = mood_a - mood_b
                 if diff > 0:
                     mood_change = f" (+{diff})"
@@ -501,9 +471,9 @@ class JournalingWidget(QWidget):
         if not self._entries:
             self._streak_label.setText("Current streak: 0 days")
             return
-        dates = sorted(set(
+        dates = sorted({
             e.get("date", e.get("timestamp", "")[:10]) for e in self._entries
-        ), reverse=True)
+        }, reverse=True)
         streak = 0
         today = date.today()
         for i, d in enumerate(dates):
@@ -535,5 +505,5 @@ class JournalingWidget(QWidget):
     # Theme
     # ------------------------------------------------------------------
 
-    def apply_theme(self, theme: Dict[str, str]) -> None:
+    def apply_theme(self, theme: dict[str, str]) -> None:
         self._theme = theme

@@ -10,13 +10,10 @@ from datetime import datetime, timedelta
 import pytest
 
 try:
-    import numpy as np
     from src.core.mood_analytics import (
+        AnalyticsReport,
         MoodAnalytics,
         TrendDirection,
-        AnalyticsReport,
-        MoodEntry,
-        _parse_entries,
     )
     _HAS_MODULE = True
 except ImportError:

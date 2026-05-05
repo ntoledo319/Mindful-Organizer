@@ -8,21 +8,23 @@ condition-aware feature interactions.
 
 import json
 from datetime import date, datetime, timedelta
-from pathlib import Path
 
 import pytest
 
 # --- Conditional imports -------------------------------------------------------
 
 try:
-    from src.core.database import DatabaseManager, TableName, CURRENT_SCHEMA_VERSION
+    from src.core.database import DatabaseManager, TableName
     _HAS_DB = True
 except ImportError:
     _HAS_DB = False
 
 try:
     from src.core.task_manager import (
-        TaskManager, Task, TaskPriority, TaskCategory,
+        Task,
+        TaskCategory,
+        TaskManager,
+        TaskPriority,
     )
     _HAS_TASKS = True
 except ImportError:
@@ -36,7 +38,10 @@ except ImportError:
 
 try:
     from src.core.export_manager import (
-        ExportManager, ExportOptions, ExportFormat, DataCategory,
+        DataCategory,
+        ExportFormat,
+        ExportManager,
+        ExportOptions,
     )
     _HAS_EXPORT = True
 except ImportError:
@@ -55,14 +60,9 @@ except ImportError:
     _HAS_DECOMPOSER = False
 
 try:
-    from src.core.energy_predictor import EnergyPredictor
-    _HAS_ENERGY = True
-except ImportError:
-    _HAS_ENERGY = False
-
-try:
     from src.core.notification_manager import (
-        NotificationManager, NotificationType, Priority,
+        NotificationManager,
+        NotificationType,
     )
     _HAS_NOTIFICATIONS = True
 except ImportError:
@@ -75,13 +75,14 @@ except ImportError:
     _HAS_FILE_ORG = False
 
 try:
-    from src.wellness.breathing import BreathingManager, BreathingExerciseType, Condition as BreathCondition
+    from src.wellness.breathing import BreathingManager
+    from src.wellness.breathing import Condition as BreathCondition
     _HAS_BREATHING = True
 except ImportError:
     _HAS_BREATHING = False
 
 try:
-    from src.profile.spoon_theory import SpoonBudget
+    from src.profiles.spoon_theory import SpoonBudget
     _HAS_SPOONS = True
 except ImportError:
     _HAS_SPOONS = False
@@ -107,7 +108,7 @@ class TestProfileToTaskFlow:
 
     def test_create_tasks_with_conditions(self, tmp_data_dir, sample_profile):
         """Tasks created for a user with ADHD+Anxiety should work end-to-end."""
-        tm = TaskManager(str(tmp_data_dir / "tasks.json"))
+        tm = TaskManager(tmp_data_dir)
 
         task = Task(
             title="Prepare presentation",
@@ -127,15 +128,15 @@ class TestProfileToTaskFlow:
     def test_decompose_task_for_adhd_user(self, sample_profile):
         """ADHD user gets task decomposed into small steps."""
         decomposer = SmartTaskDecomposer()
-        steps = decomposer.decompose(
+        result = decomposer.decompose(
             "Write a 10-page research paper",
-            conditions=sample_profile["conditions"],
+            condition_override="adhd",
         )
 
-        assert len(steps) >= 3
+        assert len(result.subtasks) >= 3
         # ADHD style should produce short-duration steps
-        for step in steps:
-            assert step.get("duration_minutes", 60) <= 30 or step.get("estimated_minutes", 60) <= 30
+        for step in result.subtasks:
+            assert step.estimated_minutes <= 30
 
     @pytest.mark.skipif(not _HAS_NLP, reason="nlp_parser not available")
     def test_parse_and_add_task(self, tmp_data_dir):
@@ -143,11 +144,12 @@ class TestProfileToTaskFlow:
         parser = NLPTaskParser()
         parsed = parser.parse("urgent: finish budget report by friday #work")
 
-        tm = TaskManager(str(tmp_data_dir / "parse_tasks.json"))
+        tm = TaskManager(tmp_data_dir)
         task = Task(
             title=parsed.title,
-            priority=TaskPriority[parsed.priority.capitalize()] if parsed.priority else TaskPriority.Medium,
-            category=TaskCategory.Work if parsed.category and "work" in parsed.category.lower() else TaskCategory.Other,
+            priority=TaskPriority[parsed.priority.value.capitalize()] if parsed.priority else TaskPriority.Medium,
+            category=TaskCategory.Work if parsed.category and "work" in parsed.category.value.lower() else TaskCategory.Other,
+            energy_required=5,
             due_date=parsed.due_date,
         )
         tm.add_task(task)
@@ -157,7 +159,7 @@ class TestProfileToTaskFlow:
     def test_spoon_budget_filters_tasks(self, tmp_data_dir):
         """Only tasks within remaining spoon budget should be suggested."""
         budget = SpoonBudget(conditions={"ADHD"})
-        tm = TaskManager(str(tmp_data_dir / "spoon_tasks.json"))
+        tm = TaskManager(tmp_data_dir)
 
         # Add tasks with varying energy
         for energy in [2, 5, 8]:
@@ -168,7 +170,7 @@ class TestProfileToTaskFlow:
                 energy_required=energy,
             ))
 
-        remaining = budget.remaining_spoons
+        remaining = budget.remaining_spoons()
         affordable = tm.get_tasks_by_energy(max_energy=remaining)
         for t in affordable:
             assert t.energy_required <= remaining
@@ -202,7 +204,8 @@ class TestMoodToAnalyticsFlow:
         trend = analytics.mood_trend()
         assert trend is not None
 
-        insights = analytics.generate_insights()
+        report = analytics.full_report()
+        insights = analytics.generate_insights(report)
         assert len(insights) >= 1
 
     def test_condition_specific_insights(self, db):
@@ -222,13 +225,17 @@ class TestMoodToAnalyticsFlow:
         analytics = MoodAnalytics(rows, conditions={"Depression", "Anxiety"})
 
         cond_insights = analytics.condition_insights()
-        assert isinstance(cond_insights, dict)
+        assert isinstance(cond_insights, list)
+        assert any(ci.condition == "depression" for ci in cond_insights)
 
     def test_empty_entries_do_not_crash(self):
         """Analytics with no data should return safe defaults."""
         analytics = MoodAnalytics([], conditions=set())
-        assert analytics.mood_trend() is not None or analytics.mood_trend() is None
-        insights = analytics.generate_insights()
+        trend = analytics.mood_trend()
+        assert trend is not None
+        assert hasattr(trend, "direction")
+        report = analytics.full_report()
+        insights = analytics.generate_insights(report)
         assert isinstance(insights, list)
 
 
@@ -262,19 +269,20 @@ class TestFullDataLifecycle:
         db2_path = tmp_data_dir / "imported.db"
         db2 = DatabaseManager(db_path=db2_path)
         db2.initialize()
-        em2 = ExportManager(db2)
+        try:
+            em2 = ExportManager(db2)
 
-        counts = em2.import_from_json(result_path)
-        assert counts["mood_entries"] >= 2
+            counts = em2.import_from_json(result_path)
+            assert counts["mood_entries"] >= 2
 
-        # 4. Verify
-        imported_moods = db2.query(TableName.MOOD_ENTRIES).rows
-        assert len(imported_moods) >= 2
-        scores = {r["mood_score"] for r in imported_moods}
-        assert 7 in scores
-        assert 4 in scores
-
-        db2.close()
+            # 4. Verify
+            imported_moods = db2.query(TableName.MOOD_ENTRIES).rows
+            assert len(imported_moods) >= 2
+            scores = {r["mood_score"] for r in imported_moods}
+            assert 7 in scores
+            assert 4 in scores
+        finally:
+            db2.close()
 
     def test_export_selective_and_reimport(self, db, tmp_data_dir):
         """Selective export of mood data only, then reimport."""
@@ -305,12 +313,14 @@ class TestFullDataLifecycle:
 
         db2 = DatabaseManager(db_path=tmp_data_dir / "settings_target.db")
         db2.initialize()
-        em2 = ExportManager(db2)
-        em2.import_settings(settings_path)
+        try:
+            em2 = ExportManager(db2)
+            em2.import_settings(settings_path)
 
-        assert db2.get_setting("theme") == "calm"
-        assert db2.get_setting("font_scale") == "1.5"
-        db2.close()
+            assert db2.get_setting("theme") == "calm"
+            assert db2.get_setting("font_scale") == "1.5"
+        finally:
+            db2.close()
 
     def test_backup_restore_preserves_data(self, db, tmp_data_dir):
         """DB backup -> modify -> restore -> verify original state."""
@@ -328,7 +338,7 @@ class TestFullDataLifecycle:
         assert row["notes"] == "Original"
 
     def test_clinical_report_generation(self, db, tmp_data_dir):
-        """Generate a clinical report from populated data."""
+        """Generate a wellness report from populated data."""
         for i in range(7):
             db.insert(
                 TableName.MOOD_ENTRIES,
@@ -338,11 +348,11 @@ class TestFullDataLifecycle:
             )
 
         em = ExportManager(db)
-        sections = em.generate_clinical_report(days=30)
+        sections = em.generate_wellness_report(days=30)
         assert len(sections) >= 2
 
-        text = em.clinical_report_to_text(sections)
-        assert "CLINICAL REPORT" in text
+        text = em.wellness_report_to_text(sections)
+        assert "WELLNESS REPORT" in text
 
 
 # ---------------------------------------------------------------------------

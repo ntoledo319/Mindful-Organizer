@@ -9,9 +9,9 @@ import pytest
 
 try:
     from src.wellness.breathing import (
-        BreathingManager,
         BreathingExercise,
         BreathingExerciseType,
+        BreathingManager,
         BreathingSession,
         BreathPhase,
         Condition,

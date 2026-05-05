@@ -6,21 +6,17 @@ and model persistence.
 """
 
 from datetime import datetime, timedelta
-from pathlib import Path
 
 import pytest
 
 try:
-    import numpy as np
     from src.core.energy_predictor import (
-        EnergyPredictor,
-        EnergyLevel,
-        EnergyDataPoint,
-        EnergyPrediction,
-        TaskEnergyRequirement,
-        _RuleBasedPredictor,
-        _energy_to_level,
         _HAS_SKLEARN,
+        EnergyLevel,
+        EnergyPrediction,
+        EnergyPredictor,
+        TaskEnergyRequirement,
+        _energy_to_level,
     )
     _HAS_MODULE = True
 except ImportError:

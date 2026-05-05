@@ -7,13 +7,11 @@ Covers hierarchy items, exposure sessions, SUDS tracking, habituation
 analysis, and response prevention logging.
 """
 
-import json
-from datetime import datetime, timedelta
 
 import pytest
 
 try:
-    from src.core.database import DatabaseManager, TableName
+    from src.core.database import DatabaseManager
     _HAS_MODULE = True
 except ImportError:
     _HAS_MODULE = False
@@ -174,7 +172,8 @@ class TestSUDSTracking:
 
     def test_suds_range_validation(self, db):
         """SUDS must be between 0 and 100."""
-        with pytest.raises(Exception):
+        import sqlite3
+        with pytest.raises(sqlite3.IntegrityError):
             db.execute(
                 "INSERT INTO erp_hierarchy (trigger_description, suds_initial) VALUES (?, ?)",
                 ("Invalid", 150),

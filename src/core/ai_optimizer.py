@@ -1,15 +1,18 @@
 """
 AI-powered system optimization, adaptive task scheduling, and burnout/hypomania detection.
 """
-from pathlib import Path
+import contextlib
 import json
+import logging
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple
+from pathlib import Path
+from typing import Any
+
 import numpy as np
 
 try:
-    from sklearn.ensemble import RandomForestRegressor
     import joblib
+    from sklearn.ensemble import RandomForestRegressor
     HAS_SKLEARN = True
 except ImportError:
     HAS_SKLEARN = False
@@ -25,8 +28,8 @@ class AISystemOptimizer:
         self.productivity_file = data_dir / "productivity_data.json"
         self.model = RandomForestRegressor(n_estimators=50, random_state=42) if HAS_SKLEARN else None
         self._model_fitted = False
-        self.history: List[Dict] = []
-        self.productivity_data: List[Dict] = []
+        self.history: list[dict] = []
+        self.productivity_data: list[dict] = []
         self._load_data()
         self._load_model()
 
@@ -34,16 +37,16 @@ class AISystemOptimizer:
         """Load history and productivity data."""
         if self.history_file.exists():
             try:
-                with open(self.history_file, "r") as f:
+                with open(self.history_file) as f:
                     self.history = json.load(f)
-            except (json.JSONDecodeError, Exception):
+            except (OSError, json.JSONDecodeError):
                 self.history = []
 
         if self.productivity_file.exists():
             try:
-                with open(self.productivity_file, "r") as f:
+                with open(self.productivity_file) as f:
                     self.productivity_data = json.load(f)
-            except (json.JSONDecodeError, Exception):
+            except (OSError, json.JSONDecodeError):
                 self.productivity_data = []
 
     def _save_history(self):
@@ -62,20 +65,18 @@ class AISystemOptimizer:
             try:
                 self.model = joblib.load(self.model_file)
                 self._model_fitted = True
-            except Exception:
+            except (OSError, ValueError):
                 self.model = RandomForestRegressor(n_estimators=50, random_state=42)
 
     def _save_model(self):
         """Save fitted model."""
         if HAS_SKLEARN and self._model_fitted:
-            try:
+            with contextlib.suppress(Exception):
                 joblib.dump(self.model, self.model_file)
-            except Exception:
-                pass
 
     # === Productivity Tracking ===
 
-    def record_task_completion(self, task_data: Dict):
+    def record_task_completion(self, task_data: dict):
         """Record when a task was completed for productivity analysis."""
         entry = {
             "timestamp": datetime.now().isoformat(),
@@ -98,15 +99,16 @@ class AISystemOptimizer:
             return
 
         try:
-            X, y = self._prepare_training_data()
-            if len(X) >= 10:
-                self.model.fit(X, y)
+            x_matrix, targets = self._prepare_training_data()
+            if len(x_matrix) >= 10:
+                self.model.fit(x_matrix, targets)
                 self._model_fitted = True
                 self._save_model()
-        except Exception:
-            pass
+        except (ValueError, TypeError):
+            logger = logging.getLogger(__name__)
+            logger.exception("Model retraining failed")
 
-    def _prepare_training_data(self) -> Tuple[np.ndarray, np.ndarray]:
+    def _prepare_training_data(self) -> tuple[np.ndarray, np.ndarray]:
         """Prepare training data from productivity history."""
         features = []
         targets = []
@@ -125,19 +127,19 @@ class AISystemOptimizer:
 
     # === Peak Hour Analysis ===
 
-    def get_peak_productivity_hours(self) -> List[Dict]:
+    def get_peak_productivity_hours(self) -> list[dict]:
         """Analyze when the user is most productive."""
         if len(self.productivity_data) < 5:
             return self._default_peak_hours()
 
-        hourly_counts: Dict[int, List[float]] = {}
+        hourly_counts: dict[int, list[float]] = {}
         for entry in self.productivity_data:
             hour = entry.get("hour", 12)
             duration = max(entry.get("duration_minutes", 30), 1)
             efficiency = 100.0 / duration
             hourly_counts.setdefault(hour, []).append(efficiency)
 
-        peak_hours = []
+        peak_hours: list[dict[str, Any]] = []
         for hour, efficiencies in sorted(hourly_counts.items()):
             avg_eff = np.mean(efficiencies)
             count = len(efficiencies)
@@ -151,7 +153,7 @@ class AISystemOptimizer:
         peak_hours.sort(key=lambda x: x["average_efficiency"], reverse=True)
         return peak_hours
 
-    def _default_peak_hours(self) -> List[Dict]:
+    def _default_peak_hours(self) -> list[dict]:
         """Default peak hours when insufficient data."""
         return [
             {"hour": 10, "average_efficiency": 80, "tasks_completed": 0, "label": "10:00 (estimated)"},
@@ -161,7 +163,7 @@ class AISystemOptimizer:
 
     # === Smart Task Ordering ===
 
-    def suggest_task_order(self, tasks: List[Dict], current_energy: int = 50, current_mood: int = 5) -> List[Dict]:
+    def suggest_task_order(self, tasks: list[dict], current_energy: int = 50, current_mood: int = 5) -> list[dict]:
         """Suggest optimal task ordering for the day based on energy and patterns."""
         current_hour = datetime.now().hour
         peak_hours = self.get_peak_productivity_hours()
@@ -211,7 +213,7 @@ class AISystemOptimizer:
         scored_tasks.sort(key=lambda x: x["_score"], reverse=True)
         return scored_tasks
 
-    def generate_daily_plan(self, tasks: List[Dict], energy_level: int = 50, mood: int = 5) -> List[Dict]:
+    def generate_daily_plan(self, tasks: list[dict], energy_level: int = 50, mood: int = 5) -> list[dict]:
         """Generate a suggested daily plan with time slots."""
         ordered = self.suggest_task_order(tasks, energy_level, mood)
         plan = []
@@ -234,7 +236,7 @@ class AISystemOptimizer:
 
     # === Burnout Detection ===
 
-    def detect_burnout_risk(self, recent_days: int = 7) -> Dict:
+    def detect_burnout_risk(self, recent_days: int = 7) -> dict:
         """Detect burnout risk based on task load and patterns."""
         cutoff = datetime.now() - timedelta(days=recent_days)
         recent = [
@@ -245,8 +247,8 @@ class AISystemOptimizer:
         if not recent:
             return {"risk_level": "unknown", "score": 0, "message": "Not enough data to assess burnout risk."}
 
-        daily_counts: Dict[str, int] = {}
-        daily_energy: Dict[str, List[int]] = {}
+        daily_counts: dict[str, int] = {}
+        daily_energy: dict[str, list[int]] = {}
         for entry in recent:
             day = entry["timestamp"][:10]
             daily_counts[day] = daily_counts.get(day, 0) + 1
@@ -287,7 +289,7 @@ class AISystemOptimizer:
 
     # === Hypomania Detection (Bipolar Support) ===
 
-    def detect_hypomania_signs(self, recent_days: int = 5) -> Dict:
+    def detect_hypomania_signs(self, recent_days: int = 5) -> dict:
         """Detect potential hypomanic patterns for bipolar users."""
         cutoff = datetime.now() - timedelta(days=recent_days)
         recent = [
@@ -302,7 +304,7 @@ class AISystemOptimizer:
         score = 0
 
         # Unusually high task completion
-        daily_counts = {}
+        daily_counts: dict[str, int] = {}
         for entry in recent:
             day = entry["timestamp"][:10]
             daily_counts[day] = daily_counts.get(day, 0) + 1
@@ -345,7 +347,7 @@ class AISystemOptimizer:
 
     # === System Optimization (Original Features) ===
 
-    def record_optimization(self, stats: Dict, action: str, result: Dict):
+    def record_optimization(self, stats: dict, action: str, result: dict):
         """Record an optimization action."""
         self.history.append({
             "timestamp": datetime.now().isoformat(),
@@ -355,7 +357,7 @@ class AISystemOptimizer:
         })
         self._save_history()
 
-    def get_optimization_suggestions(self, current_stats: Dict) -> List[str]:
+    def get_optimization_suggestions(self, current_stats: dict) -> list[str]:
         """Get system and task optimization suggestions."""
         suggestions = []
 
@@ -395,16 +397,16 @@ class AISystemOptimizer:
 
         return suggestions
 
-    def predict_resource_usage(self, task_features: List[float]) -> float:
+    def predict_resource_usage(self, task_features: list[float]) -> float:
         """Predict resource usage for a task."""
-        if not HAS_SKLEARN or not self._model_fitted:
+        if not HAS_SKLEARN or not self._model_fitted or self.model is None:
             return 50.0
 
         try:
-            X = np.array(task_features).reshape(1, -1)
-            prediction = self.model.predict(X)[0]
+            x_matrix = np.array(task_features).reshape(1, -1)
+            prediction = self.model.predict(x_matrix)[0]
             return float(np.clip(prediction, 0, 100))
-        except Exception:
+        except (ValueError, TypeError):
             return 50.0
 
     def get_confidence_score(self) -> float:

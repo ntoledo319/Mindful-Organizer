@@ -8,21 +8,32 @@ condition-specific sleep tips.
 
 from __future__ import annotations
 
+import contextlib
 import json
 import logging
 import statistics as stats_mod
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QFrame, QScrollArea, QSizePolicy, QSlider, QSpinBox,
-    QTimeEdit, QTextEdit, QListWidget, QListWidgetItem,
-    QGroupBox, QMessageBox,
-)
 from PyQt6.QtCore import Qt, QTime, pyqtSignal
 from PyQt6.QtGui import QFont
+from PyQt6.QtWidgets import (
+    QFrame,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QListWidget,
+    QMessageBox,
+    QPushButton,
+    QScrollArea,
+    QSlider,
+    QSpinBox,
+    QTextEdit,
+    QTimeEdit,
+    QVBoxLayout,
+    QWidget,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +42,7 @@ logger = logging.getLogger(__name__)
 # Condition-specific sleep tips
 # ---------------------------------------------------------------------------
 
-_SLEEP_TIPS: Dict[str, List[str]] = {
+_SLEEP_TIPS: dict[str, list[str]] = {
     "General": [
         "Keep a consistent sleep schedule, even on weekends.",
         "Avoid screens 30 minutes before bed.",
@@ -102,17 +113,15 @@ class SleepWidget(QWidget):
 
     entry_saved = pyqtSignal(dict)
 
-    def __init__(self, main_window: Any, parent: Optional[QWidget] = None) -> None:
+    def __init__(self, main_window: Any, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.main_window = main_window
 
         self._sleep_tracker = None
-        try:
+        with contextlib.suppress(Exception):
             self._sleep_tracker = main_window.sleep_tracker
-        except Exception:
-            pass
 
-        self._entries: List[Dict[str, Any]] = []
+        self._entries: list[dict[str, Any]] = []
         self._load_entries()
         self._build_ui()
         self._refresh_log()
@@ -126,7 +135,7 @@ class SleepWidget(QWidget):
     def _data_dir(self) -> Path:
         try:
             return Path(self.main_window.data_dir)
-        except Exception:
+        except (AttributeError, TypeError):
             p = Path.home() / ".mindful_optimizer"
             p.mkdir(parents=True, exist_ok=True)
             return p
@@ -142,8 +151,8 @@ class SleepWidget(QWidget):
             try:
                 with open(path) as fh:
                     self._entries = json.load(fh)
-            except Exception:
-                pass
+            except (json.JSONDecodeError, OSError) as exc:
+                logger.debug(f"Sleep entries load error: {exc}")
 
     def _save_entries(self) -> None:
         try:
@@ -220,38 +229,26 @@ class SleepWidget(QWidget):
         wake_row.addStretch()
         layout.addLayout(wake_row)
 
-        # Quality slider
+        # Quality (3-tap: 1=Poor, 2=Okay, 3=Good)
         qual_row = QHBoxLayout()
         qual_row.addWidget(_body_label("Quality:"))
-        self._quality_slider = QSlider(Qt.Orientation.Horizontal)
-        self._quality_slider.setRange(1, 10)
-        self._quality_slider.setValue(5)
-        self._quality_slider.setTickPosition(QSlider.TickPosition.TicksBelow)
-        self._quality_slider.setTickInterval(1)
-        qual_row.addWidget(self._quality_slider)
-        self._quality_value = QLabel("5 / 10")
-        self._quality_slider.valueChanged.connect(
-            lambda v: self._quality_value.setText(f"{v} / 10")
-        )
-        qual_row.addWidget(self._quality_value)
+        self._quality_btn_poor = _accent_button("Poor")
+        self._quality_btn_okay = _accent_button("Okay")
+        self._quality_btn_good = _accent_button("Good")
+        self._quality_btn_poor.setCheckable(True)
+        self._quality_btn_okay.setCheckable(True)
+        self._quality_btn_good.setCheckable(True)
+        self._quality_btn_poor.setChecked(False)
+        self._quality_btn_okay.setChecked(True)
+        self._quality_btn_good.setChecked(False)
+        self._quality_btn_poor.clicked.connect(lambda: self._set_quality(1))
+        self._quality_btn_okay.clicked.connect(lambda: self._set_quality(2))
+        self._quality_btn_good.clicked.connect(lambda: self._set_quality(3))
+        qual_row.addWidget(self._quality_btn_poor)
+        qual_row.addWidget(self._quality_btn_okay)
+        qual_row.addWidget(self._quality_btn_good)
+        qual_row.addStretch()
         layout.addLayout(qual_row)
-
-        # Interruptions
-        int_row = QHBoxLayout()
-        int_row.addWidget(_body_label("Interruptions:"))
-        self._interruptions = QSpinBox()
-        self._interruptions.setRange(0, 20)
-        self._interruptions.setValue(0)
-        int_row.addWidget(self._interruptions)
-        int_row.addStretch()
-        layout.addLayout(int_row)
-
-        # Notes
-        layout.addWidget(_body_label("Notes:"))
-        self._notes = QTextEdit()
-        self._notes.setMaximumHeight(80)
-        self._notes.setPlaceholderText("Dreams, sleep aids used, anything notable...")
-        layout.addWidget(self._notes)
 
         # Save button
         save_btn = _accent_button("Log Sleep")
@@ -308,19 +305,32 @@ class SleepWidget(QWidget):
         except (ValueError, TypeError):
             return 0.0
 
+    def _set_quality(self, value: int) -> None:
+        self._quality_btn_poor.setChecked(value == 1)
+        self._quality_btn_okay.setChecked(value == 2)
+        self._quality_btn_good.setChecked(value == 3)
+
+    def _get_quality(self) -> int:
+        if self._quality_btn_good.isChecked():
+            return 3
+        if self._quality_btn_poor.isChecked():
+            return 1
+        return 2
+
     def _save_entry(self) -> None:
         bed_str = self._bedtime.time().toString("HH:mm")
         wake_str = self._waketime.time().toString("HH:mm")
         duration = self._calc_duration(bed_str, wake_str)
+        quality = self._get_quality()
 
-        entry: Dict[str, Any] = {
+        entry: dict[str, Any] = {
             "date": date.today().isoformat(),
             "bedtime": bed_str,
             "wake_time": wake_str,
             "duration_hours": duration,
-            "quality": self._quality_slider.value(),
-            "interruptions": self._interruptions.value(),
-            "notes": self._notes.toPlainText().strip(),
+            "quality": quality,
+            "interruptions": 0,
+            "notes": "",
             "created_at": datetime.now().isoformat(),
         }
 
@@ -331,21 +341,19 @@ class SleepWidget(QWidget):
                     date=entry["date"],
                     bedtime=bed_str,
                     wake_time=wake_str,
-                    quality=entry["quality"],
-                    interruptions=entry["interruptions"],
-                    notes=entry["notes"],
+                    quality=quality,
+                    interruptions=0,
+                    notes="",
                 )
-        except Exception:
-            pass
+        except (AttributeError, TypeError) as exc:
+            logger.debug(f"Sleep tracker log error: {exc}")
 
         self._entries.append(entry)
         self._save_entries()
         self.entry_saved.emit(entry)
 
         # Reset form
-        self._quality_slider.setValue(5)
-        self._interruptions.setValue(0)
-        self._notes.clear()
+        self._set_quality(2)
 
         self._refresh_log()
         self._refresh_stats()
@@ -361,7 +369,8 @@ class SleepWidget(QWidget):
             ints = e.get("interruptions", 0)
             bed = e.get("bedtime", "?")
             wake = e.get("wake_time", "?")
-            text = f"{dt} | {bed}-{wake} | {dur:.1f}h | Quality: {qual}/10 | Int: {ints}"
+            q_label = {1: "Poor", 2: "Okay", 3: "Good"}.get(qual, "?")
+            text = f"{dt} | {bed}-{wake} | {dur:.1f}h | {q_label}"
             self._log_list.addItem(text)
 
     def _refresh_stats(self) -> None:
@@ -385,17 +394,17 @@ class SleepWidget(QWidget):
             self._avg_quality_label.setText(f"Average quality: {avg_qual:.1f} / 10")
 
     def _refresh_tips(self) -> None:
-        conditions: List[str] = ["General"]
+        conditions: list[str] = ["General"]
         try:
             profile = self.main_window.profile_manager.current_profile
             if profile and hasattr(profile, "conditions") and profile.conditions:
                 for c in profile.conditions:
                     name = c.value if hasattr(c, "value") else str(c)
                     conditions.append(name)
-        except Exception:
-            pass
+        except (AttributeError, TypeError) as exc:
+            logger.debug(f"Sleep tips refresh error: {exc}")
 
-        tips: List[str] = []
+        tips: list[str] = []
         for cond in conditions:
             tips.extend(_SLEEP_TIPS.get(cond, []))
 

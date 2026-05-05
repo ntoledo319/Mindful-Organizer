@@ -7,7 +7,6 @@ journal_entries table. Tests cover CRUD operations, search, streak tracking,
 and prompt-related logic through the database layer.
 """
 
-import json
 from datetime import datetime, timedelta
 
 import pytest
@@ -150,13 +149,13 @@ class TestStreakTracking:
             ts = (base - timedelta(days=offset)).isoformat()
             db.insert(
                 TableName.JOURNAL_ENTRIES,
-                content=f"Entry",
+                content="Entry",
                 mood_score=6,
                 timestamp=ts,
             )
 
         result = db.query(TableName.JOURNAL_ENTRIES, order_by="timestamp DESC")
-        dates = sorted(set(r["timestamp"][:10] for r in result.rows))
+        dates = sorted({r["timestamp"][:10] for r in result.rows})
         assert len(dates) == 3
 
 

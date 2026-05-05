@@ -10,10 +10,10 @@ import logging
 import os
 import platform
 import subprocess
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -92,7 +92,7 @@ class AccessibilitySettings:
     keyboard_navigation: bool = True
     animation_duration_ms: int = 200
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "font_scale": self.font_scale.value,
             "color_blindness_mode": self.color_blindness_mode.value,
@@ -106,7 +106,7 @@ class AccessibilitySettings:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "AccessibilitySettings":
+    def from_dict(cls, data: dict[str, Any]) -> "AccessibilitySettings":
         return cls(
             font_scale=FontScale(data.get("font_scale", "medium")),
             color_blindness_mode=ColorBlindnessMode(
@@ -237,9 +237,9 @@ def get_palette(settings: AccessibilitySettings) -> ColorPalette:
 def screen_reader_text(
     widget_type: str,
     label: str,
-    value: Optional[str] = None,
-    state: Optional[str] = None,
-    hint: Optional[str] = None,
+    value: str | None = None,
+    state: str | None = None,
+    hint: str | None = None,
 ) -> str:
     """Generate descriptive text suitable for screen readers.
 
@@ -292,7 +292,7 @@ def announce_to_screen_reader(widget: Any, message: str) -> None:
         QAccessible.updateAccessibility(
             QAccessible.queryAccessibleInterface(widget), 0, event
         )
-    except Exception:
+    except (ImportError, AttributeError, RuntimeError):
         # Graceful fallback: just log
         logger.debug("Screen reader announcement: %s", message)
 
@@ -307,21 +307,22 @@ def detect_high_contrast() -> bool:
     if sys_name == "windows":
         try:
             import ctypes
-            SPI_GETHIGHCONTRAST = 0x0042
+            spi_gethighcontrast = 0x0042
+            hcf_highcontraston = 0x00000001
             # HIGHCONTRAST structure
-            class HIGHCONTRAST(ctypes.Structure):
+            class HighContrast(ctypes.Structure):
                 _fields_ = [
                     ("cbSize", ctypes.c_uint),
                     ("dwFlags", ctypes.c_uint),
                     ("lpszDefaultScheme", ctypes.c_wchar_p),
                 ]
-            hc = HIGHCONTRAST()
-            hc.cbSize = ctypes.sizeof(HIGHCONTRAST)
+            hc = HighContrast()
+            hc.cbSize = ctypes.sizeof(HighContrast)
             ctypes.windll.user32.SystemParametersInfoW(  # type: ignore[attr-defined]
-                SPI_GETHIGHCONTRAST, hc.cbSize, ctypes.byref(hc), 0,
+                spi_gethighcontrast, hc.cbSize, ctypes.byref(hc), 0,
             )
-            return bool(hc.dwFlags & 0x00000001)  # HCF_HIGHCONTRASTON
-        except Exception:
+            return bool(hc.dwFlags & hcf_highcontraston)
+        except (OSError, ImportError, AttributeError):
             return False
     elif sys_name == "linux":
         try:
@@ -330,7 +331,7 @@ def detect_high_contrast() -> bool:
                 capture_output=True, text=True, timeout=5,
             )
             return "true" in result.stdout.lower()
-        except Exception:
+        except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
             return False
     return False
 
@@ -351,7 +352,7 @@ class KeyboardNavigationHelper:
     """
 
     def __init__(self) -> None:
-        self._widgets: List[Tuple[int, str, Any]] = []  # (order, group, widget)
+        self._widgets: list[tuple[int, str, Any]] = []  # (order, group, widget)
 
     def register(self, widget: Any, order: int = 0, group: str = "default") -> None:
         """Register a widget for keyboard navigation."""
@@ -360,7 +361,7 @@ class KeyboardNavigationHelper:
     def unregister(self, widget: Any) -> None:
         self._widgets = [(o, g, w) for o, g, w in self._widgets if w is not widget]
 
-    def apply_tab_order(self, group: Optional[str] = None) -> None:
+    def apply_tab_order(self, group: str | None = None) -> None:
         """Set the tab order of registered widgets using QWidget.setTabOrder.
 
         If *group* is given, only widgets in that group are ordered.
@@ -380,7 +381,7 @@ class KeyboardNavigationHelper:
         for i in range(len(filtered) - 1):
             QWidget.setTabOrder(filtered[i][2], filtered[i + 1][2])
 
-    def get_ordered_widgets(self, group: Optional[str] = None) -> List[Any]:
+    def get_ordered_widgets(self, group: str | None = None) -> list[Any]:
         filtered = [
             (o, g, w) for o, g, w in self._widgets
             if group is None or g == group
@@ -388,7 +389,7 @@ class KeyboardNavigationHelper:
         filtered.sort(key=lambda x: x[0])
         return [w for _, _, w in filtered]
 
-    def groups(self) -> List[str]:
+    def groups(self) -> list[str]:
         return sorted({g for _, g, _ in self._widgets})
 
 
@@ -418,7 +419,6 @@ def build_font_css(
 def apply_font_scale(app: Any, scale: FontScale) -> None:
     """Apply font scaling to a QApplication instance."""
     try:
-        from PyQt6.QtGui import QFont
         font = app.font()
         font.setPointSize(scale.base_point_size)
         app.setFont(font)
@@ -480,7 +480,7 @@ def detect_reduced_motion() -> bool:
                 capture_output=True, text=True, timeout=5,
             )
             return result.stdout.strip() == "1"
-        except Exception:
+        except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
             return False
     elif sys_name == "linux":
         try:
@@ -489,18 +489,18 @@ def detect_reduced_motion() -> bool:
                 capture_output=True, text=True, timeout=5,
             )
             return "false" in result.stdout.lower()
-        except Exception:
+        except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
             return False
     elif sys_name == "windows":
         try:
             import ctypes
-            SPI_GETCLIENTAREAANIMATION = 0x1042
+            spi_getclientareaanimation = 0x1042
             animation = ctypes.c_bool()
             ctypes.windll.user32.SystemParametersInfoW(  # type: ignore[attr-defined]
-                SPI_GETCLIENTAREAANIMATION, 0, ctypes.byref(animation), 0,
+                spi_getclientareaanimation, 0, ctypes.byref(animation), 0,
             )
             return not animation.value
-        except Exception:
+        except (OSError, ImportError, AttributeError):
             return False
     return False
 
@@ -537,7 +537,7 @@ QComboBox:focus {{
 
 def focus_indicator_stylesheet(
     settings: AccessibilitySettings,
-    palette: Optional[ColorPalette] = None,
+    palette: ColorPalette | None = None,
 ) -> str:
     """Generate a QSS stylesheet that adds visible focus indicators."""
     if not settings.focus_indicators:
@@ -554,7 +554,7 @@ def focus_indicator_stylesheet(
 def build_accessibility_stylesheet(settings: AccessibilitySettings) -> str:
     """Combine all accessibility-related styles into one QSS string."""
     palette = get_palette(settings)
-    parts: List[str] = []
+    parts: list[str] = []
 
     # Font
     parts.append(build_font_css(settings.font_scale, settings.dyslexia_font))
@@ -610,7 +610,7 @@ class AccessibilityManager:
         mgr.save(db)          # persist to database
     """
 
-    def __init__(self, settings: Optional[AccessibilitySettings] = None) -> None:
+    def __init__(self, settings: AccessibilitySettings | None = None) -> None:
         self.settings = settings or AccessibilitySettings()
         self._nav_helper = KeyboardNavigationHelper()
 

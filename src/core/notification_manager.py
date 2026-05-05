@@ -5,16 +5,16 @@ Supports scheduling (one-time and recurring), priority levels,
 condition-aware delivery styles, snooze/dismiss, and SQLite persistence.
 """
 
+import contextlib
 import json
 import logging
-import re
 import threading
-import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Sequence, Set
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -78,11 +78,11 @@ class RecurringPattern:
     Fields mirror simplified cron: minute, hour, day_of_week (0=Mon..6=Sun),
     day_of_month, interval_minutes.  ``None`` means "any / not set".
     """
-    minute: Optional[int] = None
-    hour: Optional[int] = None
-    day_of_week: Optional[int] = None          # 0=Monday .. 6=Sunday
-    day_of_month: Optional[int] = None
-    interval_minutes: Optional[int] = None     # simple repeat every N minutes
+    minute: int | None = None
+    hour: int | None = None
+    day_of_week: int | None = None          # 0=Monday .. 6=Sunday
+    day_of_month: int | None = None
+    interval_minutes: int | None = None     # simple repeat every N minutes
 
     def to_json(self) -> str:
         return json.dumps({
@@ -137,19 +137,19 @@ class RecurringPattern:
 @dataclass
 class Notification:
     """In-memory representation of a notification."""
-    id: Optional[int] = None
+    id: int | None = None
     type: NotificationType = NotificationType.CUSTOM
     title: str = ""
     message: str = ""
     priority: Priority = Priority.MEDIUM
-    scheduled_at: Optional[datetime] = None
-    delivered_at: Optional[datetime] = None
-    read_at: Optional[datetime] = None
-    dismissed_at: Optional[datetime] = None
-    snoozed_until: Optional[datetime] = None
-    recurring: Optional[RecurringPattern] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    created_at: Optional[datetime] = None
+    scheduled_at: datetime | None = None
+    delivered_at: datetime | None = None
+    read_at: datetime | None = None
+    dismissed_at: datetime | None = None
+    snoozed_until: datetime | None = None
+    recurring: RecurringPattern | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
+    created_at: datetime | None = None
 
     @property
     def status(self) -> NotificationStatus:
@@ -181,7 +181,7 @@ class Notification:
 # ---------------------------------------------------------------------------
 
 # Maps mental-health condition labels to preferred delivery styles per type.
-_CONDITION_DELIVERY: Dict[str, Dict[NotificationType, DeliveryStyle]] = {
+_CONDITION_DELIVERY: dict[str, dict[NotificationType, DeliveryStyle]] = {
     "ANXIETY": {
         NotificationType.MOOD_CHECKIN: DeliveryStyle.SCHEDULED,
         NotificationType.TASK_DEADLINE: DeliveryStyle.SCHEDULED,
@@ -234,13 +234,13 @@ _CONDITION_DELIVERY: Dict[str, Dict[NotificationType, DeliveryStyle]] = {
     },
 }
 
-_DEFAULT_DELIVERY: Dict[NotificationType, DeliveryStyle] = {
+_DEFAULT_DELIVERY: dict[NotificationType, DeliveryStyle] = {
     nt: DeliveryStyle.SCHEDULED for nt in NotificationType
 }
 
 
 def delivery_style_for(
-    condition: Optional[str],
+    condition: str | None,
     notification_type: NotificationType,
 ) -> DeliveryStyle:
     """Return the recommended delivery style for a condition + type pair."""
@@ -282,7 +282,7 @@ class NotificationManager:
             nm.mark_delivered(n.id)
     """
 
-    def __init__(self, db: Any, condition: Optional[str] = None) -> None:
+    def __init__(self, db: Any, condition: str | None = None) -> None:
         """
         Args:
             db: A ``DatabaseManager`` instance (from ``src.core.database``).
@@ -291,7 +291,7 @@ class NotificationManager:
         """
         self._db = db
         self._condition = condition
-        self._listeners: List[Callable[[Notification], None]] = []
+        self._listeners: list[Callable[[Notification], None]] = []
         self._lock = threading.Lock()
 
     # ------------------------------------------------------------------
@@ -320,23 +320,19 @@ class NotificationManager:
     # Persistence helpers
     # ------------------------------------------------------------------
 
-    def _row_to_notification(self, row: Dict[str, Any]) -> Notification:
+    def _row_to_notification(self, row: dict[str, Any]) -> Notification:
         """Convert a database row dict to a ``Notification`` object."""
         recurring = None
         if row.get("recurring"):
-            try:
+            with contextlib.suppress(json.JSONDecodeError, TypeError):
                 recurring = RecurringPattern.from_json(row["recurring"])
-            except (json.JSONDecodeError, TypeError):
-                pass
 
-        metadata: Dict[str, Any] = {}
+        metadata: dict[str, Any] = {}
         if row.get("metadata"):
-            try:
+            with contextlib.suppress(json.JSONDecodeError, TypeError):
                 metadata = json.loads(row["metadata"])
-            except (json.JSONDecodeError, TypeError):
-                pass
 
-        def _parse_dt(val: Any) -> Optional[datetime]:
+        def _parse_dt(val: Any) -> datetime | None:
             if val is None:
                 return None
             if isinstance(val, datetime):
@@ -378,9 +374,9 @@ class NotificationManager:
         title: str = "",
         message: str = "",
         priority: Priority = Priority.MEDIUM,
-        scheduled_at: Optional[datetime] = None,
-        recurring: Optional[RecurringPattern] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        scheduled_at: datetime | None = None,
+        recurring: RecurringPattern | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> Notification:
         """Create and persist a new notification.
 
@@ -413,14 +409,14 @@ class NotificationManager:
         logger.info("Scheduled notification #%d: %s", row_id, title)
         return notification
 
-    def get_by_id(self, notification_id: int) -> Optional[Notification]:
+    def get_by_id(self, notification_id: int) -> Notification | None:
         """Retrieve a single notification by its id."""
         row = self._db.get_by_id(self._table(), notification_id)
         if row is None:
             return None
         return self._row_to_notification(row)
 
-    def get_due_notifications(self) -> List[Notification]:
+    def get_due_notifications(self) -> list[Notification]:
         """Return all pending notifications whose scheduled time has passed."""
         now = datetime.now().isoformat()
         result = self._db.query(
@@ -434,7 +430,7 @@ class NotificationManager:
         )
         return [self._row_to_notification(r) for r in result.rows]
 
-    def get_pending(self) -> List[Notification]:
+    def get_pending(self) -> list[Notification]:
         """Return all notifications that have not yet been delivered or dismissed."""
         result = self._db.query(
             self._table(),
@@ -447,11 +443,11 @@ class NotificationManager:
         self,
         limit: int = 50,
         offset: int = 0,
-        type_filter: Optional[NotificationType] = None,
-    ) -> List[Notification]:
+        type_filter: NotificationType | None = None,
+    ) -> list[Notification]:
         """Return delivered / dismissed notifications, most recent first."""
         where = "delivered_at IS NOT NULL OR dismissed_at IS NOT NULL"
-        params: List[Any] = []
+        params: list[Any] = []
         if type_filter is not None:
             where += " AND type = ?"
             params.append(type_filter.value)
@@ -469,7 +465,7 @@ class NotificationManager:
     # Delivery
     # ------------------------------------------------------------------
 
-    def mark_delivered(self, notification_id: int) -> Optional[Notification]:
+    def mark_delivered(self, notification_id: int) -> Notification | None:
         """Mark a notification as delivered and fire listeners."""
         now = datetime.now().isoformat()
         self._db.update(self._table(), notification_id, delivered_at=now)
@@ -536,7 +532,7 @@ class NotificationManager:
         """Return the delivery style appropriate for the user's condition."""
         return delivery_style_for(self._condition, notification_type)
 
-    def set_condition(self, condition: Optional[str]) -> None:
+    def set_condition(self, condition: str | None) -> None:
         """Update the user's primary condition for delivery-style decisions."""
         self._condition = condition
 
@@ -552,7 +548,7 @@ class NotificationManager:
             "WHERE delivered_at IS NULL AND dismissed_at IS NULL",
             (now,),
         )
-        return result.row_count
+        return int(result.row_count)
 
     def delete_old(self, older_than_days: int = 90) -> int:
         """Delete notifications older than the given number of days."""
@@ -561,7 +557,7 @@ class NotificationManager:
             "DELETE FROM notifications WHERE created_at < ? AND dismissed_at IS NOT NULL",
             (cutoff,),
         )
-        return result.row_count
+        return int(result.row_count)
 
     # ------------------------------------------------------------------
     # Convenience schedulers
@@ -569,8 +565,8 @@ class NotificationManager:
 
     def schedule_mood_checkin(
         self,
-        at: Optional[datetime] = None,
-        recurring: Optional[RecurringPattern] = None,
+        at: datetime | None = None,
+        recurring: RecurringPattern | None = None,
     ) -> Notification:
         """Schedule a gentle mood check-in."""
         return self.schedule(
@@ -586,7 +582,7 @@ class NotificationManager:
         self,
         medication_name: str,
         at: datetime,
-        recurring: Optional[RecurringPattern] = None,
+        recurring: RecurringPattern | None = None,
     ) -> Notification:
         """Schedule a medication reminder."""
         return self.schedule(
@@ -601,7 +597,7 @@ class NotificationManager:
 
     def schedule_breathing_exercise(
         self,
-        at: Optional[datetime] = None,
+        at: datetime | None = None,
         technique: str = "box_breathing",
     ) -> Notification:
         """Schedule a breathing exercise reminder."""
@@ -631,26 +627,12 @@ class NotificationManager:
             metadata={"task_title": task_title, "deadline": deadline.isoformat()},
         )
 
-    def schedule_energy_check(
-        self,
-        at: Optional[datetime] = None,
-        recurring: Optional[RecurringPattern] = None,
-    ) -> Notification:
-        """Schedule an energy level check-in."""
-        return self.schedule(
-            type=NotificationType.ENERGY_CHECK,
-            title="Energy Check",
-            message="How is your energy level? Logging it helps find patterns.",
-            priority=Priority.LOW,
-            scheduled_at=at or datetime.now() + timedelta(hours=3),
-            recurring=recurring,
-        )
 
     # ------------------------------------------------------------------
     # Stats
     # ------------------------------------------------------------------
 
-    def stats(self) -> Dict[str, Any]:
+    def stats(self) -> dict[str, Any]:
         """Return summary statistics about notifications."""
         total = self._db.count(self._table())
         pending = self._db.count(

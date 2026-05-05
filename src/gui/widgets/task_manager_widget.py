@@ -7,58 +7,32 @@ colour indicators, energy badges, undo/redo, sorting, and task statistics.
 
 from __future__ import annotations
 
+import logging
 from datetime import date, datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
+from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtGui import QColor, QFont
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QFrame, QScrollArea, QSizePolicy, QLineEdit, QListWidget,
-    QListWidgetItem, QComboBox, QSpinBox, QCheckBox, QTextEdit,
-    QGroupBox, QGridLayout, QMessageBox, QProgressBar,
+    QCheckBox,
+    QComboBox,
+    QFrame,
+    QHBoxLayout,
+    QLineEdit,
+    QListWidget,
+    QListWidgetItem,
+    QMessageBox,
+    QProgressBar,
+    QScrollArea,
+    QSpinBox,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
 )
-from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QFont, QColor, QIcon
 
+from gui.components import AccentButton, BodyLabel, CardFrame, SectionTitle
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-def _card_frame(theme: Dict[str, str]) -> QFrame:
-    frame = QFrame()
-    frame.setFrameShape(QFrame.Shape.StyledPanel)
-    frame.setStyleSheet(
-        f"QFrame {{ background-color: {theme.get('card_bg', '#ffffff')}; "
-        f"border-radius: 12px; padding: 16px; }}"
-    )
-    frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
-    return frame
-
-
-def _section_title(text: str, theme: Dict[str, str]) -> QLabel:
-    label = QLabel(text)
-    label.setFont(QFont("Segoe UI", 13, QFont.Weight.Bold))
-    label.setStyleSheet(f"color: {theme.get('text', '#333333')}; padding-bottom: 4px;")
-    return label
-
-
-def _body_label(text: str, theme: Dict[str, str]) -> QLabel:
-    label = QLabel(text)
-    label.setWordWrap(True)
-    label.setStyleSheet(f"color: {theme.get('text', '#555555')};")
-    return label
-
-
-def _accent_button(text: str, theme: Dict[str, str]) -> QPushButton:
-    btn = QPushButton(text)
-    btn.setCursor(Qt.CursorShape.PointingHandCursor)
-    btn.setStyleSheet(
-        f"QPushButton {{ background-color: {theme.get('accent', '#4a90d9')}; "
-        f"color: #ffffff; border: none; border-radius: 8px; padding: 10px 18px; "
-        f"font-weight: bold; font-size: 13px; }}"
-        f"QPushButton:hover {{ background-color: {theme.get('secondary', '#357abd')}; }}"
-    )
-    return btn
+logger = logging.getLogger(__name__)
 
 
 _PRIORITY_COLOURS = {
@@ -81,17 +55,17 @@ class TaskManagerWidget(QWidget):
 
     def __init__(
         self,
-        theme: Dict[str, str],
+        theme: dict[str, str],
         task_manager: Any = None,
         nlp_parser: Any = None,
-        parent: Optional[QWidget] = None,
+        parent: QWidget | None = None,
     ) -> None:
         super().__init__(parent)
         self._theme = theme
         self._task_manager = task_manager
         self._nlp_parser = nlp_parser
-        self._undo_stack: List[Dict[str, Any]] = []
-        self._redo_stack: List[Dict[str, Any]] = []
+        self._undo_stack: list[dict[str, Any]] = []
+        self._redo_stack: list[dict[str, Any]] = []
 
         self._build_ui()
         self._refresh_task_list()
@@ -135,7 +109,7 @@ class TaskManagerWidget(QWidget):
     # -- NLP entry bar --------------------------------------------------
 
     def _build_nlp_entry(self) -> None:
-        card = _card_frame(self._theme)
+        card = CardFrame(self._theme)
         layout = QHBoxLayout(card)
 
         self._nlp_input = QLineEdit()
@@ -151,7 +125,7 @@ class TaskManagerWidget(QWidget):
         self._nlp_input.returnPressed.connect(self._add_task_from_nlp)
         layout.addWidget(self._nlp_input, stretch=1)
 
-        add_btn = _accent_button("Add Task", self._theme)
+        add_btn = AccentButton("Add Task", self._theme)
         add_btn.clicked.connect(self._add_task_from_nlp)
         layout.addWidget(add_btn)
 
@@ -160,19 +134,19 @@ class TaskManagerWidget(QWidget):
     # -- filter row -----------------------------------------------------
 
     def _build_filter_row(self) -> None:
-        card = _card_frame(self._theme)
+        card = CardFrame(self._theme)
         layout = QHBoxLayout(card)
         layout.setSpacing(12)
 
         # Priority filter
-        layout.addWidget(_body_label("Priority:", self._theme))
+        layout.addWidget(BodyLabel("Priority:", self._theme))
         self._priority_filter = QComboBox()
         self._priority_filter.addItems(["All", "Urgent", "High", "Medium", "Low"])
         self._priority_filter.currentTextChanged.connect(lambda _: self._refresh_task_list())
         layout.addWidget(self._priority_filter)
 
         # Category filter
-        layout.addWidget(_body_label("Category:", self._theme))
+        layout.addWidget(BodyLabel("Category:", self._theme))
         self._category_filter = QComboBox()
         self._category_filter.addItems([
             "All", "Work", "Personal", "Health", "Learning", "Social", "Errands", "Other",
@@ -181,7 +155,7 @@ class TaskManagerWidget(QWidget):
         layout.addWidget(self._category_filter)
 
         # Energy filter
-        layout.addWidget(_body_label("Max Energy:", self._theme))
+        layout.addWidget(BodyLabel("Max Energy:", self._theme))
         self._energy_filter = QSpinBox()
         self._energy_filter.setRange(0, 100)
         self._energy_filter.setValue(100)
@@ -207,7 +181,7 @@ class TaskManagerWidget(QWidget):
         layout.addWidget(self._search_box)
 
         # Sort
-        layout.addWidget(_body_label("Sort:", self._theme))
+        layout.addWidget(BodyLabel("Sort:", self._theme))
         self._sort_combo = QComboBox()
         self._sort_combo.addItems(["Priority", "Due Date", "Energy", "Created Date"])
         self._sort_combo.currentTextChanged.connect(lambda _: self._refresh_task_list())
@@ -218,9 +192,9 @@ class TaskManagerWidget(QWidget):
     # -- task list ------------------------------------------------------
 
     def _build_task_list(self, parent_layout: QHBoxLayout) -> None:
-        card = _card_frame(self._theme)
+        card = CardFrame(self._theme)
         layout = QVBoxLayout(card)
-        layout.addWidget(_section_title("Tasks", self._theme))
+        layout.addWidget(SectionTitle("Tasks", self._theme))
 
         self._task_list = QListWidget()
         self._task_list.setMinimumHeight(400)
@@ -240,24 +214,24 @@ class TaskManagerWidget(QWidget):
     # -- detail panel ---------------------------------------------------
 
     def _build_detail_panel(self, parent_layout: QHBoxLayout) -> None:
-        card = _card_frame(self._theme)
+        card = CardFrame(self._theme)
         self._detail_layout = QVBoxLayout(card)
-        self._detail_layout.addWidget(_section_title("Task Details", self._theme))
+        self._detail_layout.addWidget(SectionTitle("Task Details", self._theme))
 
-        self._detail_title = _body_label("Select a task to view details", self._theme)
+        self._detail_title = BodyLabel("Select a task to view details", self._theme)
         self._detail_title.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
         self._detail_layout.addWidget(self._detail_title)
 
-        self._detail_priority = _body_label("Priority: --", self._theme)
-        self._detail_category = _body_label("Category: --", self._theme)
-        self._detail_energy = _body_label("Energy: --", self._theme)
-        self._detail_due = _body_label("Due: --", self._theme)
+        self._detail_priority = BodyLabel("Priority: --", self._theme)
+        self._detail_category = BodyLabel("Category: --", self._theme)
+        self._detail_energy = BodyLabel("Energy: --", self._theme)
+        self._detail_due = BodyLabel("Due: --", self._theme)
 
         for w in (self._detail_priority, self._detail_category,
                   self._detail_energy, self._detail_due):
             self._detail_layout.addWidget(w)
 
-        self._detail_layout.addWidget(_body_label("Notes:", self._theme))
+        self._detail_layout.addWidget(BodyLabel("Notes:", self._theme))
         self._detail_notes = QTextEdit()
         self._detail_notes.setReadOnly(True)
         self._detail_notes.setMaximumHeight(100)
@@ -269,7 +243,7 @@ class TaskManagerWidget(QWidget):
         self._detail_layout.addWidget(self._detail_notes)
 
         # Subtasks
-        self._detail_layout.addWidget(_body_label("Subtasks:", self._theme))
+        self._detail_layout.addWidget(BodyLabel("Subtasks:", self._theme))
         self._subtask_list = QListWidget()
         self._subtask_list.setMaximumHeight(120)
         self._subtask_list.setStyleSheet(
@@ -280,11 +254,11 @@ class TaskManagerWidget(QWidget):
         self._detail_layout.addWidget(self._subtask_list)
 
         # Tags
-        self._detail_tags = _body_label("Tags: --", self._theme)
+        self._detail_tags = BodyLabel("Tags: --", self._theme)
         self._detail_layout.addWidget(self._detail_tags)
 
         # Values alignment
-        self._detail_values = _body_label("Values: --", self._theme)
+        self._detail_values = BodyLabel("Values: --", self._theme)
         self._detail_layout.addWidget(self._detail_values)
 
         self._detail_layout.addStretch()
@@ -293,7 +267,7 @@ class TaskManagerWidget(QWidget):
     # -- action buttons -------------------------------------------------
 
     def _build_action_buttons(self) -> None:
-        card = _card_frame(self._theme)
+        card = CardFrame(self._theme)
         layout = QHBoxLayout(card)
         layout.setSpacing(10)
 
@@ -305,18 +279,18 @@ class TaskManagerWidget(QWidget):
             ("Mark Complete", self._mark_complete),
         ]
         for label, slot in actions:
-            btn = _accent_button(label, self._theme)
+            btn = AccentButton(label, self._theme)
             btn.clicked.connect(slot)
             layout.addWidget(btn)
 
         layout.addStretch()
 
         # Undo / Redo
-        undo_btn = _accent_button("Undo", self._theme)
+        undo_btn = AccentButton("Undo", self._theme)
         undo_btn.clicked.connect(self._undo)
         layout.addWidget(undo_btn)
 
-        redo_btn = _accent_button("Redo", self._theme)
+        redo_btn = AccentButton("Redo", self._theme)
         redo_btn.clicked.connect(self._redo)
         layout.addWidget(redo_btn)
 
@@ -325,13 +299,13 @@ class TaskManagerWidget(QWidget):
     # -- statistics -----------------------------------------------------
 
     def _build_statistics(self) -> None:
-        card = _card_frame(self._theme)
+        card = CardFrame(self._theme)
         layout = QHBoxLayout(card)
         layout.setSpacing(24)
 
-        self._stat_total = _body_label("Total: 0", self._theme)
-        self._stat_completed_today = _body_label("Completed today: 0", self._theme)
-        self._stat_rate = _body_label("Completion rate: 0%", self._theme)
+        self._stat_total = BodyLabel("Total: 0", self._theme)
+        self._stat_completed_today = BodyLabel("Completed today: 0", self._theme)
+        self._stat_rate = BodyLabel("Completion rate: 0%", self._theme)
 
         self._completion_bar = QProgressBar()
         self._completion_bar.setMaximum(100)
@@ -361,7 +335,7 @@ class TaskManagerWidget(QWidget):
             return []
         try:
             return list(self._task_manager.tasks)
-        except Exception:
+        except (AttributeError, TypeError):
             return []
 
     def _get_selected_task(self) -> Any:
@@ -385,12 +359,12 @@ class TaskManagerWidget(QWidget):
                 continue
             if priority != "All":
                 tp = getattr(t, "priority", None)
-                tp_name = tp.name if hasattr(tp, "name") else str(tp)
+                tp_name = tp.name if tp is not None and hasattr(tp, "name") else str(tp)
                 if tp_name.capitalize() != priority:
                     continue
             if category != "All":
                 tc = getattr(t, "category", None)
-                tc_name = tc.value if hasattr(tc, "value") else str(tc)
+                tc_name = tc.value if tc is not None and hasattr(tc, "value") else str(tc)
                 if tc_name != category:
                     continue
             energy = getattr(t, "energy_required", 0)
@@ -423,7 +397,7 @@ class TaskManagerWidget(QWidget):
         for task in tasks:
             title = getattr(task, "title", "Untitled")
             priority = getattr(task, "priority", None)
-            priority_name = priority.name if hasattr(priority, "name") else str(priority)
+            priority_name = priority.name if priority is not None and hasattr(priority, "name") else str(priority)
             energy = getattr(task, "energy_required", 0)
             completed = getattr(task, "completed", False)
             due = getattr(task, "due_date", None)
@@ -466,13 +440,11 @@ class TaskManagerWidget(QWidget):
 
         self._detail_title.setText(getattr(task, "title", "Untitled"))
         priority = getattr(task, "priority", None)
-        self._detail_priority.setText(
-            f"Priority: {priority.name if hasattr(priority, 'name') else priority}"
-        )
+        priority_name = priority.name if priority is not None and hasattr(priority, "name") else str(priority)
+        self._detail_priority.setText(f"Priority: {priority_name}")
         category = getattr(task, "category", None)
-        self._detail_category.setText(
-            f"Category: {category.value if hasattr(category, 'value') else category}"
-        )
+        category_name = category.value if category is not None and hasattr(category, "value") else str(category)
+        self._detail_category.setText(f"Category: {category_name}")
         self._detail_energy.setText(
             f"Energy required: {getattr(task, 'energy_required', '--')}"
         )
@@ -508,7 +480,7 @@ class TaskManagerWidget(QWidget):
             try:
                 parsed = self._nlp_parser.parse(text)
                 if self._task_manager and hasattr(self._task_manager, "add_task"):
-                    from core.task_manager import Task, TaskPriority, TaskCategory
+                    from core.task_manager import Task, TaskCategory, TaskPriority
                     priority_map = {
                         "urgent": TaskPriority.Urgent,
                         "high": TaskPriority.High,
@@ -517,7 +489,7 @@ class TaskManagerWidget(QWidget):
                     }
                     category_map = {c.value: c for c in TaskCategory}
                     p = getattr(parsed, "priority", None)
-                    p_val = p.value if hasattr(p, "value") else str(p).lower() if p else "medium"
+                    p_val = p.value if p is not None and hasattr(p, "value") else str(p).lower() if p else "medium"
                     task = Task(
                         title=getattr(parsed, "title", text),
                         priority=priority_map.get(p_val, TaskPriority.Medium),
@@ -530,7 +502,7 @@ class TaskManagerWidget(QWidget):
                     self._push_undo("add", task)
                     self._task_manager.add_task(task)
                     self.task_added.emit()
-            except Exception:
+            except (AttributeError, TypeError):
                 self._add_task_simple(text)
         else:
             self._add_task_simple(text)
@@ -542,7 +514,7 @@ class TaskManagerWidget(QWidget):
         if not self._task_manager:
             return
         try:
-            from core.task_manager import Task, TaskPriority, TaskCategory
+            from core.task_manager import Task, TaskCategory, TaskPriority
             task = Task(
                 title=text,
                 priority=TaskPriority.Medium,
@@ -552,8 +524,8 @@ class TaskManagerWidget(QWidget):
             self._push_undo("add", task)
             self._task_manager.add_task(task)
             self.task_added.emit()
-        except Exception:
-            pass
+        except (AttributeError, TypeError) as exc:
+            logger.debug(f"Add task error: {exc}")
 
     def _add_task_dialog(self) -> None:
         self._nlp_input.setFocus()
@@ -603,7 +575,7 @@ class TaskManagerWidget(QWidget):
         ]
         if self._task_manager:
             try:
-                from core.task_manager import Task, TaskPriority, TaskCategory
+                from core.task_manager import Task, TaskCategory, TaskPriority
                 for st_name in subtask_names:
                     sub = Task(
                         title=st_name,
@@ -613,8 +585,8 @@ class TaskManagerWidget(QWidget):
                         due_date=getattr(task, "due_date", None),
                     )
                     self._task_manager.add_task(sub)
-            except Exception:
-                pass
+            except (AttributeError, TypeError) as exc:
+                logger.debug(f"Decompose task error: {exc}")
         self._refresh_task_list()
         QMessageBox.information(self, "Decomposed", f"Created {len(subtask_names)} subtasks.")
 
@@ -696,5 +668,5 @@ class TaskManagerWidget(QWidget):
     # Theme
     # ------------------------------------------------------------------
 
-    def apply_theme(self, theme: Dict[str, str]) -> None:
+    def apply_theme(self, theme: dict[str, str]) -> None:
         self._theme = theme

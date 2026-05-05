@@ -8,11 +8,10 @@ to mental health conditions.
 
 import logging
 import statistics
-from dataclasses import dataclass, field
-from datetime import datetime, date, time, timedelta
-from enum import Enum
+from dataclasses import dataclass
+from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -31,18 +30,18 @@ _MAX_ACCEPTABLE_HOURS = 10.0
 @dataclass
 class SleepEntry:
     """Represents a single night of sleep."""
-    id: Optional[int] = None
+    id: int | None = None
     date: str = ""                      # ISO date string (YYYY-MM-DD)
     bedtime: str = ""                   # ISO datetime or HH:MM
     wake_time: str = ""                 # ISO datetime or HH:MM
     quality: int = 5                    # 1-10
-    duration_hours: Optional[float] = None
+    duration_hours: float | None = None
     interruptions: int = 0
-    interruption_details: Optional[str] = None
-    sleep_aids: Optional[str] = None
-    dreams: Optional[str] = None
-    notes: Optional[str] = None
-    created_at: Optional[str] = None
+    interruption_details: str | None = None
+    sleep_aids: str | None = None
+    dreams: str | None = None
+    notes: str | None = None
+    created_at: str | None = None
 
     def __post_init__(self) -> None:
         if self.duration_hours is None and self.bedtime and self.wake_time:
@@ -149,10 +148,10 @@ class SleepTracker:
         wake_time: str,
         quality: int = 5,
         interruptions: int = 0,
-        interruption_details: Optional[str] = None,
-        sleep_aids: Optional[str] = None,
-        dreams: Optional[str] = None,
-        notes: Optional[str] = None,
+        interruption_details: str | None = None,
+        sleep_aids: str | None = None,
+        dreams: str | None = None,
+        notes: str | None = None,
     ) -> int:
         """Log a sleep entry. Returns the new row id."""
         entry = SleepEntry(
@@ -180,30 +179,30 @@ class SleepTracker:
             notes=entry.notes,
         )
         logger.info("Logged sleep for %s (%.1fh, quality %d)", date, entry.duration_hours or 0, entry.quality)
-        return row_id
+        return int(row_id)
 
-    def get_entry(self, entry_id: int) -> Optional[SleepEntry]:
+    def get_entry(self, entry_id: int) -> SleepEntry | None:
         row = self._db.get_by_id(self._table(), entry_id)
         if row is None:
             return None
         return self._row_to_entry(row)
 
     def update_entry(self, entry_id: int, **kwargs: Any) -> int:
-        return self._db.update(self._table(), entry_id, **kwargs)
+        return int(self._db.update(self._table(), entry_id, **kwargs))
 
     def delete_entry(self, entry_id: int) -> int:
-        return self._db.delete(self._table(), entry_id)
+        return int(self._db.delete(self._table(), entry_id))
 
     def get_entries(
         self,
-        days: Optional[int] = None,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
-        limit: Optional[int] = None,
-    ) -> List[SleepEntry]:
+        days: int | None = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
+        limit: int | None = None,
+    ) -> list[SleepEntry]:
         """Retrieve sleep entries, optionally filtered by date range."""
-        where_parts: List[str] = []
-        params: List[Any] = []
+        where_parts: list[str] = []
+        params: list[Any] = []
         if days is not None:
             cutoff = (datetime.now() - timedelta(days=days)).date().isoformat()
             where_parts.append("date >= ?")
@@ -225,7 +224,7 @@ class SleepTracker:
         return [self._row_to_entry(r) for r in result.rows]
 
     @staticmethod
-    def _row_to_entry(row: Dict[str, Any]) -> SleepEntry:
+    def _row_to_entry(row: dict[str, Any]) -> SleepEntry:
         return SleepEntry(
             id=row.get("id"),
             date=row.get("date", ""),
@@ -308,7 +307,7 @@ class SleepTracker:
         debt = expected - total_slept
         return round(max(0.0, debt), 2)
 
-    def duration_trend(self, days: int = 30) -> List[Tuple[str, float]]:
+    def duration_trend(self, days: int = 30) -> list[tuple[str, float]]:
         """Return (date, duration_hours) pairs for trend charting."""
         entries = self.get_entries(days=days)
         entries.reverse()  # chronological order
@@ -317,7 +316,7 @@ class SleepTracker:
             for e in entries
         ]
 
-    def quality_trend(self, days: int = 30) -> List[Tuple[str, int]]:
+    def quality_trend(self, days: int = 30) -> list[tuple[str, int]]:
         """Return (date, quality) pairs for trend charting."""
         entries = self.get_entries(days=days)
         entries.reverse()
@@ -328,7 +327,7 @@ class SleepTracker:
     # ------------------------------------------------------------------
 
     def correlate_with_mood(
-        self, mood_data: List[Dict[str, Any]], days: int = 30,
+        self, mood_data: list[dict[str, Any]], days: int = 30,
     ) -> SleepCorrelation:
         """Correlate sleep quality/duration with mood scores.
 
@@ -338,11 +337,11 @@ class SleepTracker:
             days: Number of recent days to consider.
         """
         entries = self.get_entries(days=days)
-        sleep_by_date: Dict[str, SleepEntry] = {}
+        sleep_by_date: dict[str, SleepEntry] = {}
         for e in entries:
             sleep_by_date[e.date] = e
 
-        pairs: List[Tuple[float, float]] = []
+        pairs: list[tuple[float, float]] = []
         for m in mood_data:
             d = (m.get("timestamp") or m.get("date", ""))[:10]
             if d in sleep_by_date and sleep_by_date[d].duration_hours is not None:
@@ -367,7 +366,7 @@ class SleepTracker:
         )
 
     def correlate_with_energy(
-        self, energy_data: List[Dict[str, Any]], days: int = 30,
+        self, energy_data: list[dict[str, Any]], days: int = 30,
     ) -> SleepCorrelation:
         """Correlate sleep quality/duration with energy levels.
 
@@ -375,11 +374,11 @@ class SleepTracker:
             energy_data: List of dicts with ``timestamp`` and ``energy_level``.
         """
         entries = self.get_entries(days=days)
-        sleep_by_date: Dict[str, SleepEntry] = {}
+        sleep_by_date: dict[str, SleepEntry] = {}
         for e in entries:
             sleep_by_date[e.date] = e
 
-        pairs: List[Tuple[float, float]] = []
+        pairs: list[tuple[float, float]] = []
         for en in energy_data:
             d = (en.get("timestamp") or en.get("date", ""))[:10]
             if d in sleep_by_date and sleep_by_date[d].duration_hours is not None:
@@ -407,10 +406,10 @@ class SleepTracker:
     # Sleep hygiene tips
     # ------------------------------------------------------------------
 
-    def get_tips(self, days: int = 14) -> List[str]:
+    def get_tips(self, days: int = 14) -> list[str]:
         """Generate personalised sleep hygiene tips based on recent patterns."""
         stats = self.get_stats(days=days)
-        tips: List[str] = []
+        tips: list[str] = []
 
         if stats.total_entries == 0:
             tips.append("Start logging your sleep to receive personalised tips.")
@@ -458,10 +457,10 @@ class SleepTracker:
 
         return tips
 
-    def get_condition_insights(self, condition: str) -> List[str]:
+    def get_condition_insights(self, condition: str) -> list[str]:
         """Return sleep insights tailored to a specific mental health condition."""
         condition_upper = condition.upper()
-        insights: List[str] = []
+        insights: list[str] = []
 
         if condition_upper == "ADHD":
             insights.extend([
@@ -529,21 +528,11 @@ class SleepTracker:
     # ------------------------------------------------------------------
 
     @staticmethod
-    def _pearson(x: List[float], y: List[float]) -> float:
+    def _pearson(x: list[float], y: list[float]) -> float:
         """Compute Pearson correlation coefficient between two lists."""
-        n = len(x)
-        if n < 2:
-            return 0.0
-        mean_x = sum(x) / n
-        mean_y = sum(y) / n
-        dx = [xi - mean_x for xi in x]
-        dy = [yi - mean_y for yi in y]
-        num = sum(a * b for a, b in zip(dx, dy))
-        den_x = sum(a * a for a in dx) ** 0.5
-        den_y = sum(b * b for b in dy) ** 0.5
-        if den_x == 0 or den_y == 0:
-            return 0.0
-        return num / (den_x * den_y)
+        from src.utils.statistics import pearson_correlation
+
+        return pearson_correlation(x, y)
 
     @staticmethod
     def _interpret_correlation(r: float, label_x: str, label_y: str) -> str:

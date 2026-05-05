@@ -7,19 +7,17 @@ and selective export.
 
 import json
 from datetime import date, timedelta
-from pathlib import Path
 
 import pytest
 
 try:
+    from src.core.database import DatabaseManager, TableName
     from src.core.export_manager import (
+        DataCategory,
+        ExportFormat,
         ExportManager,
         ExportOptions,
-        ExportFormat,
-        DataCategory,
-        ImportValidation,
     )
-    from src.core.database import DatabaseManager, TableName, CURRENT_SCHEMA_VERSION
     _HAS_MODULE = True
 except ImportError:
     _HAS_MODULE = False
@@ -122,12 +120,14 @@ class TestImportJson:
         # Create a fresh DB and import
         db2 = DatabaseManager(db_path=tmp_data_dir / "import_target.db")
         db2.initialize()
-        em2 = ExportManager(db2)
+        try:
+            em2 = ExportManager(db2)
 
-        counts = em2.import_from_json(export_path)
-        assert "mood_entries" in counts
-        assert counts["mood_entries"] >= 2
-        db2.close()
+            counts = em2.import_from_json(export_path)
+            assert "mood_entries" in counts
+            assert counts["mood_entries"] >= 2
+        finally:
+            db2.close()
 
     def test_import_validation_valid(self, em, populated_db, tmp_data_dir):
         export_path = tmp_data_dir / "valid_export.json"
@@ -190,15 +190,17 @@ class TestSettingsExportImport:
         # Import into fresh db
         db2 = DatabaseManager(db_path=tmp_data_dir / "settings_target.db")
         db2.initialize()
-        em2 = ExportManager(db2)
+        try:
+            em2 = ExportManager(db2)
 
-        count = em2.import_settings(output)
-        assert count >= 2
+            count = em2.import_settings(output)
+            assert count >= 2
 
-        # Verify settings were applied
-        assert db2.get_setting("theme") == "dark"
-        assert db2.get_setting("font_size") == "14"
-        db2.close()
+            # Verify settings were applied
+            assert db2.get_setting("theme") == "dark"
+            assert db2.get_setting("font_size") == "14"
+        finally:
+            db2.close()
 
 
 # ---------------------------------------------------------------------------
@@ -236,22 +238,22 @@ class TestSelectiveExport:
 
 
 # ---------------------------------------------------------------------------
-# Clinical report
+# Wellness report
 # ---------------------------------------------------------------------------
 
-class TestClinicalReport:
+class TestWellnessReport:
 
-    def test_generate_clinical_report(self, em, populated_db):
-        sections = em.generate_clinical_report(days=30)
+    def test_generate_wellness_report(self, em, populated_db):
+        sections = em.generate_wellness_report(days=30)
         assert len(sections) >= 2  # at least overview + disclaimer
 
         titles = [s.title for s in sections]
         assert "Report Overview" in titles
         assert "Disclaimer" in titles
 
-    def test_clinical_report_to_text(self, em, populated_db):
-        sections = em.generate_clinical_report(days=30)
-        text = em.clinical_report_to_text(sections)
+    def test_wellness_report_to_text(self, em, populated_db):
+        sections = em.generate_wellness_report(days=30)
+        text = em.wellness_report_to_text(sections)
 
-        assert "CLINICAL REPORT" in text
+        assert "WELLNESS REPORT" in text
         assert "Disclaimer" in text

@@ -7,57 +7,26 @@ phase indicators with countdown, cycle tracking, and pre/post mood checks.
 
 from __future__ import annotations
 
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+import logging
+from typing import Any
 
+from PyQt6.QtCore import QSize, Qt, QTimer, pyqtSignal
+from PyQt6.QtGui import QBrush, QColor, QFont, QPainter
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QFrame, QScrollArea, QSizePolicy, QComboBox, QSlider,
-    QListWidget, QListWidgetItem, QGroupBox, QMessageBox,
+    QComboBox,
+    QFrame,
+    QHBoxLayout,
+    QLabel,
+    QListWidget,
+    QScrollArea,
+    QSlider,
+    QVBoxLayout,
+    QWidget,
 )
-from PyQt6.QtCore import Qt, QTimer, pyqtSignal, QSize
-from PyQt6.QtGui import QFont, QPainter, QColor, QBrush
 
+from gui.components import AccentButton, BodyLabel, CardFrame, SectionTitle
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-def _card_frame(theme: Dict[str, str]) -> QFrame:
-    frame = QFrame()
-    frame.setFrameShape(QFrame.Shape.StyledPanel)
-    frame.setStyleSheet(
-        f"QFrame {{ background-color: {theme.get('card_bg', '#ffffff')}; "
-        f"border-radius: 12px; padding: 16px; }}"
-    )
-    frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
-    return frame
-
-
-def _section_title(text: str, theme: Dict[str, str]) -> QLabel:
-    label = QLabel(text)
-    label.setFont(QFont("Segoe UI", 13, QFont.Weight.Bold))
-    label.setStyleSheet(f"color: {theme.get('text', '#333333')}; padding-bottom: 4px;")
-    return label
-
-
-def _body_label(text: str, theme: Dict[str, str]) -> QLabel:
-    label = QLabel(text)
-    label.setWordWrap(True)
-    label.setStyleSheet(f"color: {theme.get('text', '#555555')};")
-    return label
-
-
-def _accent_button(text: str, theme: Dict[str, str]) -> QPushButton:
-    btn = QPushButton(text)
-    btn.setCursor(Qt.CursorShape.PointingHandCursor)
-    btn.setStyleSheet(
-        f"QPushButton {{ background-color: {theme.get('accent', '#4a90d9')}; "
-        f"color: #ffffff; border: none; border-radius: 8px; padding: 10px 18px; "
-        f"font-weight: bold; font-size: 13px; }}"
-        f"QPushButton:hover {{ background-color: {theme.get('secondary', '#357abd')}; }}"
-    )
-    return btn
+logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
@@ -67,7 +36,7 @@ def _accent_button(text: str, theme: Dict[str, str]) -> QPushButton:
 class BreathingCircle(QWidget):
     """A circle that expands on inhale and contracts on exhale."""
 
-    def __init__(self, theme: Dict[str, str], parent: Optional[QWidget] = None) -> None:
+    def __init__(self, theme: dict[str, str], parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._theme = theme
         self._ratio: float = 0.3  # 0.0 to 1.0
@@ -124,10 +93,10 @@ class BreathingWidget(QWidget):
 
     def __init__(
         self,
-        theme: Dict[str, str],
+        theme: dict[str, str],
         breathing_manager: Any = None,
         profile_manager: Any = None,
-        parent: Optional[QWidget] = None,
+        parent: QWidget | None = None,
     ) -> None:
         super().__init__(parent)
         self._theme = theme
@@ -137,7 +106,7 @@ class BreathingWidget(QWidget):
         # Session state
         self._running: bool = False
         self._paused: bool = False
-        self._timer_data: List[Dict] = []
+        self._timer_data: list[dict] = []
         self._tick_ms: int = 50
         self._elapsed_ms: int = 0
         self._current_phase_idx: int = 0
@@ -174,7 +143,7 @@ class BreathingWidget(QWidget):
         self._root.setContentsMargins(24, 24, 24, 24)
         scroll.setWidget(container)
 
-        self._root.addWidget(_section_title("Breathing Exercises", self._theme))
+        self._root.addWidget(SectionTitle("Breathing Exercises", self._theme))
 
         top = QHBoxLayout()
         top.setSpacing(16)
@@ -192,14 +161,14 @@ class BreathingWidget(QWidget):
     # -- selector -------------------------------------------------------
 
     def _build_selector(self, parent_layout: QHBoxLayout) -> None:
-        card = _card_frame(self._theme)
+        card = CardFrame(self._theme)
         card.setStyleSheet(
             card.styleSheet().replace(
                 self._theme.get("card_bg", "#ffffff"), self._CALM_CARD
             )
         )
         layout = QVBoxLayout(card)
-        layout.addWidget(_section_title("Select Exercise", self._theme))
+        layout.addWidget(SectionTitle("Select Exercise", self._theme))
 
         self._exercise_combo = QComboBox()
         self._exercise_combo.setStyleSheet(
@@ -212,15 +181,15 @@ class BreathingWidget(QWidget):
         parent_layout.addWidget(card, stretch=1)
 
     def _build_recommendation(self, parent_layout: QHBoxLayout) -> None:
-        card = _card_frame(self._theme)
+        card = CardFrame(self._theme)
         card.setStyleSheet(
             card.styleSheet().replace(
                 self._theme.get("card_bg", "#ffffff"), self._CALM_CARD
             )
         )
         layout = QVBoxLayout(card)
-        layout.addWidget(_section_title("Recommended", self._theme))
-        self._recommendation_label = _body_label(
+        layout.addWidget(SectionTitle("Recommended", self._theme))
+        self._recommendation_label = BodyLabel(
             "Track your mood for personalised recommendations.", self._theme
         )
         layout.addWidget(self._recommendation_label)
@@ -229,14 +198,14 @@ class BreathingWidget(QWidget):
     # -- exercise info --------------------------------------------------
 
     def _build_exercise_info(self) -> None:
-        card = _card_frame(self._theme)
+        card = CardFrame(self._theme)
         card.setStyleSheet(
             card.styleSheet().replace(
                 self._theme.get("card_bg", "#ffffff"), self._CALM_CARD
             )
         )
         layout = QVBoxLayout(card)
-        self._desc_label = _body_label("Select an exercise to see its description.", self._theme)
+        self._desc_label = BodyLabel("Select an exercise to see its description.", self._theme)
         self._desc_label.setFont(QFont("Segoe UI", 11))
         layout.addWidget(self._desc_label)
         self._root.addWidget(card)
@@ -244,7 +213,7 @@ class BreathingWidget(QWidget):
     # -- visual guide ---------------------------------------------------
 
     def _build_visual_guide(self) -> None:
-        card = _card_frame(self._theme)
+        card = CardFrame(self._theme)
         card.setStyleSheet(
             card.styleSheet().replace(
                 self._theme.get("card_bg", "#ffffff"), self._CALM_CARD
@@ -268,7 +237,7 @@ class BreathingWidget(QWidget):
         self._countdown_label.setStyleSheet(f"color: {self._theme.get('text', '#333')};")
         layout.addWidget(self._countdown_label)
 
-        self._cycle_label = _body_label("Cycle: -- / --", self._theme)
+        self._cycle_label = BodyLabel("Cycle: -- / --", self._theme)
         self._cycle_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self._cycle_label)
 
@@ -277,7 +246,7 @@ class BreathingWidget(QWidget):
     # -- mood checks ----------------------------------------------------
 
     def _build_mood_checks(self) -> None:
-        card = _card_frame(self._theme)
+        card = CardFrame(self._theme)
         card.setStyleSheet(
             card.styleSheet().replace(
                 self._theme.get("card_bg", "#ffffff"), self._CALM_CARD
@@ -288,11 +257,11 @@ class BreathingWidget(QWidget):
 
         # Pre-session
         pre_col = QVBoxLayout()
-        pre_col.addWidget(_body_label("Pre-session mood (1-10):", self._theme))
+        pre_col.addWidget(BodyLabel("Pre-session mood (1-10):", self._theme))
         self._pre_mood_slider = QSlider(Qt.Orientation.Horizontal)
         self._pre_mood_slider.setRange(1, 10)
         self._pre_mood_slider.setValue(5)
-        self._pre_mood_value = _body_label("5", self._theme)
+        self._pre_mood_value = BodyLabel("5", self._theme)
         self._pre_mood_slider.valueChanged.connect(
             lambda v: self._pre_mood_value.setText(str(v))
         )
@@ -302,11 +271,11 @@ class BreathingWidget(QWidget):
 
         # Post-session
         post_col = QVBoxLayout()
-        post_col.addWidget(_body_label("Post-session mood (1-10):", self._theme))
+        post_col.addWidget(BodyLabel("Post-session mood (1-10):", self._theme))
         self._post_mood_slider = QSlider(Qt.Orientation.Horizontal)
         self._post_mood_slider.setRange(1, 10)
         self._post_mood_slider.setValue(5)
-        self._post_mood_value = _body_label("5", self._theme)
+        self._post_mood_value = BodyLabel("5", self._theme)
         self._post_mood_slider.valueChanged.connect(
             lambda v: self._post_mood_value.setText(str(v))
         )
@@ -319,7 +288,7 @@ class BreathingWidget(QWidget):
     # -- controls -------------------------------------------------------
 
     def _build_controls(self) -> None:
-        card = _card_frame(self._theme)
+        card = CardFrame(self._theme)
         card.setStyleSheet(
             card.styleSheet().replace(
                 self._theme.get("card_bg", "#ffffff"), self._CALM_CARD
@@ -327,16 +296,16 @@ class BreathingWidget(QWidget):
         )
         layout = QHBoxLayout(card)
 
-        self._start_btn = _accent_button("Start", self._theme)
+        self._start_btn = AccentButton("Start", self._theme)
         self._start_btn.clicked.connect(self._start_session)
         layout.addWidget(self._start_btn)
 
-        self._pause_btn = _accent_button("Pause", self._theme)
+        self._pause_btn = AccentButton("Pause", self._theme)
         self._pause_btn.setEnabled(False)
         self._pause_btn.clicked.connect(self._pause_session)
         layout.addWidget(self._pause_btn)
 
-        self._stop_btn = _accent_button("Stop", self._theme)
+        self._stop_btn = AccentButton("Stop", self._theme)
         self._stop_btn.setEnabled(False)
         self._stop_btn.clicked.connect(self._stop_session)
         layout.addWidget(self._stop_btn)
@@ -346,14 +315,14 @@ class BreathingWidget(QWidget):
     # -- history --------------------------------------------------------
 
     def _build_history(self) -> None:
-        card = _card_frame(self._theme)
+        card = CardFrame(self._theme)
         card.setStyleSheet(
             card.styleSheet().replace(
                 self._theme.get("card_bg", "#ffffff"), self._CALM_CARD
             )
         )
         layout = QVBoxLayout(card)
-        layout.addWidget(_section_title("Session History", self._theme))
+        layout.addWidget(SectionTitle("Session History", self._theme))
 
         self._history_list = QListWidget()
         self._history_list.setMaximumHeight(200)
@@ -393,7 +362,7 @@ class BreathingWidget(QWidget):
                 etype = self._exercise_combo.currentData()
                 ex = self._breathing_manager.get_exercise(etype)
                 self._desc_label.setText(f"{ex.name}\n\n{ex.description}")
-            except Exception:
+            except (AttributeError, TypeError):
                 self._desc_label.setText("")
         else:
             self._desc_label.setText(self._exercise_combo.currentText())
@@ -411,8 +380,8 @@ class BreathingWidget(QWidget):
                 imp_str = f"  Mood change: {improvement:+d}" if improvement is not None else ""
                 text = f"{started[:16]}  |  {etype}{imp_str}"
                 self._history_list.addItem(text)
-        except Exception:
-            pass
+        except (AttributeError, TypeError) as exc:
+            logger.debug(f"History refresh error: {exc}")
 
     def _update_recommendation(self) -> None:
         if not self._breathing_manager or not hasattr(self._breathing_manager, "recommend"):
@@ -425,8 +394,8 @@ class BreathingWidget(QWidget):
                 self._recommendation_label.setText(
                     f"Recommended: {recs[0].name}\n{recs[0].description[:120]}..."
                 )
-        except Exception:
-            pass
+        except (AttributeError, TypeError) as exc:
+            logger.debug(f"Recommendation error: {exc}")
 
     # ------------------------------------------------------------------
     # Session control
@@ -445,7 +414,7 @@ class BreathingWidget(QWidget):
                 ex = self._breathing_manager.get_exercise(etype)
                 self._timer_data = ex.get_timer_data()
                 self._total_cycles = ex.default_cycles
-            except Exception:
+            except (AttributeError, TypeError):
                 self._timer_data = self._fallback_timer_data()
                 self._total_cycles = 4
         else:
@@ -457,7 +426,7 @@ class BreathingWidget(QWidget):
                 self._session = self._breathing_manager.create_session(
                     etype, mood_before=self._pre_mood_slider.value()
                 )
-            except Exception:
+            except (AttributeError, TypeError):
                 self._session = None
 
         self._running = True
@@ -507,8 +476,8 @@ class BreathingWidget(QWidget):
                     "mood_after": self._post_mood_slider.value(),
                 }
                 self.session_completed.emit(result)
-            except Exception:
-                pass
+            except (AttributeError, TypeError) as exc:
+                logger.debug(f"Breathing manager session error: {exc}")
 
         self._refresh_history()
 
@@ -553,9 +522,9 @@ class BreathingWidget(QWidget):
         self._countdown_label.setText(f"{remaining:.0f}s")
         self._cycle_label.setText(f"Cycle: {self._current_cycle} / {self._total_cycles}")
 
-    def _fallback_timer_data(self) -> List[Dict]:
+    def _fallback_timer_data(self) -> list[dict]:
         """Fallback box breathing timer data when no manager is available."""
-        data: List[Dict] = []
+        data: list[dict] = []
         elapsed = 0.0
         phases = [
             ("inhale", 4.0, "Breathe in slowly"),
@@ -580,5 +549,5 @@ class BreathingWidget(QWidget):
     # Theme
     # ------------------------------------------------------------------
 
-    def apply_theme(self, theme: Dict[str, str]) -> None:
+    def apply_theme(self, theme: dict[str, str]) -> None:
         self._theme = theme

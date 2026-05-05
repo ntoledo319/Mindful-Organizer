@@ -3,24 +3,22 @@ ERP (Exposure and Response Prevention) tracker for the Mindful Organizer applica
 
 Provides structured tracking of exposure hierarchies, exposure sessions,
 response prevention logs, safety behaviors, habituation data, and
-progress summaries for OCD treatment support.
+progress summaries for OCD support.
 
 DISCLAIMER: ERP is most effective when guided by a trained therapist
-specializing in OCD treatment.  This tool is designed to supplement
+specializing in OCD support.  This tool is designed to supplement
 professional care, not replace it.
 """
 
-from dataclasses import dataclass, field
-from datetime import datetime, date
-from typing import Dict, List, Optional, Tuple
-from pathlib import Path
 import json
 import uuid
-
+from dataclasses import dataclass, field
+from datetime import date, datetime
+from pathlib import Path
 
 DISCLAIMER = (
     "ERP is most effective when guided by a trained therapist specializing "
-    "in OCD treatment. This tool is designed to supplement professional care, "
+    "in OCD support. This tool is designed to supplement professional care, "
     "not replace it. Please work with a qualified mental health professional "
     "when implementing exposure and response prevention exercises."
 )
@@ -49,7 +47,7 @@ class HierarchyItem:
         if not 0 <= self.suds_rating <= 100:
             raise ValueError("suds_rating must be between 0 and 100")
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         return {
             "item_id": self.item_id,
             "situation": self.situation,
@@ -59,7 +57,7 @@ class HierarchyItem:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict) -> "HierarchyItem":
+    def from_dict(cls, data: dict) -> "HierarchyItem":
         return cls(
             item_id=data["item_id"],
             situation=data["situation"],
@@ -86,7 +84,7 @@ class ExposureSession:
     session_id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
     hierarchy_item_id: str = ""
     predicted_anxiety: int = 50
-    actual_anxiety_readings: List[Tuple[int, int]] = field(default_factory=list)
+    actual_anxiety_readings: list[tuple[int, int]] = field(default_factory=list)
     duration_minutes: int = 0
     compulsion_performed: bool = False
     notes: str = ""
@@ -97,21 +95,21 @@ class ExposureSession:
             raise ValueError("predicted_anxiety must be between 0 and 100")
 
     @property
-    def peak_anxiety(self) -> Optional[int]:
+    def peak_anxiety(self) -> int | None:
         """Return the highest SUDS recorded during the session."""
         if not self.actual_anxiety_readings:
             return None
         return max(suds for _, suds in self.actual_anxiety_readings)
 
     @property
-    def final_anxiety(self) -> Optional[int]:
+    def final_anxiety(self) -> int | None:
         """Return the last SUDS reading of the session."""
         if not self.actual_anxiety_readings:
             return None
         return self.actual_anxiety_readings[-1][1]
 
     @property
-    def anxiety_reduction(self) -> Optional[int]:
+    def anxiety_reduction(self) -> int | None:
         """Difference between peak and final SUDS."""
         peak = self.peak_anxiety
         final = self.final_anxiety
@@ -119,7 +117,7 @@ class ExposureSession:
             return peak - final
         return None
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         return {
             "session_id": self.session_id,
             "hierarchy_item_id": self.hierarchy_item_id,
@@ -132,7 +130,7 @@ class ExposureSession:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict) -> "ExposureSession":
+    def from_dict(cls, data: dict) -> "ExposureSession":
         readings = [
             (int(r[0]), int(r[1])) for r in data.get("actual_anxiety_readings", [])
         ]
@@ -171,7 +169,7 @@ class ResponsePreventionLog:
         if not 0 <= self.urge_intensity <= 100:
             raise ValueError("urge_intensity must be between 0 and 100")
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         return {
             "log_id": self.log_id,
             "session_id": self.session_id,
@@ -182,7 +180,7 @@ class ResponsePreventionLog:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict) -> "ResponsePreventionLog":
+    def from_dict(cls, data: dict) -> "ResponsePreventionLog":
         return cls(
             log_id=data["log_id"],
             session_id=data.get("session_id", ""),
@@ -210,7 +208,7 @@ class SafetyBehavior:
     times_used: int = 0
     working_on_reducing: bool = False
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         return {
             "behavior_id": self.behavior_id,
             "description": self.description,
@@ -220,7 +218,7 @@ class SafetyBehavior:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict) -> "SafetyBehavior":
+    def from_dict(cls, data: dict) -> "SafetyBehavior":
         return cls(
             behavior_id=data["behavior_id"],
             description=data["description"],
@@ -244,10 +242,10 @@ class ERPTracker:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self._data_file = self.data_dir / "erp_data.json"
-        self._hierarchy: List[HierarchyItem] = []
-        self._sessions: List[ExposureSession] = []
-        self._rp_logs: List[ResponsePreventionLog] = []
-        self._safety_behaviors: List[SafetyBehavior] = []
+        self._hierarchy: list[HierarchyItem] = []
+        self._sessions: list[ExposureSession] = []
+        self._rp_logs: list[ResponsePreventionLog] = []
+        self._safety_behaviors: list[SafetyBehavior] = []
         self._load()
 
     # ── persistence ──────────────────────────────────────────────
@@ -256,7 +254,7 @@ class ERPTracker:
         """Load all ERP data from disk."""
         if self._data_file.exists():
             try:
-                with open(self._data_file, "r") as fh:
+                with open(self._data_file) as fh:
                     data = json.load(fh)
                 self._hierarchy = [
                     HierarchyItem.from_dict(h) for h in data.get("hierarchy", [])
@@ -317,10 +315,10 @@ class ERPTracker:
     def update_hierarchy_item(
         self,
         item_id: str,
-        situation: Optional[str] = None,
-        suds_rating: Optional[int] = None,
-        notes: Optional[str] = None,
-    ) -> Optional[HierarchyItem]:
+        situation: str | None = None,
+        suds_rating: int | None = None,
+        notes: str | None = None,
+    ) -> HierarchyItem | None:
         """Update an existing hierarchy item.
 
         Args:
@@ -362,7 +360,7 @@ class ERPTracker:
                 return True
         return False
 
-    def get_hierarchy(self) -> List[HierarchyItem]:
+    def get_hierarchy(self) -> list[HierarchyItem]:
         """Return the full hierarchy sorted by SUDS rating (lowest first).
 
         Returns:
@@ -370,7 +368,7 @@ class ERPTracker:
         """
         return sorted(self._hierarchy, key=lambda h: h.suds_rating)
 
-    def get_hierarchy_item(self, item_id: str) -> Optional[HierarchyItem]:
+    def get_hierarchy_item(self, item_id: str) -> HierarchyItem | None:
         """Retrieve a single hierarchy item by ID.
 
         Args:
@@ -390,7 +388,7 @@ class ERPTracker:
         self,
         hierarchy_item_id: str,
         predicted_anxiety: int,
-        actual_anxiety_readings: List[Tuple[int, int]],
+        actual_anxiety_readings: list[tuple[int, int]],
         duration_minutes: int,
         compulsion_performed: bool = False,
         notes: str = "",
@@ -431,7 +429,7 @@ class ERPTracker:
         self._save()
         return session
 
-    def get_sessions_for_item(self, item_id: str) -> List[ExposureSession]:
+    def get_sessions_for_item(self, item_id: str) -> list[ExposureSession]:
         """Return all sessions for a given hierarchy item, sorted by date.
 
         Args:
@@ -445,7 +443,7 @@ class ERPTracker:
             key=lambda s: s.date,
         )
 
-    def get_all_sessions(self) -> List[ExposureSession]:
+    def get_all_sessions(self) -> list[ExposureSession]:
         """Return all exposure sessions sorted by date."""
         return sorted(self._sessions, key=lambda s: s.date)
 
@@ -485,7 +483,7 @@ class ERPTracker:
         self._save()
         return log
 
-    def get_rp_logs_for_session(self, session_id: str) -> List[ResponsePreventionLog]:
+    def get_rp_logs_for_session(self, session_id: str) -> list[ResponsePreventionLog]:
         """Return all response prevention logs for a given session.
 
         Args:
@@ -520,7 +518,7 @@ class ERPTracker:
         self._save()
         return behavior
 
-    def increment_safety_behavior(self, behavior_id: str) -> Optional[SafetyBehavior]:
+    def increment_safety_behavior(self, behavior_id: str) -> SafetyBehavior | None:
         """Record one use of a safety behavior.
 
         Args:
@@ -539,9 +537,9 @@ class ERPTracker:
     def update_safety_behavior(
         self,
         behavior_id: str,
-        working_on_reducing: Optional[bool] = None,
-        description: Optional[str] = None,
-    ) -> Optional[SafetyBehavior]:
+        working_on_reducing: bool | None = None,
+        description: str | None = None,
+    ) -> SafetyBehavior | None:
         """Update a safety behavior record.
 
         Args:
@@ -562,13 +560,13 @@ class ERPTracker:
                 return behavior
         return None
 
-    def get_safety_behaviors(self) -> List[SafetyBehavior]:
+    def get_safety_behaviors(self) -> list[SafetyBehavior]:
         """Return all tracked safety behaviors."""
         return list(self._safety_behaviors)
 
     # ── habituation data ─────────────────────────────────────────
 
-    def get_habituation_data(self, item_id: str) -> List[Dict]:
+    def get_habituation_data(self, item_id: str) -> list[dict]:
         """Return SUDS data over sessions for a hierarchy item (for charting).
 
         Each entry contains the session date, predicted anxiety, peak anxiety,
@@ -581,9 +579,9 @@ class ERPTracker:
             List of dicts, one per session, chronologically ordered.
         """
         sessions = self.get_sessions_for_item(item_id)
-        data: List[Dict] = []
+        data: list[dict] = []
         for session in sessions:
-            entry: Dict = {
+            entry: dict = {
                 "session_id": session.session_id,
                 "date": session.date,
                 "predicted_anxiety": session.predicted_anxiety,
@@ -603,7 +601,7 @@ class ERPTracker:
 
     # ── progress summary ─────────────────────────────────────────
 
-    def get_progress_summary(self) -> Dict:
+    def get_progress_summary(self) -> dict:
         """Compute an overall progress summary.
 
         Returns:
@@ -669,7 +667,7 @@ class ERPTracker:
 
     # ── export ───────────────────────────────────────────────────
 
-    def export_report(self) -> Dict:
+    def export_report(self) -> dict:
         """Export a therapist-shareable data dictionary.
 
         Returns:
@@ -687,7 +685,7 @@ class ERPTracker:
                 "habituation_data": self.get_habituation_data(item.item_id),
             })
 
-        rp_summary: Dict = {
+        rp_summary: dict = {
             "total_logs": len(self._rp_logs),
             "urges_resisted": sum(1 for r in self._rp_logs if r.urge_resisted),
             "average_urge_intensity": (

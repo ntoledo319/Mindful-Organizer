@@ -11,11 +11,11 @@ import pytest
 
 try:
     from src.core.nlp_parser import (
+        Category,
+        EnergyRequired,
         NLPTaskParser,
         ParsedTask,
         Priority,
-        Category,
-        EnergyRequired,
     )
     _HAS_MODULE = True
 except ImportError:

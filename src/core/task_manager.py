@@ -3,17 +3,19 @@ Task management system for organizing and prioritizing tasks.
 Supports recurring tasks, subtasks, dependencies, templates, undo/redo,
 tags, values alignment, and comprehensive statistics.
 """
-from enum import Enum
-from dataclasses import dataclass, field
-from datetime import datetime, date, timedelta
-from typing import Optional, List, Dict, Set, Any, Callable
-from pathlib import Path
-from copy import deepcopy
 import json
 import uuid
+from collections.abc import Callable
+from copy import deepcopy
+from dataclasses import dataclass, field
+from datetime import date, datetime, timedelta
+from enum import Enum
+from pathlib import Path
+from typing import Any
 
 
 class TaskPriority(Enum):
+    """Priority levels for tasks."""
     Low = 1
     Medium = 2
     High = 3
@@ -21,6 +23,7 @@ class TaskPriority(Enum):
 
 
 class TaskCategory(Enum):
+    """Built-in categories for tasks."""
     Work = "Work"
     Personal = "Personal"
     Health = "Health"
@@ -44,9 +47,10 @@ class SubTask:
     """A subtask belonging to a parent task."""
     title: str
     completed: bool = False
-    completed_at: Optional[str] = None
+    completed_at: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize subtask to dictionary."""
         return {
             "title": self.title,
             "completed": self.completed,
@@ -54,7 +58,8 @@ class SubTask:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "SubTask":
+    def from_dict(cls, data: dict[str, Any]) -> "SubTask":
+        """Deserialize subtask from dictionary."""
         return cls(
             title=data["title"],
             completed=data.get("completed", False),
@@ -66,10 +71,11 @@ class SubTask:
 class RecurrenceConfig:
     """Configuration for recurring tasks."""
     pattern: RecurrencePattern
-    custom_days: Optional[List[int]] = None  # 0=Mon..6=Sun for CUSTOM_DAYS
-    end_date: Optional[str] = None  # ISO date string or None for no end
+    custom_days: list[int] | None = None  # 0=Mon..6=Sun for CUSTOM_DAYS
+    end_date: str | None = None  # ISO date string or None for no end
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize recurrence configuration to dictionary."""
         return {
             "pattern": self.pattern.value,
             "custom_days": self.custom_days,
@@ -77,14 +83,15 @@ class RecurrenceConfig:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "RecurrenceConfig":
+    def from_dict(cls, data: dict[str, Any]) -> "RecurrenceConfig":
+        """Deserialize recurrence configuration from dictionary."""
         return cls(
             pattern=RecurrencePattern(data["pattern"]),
             custom_days=data.get("custom_days"),
             end_date=data.get("end_date"),
         )
 
-    def next_due_date(self, current_due: date) -> Optional[date]:
+    def next_due_date(self, current_due: date) -> date | None:
         """Calculate the next due date from the current one."""
         if self.end_date:
             end = date.fromisoformat(self.end_date)
@@ -123,20 +130,20 @@ class Task:
     category: TaskCategory
     energy_required: int
     id: str = ""
-    due_date: Optional[str] = None
+    due_date: str | None = None
     completed: bool = False
-    notes: Optional[str] = None
+    notes: str | None = None
     created_at: str = ""
-    completed_at: Optional[str] = None
-    subtasks: List[SubTask] = field(default_factory=list)
-    tags: Set[str] = field(default_factory=set)
-    custom_category: Optional[str] = None
-    recurrence: Optional[RecurrenceConfig] = None
-    blocked_by: List[str] = field(default_factory=list)
-    estimated_duration: Optional[int] = None  # minutes
-    actual_duration: Optional[int] = None  # minutes
-    values_alignment: Optional[str] = None  # ACT therapy personal value
-    reminder: Optional[str] = None  # ISO datetime string
+    completed_at: str | None = None
+    subtasks: list[SubTask] = field(default_factory=list)
+    tags: set[str] = field(default_factory=set)
+    custom_category: str | None = None
+    recurrence: RecurrenceConfig | None = None
+    blocked_by: list[str] = field(default_factory=list)
+    estimated_duration: int | None = None  # minutes
+    actual_duration: int | None = None  # minutes
+    values_alignment: str | None = None  # ACT therapy personal value
+    reminder: str | None = None  # ISO datetime string
 
     def __post_init__(self):
         if not self.id:
@@ -146,7 +153,7 @@ class Task:
         if isinstance(self.tags, list):
             self.tags = set(self.tags)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Serialize task to dictionary."""
         return {
             "id": self.id,
@@ -171,7 +178,7 @@ class Task:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "Task":
+    def from_dict(cls, data: dict[str, Any]) -> "Task":
         """Deserialize task from dictionary, handling legacy formats."""
         # Handle priority
         priority_val = data.get("priority", 2)
@@ -259,14 +266,15 @@ class TaskTemplate:
     priority: int
     category: str
     energy_required: int
-    tags: List[str] = field(default_factory=list)
-    subtasks: List[Dict[str, Any]] = field(default_factory=list)
-    estimated_duration: Optional[int] = None
-    values_alignment: Optional[str] = None
-    custom_category: Optional[str] = None
-    notes: Optional[str] = None
+    tags: list[str] = field(default_factory=list)
+    subtasks: list[dict[str, Any]] = field(default_factory=list)
+    estimated_duration: int | None = None
+    values_alignment: str | None = None
+    custom_category: str | None = None
+    notes: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize template to dictionary."""
         return {
             "name": self.name,
             "title": self.title,
@@ -282,7 +290,8 @@ class TaskTemplate:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "TaskTemplate":
+    def from_dict(cls, data: dict[str, Any]) -> "TaskTemplate":
+        """Deserialize template from dictionary."""
         return cls(**data)
 
     def create_task(self) -> Task:
@@ -325,8 +334,8 @@ class UndoManager:
     """Manages undo/redo history for task operations."""
 
     def __init__(self, max_history: int = 50):
-        self._undo_stack: List[UndoAction] = []
-        self._redo_stack: List[UndoAction] = []
+        self._undo_stack: list[UndoAction] = []
+        self._redo_stack: list[UndoAction] = []
         self.max_history = max_history
 
     def push(self, action: UndoAction) -> None:
@@ -336,7 +345,7 @@ class UndoManager:
             self._undo_stack.pop(0)
         self._redo_stack.clear()
 
-    def undo(self) -> Optional[str]:
+    def undo(self) -> str | None:
         """Undo the last action. Returns description or None."""
         if not self._undo_stack:
             return None
@@ -345,7 +354,7 @@ class UndoManager:
         self._redo_stack.append(action)
         return action.description
 
-    def redo(self) -> Optional[str]:
+    def redo(self) -> str | None:
         """Redo the last undone action. Returns description or None."""
         if not self._redo_stack:
             return None
@@ -363,12 +372,12 @@ class UndoManager:
         return len(self._redo_stack) > 0
 
     @property
-    def undo_description(self) -> Optional[str]:
+    def undo_description(self) -> str | None:
         """Description of the action that would be undone."""
         return self._undo_stack[-1].description if self._undo_stack else None
 
     @property
-    def redo_description(self) -> Optional[str]:
+    def redo_description(self) -> str | None:
         """Description of the action that would be redone."""
         return self._redo_stack[-1].description if self._redo_stack else None
 
@@ -382,9 +391,9 @@ class TaskManager:
         self.tasks_file = data_dir / "tasks.json"
         self.templates_file = data_dir / "task_templates.json"
         self.custom_categories_file = data_dir / "custom_categories.json"
-        self.tasks: List[Task] = []
-        self.templates: Dict[str, TaskTemplate] = {}
-        self.custom_categories: List[str] = []
+        self.tasks: list[Task] = []
+        self.templates: dict[str, TaskTemplate] = {}
+        self.custom_categories: list[str] = []
         self.undo_manager = UndoManager()
         self._load_tasks()
         self._load_templates()
@@ -397,7 +406,7 @@ class TaskManager:
         if not self.tasks_file.exists():
             self.tasks = []
             return
-        with open(self.tasks_file, "r") as f:
+        with open(self.tasks_file) as f:
             tasks_data = json.load(f)
         self.tasks = [Task.from_dict(t) for t in tasks_data]
 
@@ -411,7 +420,7 @@ class TaskManager:
         if not self.templates_file.exists():
             self.templates = {}
             return
-        with open(self.templates_file, "r") as f:
+        with open(self.templates_file) as f:
             data = json.load(f)
         self.templates = {k: TaskTemplate.from_dict(v) for k, v in data.items()}
 
@@ -425,7 +434,7 @@ class TaskManager:
         if not self.custom_categories_file.exists():
             self.custom_categories = []
             return
-        with open(self.custom_categories_file, "r") as f:
+        with open(self.custom_categories_file) as f:
             self.custom_categories = json.load(f)
 
     def _save_custom_categories(self) -> None:
@@ -449,7 +458,7 @@ class TaskManager:
             return True
         return False
 
-    def get_all_categories(self) -> List[str]:
+    def get_all_categories(self) -> list[str]:
         """Return built-in category values plus custom categories."""
         built_in = [c.value for c in TaskCategory]
         return built_in + self.custom_categories
@@ -460,6 +469,14 @@ class TaskManager:
         """Add a task with undo support."""
         self.tasks.append(task)
         self._save_tasks()
+
+        # Emit state change
+        try:
+            from gui.state_bus import get_state_bus
+            bus = get_state_bus()
+            bus.emit_task_changed("added", task_id=task.id, title=task.title)
+        except RuntimeError:
+            pass
 
         task_copy = deepcopy(task)
 
@@ -474,7 +491,7 @@ class TaskManager:
         self.undo_manager.push(UndoAction(f"Add task: {task.title}", undo, redo))
         return task
 
-    def delete_task(self, task_id: str) -> Optional[Task]:
+    def delete_task(self, task_id: str) -> Task | None:
         """Delete a task by ID with undo support."""
         task = self.get_task_by_id(task_id)
         if task is None:
@@ -495,12 +512,12 @@ class TaskManager:
         self.undo_manager.push(UndoAction(f"Delete task: {task_copy.title}", undo, redo))
         return task_copy
 
-    def update_task(self, task_id: str, **kwargs: Any) -> Optional[Task]:
+    def update_task(self, task_id: str, **kwargs: Any) -> Task | None:
         """Update task fields by ID with undo support."""
         task = self.get_task_by_id(task_id)
         if task is None:
             return None
-        old_values: Dict[str, Any] = {}
+        old_values: dict[str, Any] = {}
         for key, value in kwargs.items():
             if hasattr(task, key):
                 old_values[key] = deepcopy(getattr(task, key))
@@ -525,12 +542,9 @@ class TaskManager:
         self.undo_manager.push(UndoAction(f"Update task: {task.title}", undo, redo))
         return task
 
-    def complete_task(self, task_or_id: Any) -> Optional[Task]:
+    def complete_task(self, task_or_id: Any) -> Task | None:
         """Mark a task as completed. Accepts a Task object or task ID string."""
-        if isinstance(task_or_id, str):
-            task = self.get_task_by_id(task_or_id)
-        else:
-            task = task_or_id
+        task = self.get_task_by_id(task_or_id) if isinstance(task_or_id, str) else task_or_id
 
         if task is None:
             return None
@@ -540,6 +554,14 @@ class TaskManager:
         task.completed = True
         task.completed_at = datetime.now().isoformat()
         self._save_tasks()
+
+        # Emit state change
+        try:
+            from gui.state_bus import get_state_bus
+            bus = get_state_bus()
+            bus.emit_task_changed("completed", task_id=task.id, title=task.title)
+        except RuntimeError:
+            pass
 
         task_id = task.id
 
@@ -565,8 +587,10 @@ class TaskManager:
 
         return task
 
-    def _generate_next_recurring(self, completed_task: Task) -> Optional[Task]:
+    def _generate_next_recurring(self, completed_task: Task) -> Task | None:
         """Create the next instance of a recurring task."""
+        if completed_task.due_date is None or completed_task.recurrence is None:
+            return None
         current_due = date.fromisoformat(completed_task.due_date)
         next_due = completed_task.recurrence.next_due_date(current_due)
         if next_due is None:
@@ -592,7 +616,7 @@ class TaskManager:
         self._save_tasks()
         return new_task
 
-    def complete_subtask(self, task_id: str, subtask_index: int) -> Optional[SubTask]:
+    def complete_subtask(self, task_id: str, subtask_index: int) -> SubTask | None:
         """Complete a subtask by index within a task."""
         task = self.get_task_by_id(task_id)
         if task is None or subtask_index >= len(task.subtasks):
@@ -603,7 +627,7 @@ class TaskManager:
         self._save_tasks()
         return subtask
 
-    def get_task_by_id(self, task_id: str) -> Optional[Task]:
+    def get_task_by_id(self, task_id: str) -> Task | None:
         """Find a task by its ID."""
         for task in self.tasks:
             if task.id == task_id:
@@ -612,55 +636,53 @@ class TaskManager:
 
     # ── Query Methods ─────────────────────────────────────────────
 
-    def get_tasks(self, completed: bool = False) -> List[Task]:
+    def get_tasks(self, completed: bool = False) -> list[Task]:
         """Get tasks filtered by completion status."""
         return [t for t in self.tasks if t.completed == completed]
 
-    def get_tasks_by_priority(self, priority: TaskPriority) -> List[Task]:
+    def get_tasks_by_priority(self, priority: TaskPriority) -> list[Task]:
         """Get incomplete tasks of a given priority."""
         return [t for t in self.tasks if t.priority == priority and not t.completed]
 
-    def get_tasks_by_category(self, category: TaskCategory) -> List[Task]:
+    def get_tasks_by_category(self, category: TaskCategory) -> list[Task]:
         """Get incomplete tasks of a given category."""
         return [t for t in self.tasks if t.category == category and not t.completed]
 
-    def get_tasks_by_custom_category(self, custom_category: str) -> List[Task]:
+    def get_tasks_by_custom_category(self, custom_category: str) -> list[Task]:
         """Get incomplete tasks with a specific custom category."""
         return [t for t in self.tasks if t.custom_category == custom_category and not t.completed]
 
-    def get_tasks_by_energy(self, max_energy: int) -> List[Task]:
+    def get_tasks_by_energy(self, max_energy: int) -> list[Task]:
         """Get incomplete tasks requiring at most the given energy level."""
         return [t for t in self.tasks if t.energy_required <= max_energy and not t.completed]
 
-    def get_tasks_by_tag(self, tag: str) -> List[Task]:
+    def get_tasks_by_tag(self, tag: str) -> list[Task]:
         """Get incomplete tasks containing a specific tag."""
         return [t for t in self.tasks if tag in t.tags and not t.completed]
 
-    def get_tasks_by_value(self, value: str) -> List[Task]:
+    def get_tasks_by_value(self, value: str) -> list[Task]:
         """Get tasks aligned with a specific personal value (ACT therapy)."""
         return [t for t in self.tasks if t.values_alignment == value and not t.completed]
 
-    def get_blocked_tasks(self) -> List[Task]:
+    def get_blocked_tasks(self) -> list[Task]:
         """Get tasks that are currently blocked by unfinished dependencies."""
         completed_ids = {t.id for t in self.tasks if t.completed}
         blocked = []
         for t in self.tasks:
-            if not t.completed and t.blocked_by:
-                if not all(dep_id in completed_ids for dep_id in t.blocked_by):
-                    blocked.append(t)
+            if not t.completed and t.blocked_by and not all(dep_id in completed_ids for dep_id in t.blocked_by):
+                blocked.append(t)
         return blocked
 
-    def get_unblocked_tasks(self) -> List[Task]:
+    def get_unblocked_tasks(self) -> list[Task]:
         """Get incomplete tasks that are not blocked."""
         completed_ids = {t.id for t in self.tasks if t.completed}
         unblocked = []
         for t in self.tasks:
-            if not t.completed:
-                if not t.blocked_by or all(dep_id in completed_ids for dep_id in t.blocked_by):
-                    unblocked.append(t)
+            if not t.completed and (not t.blocked_by or all(dep_id in completed_ids for dep_id in t.blocked_by)):
+                unblocked.append(t)
         return unblocked
 
-    def get_overdue_tasks(self) -> List[Task]:
+    def get_overdue_tasks(self) -> list[Task]:
         """Get incomplete tasks past their due date."""
         today_str = date.today().isoformat()
         return [
@@ -668,7 +690,7 @@ class TaskManager:
             if not t.completed and t.due_date and t.due_date < today_str
         ]
 
-    def get_upcoming_reminders(self, within_minutes: int = 60) -> List[Task]:
+    def get_upcoming_reminders(self, within_minutes: int = 60) -> list[Task]:
         """Get tasks with reminders due within the given time window."""
         now = datetime.now()
         cutoff = now + timedelta(minutes=within_minutes)
@@ -685,29 +707,29 @@ class TaskManager:
 
     # ── Sorting ───────────────────────────────────────────────────
 
-    def sort_by_priority(self, tasks: Optional[List[Task]] = None) -> List[Task]:
+    def sort_by_priority(self, tasks: list[Task] | None = None) -> list[Task]:
         """Sort tasks by priority (Urgent first)."""
         target = tasks if tasks is not None else self.get_tasks(completed=False)
         return sorted(target, key=lambda t: t.priority.value, reverse=True)
 
-    def sort_by_energy(self, tasks: Optional[List[Task]] = None) -> List[Task]:
+    def sort_by_energy(self, tasks: list[Task] | None = None) -> list[Task]:
         """Sort tasks by energy required (lowest first)."""
         target = tasks if tasks is not None else self.get_tasks(completed=False)
         return sorted(target, key=lambda t: t.energy_required)
 
-    def sort_by_due_date(self, tasks: Optional[List[Task]] = None) -> List[Task]:
+    def sort_by_due_date(self, tasks: list[Task] | None = None) -> list[Task]:
         """Sort tasks by due date (earliest first, None last)."""
         target = tasks if tasks is not None else self.get_tasks(completed=False)
         return sorted(target, key=lambda t: t.due_date or "9999-12-31")
 
-    def sort_by_created(self, tasks: Optional[List[Task]] = None) -> List[Task]:
+    def sort_by_created(self, tasks: list[Task] | None = None) -> list[Task]:
         """Sort tasks by creation date (oldest first)."""
         target = tasks if tasks is not None else self.get_tasks(completed=False)
         return sorted(target, key=lambda t: t.created_at)
 
     # ── Search ────────────────────────────────────────────────────
 
-    def search(self, query: str) -> List[Task]:
+    def search(self, query: str) -> list[Task]:
         """Search tasks by title, notes, and tags (case-insensitive)."""
         q = query.lower()
         results = []
@@ -725,7 +747,7 @@ class TaskManager:
 
     # ── Batch Operations ──────────────────────────────────────────
 
-    def batch_complete(self, task_ids: List[str]) -> List[Task]:
+    def batch_complete(self, task_ids: list[str]) -> list[Task]:
         """Complete multiple tasks at once."""
         completed = []
         for tid in task_ids:
@@ -734,7 +756,7 @@ class TaskManager:
                 completed.append(result)
         return completed
 
-    def batch_delete(self, task_ids: List[str]) -> List[Task]:
+    def batch_delete(self, task_ids: list[str]) -> list[Task]:
         """Delete multiple tasks at once."""
         deleted = []
         for tid in task_ids:
@@ -745,7 +767,7 @@ class TaskManager:
 
     # ── Templates ─────────────────────────────────────────────────
 
-    def save_as_template(self, task_id: str, template_name: str) -> Optional[TaskTemplate]:
+    def save_as_template(self, task_id: str, template_name: str) -> TaskTemplate | None:
         """Save an existing task as a reusable template."""
         task = self.get_task_by_id(task_id)
         if task is None:
@@ -767,7 +789,7 @@ class TaskManager:
         self._save_templates()
         return template
 
-    def create_from_template(self, template_name: str, **overrides: Any) -> Optional[Task]:
+    def create_from_template(self, template_name: str, **overrides: Any) -> Task | None:
         """Create a new task from a saved template with optional overrides."""
         template = self.templates.get(template_name)
         if template is None:
@@ -786,13 +808,13 @@ class TaskManager:
             return True
         return False
 
-    def list_templates(self) -> List[str]:
+    def list_templates(self) -> list[str]:
         """List all saved template names."""
         return list(self.templates.keys())
 
     # ── Statistics ─────────────────────────────────────────────────
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Compute comprehensive task statistics."""
         total = len(self.tasks)
         completed_tasks = [t for t in self.tasks if t.completed]
@@ -803,7 +825,7 @@ class TaskManager:
         completion_rate = (completed_count / total * 100) if total > 0 else 0.0
 
         # Average completion time (for tasks with both created_at and completed_at)
-        completion_times: List[float] = []
+        completion_times: list[float] = []
         for t in completed_tasks:
             if t.created_at and t.completed_at:
                 try:
@@ -823,13 +845,13 @@ class TaskManager:
         )
 
         # Tasks by category
-        by_category: Dict[str, int] = {}
+        by_category: dict[str, int] = {}
         for t in self.tasks:
             cat = t.custom_category or t.category.value
             by_category[cat] = by_category.get(cat, 0) + 1
 
         # Tasks by priority
-        by_priority: Dict[str, int] = {}
+        by_priority: dict[str, int] = {}
         for t in self.tasks:
             pname = t.priority.name
             by_priority[pname] = by_priority.get(pname, 0) + 1
@@ -838,7 +860,7 @@ class TaskManager:
         overdue_count = len(self.get_overdue_tasks())
 
         # Tags frequency
-        tag_counts: Dict[str, int] = {}
+        tag_counts: dict[str, int] = {}
         for t in self.tasks:
             for tag in t.tags:
                 tag_counts[tag] = tag_counts.get(tag, 0) + 1

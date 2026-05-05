@@ -10,17 +10,24 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
-from PyQt6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QFrame, QSizePolicy, QLineEdit, QCheckBox, QSlider,
-    QGroupBox, QGridLayout, QStackedWidget, QComboBox,
-    QWidget, QTextEdit,
-)
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QFont
+from PyQt6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QDialog,
+    QFrame,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QStackedWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +61,7 @@ def _accent_button(text: str) -> QPushButton:
 # Condition & therapy data
 # ---------------------------------------------------------------------------
 
-_CONDITION_INFO: Dict[str, str] = {
+_CONDITION_INFO: dict[str, str] = {
     "ADHD": (
         "Attention Deficit Hyperactivity Disorder -- difficulty with focus, "
         "impulse control, and executive function. The app adapts with "
@@ -86,7 +93,7 @@ _CONDITION_INFO: Dict[str, str] = {
     ),
 }
 
-_THERAPY_INFO: Dict[str, str] = {
+_THERAPY_INFO: dict[str, str] = {
     "CBT": (
         "Cognitive Behavioral Therapy -- focuses on identifying and changing "
         "negative thought patterns. The app integrates thought records and "
@@ -106,7 +113,7 @@ _THERAPY_INFO: Dict[str, str] = {
     ),
     "ERP": (
         "Exposure and Response Prevention -- the gold standard for OCD "
-        "treatment. Gradual exposure to feared stimuli while resisting compulsions."
+        "treatment support. Gradual exposure to feared stimuli while resisting compulsions."
     ),
 }
 
@@ -126,7 +133,7 @@ class OnboardingWizard(QDialog):
         self,
         profile_manager: Any,
         data_dir: Any = None,
-        parent: Optional[QWidget] = None,
+        parent: QWidget | None = None,
     ) -> None:
         super().__init__(parent)
         self.setWindowTitle("Welcome to Mindful Organizer")
@@ -135,7 +142,7 @@ class OnboardingWizard(QDialog):
         self._data_dir = data_dir
 
         # Collected data
-        self._data: Dict[str, Any] = {
+        self._data: dict[str, Any] = {
             "name": "",
             "conditions": [],
             "therapy_types": [],
@@ -158,8 +165,8 @@ class OnboardingWizard(QDialog):
         # Progress dots
         self._dots_layout = QHBoxLayout()
         self._dots_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self._dots: List[QLabel] = []
-        for i in range(self._TOTAL_PAGES):
+        self._dots: list[QLabel] = []
+        for _i in range(self._TOTAL_PAGES):
             dot = QLabel()
             dot.setFixedSize(14, 14)
             dot.setStyleSheet("background-color: #ccc; border-radius: 7px;")
@@ -250,12 +257,16 @@ class OnboardingWizard(QDialog):
         # Create profile via profile_manager
         try:
             from profiles.mental_health_profile_builder import (
-                Condition, TherapyType, Profile, UIPreference, OrganizationPreference,
+                Condition,
+                OrganizationPreference,
+                Profile,
+                TherapyType,
+                UIPreference,
             )
 
             # Map condition names to enums
             condition_map = {c.value: c for c in Condition}
-            conditions: Set[Condition] = set()
+            conditions: set[Condition] = set()
             for name in self._data.get("conditions", []):
                 if name in condition_map:
                     conditions.add(condition_map[name])
@@ -267,7 +278,7 @@ class OnboardingWizard(QDialog):
                 "ACT": TherapyType.ACT,
                 "Mindfulness": TherapyType.MINDFULNESS,
             }
-            therapy_types: Set[TherapyType] = set()
+            therapy_types: set[TherapyType] = set()
             for name in self._data.get("therapy_types", []):
                 if name in therapy_map:
                     therapy_types.add(therapy_map[name])
@@ -310,16 +321,16 @@ class OnboardingWizard(QDialog):
                         name=self._data.get("name") or "User",
                         conditions=set(),
                     )
-            except Exception:
-                pass
+            except (AttributeError, TypeError) as exc:
+                logger.debug(f"Profile creation error: {exc}")
 
         # Apply selected theme
         try:
             parent_window = self.parent()
             if parent_window and hasattr(parent_window, "change_theme"):
                 parent_window.change_theme(self._data.get("theme", "light"))
-        except Exception:
-            pass
+        except (AttributeError, TypeError) as exc:
+            logger.debug(f"Theme change error: {exc}")
 
         self.onboarding_completed.emit(self._data)
         self.accept()
@@ -384,7 +395,7 @@ class OnboardingWizard(QDialog):
             "Select any conditions that apply. This helps us tailor the experience.",
         ))
 
-        self._condition_checks: Dict[str, QCheckBox] = {}
+        self._condition_checks: dict[str, QCheckBox] = {}
         for name, description in _CONDITION_INFO.items():
             group = QGroupBox(name)
             group.setCheckable(True)
@@ -411,7 +422,7 @@ class OnboardingWizard(QDialog):
             "Select therapy approaches you use or are interested in.",
         ))
 
-        self._therapy_checks: Dict[str, QCheckBox] = {}
+        self._therapy_checks: dict[str, QCheckBox] = {}
         for name, description in _THERAPY_INFO.items():
             group = QGroupBox(name)
             group.setCheckable(True)
@@ -446,7 +457,7 @@ class OnboardingWizard(QDialog):
             from gui.themes import THEMES
             for name, theme in THEMES.items():
                 self._theme_combo.addItem(f"{theme.display_name} - {theme.description}", name)
-        except Exception:
+        except (ImportError, AttributeError):
             self._theme_combo.addItem("Light", "light")
             self._theme_combo.addItem("Dark", "dark")
             self._theme_combo.addItem("Calm", "calm")
@@ -477,8 +488,8 @@ class OnboardingWizard(QDialog):
                     f"border: 3px solid {theme.accent}; border-radius: 12px; }}"
                 )
                 return
-        except Exception:
-            pass
+        except (ImportError, AttributeError) as exc:
+            logger.debug(f"Theme preview error: {exc}")
         self._theme_preview.setStyleSheet(
             "QFrame { background-color: #f5f5f5; border: 3px solid #4a90d9; border-radius: 12px; }"
         )
@@ -518,6 +529,6 @@ class OnboardingWizard(QDialog):
     # Public API
     # ------------------------------------------------------------------
 
-    def get_data(self) -> Dict[str, Any]:
+    def get_data(self) -> dict[str, Any]:
         """Return the collected onboarding data."""
         return dict(self._data)

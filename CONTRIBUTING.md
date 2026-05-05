@@ -121,6 +121,7 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
 
 - **Mental Health Features**
   - New therapy technique integrations
+  - DBT diary card improvements
   - Improved mood tracking algorithms
   - Better energy prediction models
   
@@ -128,14 +129,16 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
   - Accessibility improvements
   - New calming themes
   - Better responsive design
+  - Condition-aware widget improvements
   
 - **AI/ML Enhancements**
   - Improved task scheduling algorithms
   - Better pattern recognition
-  - Quantum optimization improvements
+  - Shareable report enhancements
   
 - **Testing**
   - Unit test coverage
+  - GUI widget tests (pytest-qt)
   - Integration tests
   - Performance benchmarks
   

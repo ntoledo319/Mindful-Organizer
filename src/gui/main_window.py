@@ -2,28 +2,38 @@
 Refactored main window for Mindful Organizer.
 Orchestrates all widget modules and manages application state.
 """
-import sys
 import json
 import logging
+import sys
 from pathlib import Path
-from typing import Optional
+from typing import cast
 
+from PyQt6.QtCore import Qt, QTimer, pyqtSignal
+from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (
-    QMainWindow, QTabWidget, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QComboBox, QScrollArea, QFrame, QGridLayout,
-    QStatusBar, QMessageBox, QApplication, QSystemTrayIcon, QMenu,
+    QApplication,
+    QComboBox,
+    QFrame,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QMessageBox,
+    QStatusBar,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
 )
-from PyQt6.QtCore import Qt, QTimer, pyqtSignal, QSize
-from PyQt6.QtGui import QFont, QIcon, QAction, QKeySequence, QShortcut
 
-from gui.themes import ThemeManager, THEMES
-from core.task_manager import TaskManager
-from core.system_optimizer import SystemOptimizer
 from core.ai_optimizer import AISystemOptimizer
+from core.constants import Condition
 from core.file_organizer import FileOrganizer
-from profiles.mental_health_profile_builder import (
-    ProfileManager, Condition, TherapyType,
-)
+from core.system_optimizer import SystemOptimizer
+from core.task_manager import TaskManager
+from gui.state_bus import StateBus, set_state_bus
+from gui.themes import ThemeManager
+from profiles.mental_health_profile_builder import ProfileManager
+from utils.accessibility import AccessibilityManager
+from utils.keyboard_shortcuts import ShortcutManager
 
 logger = logging.getLogger(__name__)
 
@@ -53,9 +63,27 @@ class AdaptiveMainWindow(QMainWindow):
         # Initialize core managers
         self.profile_manager = ProfileManager(self.data_dir)
         self.task_manager = TaskManager(self.data_dir)
-        self.file_organizer = FileOrganizer(self.data_dir)
+        self.file_organizer = FileOrganizer(self.data_dir, profile=self.profile_manager.current_profile)
         self.system_optimizer = SystemOptimizer(self.data_dir)
         self.ai_optimizer = AISystemOptimizer(self.data_dir)
+
+        # Initialize wellness orchestrator (cross-module intelligence)
+        self._wellness_orchestrator = None
+
+        # Initialize reactive state bus
+        self.state_bus = StateBus()
+        set_state_bus(self.state_bus)
+
+        # Initialize accessibility
+        self.accessibility_manager = AccessibilityManager()
+        self.accessibility_manager.auto_detect()
+        app = QApplication.instance()
+        if app:
+            self.accessibility_manager.apply(app)
+
+        # Initialize shortcut manager
+        self.shortcut_manager = ShortcutManager()
+        self._setup_shortcut_callbacks()
 
         # Initialize optional managers (lazy loaded)
         self._sleep_tracker = None
@@ -76,6 +104,11 @@ class AdaptiveMainWindow(QMainWindow):
         self._coping_engine = None
         self._gamification_manager = None
         self._keyboard_shortcuts = None
+        self._subscription_manager = None
+        self._auto_updater = None
+        self._onboarding_analytics = None
+        self._diary_card_manager = None
+        self._mood_manager = None
 
         # Widget references
         self._widgets = {}
@@ -92,8 +125,8 @@ class AdaptiveMainWindow(QMainWindow):
     def _get_data_dir(self) -> Path:
         """Get platform-appropriate data directory."""
         try:
-            from windows.platform_utils import get_data_directory
-            return get_data_directory()
+            from windows.platform_utils import get_data_dir
+            return cast(Path, get_data_dir())
         except ImportError:
             if sys.platform == "win32":
                 base = Path.home() / "AppData" / "Roaming"
@@ -108,14 +141,14 @@ class AdaptiveMainWindow(QMainWindow):
         settings_file = self.data_dir / "settings.json"
         if settings_file.exists():
             try:
-                with open(settings_file, "r") as f:
+                with open(settings_file) as f:
                     settings = json.load(f)
                 self.theme_manager.set_theme(settings.get("theme", "light"))
                 self.theme_manager.font_scale = settings.get("font_scale", 1.0)
                 self.theme_manager.color_blind_mode = settings.get("color_blind_mode")
                 self.theme_manager.reduced_motion = settings.get("reduced_motion", False)
                 self.theme_manager.dyslexia_font = settings.get("dyslexia_font", False)
-            except (json.JSONDecodeError, Exception) as e:
+            except (json.JSONDecodeError, OSError) as e:
                 logger.warning(f"Failed to load settings: {e}")
 
     def save_settings(self):
@@ -131,7 +164,7 @@ class AdaptiveMainWindow(QMainWindow):
         try:
             with open(settings_file, "w") as f:
                 json.dump(settings, f, indent=2)
-        except Exception as e:
+        except (OSError, TypeError) as e:
             logger.error(f"Failed to save settings: {e}")
 
     # === Lazy-loaded manager properties ===
@@ -175,6 +208,26 @@ class AdaptiveMainWindow(QMainWindow):
             except ImportError:
                 logger.warning("EnergyPredictor not available")
         return self._energy_predictor
+
+    @property
+    def diary_card_manager(self):
+        if self._diary_card_manager is None:
+            try:
+                from core.diary_card_manager import DiaryCardManager
+                self._diary_card_manager = DiaryCardManager()
+            except ImportError:
+                logger.warning("DiaryCardManager not available")
+        return self._diary_card_manager
+
+    @property
+    def mood_manager(self):
+        if self._mood_manager is None:
+            try:
+                from core.mood_manager import MoodManager
+                self._mood_manager = MoodManager()
+            except ImportError:
+                logger.warning("MoodManager not available")
+        return self._mood_manager
 
     @property
     def nlp_parser(self):
@@ -300,6 +353,16 @@ class AdaptiveMainWindow(QMainWindow):
         return self._coping_engine
 
     @property
+    def wellness_orchestrator(self):
+        if self._wellness_orchestrator is None:
+            try:
+                from core.wellness_orchestrator import WellnessOrchestrator
+                self._wellness_orchestrator = WellnessOrchestrator()
+            except ImportError:
+                logger.warning("WellnessOrchestrator not available")
+        return self._wellness_orchestrator
+
+    @property
     def gamification_manager(self):
         if self._gamification_manager is None:
             try:
@@ -308,6 +371,41 @@ class AdaptiveMainWindow(QMainWindow):
             except ImportError:
                 logger.warning("ADHDGameManager not available")
         return self._gamification_manager
+
+    @property
+    def subscription_manager(self):
+        if self._subscription_manager is None:
+            try:
+                from core.subscription_manager import SubscriptionManager
+                self._subscription_manager = SubscriptionManager(self.data_dir)
+            except ImportError:
+                logger.warning("SubscriptionManager not available")
+        return self._subscription_manager
+
+    @property
+    def auto_updater(self):
+        if self._auto_updater is None:
+            try:
+                from core.auto_updater import AutoUpdater
+                import importlib.metadata
+                try:
+                    version = importlib.metadata.version("mindful-organizer")
+                except importlib.metadata.PackageNotFoundError:
+                    version = "1.1.0"
+                self._auto_updater = AutoUpdater(version)
+            except ImportError:
+                logger.warning("AutoUpdater not available")
+        return self._auto_updater
+
+    @property
+    def onboarding_analytics(self):
+        if self._onboarding_analytics is None:
+            try:
+                from core.onboarding_analytics import OnboardingAnalytics
+                self._onboarding_analytics = OnboardingAnalytics(self.data_dir)
+            except ImportError:
+                logger.warning("OnboardingAnalytics not available")
+        return self._onboarding_analytics
 
     # === UI Setup ===
 
@@ -335,7 +433,7 @@ class AdaptiveMainWindow(QMainWindow):
 
     def _show_basic_profile_setup(self):
         """Fallback profile setup if onboarding widget is unavailable."""
-        from PyQt6.QtWidgets import QDialog, QDialogButtonBox, QLineEdit, QCheckBox
+        from PyQt6.QtWidgets import QCheckBox, QDialog, QDialogButtonBox, QLineEdit
         dialog = QDialog(self)
         dialog.setWindowTitle("Welcome to Mindful Organizer")
         dialog.setMinimumWidth(500)
@@ -423,7 +521,7 @@ class AdaptiveMainWindow(QMainWindow):
 
         # App title
         title = QLabel("Mindful Organizer")
-        title.setFont(QFont("Segoe UI", 14, QFont.Weight.Bold))
+        title.setFont(QFont(self.font().family(), 14, QFont.Weight.Bold))
         header_layout.addWidget(title)
 
         header_layout.addStretch()
@@ -432,12 +530,12 @@ class AdaptiveMainWindow(QMainWindow):
         profile = self.profile_manager.current_profile
         profile_name = profile.name if profile else "User"
         profile_label = QLabel(f"Welcome, {profile_name}")
-        profile_label.setFont(QFont("Segoe UI", 11))
+        profile_label.setFont(QFont(self.font().family(), 11))
         header_layout.addWidget(profile_label)
 
         # Theme selector
         theme_label = QLabel("Theme:")
-        theme_label.setFont(QFont("Segoe UI", 11))
+        theme_label.setFont(QFont(self.font().family(), 11))
         header_layout.addWidget(theme_label)
 
         self.theme_combo = QComboBox()
@@ -456,18 +554,20 @@ class AdaptiveMainWindow(QMainWindow):
         """Add all tabs based on user profile."""
         profile = self.profile_manager.current_profile
         conditions = profile.conditions if profile else set()
-        therapy_types = profile.therapy_types if profile else set()
 
         # Core tabs (always present)
         self._add_tab("dashboard", "Dashboard")
         self._add_tab("task_manager", "Tasks")
         self._add_tab("mood_tracker", "Mood")
+        self._add_tab("diary_card", "Diary Card")
         self._add_tab("journaling", "Journal")
         self._add_tab("breathing", "Breathing")
 
         # Condition-specific tabs
         if Condition.OCD in conditions:
             self._add_tab("erp", "ERP")
+        if Condition.PANIC in conditions or Condition.ANXIETY in conditions or Condition.PTSD in conditions:
+            self._add_tab("panic_tracker", "Panic Log")
 
         # Therapy tabs
         self._add_tab("meditation", "Meditation")
@@ -483,6 +583,9 @@ class AdaptiveMainWindow(QMainWindow):
         # Settings (always last)
         self._add_tab("settings", "Settings")
 
+        # Check for updates after UI is ready
+        QTimer.singleShot(2000, self._check_for_updates)
+
     def _add_tab(self, widget_name: str, display_name: str):
         """Add a tab, creating the widget with fallback to placeholder."""
         widget = self._create_widget(widget_name)
@@ -490,53 +593,97 @@ class AdaptiveMainWindow(QMainWindow):
             self._widgets[widget_name] = widget
             self.tabs.addTab(widget, display_name)
 
-    def _create_widget(self, name: str) -> Optional[QWidget]:
+    def _create_widget(self, name: str) -> QWidget | None:
         """Create a widget by name with graceful fallback."""
+        theme = self.theme_manager.get_colors()
+        widget: QWidget | None = None
         try:
             if name == "dashboard":
                 from gui.widgets.dashboard import DashboardWidget
-                return DashboardWidget(self)
+                widget = DashboardWidget(
+                    theme,
+                    task_manager=self.task_manager,
+                    profile_manager=self.profile_manager,
+                    mood_manager=None,
+                    energy_predictor=self.energy_predictor,
+                    gamification_manager=self.gamification_manager,
+                    wellness_orchestrator=self.wellness_orchestrator,
+                    subscription_manager=self.subscription_manager,
+                )
             elif name == "task_manager":
                 from gui.widgets.task_manager_widget import TaskManagerWidget
-                return TaskManagerWidget(self)
+                widget = TaskManagerWidget(
+                    theme,
+                    task_manager=self.task_manager,
+                    nlp_parser=self.nlp_parser,
+                )
             elif name == "mood_tracker":
                 from gui.widgets.mood_tracker import MoodTrackerWidget
-                return MoodTrackerWidget(self)
+                widget = MoodTrackerWidget(
+                    theme,
+                    mood_manager=self.mood_manager,
+                    profile_manager=self.profile_manager,
+                )
+            elif name == "diary_card":
+                from gui.widgets.diary_card_widget import DiaryCardWidget
+                widget = DiaryCardWidget(
+                    theme,
+                    diary_card_manager=self.diary_card_manager,
+                    profile_manager=self.profile_manager,
+                )
             elif name == "journaling":
                 from gui.widgets.journaling_widget import JournalingWidget
-                return JournalingWidget(self)
+                widget = JournalingWidget(
+                    theme,
+                    journal_manager=self.journaling_manager,
+                    profile_manager=self.profile_manager,
+                )
             elif name == "breathing":
                 from gui.widgets.breathing_widget import BreathingWidget
-                return BreathingWidget(self)
+                widget = BreathingWidget(
+                    theme,
+                    breathing_manager=self.breathing_manager,
+                    profile_manager=self.profile_manager,
+                )
             elif name == "erp":
                 from gui.widgets.erp_widget import ERPWidget
-                return ERPWidget(self)
+                widget = ERPWidget(self)
             elif name == "meditation":
                 from gui.widgets.meditation_widget import MeditationWidget
-                return MeditationWidget(self)
+                widget = MeditationWidget(self)
             elif name == "crisis":
                 from gui.widgets.crisis_widget import CrisisWidget
-                return CrisisWidget(self)
+                widget = CrisisWidget(self)
+            elif name == "panic_tracker":
+                from gui.widgets.panic_tracker_widget import PanicTrackerWidget
+                widget = PanicTrackerWidget(self)
             elif name == "sleep":
                 from gui.widgets.sleep_widget import SleepWidget
-                return SleepWidget(self)
+                widget = SleepWidget(self)
             elif name == "medication":
                 from gui.widgets.medication_widget import MedicationWidget
-                return MedicationWidget(self)
+                widget = MedicationWidget(self)
             elif name == "file_organizer":
-                return self._create_file_organizer_fallback()
+                from gui.widgets.file_organizer_widget import FileOrganizerWidget
+                widget = FileOrganizerWidget(
+                    theme,
+                    file_organizer=self.file_organizer,
+                    profile_manager=self.profile_manager,
+                )
             elif name == "settings":
                 from gui.widgets.settings_widget import SettingsWidget
-                return SettingsWidget(self)
+                widget = SettingsWidget(self)
             elif name == "search":
                 from gui.widgets.search_widget import SearchWidget
-                return SearchWidget(self)
+                widget = SearchWidget(self)
         except ImportError as e:
             logger.info(f"Widget '{name}' not available: {e}")
         except Exception as e:
             logger.error(f"Error creating widget '{name}': {e}")
 
-        return self._create_placeholder_tab(name)
+        if widget is None:
+            widget = self._create_placeholder_tab(name)
+        return widget
 
     def _create_placeholder_tab(self, name: str) -> QWidget:
         """Create a placeholder tab for unavailable widgets."""
@@ -545,21 +692,75 @@ class AdaptiveMainWindow(QMainWindow):
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         label = QLabel(f"{name.replace('_', ' ').title()}")
-        label.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
+        label.setFont(QFont(self.font().family(), 18, QFont.Weight.Bold))
         label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(label)
 
         subtitle = QLabel("This module is loading...")
-        subtitle.setFont(QFont("Segoe UI", 12))
+        subtitle.setFont(QFont(self.font().family(), 12))
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         subtitle.setStyleSheet("color: #888;")
         layout.addWidget(subtitle)
 
         return widget
 
+    def _create_upsell_tab(self, feature_key: str, display_name: str, required_tier: str) -> QWidget:
+        """Create an upsell placeholder for gated features."""
+        from gui.components.upsell_dialog import UpsellDialog
+        from core.subscription_manager import FEATURE_DISPLAY_NAMES
+
+        widget = QWidget()
+        layout = QVBoxLayout(widget)
+        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        icon = QLabel("✨")
+        icon.setFont(QFont(self.font().family(), 48))
+        icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(icon)
+
+        title = QLabel(display_name)
+        title.setFont(QFont(self.font().family(), 20, QFont.Weight.Bold))
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(title)
+
+        desc = QLabel(
+            f"{FEATURE_DISPLAY_NAMES.get(feature_key, display_name)} is available "
+            f"with the {required_tier} plan."
+        )
+        desc.setWordWrap(True)
+        desc.setFont(QFont(self.font().family(), 12))
+        desc.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        desc.setStyleSheet("color: #666; padding: 12px 40px;")
+        layout.addWidget(desc)
+
+        trial_btn = QPushButton("Start 14-Day Free Trial")
+        trial_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        trial_btn.setStyleSheet(
+            "QPushButton { background-color: #3498DB; color: white; "
+            "border-radius: 8px; padding: 12px 24px; font-weight: bold; font-size: 14px; }"
+            "QPushButton:hover { background-color: #2980B9; }"
+        )
+        trial_btn.clicked.connect(lambda: self._start_trial_from_upsell(feature_key))
+        layout.addWidget(trial_btn, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        maybe_later = QLabel("Maybe later — continue using the free features")
+        maybe_later.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        maybe_later.setStyleSheet("color: #aaa; font-size: 11px; padding-top: 12px;")
+        layout.addWidget(maybe_later)
+
+        return widget
+
+    def _start_trial_from_upsell(self, feature_key: str) -> None:
+        """Handle trial start from an upsell tab."""
+        if self.subscription_manager:
+            try:
+                self.subscription_manager.start_trial()
+            except Exception as e:
+                logger.info("Trial start from upsell: %s", e)
+
     def _create_file_organizer_fallback(self) -> QWidget:
         """Create a basic file organizer tab."""
-        from PyQt6.QtWidgets import QPushButton, QListWidget, QFileDialog
+        from PyQt6.QtWidgets import QListWidget, QPushButton
 
         widget = QWidget()
         layout = QVBoxLayout(widget)
@@ -639,21 +840,26 @@ class AdaptiveMainWindow(QMainWindow):
 
     # === Keyboard Shortcuts ===
 
-    def _setup_shortcuts(self):
-        """Setup global keyboard shortcuts."""
-        shortcuts = {
-            "Ctrl+N": lambda: self._switch_to_tab("task_manager"),
-            "Ctrl+M": lambda: self._switch_to_tab("mood_tracker"),
-            "Ctrl+B": lambda: self._switch_to_tab("breathing"),
-            "Ctrl+J": lambda: self._switch_to_tab("journaling"),
-            "Ctrl+F": self._show_search,
-            "Ctrl+E": lambda: self._switch_to_tab("settings"),
-            "F1": self._show_help,
-        }
+    def _setup_shortcut_callbacks(self):
+        """Register callbacks with ShortcutManager."""
+        self.shortcut_manager.set_callback(
+            "new_task", lambda: self._switch_to_tab("task_manager")
+        )
+        self.shortcut_manager.set_callback(
+            "mood_entry", lambda: self._switch_to_tab("mood_tracker")
+        )
+        self.shortcut_manager.set_callback(
+            "breathing_exercise", lambda: self._switch_to_tab("breathing")
+        )
+        self.shortcut_manager.set_callback(
+            "journal_entry", lambda: self._switch_to_tab("journaling")
+        )
+        self.shortcut_manager.set_callback("global_search", self._show_search)
+        self.shortcut_manager.set_callback("help", self._show_help)
 
-        for key, callback in shortcuts.items():
-            shortcut = QShortcut(QKeySequence(key), self)
-            shortcut.activated.connect(callback)
+    def _setup_shortcuts(self):
+        """Bind ShortcutManager actions to the main window."""
+        self.shortcut_manager.bind_to_widget(self)
 
     def _switch_to_tab(self, name: str):
         """Switch to a named tab."""
@@ -708,7 +914,7 @@ class AdaptiveMainWindow(QMainWindow):
         """Update system statistics."""
         try:
             self.system_optimizer.get_system_stats()
-        except Exception as e:
+        except (OSError, ValueError, TypeError) as e:
             logger.debug(f"System stats update error: {e}")
 
     def _check_notifications(self):
@@ -720,12 +926,40 @@ class AdaptiveMainWindow(QMainWindow):
                     self.status_bar.showMessage(
                         f"Reminder: {notif.get('message', '')}", 10000
                     )
-            except Exception:
-                pass
+            except (OSError, ValueError, TypeError) as e:
+                logger.debug(f"Notification check error: {e}")
+
+    # === Update checking ===
+
+    def _check_for_updates(self) -> None:
+        """Background check for app updates."""
+        updater = self.auto_updater
+        if not updater:
+            return
+        try:
+            release = updater.check()
+            if release and not updater.is_skipped(release.version):
+                from PyQt6.QtWidgets import QMessageBox
+                reply = QMessageBox.question(
+                    self,
+                    "Update Available",
+                    f"Mindful Organizer {release.version} is available.\n\n"
+                    f"Released: {release.published_at.strftime('%B %d, %Y')}\n\n"
+                    "Would you like to open the download page?",
+                    QMessageBox.StandardButton.Yes
+                    | QMessageBox.StandardButton.No
+                    | QMessageBox.StandardButton.Ignore,
+                )
+                if reply == QMessageBox.StandardButton.Yes:
+                    updater.open_download_page()
+                elif reply == QMessageBox.StandardButton.Ignore:
+                    updater.skip_version(release.version)
+        except Exception:
+            logger.debug("Update check failed silently")
 
     # === Window Events ===
 
-    def closeEvent(self, event):
+    def closeEvent(self, event):  # noqa: N802
         """Handle window close - save all state."""
         self.save_settings()
 
@@ -739,7 +973,7 @@ class AdaptiveMainWindow(QMainWindow):
 
         event.accept()
 
-    def resizeEvent(self, event):
+    def resizeEvent(self, event):  # noqa: N802
         """Handle window resize."""
         super().resizeEvent(event)
         # Widgets can adapt to size changes via their own resize handling

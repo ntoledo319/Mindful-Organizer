@@ -9,12 +9,12 @@ import pytest
 
 try:
     from src.core.smart_task_decomposer import (
-        SmartTaskDecomposer,
+        Condition,
         DecompositionResult,
+        EnergyLevel,
+        SmartTaskDecomposer,
         SubTask,
         TaskComplexity,
-        Condition,
-        EnergyLevel,
     )
     _HAS_MODULE = True
 except ImportError:

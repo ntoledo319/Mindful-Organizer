@@ -7,24 +7,16 @@ matching and a built-in template library.  No external AI API required.
 
 from __future__ import annotations
 
-import re
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any
 
+from core.constants import Condition
 
 # ---------------------------------------------------------------------------
 # Enums
 # ---------------------------------------------------------------------------
-
-class Condition(Enum):
-    """Mental health conditions that affect decomposition strategy."""
-    ADHD = "adhd"
-    DEPRESSION = "depression"
-    ANXIETY = "anxiety"
-    OCD = "ocd"
-    GENERAL = "general"
 
 
 class TaskComplexity(Enum):
@@ -54,12 +46,12 @@ class SubTask:
     order: int
     parent_task_id: str
     subtask_id: str = field(default_factory=lambda: uuid.uuid4().hex[:8])
-    completion_criteria: Optional[str] = None
-    prep_note: Optional[str] = None
-    reward: Optional[str] = None
+    completion_criteria: str | None = None
+    prep_note: str | None = None
+    reward: str | None = None
     is_first_step: bool = False
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "subtask_id": self.subtask_id,
             "title": self.title,
@@ -81,12 +73,12 @@ class DecompositionResult:
     task_id: str
     complexity: TaskComplexity
     condition: Condition
-    subtasks: List[SubTask]
+    subtasks: list[SubTask]
     total_estimated_minutes: int
-    just_start_step: Optional[SubTask] = None
+    just_start_step: SubTask | None = None
     encouragement: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "task_title": self.task_title,
             "task_id": self.task_id,
@@ -182,7 +174,7 @@ def _estimate_complexity(title: str) -> TaskComplexity:
 # Each template: list of (title_template, estimated_minutes, energy)
 # Titles use {task} as placeholder for the original task title.
 
-_TEMPLATES: Dict[str, List[tuple]] = {
+_TEMPLATES: dict[str, list[tuple]] = {
     "cleaning": [
         ("Gather cleaning supplies", 3, EnergyLevel.LOW),
         ("Pick up visible clutter from surfaces", 5, EnergyLevel.LOW),
@@ -268,7 +260,7 @@ _TEMPLATES: Dict[str, List[tuple]] = {
 }
 
 # Map keywords to template names
-_TEMPLATE_KEYWORD_MAP: Dict[str, str] = {
+_TEMPLATE_KEYWORD_MAP: dict[str, str] = {
     "clean": "cleaning", "cleaning": "cleaning", "tidy": "cleaning",
     "deep clean": "cleaning", "declutter": "cleaning",
     "study": "studying", "studying": "studying", "homework": "studying",
@@ -289,7 +281,7 @@ _TEMPLATE_KEYWORD_MAP: Dict[str, str] = {
 }
 
 
-def _find_template(title: str) -> Optional[str]:
+def _find_template(title: str) -> str | None:
     """Match a task title to a template name."""
     lower = title.lower()
     # Try multi-word keys first (longer = more specific)
@@ -304,12 +296,12 @@ def _find_template(title: str) -> Optional[str]:
 # Condition-aware step modifiers
 # ---------------------------------------------------------------------------
 
-def _apply_adhd_style(steps: List[SubTask]) -> List[SubTask]:
+def _apply_adhd_style(steps: list[SubTask]) -> list[SubTask]:
     """ADHD: very small steps, action verbs, estimated time per step (already done).
 
     Splits any step longer than 10 minutes and adds transition cues.
     """
-    result: List[SubTask] = []
+    result: list[SubTask] = []
     order = 1
     for s in steps:
         if s.estimated_minutes > 10:
@@ -346,7 +338,7 @@ def _apply_adhd_style(steps: List[SubTask]) -> List[SubTask]:
     return result
 
 
-def _apply_depression_style(steps: List[SubTask]) -> List[SubTask]:
+def _apply_depression_style(steps: list[SubTask]) -> list[SubTask]:
     """Depression: start with the easiest step, build momentum (success spirals).
 
     Sorts by energy (low first) and adds encouragement rewards.
@@ -367,10 +359,10 @@ def _apply_depression_style(steps: List[SubTask]) -> List[SubTask]:
     return sorted_steps
 
 
-def _apply_anxiety_style(steps: List[SubTask]) -> List[SubTask]:
+def _apply_anxiety_style(steps: list[SubTask]) -> list[SubTask]:
     """Anxiety: add preparation steps, clear expectations per step."""
     parent_id = steps[0].parent_task_id if steps else ""
-    result: List[SubTask] = []
+    result: list[SubTask] = []
     order = 1
 
     # Add a preparation step at the beginning
@@ -399,7 +391,7 @@ def _apply_anxiety_style(steps: List[SubTask]) -> List[SubTask]:
     return result
 
 
-def _apply_ocd_style(steps: List[SubTask]) -> List[SubTask]:
+def _apply_ocd_style(steps: list[SubTask]) -> list[SubTask]:
     """OCD: structured steps with defined completion criteria."""
     for i, s in enumerate(steps):
         s.order = i + 1
@@ -420,7 +412,7 @@ def _apply_ocd_style(steps: List[SubTask]) -> List[SubTask]:
 # Generic decomposition (no template match)
 # ---------------------------------------------------------------------------
 
-def _generic_decompose(title: str, task_id: str) -> List[SubTask]:
+def _generic_decompose(title: str, task_id: str) -> list[SubTask]:
     """Generate generic micro-steps when no template matches."""
     return [
         SubTask(
@@ -470,7 +462,7 @@ def _generic_decompose(title: str, task_id: str) -> List[SubTask]:
 # Encouragement messages
 # ---------------------------------------------------------------------------
 
-_ENCOURAGEMENTS: Dict[Condition, str] = {
+_ENCOURAGEMENTS: dict[Condition, str] = {
     Condition.GENERAL: "You have a plan now. Take it one step at a time.",
     Condition.ADHD: (
         "Each step is small and concrete. If you lose focus, "
@@ -505,13 +497,12 @@ class SmartTaskDecomposer:
         The first listed condition drives the decomposition style.
     """
 
-    def __init__(self, conditions: Optional[List[str]] = None) -> None:
-        self._conditions: List[Condition] = []
+    def __init__(self, conditions: list[str] | None = None) -> None:
+        self._conditions: list[Condition] = []
         for c in (conditions or []):
-            try:
-                self._conditions.append(Condition(c.lower()))
-            except ValueError:
-                continue
+            cond = Condition.from_string(c)
+            if cond != Condition.GENERAL or c.lower() == "general":
+                self._conditions.append(cond)
         if not self._conditions:
             self._conditions = [Condition.GENERAL]
 
@@ -523,8 +514,8 @@ class SmartTaskDecomposer:
         self,
         task_title: str,
         *,
-        task_id: Optional[str] = None,
-        condition_override: Optional[str] = None,
+        task_id: str | None = None,
+        condition_override: str | None = None,
     ) -> DecompositionResult:
         """Break a task into micro-steps.
 
@@ -554,9 +545,8 @@ class SmartTaskDecomposer:
 
         # Determine condition
         if condition_override:
-            try:
-                condition = Condition(condition_override.lower())
-            except ValueError:
+            condition = Condition.from_string(condition_override)
+            if condition == Condition.GENERAL and condition_override.lower() != "general":
                 condition = self.primary_condition
         else:
             condition = self.primary_condition
@@ -565,7 +555,7 @@ class SmartTaskDecomposer:
         template_name = _find_template(title)
         if template_name and template_name in _TEMPLATES:
             raw_steps = _TEMPLATES[template_name]
-            steps: List[SubTask] = []
+            steps: list[SubTask] = []
             for i, (step_title, est_min, energy) in enumerate(raw_steps):
                 steps.append(SubTask(
                     title=step_title,
@@ -619,8 +609,8 @@ class SmartTaskDecomposer:
         self,
         task_title: str,
         *,
-        task_id: Optional[str] = None,
-    ) -> Optional[SubTask]:
+        task_id: str | None = None,
+    ) -> SubTask | None:
         """Return only the very first tiny step to reduce overwhelm.
 
         This is the 'Just Start' mode: ignore the full plan and focus
@@ -630,8 +620,8 @@ class SmartTaskDecomposer:
         return result.just_start_step
 
     def _apply_condition_style(
-        self, steps: List[SubTask], condition: Condition,
-    ) -> List[SubTask]:
+        self, steps: list[SubTask], condition: Condition,
+    ) -> list[SubTask]:
         """Apply condition-specific modifications to the step list."""
         if condition == Condition.ADHD:
             return _apply_adhd_style(steps)
@@ -649,12 +639,12 @@ class SmartTaskDecomposer:
         return steps
 
     @staticmethod
-    def available_templates() -> List[str]:
+    def available_templates() -> list[str]:
         """Return the names of all built-in task templates."""
         return sorted(_TEMPLATES.keys())
 
     @staticmethod
-    def template_steps(template_name: str) -> Optional[List[Dict[str, Any]]]:
+    def template_steps(template_name: str) -> list[dict[str, Any]] | None:
         """Return the raw steps for a named template, or None."""
         raw = _TEMPLATES.get(template_name)
         if raw is None:

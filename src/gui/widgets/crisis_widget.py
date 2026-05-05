@@ -8,19 +8,26 @@ layout designed for use during emotional crises.
 
 from __future__ import annotations
 
+import contextlib
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QFrame, QScrollArea, QSizePolicy, QListWidget, QListWidgetItem,
-    QDialog, QLineEdit, QTextEdit, QDialogButtonBox, QGridLayout,
-    QMessageBox, QGroupBox,
-)
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QFont
+from PyQt6.QtWidgets import (
+    QDialog,
+    QDialogButtonBox,
+    QFrame,
+    QLabel,
+    QPushButton,
+    QScrollArea,
+    QSizePolicy,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +75,7 @@ def _calm_button(text: str) -> QPushButton:
 # Default crisis data
 # ---------------------------------------------------------------------------
 
-_DEFAULT_CRISIS_PLAN: Dict[str, Any] = {
+_DEFAULT_CRISIS_PLAN: dict[str, Any] = {
     "emergency_contacts": [
         {"name": "988 Suicide & Crisis Lifeline", "phone": "988", "relationship": "National Hotline"},
         {"name": "Crisis Text Line", "phone": "Text HOME to 741741", "relationship": "Text Service"},
@@ -112,8 +119,8 @@ class _CrisisPlanEditDialog(QDialog):
     """Dialog for editing the crisis plan."""
 
     def __init__(
-        self, plan: Dict[str, Any],
-        parent: Optional[QWidget] = None,
+        self, plan: dict[str, Any],
+        parent: QWidget | None = None,
     ) -> None:
         super().__init__(parent)
         self.setWindowTitle("Edit Crisis Plan")
@@ -183,8 +190,8 @@ class _CrisisPlanEditDialog(QDialog):
         buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
 
-    def _parse_contacts(self, text: str) -> List[Dict[str, str]]:
-        contacts: List[Dict[str, str]] = []
+    def _parse_contacts(self, text: str) -> list[dict[str, str]]:
+        contacts: list[dict[str, str]] = []
         for line in text.strip().split("\n"):
             parts = [p.strip() for p in line.split("|")]
             if len(parts) >= 2 and parts[0]:
@@ -195,7 +202,7 @@ class _CrisisPlanEditDialog(QDialog):
                 })
         return contacts
 
-    def get_plan(self) -> Dict[str, Any]:
+    def get_plan(self) -> dict[str, Any]:
         return {
             "emergency_contacts": self._plan.get("emergency_contacts", []),
             "personal_contacts": self._parse_contacts(self._personal_edit.toPlainText()),
@@ -224,17 +231,15 @@ class CrisisWidget(QWidget):
 
     plan_updated = pyqtSignal()
 
-    def __init__(self, main_window: Any, parent: Optional[QWidget] = None) -> None:
+    def __init__(self, main_window: Any, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.main_window = main_window
-        self._plan: Dict[str, Any] = dict(_DEFAULT_CRISIS_PLAN)
+        self._plan: dict[str, Any] = dict(_DEFAULT_CRISIS_PLAN)
 
         # Try to get crisis plan manager
         self._crisis_manager = None
-        try:
+        with contextlib.suppress(Exception):
             self._crisis_manager = main_window.crisis_plan_manager
-        except Exception:
-            pass
 
         self._data_dir = self._resolve_data_dir()
         self._load_plan()
@@ -247,7 +252,7 @@ class CrisisWidget(QWidget):
     def _resolve_data_dir(self) -> Path:
         try:
             return Path(self.main_window.data_dir)
-        except Exception:
+        except (AttributeError, TypeError):
             p = Path.home() / ".mindful_optimizer"
             p.mkdir(parents=True, exist_ok=True)
             return p
@@ -261,29 +266,29 @@ class CrisisWidget(QWidget):
             try:
                 self._plan = self._crisis_manager.get_plan()
                 return
-            except Exception:
-                pass
+            except (OSError, ValueError) as exc:
+                logger.debug(f"Crisis manager load error: {exc}")
         path = self._plan_file()
         if path.exists():
             try:
                 with open(path) as fh:
                     loaded = json.load(fh)
                 self._plan.update(loaded)
-            except Exception:
-                pass
+            except (json.JSONDecodeError, OSError) as exc:
+                logger.debug(f"Crisis plan load error: {exc}")
 
     def _save_plan(self) -> None:
         if self._crisis_manager and hasattr(self._crisis_manager, "save_plan"):
             try:
                 self._crisis_manager.save_plan(self._plan)
                 return
-            except Exception:
-                pass
+            except (OSError, ValueError) as exc:
+                logger.debug(f"Crisis manager save error: {exc}")
         try:
             with open(self._plan_file(), "w") as fh:
                 json.dump(self._plan, fh, indent=2)
-        except Exception:
-            pass
+        except (OSError, TypeError) as exc:
+            logger.debug(f"Crisis plan save error: {exc}")
 
     # ------------------------------------------------------------------
     # UI
@@ -446,7 +451,9 @@ class CrisisWidget(QWidget):
         if layout:
             while layout.count():
                 item = layout.takeAt(0)
-                widget = item.widget()
+                if item is None:
+                    continue
+                widget = item.widget()  # type: ignore[union-attr]
                 if widget:
                     widget.deleteLater()
         self._build_ui()

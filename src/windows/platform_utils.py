@@ -6,18 +6,18 @@ high-DPI handling, notification integration, system tray support,
 startup registration, and single-instance enforcement.
 """
 
+import contextlib
 import ctypes
 import logging
 import os
 import platform
-import struct
 import subprocess
 import sys
 import tempfile
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -60,13 +60,11 @@ class PlatformInfo:
 def detect_os() -> OperatingSystem:
     """Return the current operating system."""
     name = platform.system().lower()
-    if name == "windows":
-        return OperatingSystem.WINDOWS
-    elif name == "darwin":
-        return OperatingSystem.MACOS
-    elif name == "linux":
-        return OperatingSystem.LINUX
-    return OperatingSystem.UNKNOWN
+    return {
+        "windows": OperatingSystem.WINDOWS,
+        "darwin": OperatingSystem.MACOS,
+        "linux": OperatingSystem.LINUX,
+    }.get(name, OperatingSystem.UNKNOWN)
 
 
 # ---------------------------------------------------------------------------
@@ -76,8 +74,8 @@ def detect_os() -> OperatingSystem:
 def get_data_dir() -> Path:
     """Return the platform-appropriate application data directory.
 
-    - Windows:  ``%APPDATA%/MindfulOptimizer``
-    - macOS:    ``~/Library/Application Support/MindfulOptimizer``
+    - Windows:  ``%APPDATA%/MindfulOrganizer``
+    - macOS:    ``~/Library/Application Support/MindfulOrganizer``
     - Linux:    ``~/.mindful_optimizer``
     """
     current_os = detect_os()
@@ -85,11 +83,11 @@ def get_data_dir() -> Path:
     if current_os == OperatingSystem.WINDOWS:
         appdata = os.environ.get("APPDATA")
         if appdata:
-            data_dir = Path(appdata) / "MindfulOptimizer"
+            data_dir = Path(appdata) / "MindfulOrganizer"
         else:
-            data_dir = Path.home() / "AppData" / "Roaming" / "MindfulOptimizer"
+            data_dir = Path.home() / "AppData" / "Roaming" / "MindfulOrganizer"
     elif current_os == OperatingSystem.MACOS:
-        data_dir = Path.home() / "Library" / "Application Support" / "MindfulOptimizer"
+        data_dir = Path.home() / "Library" / "Application Support" / "MindfulOrganizer"
     else:
         data_dir = Path.home() / ".mindful_optimizer"
 
@@ -103,7 +101,7 @@ def get_config_dir() -> Path:
     if current_os == OperatingSystem.WINDOWS:
         return get_data_dir()
     elif current_os == OperatingSystem.MACOS:
-        config = Path.home() / "Library" / "Preferences" / "MindfulOptimizer"
+        config = Path.home() / "Library" / "Preferences" / "MindfulOrganizer"
     else:
         xdg = os.environ.get("XDG_CONFIG_HOME")
         if xdg:
@@ -120,7 +118,7 @@ def get_log_dir() -> Path:
     if current_os == OperatingSystem.WINDOWS:
         return get_data_dir() / "logs"
     elif current_os == OperatingSystem.MACOS:
-        log_dir = Path.home() / "Library" / "Logs" / "MindfulOptimizer"
+        log_dir = Path.home() / "Library" / "Logs" / "MindfulOrganizer"
     else:
         log_dir = get_data_dir() / "logs"
     log_dir.mkdir(parents=True, exist_ok=True)
@@ -148,14 +146,14 @@ def _windows_theme() -> SystemTheme:
     """Read the Windows registry for AppsUseLightTheme."""
     try:
         import winreg
-        key = winreg.OpenKey(
-            winreg.HKEY_CURRENT_USER,
+        key = winreg.OpenKey(  # type: ignore[attr-defined]
+            winreg.HKEY_CURRENT_USER,  # type: ignore[attr-defined]
             r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize",
         )
-        value, _ = winreg.QueryValueEx(key, "AppsUseLightTheme")
-        winreg.CloseKey(key)
+        value, _ = winreg.QueryValueEx(key, "AppsUseLightTheme")  # type: ignore[attr-defined]
+        winreg.CloseKey(key)  # type: ignore[attr-defined]
         return SystemTheme.LIGHT if value == 1 else SystemTheme.DARK
-    except Exception:
+    except (OSError, ImportError):
         return SystemTheme.UNKNOWN
 
 
@@ -171,7 +169,7 @@ def _macos_theme() -> SystemTheme:
         if result.returncode == 0 and "dark" in result.stdout.lower():
             return SystemTheme.DARK
         return SystemTheme.LIGHT
-    except Exception:
+    except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
         return SystemTheme.UNKNOWN
 
 
@@ -189,7 +187,7 @@ def _linux_theme() -> SystemTheme:
             if "dark" in result.stdout.lower():
                 return SystemTheme.DARK
             return SystemTheme.LIGHT
-    except Exception:
+    except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
         pass
 
     # Try KDE
@@ -202,7 +200,7 @@ def _linux_theme() -> SystemTheme:
         )
         if result.returncode == 0 and "dark" in result.stdout.lower():
             return SystemTheme.DARK
-    except Exception:
+    except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
         pass
 
     return SystemTheme.UNKNOWN
@@ -225,10 +223,11 @@ def get_scale_factor() -> float:
             user32.SetProcessDPIAware()
             dc = user32.GetDC(0)
             gdi32 = ctypes.windll.gdi32  # type: ignore[attr-defined]
-            dpi = gdi32.GetDeviceCaps(dc, 88)  # LOGPIXELSX
+            logpixelsx = 88
+            dpi = gdi32.GetDeviceCaps(dc, logpixelsx)
             user32.ReleaseDC(0, dc)
-            return dpi / 96.0
-        except Exception:
+            return float(dpi) / 96.0
+        except (OSError, ImportError, AttributeError):
             return 1.0
 
     elif current_os == OperatingSystem.MACOS:
@@ -241,7 +240,7 @@ def get_scale_factor() -> float:
             )
             if "Retina" in result.stdout:
                 return 2.0
-        except Exception:
+        except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
             pass
         return 1.0
 
@@ -264,7 +263,7 @@ def get_scale_factor() -> float:
                 if "Xft.dpi" in line:
                     dpi = float(line.split(":")[-1].strip())
                     return dpi / 96.0
-        except Exception:
+        except (FileNotFoundError, subprocess.TimeoutExpired, OSError, ValueError):
             pass
         return 1.0
 
@@ -309,7 +308,7 @@ def system_tray_supported() -> bool:
             capture_output=True, text=True, timeout=5,
         )
         return result.returncode == 0
-    except Exception:
+    except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
         return False
 
 
@@ -320,7 +319,7 @@ def system_tray_supported() -> bool:
 def send_desktop_notification(
     title: str,
     message: str,
-    icon_path: Optional[str] = None,
+    icon_path: str | None = None,
     timeout: int = 5,
 ) -> bool:
     """Send a native desktop notification. Returns True on success.
@@ -339,7 +338,7 @@ def send_desktop_notification(
 
 
 def _windows_notification(
-    title: str, message: str, icon_path: Optional[str], timeout: int,
+    title: str, message: str, icon_path: str | None, timeout: int,
 ) -> bool:
     """Try win10toast, then winotify, then fall back to a basic messagebox."""
     try:
@@ -358,18 +357,8 @@ def _windows_notification(
     except ImportError:
         pass
 
-    # Last resort: PowerShell toast (no extra deps)
-    try:
-        ps_script = (
-            "[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, "
-            "ContentType = WindowsRuntime] > $null; "
-            "$template = [Windows.UI.Notifications.ToastNotification]::new("
-            "[Windows.UI.Notifications.ToastTemplateType]::ToastText02); "
-        )
-        logger.debug("Windows notification fallback: using in-app display")
-        return False
-    except Exception:
-        return False
+    logger.debug("Windows notification fallback: using in-app display")
+    return False
 
 
 def _macos_notification(title: str, message: str) -> bool:
@@ -380,12 +369,12 @@ def _macos_notification(title: str, message: str) -> bool:
         )
         subprocess.run(["osascript", "-e", script], capture_output=True, timeout=5)
         return True
-    except Exception:
+    except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
         return False
 
 
 def _linux_notification(
-    title: str, message: str, icon_path: Optional[str], timeout: int,
+    title: str, message: str, icon_path: str | None, timeout: int,
 ) -> bool:
     try:
         cmd = ["notify-send", title, message, "-t", str(timeout * 1000)]
@@ -393,7 +382,7 @@ def _linux_notification(
             cmd.extend(["-i", icon_path])
         subprocess.run(cmd, capture_output=True, timeout=5)
         return True
-    except Exception:
+    except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
         return False
 
 
@@ -405,7 +394,7 @@ _APP_NAME = "MindfulOrganizer"
 
 
 def register_startup(
-    executable_path: Optional[str] = None,
+    executable_path: str | None = None,
     enabled: bool = True,
 ) -> bool:
     """Register or unregister the app to launch at system login.
@@ -428,22 +417,20 @@ def register_startup(
 def _windows_startup(exe: str, enabled: bool) -> bool:
     try:
         import winreg
-        key = winreg.OpenKey(
-            winreg.HKEY_CURRENT_USER,
+        key = winreg.OpenKey(  # type: ignore[attr-defined]
+            winreg.HKEY_CURRENT_USER,  # type: ignore[attr-defined]
             r"Software\Microsoft\Windows\CurrentVersion\Run",
             0,
-            winreg.KEY_SET_VALUE | winreg.KEY_QUERY_VALUE,
+            winreg.KEY_SET_VALUE | winreg.KEY_QUERY_VALUE,  # type: ignore[attr-defined]
         )
         if enabled:
-            winreg.SetValueEx(key, _APP_NAME, 0, winreg.REG_SZ, f'"{exe}"')
+            winreg.SetValueEx(key, _APP_NAME, 0, winreg.REG_SZ, f'"{exe}"')  # type: ignore[attr-defined]
         else:
-            try:
-                winreg.DeleteValue(key, _APP_NAME)
-            except FileNotFoundError:
-                pass
-        winreg.CloseKey(key)
+            with contextlib.suppress(FileNotFoundError):
+                winreg.DeleteValue(key, _APP_NAME)  # type: ignore[attr-defined]
+        winreg.CloseKey(key)  # type: ignore[attr-defined]
         return True
-    except Exception as exc:
+    except (OSError, ImportError) as exc:
         logger.warning("Windows startup registration failed: %s", exc)
         return False
 
@@ -508,18 +495,18 @@ def is_registered_for_startup() -> bool:
     if current_os == OperatingSystem.WINDOWS:
         try:
             import winreg
-            key = winreg.OpenKey(
-                winreg.HKEY_CURRENT_USER,
+            key = winreg.OpenKey(  # type: ignore[attr-defined]
+                winreg.HKEY_CURRENT_USER,  # type: ignore[attr-defined]
                 r"Software\Microsoft\Windows\CurrentVersion\Run",
             )
             try:
-                winreg.QueryValueEx(key, _APP_NAME)
-                winreg.CloseKey(key)
+                winreg.QueryValueEx(key, _APP_NAME)  # type: ignore[attr-defined]
+                winreg.CloseKey(key)  # type: ignore[attr-defined]
                 return True
             except FileNotFoundError:
-                winreg.CloseKey(key)
+                winreg.CloseKey(key)  # type: ignore[attr-defined]
                 return False
-        except Exception:
+        except (OSError, ImportError):
             return False
     elif current_os == OperatingSystem.MACOS:
         return (Path.home() / "Library" / "LaunchAgents" / "com.mindfulorganizer.app.plist").exists()
@@ -546,7 +533,7 @@ class SingleInstance:
 
     def __init__(self, app_id: str = "mindful-organizer") -> None:
         self._app_id = app_id
-        self._lock_file: Optional[Path] = None
+        self._lock_file: Path | None = None
         self._lock_handle: Any = None
         self._current_os = detect_os()
 
@@ -568,33 +555,32 @@ class SingleInstance:
             kernel32 = ctypes.windll.kernel32  # type: ignore[attr-defined]
             mutex_name = f"Global\\{self._app_id}"
             handle = kernel32.CreateMutexW(None, False, mutex_name)
-            last_error = ctypes.GetLastError()
-            if last_error == 183:  # ERROR_ALREADY_EXISTS
+            error_already_exists = 183
+            last_error = ctypes.GetLastError()  # type: ignore
+            if last_error == error_already_exists:
                 kernel32.CloseHandle(handle)
                 return False
             self._lock_handle = handle
             return True
-        except Exception:
+        except (OSError, ImportError, AttributeError):
             return True  # Fail open
 
     def _release_windows(self) -> None:
         if self._lock_handle is not None:
-            try:
+            with contextlib.suppress(OSError, AttributeError):
                 ctypes.windll.kernel32.CloseHandle(self._lock_handle)  # type: ignore[attr-defined]
-            except Exception:
-                pass
             self._lock_handle = None
 
     def _acquire_posix(self) -> bool:
         self._lock_file = Path(tempfile.gettempdir()) / f"{self._app_id}.lock"
         try:
             import fcntl
-            self._lock_handle = open(self._lock_file, "w")
+            self._lock_handle = self._lock_file.open("w")
             fcntl.flock(self._lock_handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
             self._lock_handle.write(str(os.getpid()))
             self._lock_handle.flush()
             return True
-        except (IOError, OSError):
+        except OSError:
             return False
         except ImportError:
             # fcntl unavailable (shouldn't happen on POSIX)
@@ -602,18 +588,14 @@ class SingleInstance:
 
     def _release_posix(self) -> None:
         if self._lock_handle is not None:
-            try:
+            with contextlib.suppress(OSError, ValueError):
                 import fcntl
                 fcntl.flock(self._lock_handle, fcntl.LOCK_UN)
                 self._lock_handle.close()
-            except Exception:
-                pass
             self._lock_handle = None
         if self._lock_file and self._lock_file.exists():
-            try:
+            with contextlib.suppress(OSError):
                 self._lock_file.unlink()
-            except Exception:
-                pass
 
     def __enter__(self) -> "SingleInstance":
         if not self.acquire():

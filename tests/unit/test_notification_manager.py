@@ -10,17 +10,17 @@ from datetime import datetime, timedelta
 import pytest
 
 try:
+    from src.core.database import DatabaseManager
     from src.core.notification_manager import (
+        DeliveryStyle,
+        Notification,
         NotificationManager,
+        NotificationStatus,
         NotificationType,
         Priority,
-        DeliveryStyle,
         RecurringPattern,
-        Notification,
-        NotificationStatus,
         delivery_style_for,
     )
-    from src.core.database import DatabaseManager, TableName
     _HAS_MODULE = True
 except ImportError:
     _HAS_MODULE = False
@@ -102,11 +102,6 @@ class TestCreateNotification:
     def test_convenience_task_deadline(self, nm):
         n = nm.schedule_task_deadline("Finish report", datetime.now() + timedelta(hours=2))
         assert n.type == NotificationType.TASK_DEADLINE
-
-    def test_convenience_energy_check(self, nm):
-        n = nm.schedule_energy_check()
-        assert n.type == NotificationType.ENERGY_CHECK
-
 
 # ---------------------------------------------------------------------------
 # Recurring notifications
@@ -276,7 +271,8 @@ class TestStatsAndListeners:
 
     def test_remove_listener(self, nm):
         delivered = []
-        cb = lambda n: delivered.append(n)
+        def cb(n):
+            delivered.append(n)
         nm.add_listener(cb)
         nm.remove_listener(cb)
 

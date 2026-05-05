@@ -8,19 +8,19 @@ when fewer than 7 days of data are available.
 
 from __future__ import annotations
 
-import os
-from dataclasses import dataclass, field
+from collections.abc import Sequence
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any
 
 import numpy as np
 
 try:
+    import joblib
     from sklearn.ensemble import RandomForestRegressor
     from sklearn.preprocessing import StandardScaler
-    import joblib
     _HAS_SKLEARN = True
 except ImportError:
     _HAS_SKLEARN = False
@@ -58,7 +58,7 @@ class EnergyDataPoint:
     mood_score: float             # 1-10
     tasks_completed_yesterday: int
     medication_taken: bool
-    weather: Optional[str] = None  # "sunny", "cloudy", "rainy", "snowy"
+    weather: str | None = None  # "sunny", "cloudy", "rainy", "snowy"
     exercise: bool = False
 
 
@@ -76,7 +76,7 @@ class EnergyPrediction:
 class DailyEnergyCurve:
     """Predicted energy levels for every hour of a day."""
     date: datetime
-    hourly_predictions: List[EnergyPrediction]
+    hourly_predictions: list[EnergyPrediction]
     peak_hour: int
     trough_hour: int
     description: str
@@ -86,14 +86,14 @@ class DailyEnergyCurve:
 class TaskTimingSuggestion:
     """Recommendation for when to schedule a task."""
     task_energy_requirement: TaskEnergyRequirement
-    suggested_hours: List[int]
+    suggested_hours: list[int]
     reason: str
 
 
 @dataclass
 class FeatureImportanceResult:
     """Which features matter most for this user's energy."""
-    feature_importances: Dict[str, float]
+    feature_importances: dict[str, float]
     top_feature: str
     description: str
 
@@ -152,9 +152,9 @@ def _energy_to_level(energy: float) -> EnergyLevel:
     return EnergyLevel.VERY_HIGH
 
 
-def _parse_data_points(raw: Sequence[Dict[str, Any]]) -> List[EnergyDataPoint]:
+def _parse_data_points(raw: Sequence[dict[str, Any]]) -> list[EnergyDataPoint]:
     """Convert a list of dicts into validated EnergyDataPoint objects."""
-    points: List[EnergyDataPoint] = []
+    points: list[EnergyDataPoint] = []
     for d in raw:
         ts = d.get("timestamp")
         if isinstance(ts, str):
@@ -243,15 +243,15 @@ class EnergyPredictor:
 
     def __init__(
         self,
-        model_dir: Optional[Path] = None,
+        model_dir: Path | None = None,
         min_samples_for_ml: int = MIN_SAMPLES_ML,
     ) -> None:
         self._model_dir = Path(model_dir) if model_dir else None
         self._min_samples = min_samples_for_ml
-        self._model: Optional[Any] = None  # RandomForestRegressor
-        self._scaler: Optional[Any] = None  # StandardScaler
+        self._model: Any | None = None  # RandomForestRegressor
+        self._scaler: Any | None = None  # StandardScaler
         self._rule_predictor = _RuleBasedPredictor()
-        self._training_data: List[EnergyDataPoint] = []
+        self._training_data: list[EnergyDataPoint] = []
         self._is_trained = False
 
         if self._model_dir:
@@ -259,13 +259,13 @@ class EnergyPredictor:
 
     # -- training --------------------------------------------------------------
 
-    def add_data(self, raw_entries: Sequence[Dict[str, Any]]) -> None:
+    def add_data(self, raw_entries: Sequence[dict[str, Any]]) -> None:
         """Add historical data points for training."""
         new_points = _parse_data_points(raw_entries)
         self._training_data.extend(new_points)
         # Deduplicate by timestamp
         seen = set()
-        unique: List[EnergyDataPoint] = []
+        unique: list[EnergyDataPoint] = []
         for p in self._training_data:
             key = p.timestamp.isoformat()
             if key not in seen:
@@ -282,11 +282,11 @@ class EnergyPredictor:
             self._is_trained = False
             return False
 
-        X = np.array([_encode_features(dp) for dp in self._training_data])
-        y = np.array([dp.energy_score for dp in self._training_data])
+        features_matrix = np.array([_encode_features(dp) for dp in self._training_data])
+        targets = np.array([dp.energy_score for dp in self._training_data])
 
         self._scaler = StandardScaler()
-        X_scaled = self._scaler.fit_transform(X)
+        features_scaled = self._scaler.fit_transform(features_matrix)
 
         self._model = RandomForestRegressor(
             n_estimators=100,
@@ -295,7 +295,7 @@ class EnergyPredictor:
             random_state=42,
             n_jobs=-1,
         )
-        self._model.fit(X_scaled, y)
+        self._model.fit(features_scaled, targets)
         self._is_trained = True
 
         if self._model_dir:
@@ -305,7 +305,7 @@ class EnergyPredictor:
 
     # -- prediction ------------------------------------------------------------
 
-    def predict_single(self, data: Dict[str, Any]) -> EnergyPrediction:
+    def predict_single(self, data: dict[str, Any]) -> EnergyPrediction:
         """Predict energy for a single data point."""
         points = _parse_data_points([data])
         if not points:
@@ -320,7 +320,7 @@ class EnergyPredictor:
         dp = points[0]
         return self._predict_point(dp)
 
-    def predict_next_hour(self, current_state: Dict[str, Any]) -> EnergyPrediction:
+    def predict_next_hour(self, current_state: dict[str, Any]) -> EnergyPrediction:
         """Predict energy level one hour from now."""
         points = _parse_data_points([current_state])
         if not points:
@@ -345,14 +345,14 @@ class EnergyPredictor:
         pred.timestamp = future_ts
         return pred
 
-    def predict_rest_of_day(self, current_state: Dict[str, Any]) -> List[EnergyPrediction]:
+    def predict_rest_of_day(self, current_state: dict[str, Any]) -> list[EnergyPrediction]:
         """Predict energy for each remaining hour of the day."""
         points = _parse_data_points([current_state])
         if not points:
             return []
         dp = points[0]
         current_hour = int(dp.time_of_day)
-        predictions: List[EnergyPrediction] = []
+        predictions: list[EnergyPrediction] = []
 
         for h in range(current_hour + 1, 24):
             future_ts = dp.timestamp.replace(hour=h, minute=0, second=0, microsecond=0)
@@ -372,7 +372,7 @@ class EnergyPredictor:
             predictions.append(self._predict_point(future_dp))
         return predictions
 
-    def predict_tomorrow(self, current_state: Dict[str, Any]) -> DailyEnergyCurve:
+    def predict_tomorrow(self, current_state: dict[str, Any]) -> DailyEnergyCurve:
         """Predict a full energy curve for tomorrow."""
         points = _parse_data_points([current_state])
         if not points:
@@ -387,7 +387,7 @@ class EnergyPredictor:
         dp = points[0]
         tomorrow = dp.timestamp + timedelta(days=1)
         tomorrow_start = tomorrow.replace(hour=0, minute=0, second=0, microsecond=0)
-        predictions: List[EnergyPrediction] = []
+        predictions: list[EnergyPrediction] = []
 
         for h in range(24):
             ts = tomorrow_start.replace(hour=h)
@@ -426,8 +426,8 @@ class EnergyPredictor:
 
     def suggest_task_timing(
         self,
-        current_state: Dict[str, Any],
-    ) -> List[TaskTimingSuggestion]:
+        current_state: dict[str, Any],
+    ) -> list[TaskTimingSuggestion]:
         """Suggest optimal hours for tasks at different energy levels."""
         rest_of_day = self.predict_rest_of_day(current_state)
         if not rest_of_day:
@@ -490,8 +490,8 @@ class EnergyPredictor:
             )
 
         importances = self._model.feature_importances_
-        imp_dict: Dict[str, float] = {}
-        for name, val in zip(_FEATURE_NAMES, importances):
+        imp_dict: dict[str, float] = {}
+        for name, val in zip(_FEATURE_NAMES, importances, strict=False):
             imp_dict[name] = round(float(val), 4)
 
         # Sort descending
@@ -594,7 +594,7 @@ class EnergyPredictor:
                 self._model = joblib.load(model_path)
                 self._scaler = joblib.load(scaler_path)
                 self._is_trained = True
-            except Exception:
+            except (OSError, ValueError):
                 self._is_trained = False
 
     @property

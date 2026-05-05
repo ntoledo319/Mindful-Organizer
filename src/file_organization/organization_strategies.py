@@ -1,17 +1,16 @@
 """
 File organization strategies adapted for different mental health needs.
 """
+import json
+import shutil
+from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
-from typing import List, Dict, Set, Optional
-import shutil
-import json
-import re
-from datetime import datetime
+
 
 class MentalHealthProfile:
     """Represents different mental health considerations for file organization."""
-    def __init__(self):
+    def __init__(self) -> None:
         self.has_adhd: bool = False
         self.has_anxiety: bool = False
         self.has_depression: bool = False
@@ -28,12 +27,12 @@ class OrganizationStrategy(Enum):
 
 class FileOrganizer:
     """Manages file organization based on mental health needs."""
-    
+
     def __init__(self, profile: MentalHealthProfile):
         self.profile = profile
         self.strategy = self._determine_strategy()
         self.base_path = Path.home()
-        
+
     def _determine_strategy(self) -> OrganizationStrategy:
         """Determine the best organization strategy based on profile."""
         if self.profile.has_adhd and self.profile.has_anxiety:
@@ -47,10 +46,10 @@ class FileOrganizer:
         else:
             return OrganizationStrategy.FLEXIBLE
 
-    def create_organization_structure(self, root_dir: Path) -> Dict[str, Path]:
+    def create_organization_structure(self, root_dir: Path) -> dict[str, Path]:
         """Create an organization structure based on the selected strategy."""
         structure = {}
-        
+
         if self.strategy == OrganizationStrategy.MINIMAL:
             # ADHD-friendly: Simple, clear categories with action-based names
             categories = [
@@ -59,7 +58,7 @@ class FileOrganizer:
                 "DONE - Completed",
                 "REFERENCE - Important Info"
             ]
-        
+
         elif self.strategy == OrganizationStrategy.VISUAL:
             # Visual-heavy organization with emoji markers
             categories = [
@@ -69,7 +68,7 @@ class FileOrganizer:
                 "✨ Inspiration",
                 "✅ Completed"
             ]
-        
+
         elif self.strategy == OrganizationStrategy.DETAILED:
             # Anxiety-friendly: Detailed categorization with clear hierarchy
             categories = [
@@ -80,7 +79,7 @@ class FileOrganizer:
                 "05_Documentation",
                 "06_Backups"
             ]
-        
+
         else:  # FLEXIBLE
             # Adaptable structure with both simple and detailed options
             categories = [
@@ -89,16 +88,16 @@ class FileOrganizer:
                 "Resources",
                 "Archives"
             ]
-        
+
         # Create directories
         for category in categories:
             dir_path = root_dir / category
             dir_path.mkdir(parents=True, exist_ok=True)
             structure[category] = dir_path
-            
+
             # Create metadata file for the directory
             self._create_metadata_file(dir_path, category)
-        
+
         return structure
 
     def _create_metadata_file(self, directory: Path, category: str):
@@ -110,7 +109,7 @@ class FileOrganizer:
             "guidelines": self._get_organization_guidelines(),
             "quick_tips": self._get_quick_tips()
         }
-        
+
         with open(directory / ".folder_info.json", "w") as f:
             json.dump(metadata, f, indent=2)
 
@@ -129,10 +128,10 @@ class FileOrganizer:
         }
         return purposes.get(category, "General purpose storage")
 
-    def _get_organization_guidelines(self) -> List[str]:
+    def _get_organization_guidelines(self) -> list[str]:
         """Get organization guidelines based on the current strategy."""
         guidelines = []
-        
+
         if self.profile.has_adhd:
             guidelines.extend([
                 "Keep file names short and action-oriented",
@@ -140,7 +139,7 @@ class FileOrganizer:
                 "Limit folder depth to reduce overwhelm",
                 "Set up automatic file sorting when possible"
             ])
-            
+
         if self.profile.has_anxiety:
             guidelines.extend([
                 "Use detailed, consistent naming conventions",
@@ -148,7 +147,7 @@ class FileOrganizer:
                 "Maintain regular backups",
                 "Create detailed README files for each project"
             ])
-            
+
         if self.profile.has_depression:
             guidelines.extend([
                 "Use positive and encouraging folder names",
@@ -156,7 +155,7 @@ class FileOrganizer:
                 "Keep important files easily accessible",
                 "Set up automatic cleanup routines"
             ])
-            
+
         if not any([self.profile.has_adhd, self.profile.has_anxiety, self.profile.has_depression]):
             guidelines.extend([
                 "Use clear, descriptive names",
@@ -164,13 +163,13 @@ class FileOrganizer:
                 "Archive completed projects",
                 "Regular maintenance and cleanup"
             ])
-            
+
         return guidelines
 
-    def _get_quick_tips(self) -> List[str]:
+    def _get_quick_tips(self) -> list[str]:
         """Get quick tips based on the user's profile."""
         tips = []
-        
+
         if self.profile.has_adhd:
             tips.extend([
                 "💡 Use color coding for different project types",
@@ -178,7 +177,7 @@ class FileOrganizer:
                 "📱 Use quick access shortcuts",
                 "🎯 Focus on one folder at a time"
             ])
-            
+
         if self.profile.has_anxiety:
             tips.extend([
                 "✅ Regular backups are automated",
@@ -186,7 +185,7 @@ class FileOrganizer:
                 "🔍 Search function helps find anything",
                 "📝 Keep notes with context"
             ])
-            
+
         if self.profile.has_depression:
             tips.extend([
                 "🌟 Celebrate completed projects",
@@ -194,14 +193,11 @@ class FileOrganizer:
                 "👥 Share and collaborate",
                 "🌱 Start small, grow gradually"
             ])
-            
+
         return tips
 
     def suggest_file_location(self, file_path: Path) -> Path:
         """Suggest the best location for a file based on its type and content."""
-        file_type = file_path.suffix.lower()
-        file_name = file_path.name.lower()
-        
         # Determine the best category based on file analysis
         if self.strategy == OrganizationStrategy.MINIMAL:
             if self._is_active_project_file(file_path):
@@ -210,7 +206,7 @@ class FileOrganizer:
                 return self.base_path / "REFERENCE - Important Info" / file_path.name
             else:
                 return self.base_path / "NEXT - Upcoming" / file_path.name
-                
+
         elif self.strategy == OrganizationStrategy.VISUAL:
             if self._is_active_project_file(file_path):
                 return self.base_path / "🎯 Active Projects" / file_path.name
@@ -218,11 +214,11 @@ class FileOrganizer:
                 return self.base_path / "📅 Scheduled Tasks" / file_path.name
             else:
                 return self.base_path / "📚 Resources" / file_path.name
-                
+
         elif self.strategy == OrganizationStrategy.DETAILED:
             category = self._determine_detailed_category(file_path)
             return self.base_path / category / self._generate_detailed_filename(file_path)
-            
+
         else:  # FLEXIBLE
             if self._is_active_project_file(file_path):
                 return self.base_path / "Quick Access" / file_path.name
@@ -230,24 +226,46 @@ class FileOrganizer:
                 return self.base_path / "Projects" / file_path.name
 
     def _is_active_project_file(self, file_path: Path) -> bool:
-        """Check if a file belongs to an active project."""
-        # Implementation would check file metadata, modification time, etc.
-        return True  # Placeholder
+        """Check if a file belongs to an active project.
+
+        Currently uses modification time within the last 30 days as a heuristic.
+        """
+        try:
+            mtime = datetime.fromtimestamp(file_path.stat().st_mtime)
+            return (datetime.now() - mtime).days <= 30
+        except OSError:
+            return False
 
     def _is_reference_file(self, file_path: Path) -> bool:
         """Check if a file is a reference document."""
-        reference_types = {'.pdf', '.doc', '.docx', '.txt', '.md'}
+        reference_types = {".pdf", ".doc", ".docx", ".txt", ".md"}
         return file_path.suffix.lower() in reference_types
 
     def _is_scheduled_task(self, file_path: Path) -> bool:
-        """Check if a file is related to a scheduled task."""
-        # Implementation would check file metadata, name patterns, etc.
-        return False  # Placeholder
+        """Check if a file is related to a scheduled task.
+
+        Placeholder: returns False until task-calendar integration is implemented.
+        """
+        return False
 
     def _determine_detailed_category(self, file_path: Path) -> str:
-        """Determine the detailed category for a file."""
-        # Implementation would analyze file content and type
-        return "01_Current_Projects"  # Placeholder
+        """Determine the detailed category for a file.
+
+        Uses a simple extension-based heuristic. Clients requiring richer
+        categorization should subclass and override.
+        """
+        suffix = file_path.suffix.lower()
+        if suffix in {".pdf", ".doc", ".docx", ".txt", ".md"}:
+            return "01_Documents"
+        if suffix in {".jpg", ".jpeg", ".png", ".gif", ".svg"}:
+            return "02_Images"
+        if suffix in {".mp4", ".mov", ".avi", ".mkv"}:
+            return "03_Videos"
+        if suffix in {".mp3", ".wav", ".flac", ".aac"}:
+            return "04_Audio"
+        if suffix in {".py", ".js", ".ts", ".java", ".cpp", ".c", ".go", ".rs"}:
+            return "05_Code"
+        return "06_Misc"
 
     def _generate_detailed_filename(self, file_path: Path) -> str:
         """Generate a detailed filename with metadata."""
@@ -255,18 +273,25 @@ class FileOrganizer:
         return f"{date_prefix}_{file_path.name}"
 
     def organize_directory(self, directory: Path):
-        """Organize an entire directory according to the current strategy."""
-        for file_path in directory.rglob('*'):
+        """Organize an entire directory according to the current strategy.
+
+        Raises:
+            FileExistsError: If a collision is detected and would overwrite.
+        """
+        for file_path in directory.rglob("*"):
             if file_path.is_file():
                 suggested_location = self.suggest_file_location(file_path)
                 suggested_location.parent.mkdir(parents=True, exist_ok=True)
+                if suggested_location.exists():
+                    raise FileExistsError(
+                        f"Collision: {suggested_location} already exists. "
+                        "Resolve manually or enable overwrite mode."
+                    )
                 shutil.move(str(file_path), str(suggested_location))
 
     def create_quick_access_links(self, directory: Path):
-        """Create quick access links for frequently used files and folders."""
-        quick_access = directory / "Quick Access"
-        quick_access.mkdir(exist_ok=True)
-        
-        # Create symbolic links based on frequency of access
-        # Implementation would track file access patterns
-        pass
+        """Create quick access links for frequently used files and folders.
+
+        Placeholder: not yet implemented.
+        """
+        raise NotImplementedError("Quick access links are not yet implemented.")

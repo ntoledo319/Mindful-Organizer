@@ -17,8 +17,8 @@ def download_file(url, destination):
             with open(destination, "wb") as f:
                 shutil.copyfileobj(r.raw, f)
         return True
-    except Exception as e:
-        print(f"✖ Failed to download {url} - {str(e)}")
+    except (requests.RequestException, OSError) as exc:
+        print(f"✖ Failed to download {url} - {exc}")
         return False
 
 def main():

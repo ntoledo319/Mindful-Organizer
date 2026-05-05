@@ -3,15 +3,18 @@ Enhanced file organization and management system with dry-run,
 undo, duplicate detection, watch folders, custom rules, batch rename,
 recency scoring, and archive support.
 """
-from pathlib import Path
-import shutil
 import hashlib
-import os
-import time
-import threading
-from datetime import datetime
-from typing import Dict, List, Optional, Tuple, Callable
 import json
+import logging
+import shutil
+import threading
+import time
+from collections.abc import Callable
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+_SECONDS_PER_DAY = 86400
 
 
 class FileOrganizer:
@@ -52,7 +55,7 @@ class FileOrganizer:
     }
 
     # Content-based hints: map first bytes (magic numbers) to categories
-    MAGIC_BYTES: Dict[bytes, str] = {
+    MAGIC_BYTES: dict[bytes, str] = {
         b"%PDF": "documents",
         b"\x89PNG": "images",
         b"\xff\xd8\xff": "images",
@@ -66,18 +69,18 @@ class FileOrganizer:
         b"\x00\x00\x00\x18": "video",
     }
 
-    def __init__(self, data_dir: Path, profile: Optional[object] = None):
+    def __init__(self, data_dir: Path, profile: object | None = None):
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.profile = profile
         self.config_file = data_dir / "file_organizer_config.json"
         self.history_file = data_dir / "file_history.json"
         self.rules_file = data_dir / "organization_rules.json"
-        self.config: Dict = {}
-        self.history: List[Dict] = []
-        self.custom_rules: List[Dict] = []
-        self._undo_stack: List[List[Dict]] = []
-        self._watch_thread: Optional[threading.Thread] = None
+        self.config: dict[str, Any] = {}
+        self.history: list[dict] = []
+        self.custom_rules: list[dict] = []
+        self._undo_stack: list[list[dict]] = []
+        self._watch_thread: threading.Thread | None = None
         self._watch_stop_event = threading.Event()
         self.load_config()
         self.load_history()
@@ -88,7 +91,7 @@ class FileOrganizer:
     def load_config(self) -> None:
         if self.config_file.exists():
             try:
-                with open(self.config_file, "r") as f:
+                with open(self.config_file) as f:
                     self.config = json.load(f)
             except (json.JSONDecodeError, Exception):
                 self.config = {}
@@ -109,7 +112,7 @@ class FileOrganizer:
     def load_history(self) -> None:
         if self.history_file.exists():
             try:
-                with open(self.history_file, "r") as f:
+                with open(self.history_file) as f:
                     self.history = json.load(f)
             except (json.JSONDecodeError, Exception):
                 self.history = []
@@ -121,7 +124,7 @@ class FileOrganizer:
     def load_rules(self) -> None:
         if self.rules_file.exists():
             try:
-                with open(self.rules_file, "r") as f:
+                with open(self.rules_file) as f:
                     self.custom_rules = json.load(f)
             except (json.JSONDecodeError, Exception):
                 self.custom_rules = []
@@ -135,9 +138,9 @@ class FileOrganizer:
     def organize_files(
         self,
         source_dir: Path,
-        target_dir: Optional[Path] = None,
+        target_dir: Path | None = None,
         dry_run: bool = False,
-    ) -> Dict:
+    ) -> dict:
         """Organize files from source directory into categorized structure.
 
         Args:
@@ -151,7 +154,7 @@ class FileOrganizer:
         if target_dir is None:
             target_dir = source_dir / "organized"
 
-        summary: Dict = {"moved": 0, "skipped": 0, "errors": 0, "actions": []}
+        summary: dict = {"moved": 0, "skipped": 0, "errors": 0, "actions": []}
 
         for file_path in source_dir.glob("*"):
             if file_path.is_file() and not file_path.name.startswith("."):
@@ -175,7 +178,7 @@ class FileOrganizer:
                         summary["actions"].append(action)
                     else:
                         summary["skipped"] += 1
-                except Exception as e:
+                except (OSError, PermissionError, shutil.Error) as e:
                     summary["errors"] += 1
                     self._record_action(file_path, None, "error", str(e))
 
@@ -185,8 +188,8 @@ class FileOrganizer:
         return summary
 
     def dry_run(
-        self, source_dir: Path, target_dir: Optional[Path] = None
-    ) -> Dict:
+        self, source_dir: Path, target_dir: Path | None = None
+    ) -> dict:
         """Preview organization without moving files.
 
         Returns the same summary structure as organize_files but with
@@ -194,7 +197,7 @@ class FileOrganizer:
         """
         return self.organize_files(source_dir, target_dir, dry_run=True)
 
-    def undo_last_organization(self) -> Dict:
+    def undo_last_organization(self) -> dict:
         """Undo the most recent organization batch, restoring files to
         their original locations.
 
@@ -205,7 +208,7 @@ class FileOrganizer:
             return {"undone": 0, "errors": 0, "message": "Nothing to undo."}
 
         actions = self._undo_stack.pop()
-        result: Dict = {"undone": 0, "errors": 0, "message": ""}
+        result: dict = {"undone": 0, "errors": 0, "message": ""}
 
         for action in reversed(actions):
             if action.get("action") == "move":
@@ -217,7 +220,7 @@ class FileOrganizer:
                         shutil.move(str(src), str(dst))
                         result["undone"] += 1
                         self._record_action(src, dst, "undo")
-                except Exception:
+                except (OSError, PermissionError, shutil.Error):
                     result["errors"] += 1
 
         result["message"] = f"Undone {result['undone']} file moves."
@@ -225,16 +228,18 @@ class FileOrganizer:
 
     # ── File Categorization ───────────────────────────────────────
 
-    def _get_file_category(self, file_path: Path) -> Optional[str]:
+    def _get_file_category(self, file_path: Path) -> str | None:
         """Determine category using custom rules, extension, then content hints."""
         # Custom rules first
         for rule in self.custom_rules:
             if self._matches_rule(file_path, rule):
-                return rule.get("category")
+                category = rule.get("category")
+                if isinstance(category, str):
+                    return category
 
         # Extension-based lookup
         ext = file_path.suffix.lower()
-        categories = self.config.get("categories", self.DEFAULT_CATEGORIES)
+        categories: dict[str, list[str]] = self.config.get("categories", self.DEFAULT_CATEGORIES)
         for category, extensions in categories.items():
             if ext in extensions:
                 return category
@@ -242,7 +247,7 @@ class FileOrganizer:
         # Content-based fallback (magic bytes)
         return self._detect_category_by_content(file_path)
 
-    def _detect_category_by_content(self, file_path: Path) -> Optional[str]:
+    def _detect_category_by_content(self, file_path: Path) -> str | None:
         """Attempt to detect file category from the first bytes of the file."""
         try:
             with open(file_path, "rb") as f:
@@ -254,10 +259,10 @@ class FileOrganizer:
             pass
         return None
 
-    def _matches_rule(self, file_path: Path, rule: Dict) -> bool:
+    def _matches_rule(self, file_path: Path, rule: dict[str, Any]) -> bool:
         """Check if a file matches a custom organization rule."""
-        rule_type = rule.get("type", "extension")
-        pattern = rule.get("pattern", "")
+        rule_type = str(rule.get("type", "extension"))
+        pattern = str(rule.get("pattern", ""))
 
         if rule_type == "extension":
             return file_path.suffix.lower() == pattern.lower()
@@ -289,7 +294,7 @@ class FileOrganizer:
         rule_type: str,
         pattern: str,
         category: str,
-        destination: Optional[str] = None,
+        destination: str | None = None,
     ) -> None:
         """Add a custom organization rule.
 
@@ -319,7 +324,7 @@ class FileOrganizer:
             return True
         return False
 
-    def get_rules(self) -> List[Dict]:
+    def get_rules(self) -> list[dict]:
         """Return a copy of all custom rules."""
         return self.custom_rules.copy()
 
@@ -330,7 +335,7 @@ class FileOrganizer:
         directory: Path,
         template: str,
         dry_run: bool = False,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Rename files in a directory using a template string.
 
         Template placeholders:
@@ -348,7 +353,7 @@ class FileOrganizer:
         Returns:
             List of dicts with 'original', 'new_name', and 'action' keys.
         """
-        results: List[Dict] = []
+        results: list[dict] = []
         files = sorted(
             [f for f in directory.iterdir() if f.is_file()],
             key=lambda p: p.name,
@@ -382,13 +387,13 @@ class FileOrganizer:
 
     # ── Duplicate Detection ───────────────────────────────────────
 
-    def find_duplicates(self, directory: Path) -> List[Tuple[Path, Path]]:
+    def find_duplicates(self, directory: Path) -> list[tuple[Path, Path]]:
         """Find duplicate files by size and SHA-256 hash.
 
         Returns:
             List of (original, duplicate) path pairs.
         """
-        size_map: Dict[int, List[Path]] = {}
+        size_map: dict[int, list[Path]] = {}
         for file_path in directory.rglob("*"):
             if file_path.is_file():
                 try:
@@ -397,31 +402,31 @@ class FileOrganizer:
                 except (OSError, PermissionError):
                     continue
 
-        duplicates: List[Tuple[Path, Path]] = []
-        for size, files in size_map.items():
+        duplicates: list[tuple[Path, Path]] = []
+        for _size, files in size_map.items():
             if len(files) < 2:
                 continue
-            hash_map: Dict[str, List[Path]] = {}
+            hash_map: dict[str, list[Path]] = {}
             for fp in files:
                 try:
                     file_hash = self._hash_file(fp)
                     hash_map.setdefault(file_hash, []).append(fp)
                 except (OSError, PermissionError):
                     continue
-            for h, fps in hash_map.items():
+            for _h, fps in hash_map.items():
                 if len(fps) >= 2:
                     for i in range(1, len(fps)):
                         duplicates.append((fps[0], fps[i]))
 
         return duplicates
 
-    def find_duplicates_by_name(self, directory: Path) -> Dict[str, List[Path]]:
+    def find_duplicates_by_name(self, directory: Path) -> dict[str, list[Path]]:
         """Find files with identical names across subdirectories.
 
         Returns:
             Dict mapping filename to list of paths where it appears.
         """
-        name_map: Dict[str, List[Path]] = {}
+        name_map: dict[str, list[Path]] = {}
         for file_path in directory.rglob("*"):
             if file_path.is_file():
                 name_map.setdefault(file_path.name, []).append(file_path)
@@ -444,9 +449,9 @@ class FileOrganizer:
     def start_watching(
         self,
         directory: Path,
-        target_dir: Optional[Path] = None,
+        target_dir: Path | None = None,
         poll_interval: float = 5.0,
-        callback: Optional[Callable[[Dict], None]] = None,
+        callback: Callable[[dict], None] | None = None,
     ) -> None:
         """Start monitoring a directory for new files.
 
@@ -496,8 +501,9 @@ class FileOrganizer:
                                                 "category": category,
                                             }
                                         )
-                                except Exception:
-                                    pass
+                                except (OSError, PermissionError, shutil.Error):
+                                    logger = logging.getLogger(__name__)
+                                    logger.exception("Watch folder move failed")
                 self._watch_stop_event.wait(poll_interval)
 
         self._watch_thread = threading.Thread(
@@ -521,14 +527,14 @@ class FileOrganizer:
 
     # ── Recency Scoring ───────────────────────────────────────────
 
-    def get_recency_scores(self, directory: Path) -> List[Dict]:
+    def get_recency_scores(self, directory: Path) -> list[dict]:
         """Score files by how recently they were accessed/modified.
 
         Returns a list sorted by recency (most recent first), each with:
             path, last_accessed, last_modified, recency_score (0-100).
         """
         now = time.time()
-        scored: List[Dict] = []
+        scored: list[dict] = []
 
         for fp in directory.rglob("*"):
             if not fp.is_file():
@@ -538,7 +544,7 @@ class FileOrganizer:
                 last_access = stat.st_atime
                 last_modify = stat.st_mtime
                 most_recent = max(last_access, last_modify)
-                age_days = (now - most_recent) / 86400
+                age_days = (now - most_recent) / _SECONDS_PER_DAY
                 # Exponential decay: score 100 for today, ~37 after 30 days
                 score = max(0.0, 100.0 * (0.97 ** age_days))
                 scored.append(
@@ -567,7 +573,7 @@ class FileOrganizer:
         directory: Path,
         days: int = 90,
         dry_run: bool = False,
-    ) -> Dict:
+    ) -> dict:
         """Move files not modified in *days* to an archive sub-folder.
 
         Args:
@@ -579,8 +585,8 @@ class FileOrganizer:
             Dict with archived count and file list.
         """
         archive_dir = directory / "_archive"
-        cutoff = datetime.now().timestamp() - (days * 86400)
-        result: Dict = {"archived": 0, "files": []}
+        cutoff = datetime.now().timestamp() - (days * _SECONDS_PER_DAY)
+        result: dict = {"archived": 0, "files": []}
 
         for fp in directory.glob("*"):
             if fp.is_file():
@@ -602,13 +608,13 @@ class FileOrganizer:
 
     # ── File Statistics ───────────────────────────────────────────
 
-    def get_file_statistics(self, directory: Path) -> Dict:
+    def get_file_statistics(self, directory: Path) -> dict:
         """Comprehensive file statistics for a directory tree.
 
         Returns counts by type, size distribution, age analysis, and
         top largest / oldest / newest files.
         """
-        stats: Dict = {
+        stats: dict = {
             "total_files": 0,
             "total_size_bytes": 0,
             "by_category": {},
@@ -633,7 +639,7 @@ class FileOrganizer:
         }
 
         now = time.time()
-        files_info: List[Dict] = []
+        files_info: list[dict] = []
 
         for fp in directory.rglob("*"):
             if not fp.is_file():
@@ -708,9 +714,9 @@ class FileOrganizer:
     def _record_action(
         self,
         source: Path,
-        target: Optional[Path],
+        target: Path | None,
         action: str,
-        error: Optional[str] = None,
+        error: str | None = None,
     ) -> None:
         """Record a file operation in the history log."""
         self.history.append(
@@ -724,9 +730,9 @@ class FileOrganizer:
         )
         self.save_history()
 
-    def get_organization_stats(self) -> Dict:
+    def get_organization_stats(self) -> dict:
         """Get statistics about organized files from history."""
-        stats: Dict = {
+        stats: dict = {
             "total_files_moved": 0,
             "files_by_category": {},
             "recent_errors": [],
@@ -743,9 +749,9 @@ class FileOrganizer:
                 stats["recent_errors"].append(entry)
         return stats
 
-    def search_files(self, query: str) -> List[str]:
+    def search_files(self, query: str) -> list[str]:
         """Search for files by name in organized directories."""
-        results: List[str] = []
+        results: list[str] = []
         files_dir = self.data_dir / "files"
         if files_dir.exists():
             for fp in files_dir.rglob("*"):

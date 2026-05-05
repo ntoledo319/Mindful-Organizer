@@ -6,16 +6,15 @@ daily challenges, and progress visualization.
 """
 
 from datetime import datetime, timedelta
-from pathlib import Path
 
 import pytest
 
 try:
     from src.file_organization.adhd_gamification import (
-        ADHDGameManager,
         Achievement,
-        RewardSystem,
         ADHDFileTracker,
+        ADHDGameManager,
+        RewardSystem,
     )
     _HAS_MODULE = True
 except ImportError:

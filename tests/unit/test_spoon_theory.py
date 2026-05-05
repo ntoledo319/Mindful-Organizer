@@ -5,18 +5,16 @@ Covers daily allocation, spending spoons, recovery, spoon debt,
 and condition-specific defaults.
 """
 
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 
 import pytest
 
 try:
-    from src.profile.spoon_theory import (
-        SpoonBudget,
+    from src.profiles.spoon_theory import (
         ActivityType,
-        Condition,
-        WarningLevel,
-        DailySpoonState,
+        SpoonBudget,
         SpoonCostEntry,
+        WarningLevel,
     )
     _HAS_MODULE = True
 except ImportError:
@@ -40,7 +38,7 @@ class TestDailyAllocation:
         assert budget.daily_spoons == 10.0
 
     def test_condition_adjusts_daily_spoons(self):
-        budget = SpoonBudget(conditions=["depression"])
+        budget = SpoonBudget(conditions=["Depression"])
         assert budget.daily_spoons == 8.0
 
     def test_remaining_spoons_at_start(self):

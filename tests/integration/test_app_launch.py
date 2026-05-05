@@ -1,6 +1,5 @@
 import subprocess
-import time
-import pytest
+
 
 def test_app_launch():
     """Test that the application can be launched from command line."""

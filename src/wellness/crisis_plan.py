@@ -11,13 +11,12 @@ your local emergency number. The resources and plans in this tool are meant
 to support, not substitute for, guidance from qualified professionals.
 """
 
+import json
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional
 from pathlib import Path
-import json
-import uuid
 
 
 class ContactType(Enum):
@@ -68,7 +67,7 @@ class SupportContact:
     available_hours: str = ""
     notes: str = ""
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Serialize to dictionary."""
         return {
             "name": self.name,
@@ -80,7 +79,7 @@ class SupportContact:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict) -> "SupportContact":
+    def from_dict(cls, data: dict) -> "SupportContact":
         """Deserialize from dictionary."""
         return cls(
             name=data["name"],
@@ -113,7 +112,7 @@ class ProfessionalContact:
     available_hours: str = ""
     instructions: str = ""
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Serialize to dictionary."""
         return {
             "name": self.name,
@@ -126,7 +125,7 @@ class ProfessionalContact:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict) -> "ProfessionalContact":
+    def from_dict(cls, data: dict) -> "ProfessionalContact":
         """Deserialize from dictionary."""
         return cls(
             name=data["name"],
@@ -139,7 +138,7 @@ class ProfessionalContact:
         )
 
 
-def _default_crisis_resources() -> List[ProfessionalContact]:
+def _default_crisis_resources() -> list[ProfessionalContact]:
     """Return default crisis resources that should always be available."""
     return [
         ProfessionalContact(
@@ -168,7 +167,7 @@ def _default_crisis_resources() -> List[ProfessionalContact]:
             organization="SAMHSA",
             available_hours="24/7, 365 days a year",
             instructions=(
-                "Free, confidential treatment referral and information service. "
+                "Free, confidential support referral and information service. "
                 "Available in English and Spanish."
             ),
         ),
@@ -197,26 +196,26 @@ class CrisisPlan:
     plan_id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
     name: str = "My Crisis Plan"
     situation: PlanSituation = PlanSituation.GENERAL
-    warning_signs: List[str] = field(default_factory=list)
-    coping_strategies: List[str] = field(default_factory=list)
-    support_contacts: List[SupportContact] = field(default_factory=list)
-    professional_contacts: List[ProfessionalContact] = field(
+    warning_signs: list[str] = field(default_factory=list)
+    coping_strategies: list[str] = field(default_factory=list)
+    support_contacts: list[SupportContact] = field(default_factory=list)
+    professional_contacts: list[ProfessionalContact] = field(
         default_factory=_default_crisis_resources
     )
-    safe_places: List[str] = field(default_factory=list)
-    reasons_for_living: List[str] = field(default_factory=list)
-    things_to_remove: List[str] = field(default_factory=list)
+    safe_places: list[str] = field(default_factory=list)
+    reasons_for_living: list[str] = field(default_factory=list)
+    things_to_remove: list[str] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
     updated_at: str = field(default_factory=lambda: datetime.now().isoformat())
     notes: str = ""
 
-    def validate(self) -> List[str]:
+    def validate(self) -> list[str]:
         """Check the plan for completeness and return any warnings.
 
         Returns:
             List of warning strings. Empty list means the plan is complete.
         """
-        warnings: List[str] = []
+        warnings: list[str] = []
 
         if not self.warning_signs:
             warnings.append("No warning signs listed. Add signs that a crisis may be building.")
@@ -235,13 +234,13 @@ class CrisisPlan:
         for contact in self.support_contacts:
             if not contact.phone.strip():
                 warnings.append(f"Support contact '{contact.name}' is missing a phone number.")
-        for contact in self.professional_contacts:
-            if not contact.phone.strip():
-                warnings.append(f"Professional contact '{contact.name}' is missing a phone number.")
+        for pro_contact in self.professional_contacts:
+            if not pro_contact.phone.strip():
+                warnings.append(f"Professional contact '{pro_contact.name}' is missing a phone number.")
 
         return warnings
 
-    def get_quick_access(self) -> Dict:
+    def get_quick_access(self) -> dict:
         """Generate a minimal quick-access version of the plan.
 
         Returns a simplified structure optimized for crisis moments:
@@ -286,7 +285,7 @@ class CrisisPlan:
         Returns:
             Formatted text representation of the complete crisis plan.
         """
-        lines: List[str] = []
+        lines: list[str] = []
         lines.append("=" * 60)
         lines.append("CRISIS SAFETY PLAN")
         lines.append("=" * 60)
@@ -323,10 +322,10 @@ class CrisisPlan:
         lines.append("-" * 40)
         lines.append("PROFESSIONAL CONTACTS")
         lines.append("-" * 40)
-        for contact in self.professional_contacts:
-            line = f"  {contact.name} ({contact.role}): {contact.phone}"
-            if contact.instructions:
-                line += f" - {contact.instructions}"
+        for pro_contact in self.professional_contacts:
+            line = f"  {pro_contact.name} ({pro_contact.role}): {pro_contact.phone}"
+            if pro_contact.instructions:
+                line += f" - {pro_contact.instructions}"
             lines.append(line)
         lines.append("")
 
@@ -362,7 +361,7 @@ class CrisisPlan:
         lines.append("=" * 60)
         return "\n".join(lines)
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Serialize plan to a dictionary for JSON storage."""
         return {
             "plan_id": self.plan_id,
@@ -381,7 +380,7 @@ class CrisisPlan:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict) -> "CrisisPlan":
+    def from_dict(cls, data: dict) -> "CrisisPlan":
         """Deserialize a plan from a dictionary."""
         return cls(
             plan_id=data["plan_id"],
@@ -417,7 +416,7 @@ class CrisisPlanManager:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self._plans_file = self.data_dir / "crisis_plans.json"
-        self._plans: List[CrisisPlan] = []
+        self._plans: list[CrisisPlan] = []
         self._load_plans()
 
     # -- persistence ----------------------------------------------------------
@@ -426,7 +425,7 @@ class CrisisPlanManager:
         """Load plans from disk."""
         if self._plans_file.exists():
             try:
-                with open(self._plans_file, "r") as fh:
+                with open(self._plans_file) as fh:
                     data = json.load(fh)
                 self._plans = [CrisisPlan.from_dict(p) for p in data]
             except (json.JSONDecodeError, KeyError):
@@ -458,7 +457,7 @@ class CrisisPlanManager:
         self._save_plans()
         return plan
 
-    def get_plan(self, plan_id: str) -> Optional[CrisisPlan]:
+    def get_plan(self, plan_id: str) -> CrisisPlan | None:
         """Retrieve a plan by ID.
 
         Args:
@@ -472,7 +471,7 @@ class CrisisPlanManager:
                 return plan
         return None
 
-    def get_plan_by_situation(self, situation: PlanSituation) -> Optional[CrisisPlan]:
+    def get_plan_by_situation(self, situation: PlanSituation) -> CrisisPlan | None:
         """Retrieve the first plan matching a situation type.
 
         Args:
@@ -518,24 +517,24 @@ class CrisisPlanManager:
                 return True
         return False
 
-    def list_plans(self) -> List[CrisisPlan]:
+    def list_plans(self) -> list[CrisisPlan]:
         """Return all crisis plans."""
         return list(self._plans)
 
-    def validate_all_plans(self) -> Dict[str, List[str]]:
+    def validate_all_plans(self) -> dict[str, list[str]]:
         """Validate all plans and return warnings per plan.
 
         Returns:
             Dictionary mapping plan_id to list of warning strings.
         """
-        results: Dict[str, List[str]] = {}
+        results: dict[str, list[str]] = {}
         for plan in self._plans:
             warnings = plan.validate()
             if warnings:
                 results[plan.plan_id] = warnings
         return results
 
-    def get_quick_access(self, plan_id: Optional[str] = None) -> Dict:
+    def get_quick_access(self, plan_id: str | None = None) -> dict:
         """Get quick-access crisis information.
 
         If no plan_id is provided, returns the first plan or a default
@@ -547,7 +546,7 @@ class CrisisPlanManager:
         Returns:
             Quick-access dictionary for crisis UI display.
         """
-        plan: Optional[CrisisPlan] = None
+        plan: CrisisPlan | None = None
         if plan_id:
             plan = self.get_plan(plan_id)
         elif self._plans:
@@ -571,7 +570,7 @@ class CrisisPlanManager:
             "reasons_for_living": [],
         }
 
-    def export_plan(self, plan_id: str) -> Optional[str]:
+    def export_plan(self, plan_id: str) -> str | None:
         """Export a plan as PDF-ready formatted text.
 
         Args:
@@ -586,12 +585,12 @@ class CrisisPlanManager:
         return None
 
     @property
-    def plans(self) -> List[CrisisPlan]:
+    def plans(self) -> list[CrisisPlan]:
         """Read-only access to the plan list."""
         return list(self._plans)
 
     @staticmethod
-    def get_default_crisis_resources() -> List[ProfessionalContact]:
+    def get_default_crisis_resources() -> list[ProfessionalContact]:
         """Return the default crisis hotline resources.
 
         These are always available regardless of whether the user has

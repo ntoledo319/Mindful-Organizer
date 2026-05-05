@@ -8,21 +8,34 @@ and therapist-shareable report export.
 
 from __future__ import annotations
 
+import contextlib
 import json
 import logging
 import uuid
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QFrame, QScrollArea, QSizePolicy, QListWidget, QListWidgetItem,
-    QSpinBox, QTextEdit, QLineEdit, QGroupBox, QMessageBox,
-    QFileDialog, QDialog, QDialogButtonBox, QProgressBar,
-)
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal
-from PyQt6.QtGui import QFont, QColor
+from PyQt6.QtGui import QFont
+from PyQt6.QtWidgets import (
+    QDialog,
+    QDialogButtonBox,
+    QFileDialog,
+    QFrame,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QListWidget,
+    QMessageBox,
+    QPushButton,
+    QScrollArea,
+    QSizePolicy,
+    QSpinBox,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +77,7 @@ class _HierarchyItemDialog(QDialog):
     def __init__(
         self,
         title: str = "", suds: int = 50,
-        parent: Optional[QWidget] = None,
+        parent: QWidget | None = None,
     ) -> None:
         super().__init__(parent)
         self.setWindowTitle("Hierarchy Item")
@@ -89,7 +102,7 @@ class _HierarchyItemDialog(QDialog):
         buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
 
-    def get_data(self) -> Dict[str, Any]:
+    def get_data(self) -> dict[str, Any]:
         return {
             "title": self._title_edit.text().strip(),
             "predicted_suds": self._suds_spin.value(),
@@ -107,23 +120,21 @@ class ERPWidget(QWidget):
 
     _SUDS_CHECK_INTERVAL_MS = 5 * 60 * 1000
 
-    def __init__(self, main_window: Any, parent: Optional[QWidget] = None) -> None:
+    def __init__(self, main_window: Any, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.main_window = main_window
 
         # Try to get ERP manager
         self._erp_manager = None
-        try:
+        with contextlib.suppress(Exception):
             self._erp_manager = main_window.erp_tracker
-        except Exception:
-            pass
 
         # Data
-        self._hierarchy: List[Dict[str, Any]] = []
-        self._sessions: List[Dict[str, Any]] = []
-        self._active_session: Optional[Dict[str, Any]] = None
-        self._session_suds: List[Dict[str, Any]] = []
-        self._session_urges: List[Dict[str, Any]] = []
+        self._hierarchy: list[dict[str, Any]] = []
+        self._sessions: list[dict[str, Any]] = []
+        self._active_session: dict[str, Any] | None = None
+        self._session_suds: list[dict[str, Any]] = []
+        self._session_urges: list[dict[str, Any]] = []
 
         # Timers
         self._exposure_timer = QTimer(self)
@@ -146,7 +157,7 @@ class ERPWidget(QWidget):
     def _data_dir(self) -> Path:
         try:
             base = Path(self.main_window.data_dir)
-        except Exception:
+        except (AttributeError, TypeError):
             base = Path.home() / ".mindful_optimizer"
         p = base / "erp"
         p.mkdir(parents=True, exist_ok=True)
@@ -159,14 +170,14 @@ class ERPWidget(QWidget):
             try:
                 with open(hfile) as fh:
                     self._hierarchy = json.load(fh)
-            except Exception:
-                pass
+            except (json.JSONDecodeError, OSError) as exc:
+                logger.debug(f"ERP hierarchy load error: {exc}")
         if sfile.exists():
             try:
                 with open(sfile) as fh:
                     self._sessions = json.load(fh)
-            except Exception:
-                pass
+            except (json.JSONDecodeError, OSError) as exc:
+                logger.debug(f"ERP sessions load error: {exc}")
 
     def _save_data(self) -> None:
         dd = self._data_dir()
@@ -203,7 +214,7 @@ class ERPWidget(QWidget):
         # Disclaimer
         disclaimer = _body_label(
             "ERP should be done under the guidance of a licensed therapist. "
-            "This tool is for tracking and support, not a substitute for professional treatment."
+            "This tool is for tracking and support, not a substitute for professional support."
         )
         disclaimer.setStyleSheet("font-style: italic;")
         self._root.addWidget(disclaimer)
@@ -552,7 +563,7 @@ class ERPWidget(QWidget):
         urges = sum(s.get("urges_resisted", 0) for s in self._sessions)
         self._total_urges_resisted.setText(f"Urges resisted: {urges}")
 
-        drops: List[int] = []
+        drops: list[int] = []
         for s in self._sessions:
             predicted = s.get("predicted_suds", 0)
             final = s.get("final_suds")

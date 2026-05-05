@@ -8,15 +8,14 @@ from mood/energy journal entries.
 
 from __future__ import annotations
 
-import math
 from collections import Counter, defaultdict
+from collections.abc import Sequence
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any
 
 import numpy as np
-
 
 # ---------------------------------------------------------------------------
 # Enums & data-classes
@@ -51,20 +50,20 @@ class MoodEntry:
     timestamp: datetime
     mood_score: float            # 1-10
     energy_score: float          # 1-100
-    symptoms: List[str] = field(default_factory=list)
+    symptoms: list[str] = field(default_factory=list)
     notes: str = ""
-    activities: List[str] = field(default_factory=list)
-    sleep_hours: Optional[float] = None
-    medication_taken: Optional[bool] = None
-    tasks_completed: Optional[int] = None
+    activities: list[str] = field(default_factory=list)
+    sleep_hours: float | None = None
+    medication_taken: bool | None = None
+    tasks_completed: int | None = None
 
 
 @dataclass
 class TrendResult:
     """Result of a trend analysis."""
     direction: TrendDirection
-    moving_avg_7: Optional[float]
-    moving_avg_30: Optional[float]
+    moving_avg_7: float | None
+    moving_avg_30: float | None
     slope: float
     description: str
 
@@ -73,7 +72,7 @@ class TrendResult:
 class PatternResult:
     """Detected temporal pattern."""
     pattern_type: str           # "time_of_day", "day_of_week", "seasonal"
-    detail: Dict[str, float]    # bucket -> avg mood
+    detail: dict[str, float]    # bucket -> avg mood
     best: str
     worst: str
     description: str
@@ -91,7 +90,7 @@ class TriggerResult:
 @dataclass
 class ClusterResult:
     """Co-occurring symptom cluster."""
-    symptoms: Tuple[str, ...]
+    symptoms: tuple[str, ...]
     co_occurrence_count: int
     avg_mood_when_present: float
     description: str
@@ -108,7 +107,7 @@ class StreakInfo:
 
 @dataclass
 class ConditionInsight:
-    """A condition-specific clinical insight."""
+    """A condition-specific wellness insight."""
     condition: str
     insight_type: str
     severity: str               # "info", "mild", "moderate", "severe"
@@ -119,31 +118,34 @@ class ConditionInsight:
 @dataclass
 class AnalyticsReport:
     """Full analytics report."""
-    mood_trend: Optional[TrendResult] = None
-    energy_trend: Optional[TrendResult] = None
-    time_of_day_pattern: Optional[PatternResult] = None
-    day_of_week_pattern: Optional[PatternResult] = None
-    seasonal_pattern: Optional[PatternResult] = None
-    triggers: List[TriggerResult] = field(default_factory=list)
-    symptom_clusters: List[ClusterResult] = field(default_factory=list)
+    mood_trend: TrendResult | None = None
+    energy_trend: TrendResult | None = None
+    time_of_day_pattern: PatternResult | None = None
+    day_of_week_pattern: PatternResult | None = None
+    seasonal_pattern: PatternResult | None = None
+    triggers: list[TriggerResult] = field(default_factory=list)
+    symptom_clusters: list[ClusterResult] = field(default_factory=list)
     mood_volatility: float = 0.0
     energy_mood_correlation: float = 0.0
-    streaks: List[StreakInfo] = field(default_factory=list)
-    condition_insights: List[ConditionInsight] = field(default_factory=list)
-    insights: List[str] = field(default_factory=list)
+    streaks: list[StreakInfo] = field(default_factory=list)
+    condition_insights: list[ConditionInsight] = field(default_factory=list)
+    insights: list[str] = field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _parse_entries(raw: Sequence[Dict[str, Any]]) -> List[MoodEntry]:
+def _parse_entries(raw: Sequence[dict[str, Any]]) -> list[MoodEntry]:
     """Convert list-of-dicts into validated MoodEntry objects."""
-    entries: List[MoodEntry] = []
+    entries: list[MoodEntry] = []
     for d in raw:
         ts = d.get("timestamp")
         if isinstance(ts, str):
-            ts = datetime.fromisoformat(ts)
+            try:
+                ts = datetime.fromisoformat(ts)
+            except ValueError:
+                continue  # skip invalid date strings
         elif not isinstance(ts, datetime):
             continue  # skip invalid entries
 
@@ -167,7 +169,7 @@ def _parse_entries(raw: Sequence[Dict[str, Any]]) -> List[MoodEntry]:
     return entries
 
 
-def _moving_average(values: np.ndarray, window: int) -> Optional[float]:
+def _moving_average(values: np.ndarray, window: int) -> float | None:
     """Return the latest moving average for *window* or None if insufficient data."""
     if len(values) < window:
         return None
@@ -227,9 +229,9 @@ class MoodAnalytics:
 
     def __init__(
         self,
-        entries: Sequence[Dict[str, Any]],
+        entries: Sequence[dict[str, Any]],
         *,
-        conditions: Optional[List[str]] = None,
+        conditions: list[str] | None = None,
     ) -> None:
         """
         Parameters
@@ -301,23 +303,23 @@ class MoodAnalytics:
 
     # -- pattern detection --------------------------------------------------
 
-    def time_of_day_pattern(self) -> Optional[PatternResult]:
+    def time_of_day_pattern(self) -> PatternResult | None:
         """Average mood by time-of-day bucket."""
-        buckets: Dict[str, List[float]] = defaultdict(list)
+        buckets: dict[str, list[float]] = defaultdict(list)
         for e in self._entries:
             buckets[_time_of_day(e.timestamp).value].append(e.mood_score)
         return self._pattern_result("time_of_day", buckets, "time of day")
 
-    def day_of_week_pattern(self) -> Optional[PatternResult]:
+    def day_of_week_pattern(self) -> PatternResult | None:
         """Average mood by day of week."""
-        buckets: Dict[str, List[float]] = defaultdict(list)
+        buckets: dict[str, list[float]] = defaultdict(list)
         for e in self._entries:
             buckets[_DAY_NAMES[e.timestamp.weekday()]].append(e.mood_score)
         return self._pattern_result("day_of_week", buckets, "day of the week")
 
-    def seasonal_pattern(self) -> Optional[PatternResult]:
+    def seasonal_pattern(self) -> PatternResult | None:
         """Average mood by season (needs multi-month data)."""
-        buckets: Dict[str, List[float]] = defaultdict(list)
+        buckets: dict[str, list[float]] = defaultdict(list)
         for e in self._entries:
             buckets[_season(e.timestamp).value].append(e.mood_score)
         if len(buckets) < 2:
@@ -325,8 +327,8 @@ class MoodAnalytics:
         return self._pattern_result("seasonal", buckets, "season")
 
     def _pattern_result(
-        self, ptype: str, buckets: Dict[str, List[float]], label: str
-    ) -> Optional[PatternResult]:
+        self, ptype: str, buckets: dict[str, list[float]], label: str
+    ) -> PatternResult | None:
         if not buckets:
             return None
         avgs = {k: float(np.mean(v)) for k, v in buckets.items() if v}
@@ -348,9 +350,9 @@ class MoodAnalytics:
 
     # -- trigger identification --------------------------------------------
 
-    def identify_triggers(self) -> List[TriggerResult]:
+    def identify_triggers(self) -> list[TriggerResult]:
         """Correlate mood changes with activities, sleep, medication, tasks."""
-        results: List[TriggerResult] = []
+        results: list[TriggerResult] = []
         moods = np.array([e.mood_score for e in self._entries])
         if len(moods) < 3:
             return results
@@ -415,10 +417,10 @@ class MoodAnalytics:
 
     # -- symptom clustering -------------------------------------------------
 
-    def symptom_clusters(self, min_co_occurrence: int = 2) -> List[ClusterResult]:
+    def symptom_clusters(self, min_co_occurrence: int = 2) -> list[ClusterResult]:
         """Find symptoms that tend to co-occur."""
-        pair_counts: Counter[Tuple[str, str]] = Counter()
-        pair_moods: Dict[Tuple[str, str], List[float]] = defaultdict(list)
+        pair_counts: Counter[tuple[str, str]] = Counter()
+        pair_moods: dict[tuple[str, str], list[float]] = defaultdict(list)
 
         for e in self._entries:
             syms = sorted(set(e.symptoms))
@@ -428,7 +430,7 @@ class MoodAnalytics:
                     pair_counts[pair] += 1
                     pair_moods[pair].append(e.mood_score)
 
-        results: List[ClusterResult] = []
+        results: list[ClusterResult] = []
         for pair, count in pair_counts.most_common():
             if count < min_co_occurrence:
                 break
@@ -462,9 +464,9 @@ class MoodAnalytics:
 
     # -- streaks -----------------------------------------------------------
 
-    def compute_streaks(self) -> List[StreakInfo]:
+    def compute_streaks(self) -> list[StreakInfo]:
         """Track stable-mood and good-energy streaks."""
-        results: List[StreakInfo] = []
+        results: list[StreakInfo] = []
         if not self._entries:
             return results
 
@@ -495,49 +497,51 @@ class MoodAnalytics:
 
     # -- condition-specific insights ----------------------------------------
 
-    def condition_insights(self) -> List[ConditionInsight]:
+    def condition_insights(self) -> list[ConditionInsight]:
         """Generate insights tailored to the user's conditions."""
-        insights: List[ConditionInsight] = []
+        insights: list[ConditionInsight] = []
         if not self._entries or not self._conditions:
             return insights
 
         moods = np.array([e.mood_score for e in self._entries])
         energies = np.array([e.energy_score for e in self._entries])
 
-        # --- Bipolar: detect potential manic/depressive episodes ---
-        if "bipolar" in self._conditions:
-            recent = moods[-7:] if len(moods) >= 7 else moods
-            avg_recent = float(np.mean(recent))
-            if avg_recent >= 8.5 and float(np.mean(energies[-7:] if len(energies) >= 7 else energies)) >= 80:
-                insights.append(ConditionInsight(
-                    "bipolar", "potential_mania", "moderate",
-                    "Your mood and energy have been unusually elevated for several days, "
-                    "which may indicate a hypomanic or manic trend.",
-                    "Consider contacting your care team and tracking sleep carefully.",
-                ))
-            if avg_recent <= 3.0:
-                insights.append(ConditionInsight(
-                    "bipolar", "potential_depressive_episode", "moderate",
-                    "Your mood has been consistently low, which may signal a depressive episode.",
-                    "Reach out to your therapist or psychiatrist for support.",
-                ))
+        # --- Bipolar: observe elevated or low patterns (never diagnose) ---
+        if "bipolar" in self._conditions and len(moods) >= 14:
+                recent = moods[-14:]
+                recent_energy = energies[-14:]
+                avg_recent = float(np.mean(recent))
+                avg_energy = float(np.mean(recent_energy))
+                if avg_recent >= 8.5 and avg_energy >= 80:
+                    insights.append(ConditionInsight(
+                        "bipolar", "elevated_period", "info",
+                        "Your mood and energy have been elevated recently. "
+                        "If this feels unusual for you, consider noting it for your clinician.",
+                        "Track sleep and continue your usual routines.",
+                    ))
+                if avg_recent <= 3.0:
+                    insights.append(ConditionInsight(
+                        "bipolar", "low_period", "mild",
+                        "Your mood has been lower than usual recently.",
+                        "Gentle self-care and reaching out to your support network can help.",
+                    ))
 
-        # --- Depression: prolonged low mood ---
-        if "depression" in self._conditions:
-            recent = moods[-14:] if len(moods) >= 14 else moods
-            low_days = int(np.sum(recent <= 4))
-            if low_days >= 10:
-                insights.append(ConditionInsight(
-                    "depression", "prolonged_low_mood", "severe",
-                    f"Your mood has been at 4 or below for {low_days} of the last {len(recent)} entries.",
-                    "Please reach out to your mental health provider.",
-                ))
-            elif low_days >= 5:
-                insights.append(ConditionInsight(
-                    "depression", "low_mood_trend", "mild",
-                    f"You've had {low_days} low-mood days recently.",
-                    "Gentle activities like walking or calling a friend may help.",
-                ))
+        # --- Depression: observe low mood periods (never diagnose) ---
+        if "depression" in self._conditions and len(moods) >= 14:
+                recent = moods[-14:]
+                low_days = int(np.sum(recent <= 4))
+                if low_days >= 10:
+                    insights.append(ConditionInsight(
+                        "depression", "persistent_low_mood", "moderate",
+                        f"Your mood has been at 4 or below for {low_days} of the last {len(recent)} entries.",
+                        "Consider mentioning this pattern to your mental health provider.",
+                    ))
+                elif low_days >= 5:
+                    insights.append(ConditionInsight(
+                        "depression", "low_mood_trend", "mild",
+                        f"You've had {low_days} low-mood days recently.",
+                        "Gentle activities like walking or calling a friend may help.",
+                    ))
 
         # --- Anxiety: spikes ---
         if "anxiety" in self._conditions:
@@ -556,24 +560,23 @@ class MoodAnalytics:
                 ))
 
         # --- ADHD: energy volatility ---
-        if "adhd" in self._conditions:
-            if len(energies) >= 5:
-                vol = float(np.std(np.diff(energies)))
-                if vol > 20:
-                    insights.append(ConditionInsight(
-                        "adhd", "energy_volatility", "info",
-                        f"Your energy levels are quite variable (volatility {vol:.1f}). "
-                        "This is common with ADHD.",
-                        "Try anchoring your day with consistent routines and transition rituals.",
-                    ))
+        if "adhd" in self._conditions and len(energies) >= 5:
+            vol = float(np.std(np.diff(energies)))
+            if vol > 20:
+                insights.append(ConditionInsight(
+                    "adhd", "energy_volatility", "info",
+                    f"Your energy levels are quite variable (volatility {vol:.1f}). "
+                    "This is common with ADHD.",
+                    "Try anchoring your day with consistent routines and transition rituals.",
+                ))
 
         return insights
 
     # -- human-readable insights -------------------------------------------
 
-    def generate_insights(self, report: AnalyticsReport) -> List[str]:
+    def generate_insights(self, report: AnalyticsReport) -> list[str]:
         """Compile a list of human-readable insight strings."""
-        insights: List[str] = []
+        insights: list[str] = []
 
         if report.mood_trend:
             insights.append(report.mood_trend.description)
@@ -624,15 +627,12 @@ class MoodAnalytics:
     @staticmethod
     def _pearson(x: np.ndarray, y: np.ndarray) -> float:
         """Pearson correlation, returning 0 on degenerate input."""
-        if len(x) < 2 or np.std(x) == 0 or np.std(y) == 0:
-            return 0.0
-        r = np.corrcoef(x, y)[0, 1]
-        if math.isnan(r):
-            return 0.0
-        return float(r)
+        from src.utils.statistics import pearson_correlation
+
+        return pearson_correlation(x, y)
 
     @staticmethod
-    def _streak(flags: Sequence[bool]) -> Tuple[int, int]:
+    def _streak(flags: Sequence[bool]) -> tuple[int, int]:
         """Return (current_streak, longest_streak) for a boolean sequence."""
         current = 0
         longest = 0

@@ -1,11 +1,10 @@
 """
 Evidence-based mental health condition combinations with clinically-backed features.
-Based on research from clinical psychology and cognitive behavioral therapy practices.
+Based on research from psychology and cognitive behavioral therapy practices.
 """
 from dataclasses import dataclass
-from typing import List, Dict, Set
-from enum import Enum
-import json
+from typing import Any
+
 
 @dataclass
 class ClinicalFeature:
@@ -13,16 +12,16 @@ class ClinicalFeature:
     description: str
     research_basis: str
     implementation: str
-    contraindications: List[str]
+    contraindications: list[str]
 
 class ClinicalCombinations:
     """
     Manages evidence-based feature combinations for co-occurring conditions.
-    Based on DSM-5 and clinical research publications.
+    Based on DSM-5 and research publications.
     """
-    
-    def __init__(self):
-        self.combinations = {
+
+    def __init__(self) -> None:
+        self.combinations: dict[str, dict[str, Any]] = {
             # ADHD + Anxiety (Common comorbidity: 50% of adults with ADHD have anxiety)
             "adhd_anxiety": {
                 "name": "Focus-Calm Balance",
@@ -64,7 +63,7 @@ class ClinicalCombinations:
                     "energy_based_tasks": ClinicalFeature(
                         name="Energy-Based Tasks",
                         description="Match tasks to energy levels",
-                        research_basis="Journal of Clinical Psychology: Energy-task matching improves completion rates",
+                        research_basis="Journal of Psychology: Energy-task matching improves completion rates",
                         implementation="Dynamic task suggestions based on reported energy levels",
                         contraindications=["fixed_scheduling"]
                     ),
@@ -98,14 +97,14 @@ class ClinicalCombinations:
                     "safety_nets": ClinicalFeature(
                         name="Safety Nets",
                         description="Multiple backup and recovery options",
-                        research_basis="Anxiety treatment research on safety behaviors",
+                        research_basis="Anxiety research on safety behaviors",
                         implementation="Automated backups with restore points",
                         contraindications=["risk_based_systems"]
                     ),
                     "achievement_scaling": ClinicalFeature(
                         name="Achievement Scaling",
                         description="Adjustable goals based on current capacity",
-                        research_basis="Depression treatment studies on behavioral activation",
+                        research_basis="Depression research on behavioral activation",
                         implementation="Dynamic goal adjustment with mood tracking",
                         contraindications=["fixed_goals"]
                     ),
@@ -132,7 +131,7 @@ class ClinicalCombinations:
                     "controlled_flexibility": ClinicalFeature(
                         name="Controlled Flexibility",
                         description="Structured systems with built-in adaptation points",
-                        research_basis="OCD treatment research on flexibility training",
+                        research_basis="OCD research on flexibility training",
                         implementation="Customizable organization patterns with verification",
                         contraindications=["rigid_systems"]
                     ),
@@ -166,7 +165,7 @@ class ClinicalCombinations:
                     "environment_control": ClinicalFeature(
                         name="Environment Control",
                         description="User control over all system aspects",
-                        research_basis="PTSD treatment research on environmental control",
+                        research_basis="PTSD research on environmental control",
                         implementation="Customizable interface with preview options",
                         contraindications=["automatic_changes"]
                     ),
@@ -200,7 +199,7 @@ class ClinicalCombinations:
                     "flexible_routines": ClinicalFeature(
                         name="Flexible Routines",
                         description="Structured but adaptable organization patterns",
-                        research_basis="Combined ADHD-OCD treatment studies",
+                        research_basis="Combined ADHD-OCD research",
                         implementation="Customizable templates with flexibility points",
                         contraindications=["rigid_routines"]
                     ),
@@ -234,7 +233,7 @@ class ClinicalCombinations:
                     "energy_aware_structure": ClinicalFeature(
                         name="Energy-Aware Structure",
                         description="Organization systems that adapt to energy levels",
-                        research_basis="Depression management in OCD treatment",
+                        research_basis="Depression management in OCD",
                         implementation="Adaptive organization requirements",
                         contraindications=["fixed_energy_demands"]
                     ),
@@ -302,21 +301,21 @@ class ClinicalCombinations:
                     "structured_flexibility": ClinicalFeature(
                         name="Structured Flexibility",
                         description="Balanced organization with adaptable verification",
-                        research_basis="Clinical Psychology Review (2024): Managing multiple condition interactions",
+                        research_basis="Psychology Review (2024): Managing multiple condition interactions",
                         implementation="Customizable structure with gentle checking",
                         contraindications=["rigid_systems"]
                     ),
                     "energy_verification": ClinicalFeature(
                         name="Energy Verification",
                         description="Energy-aware checking mechanisms",
-                        research_basis="OCD treatment studies in complex comorbidity",
+                        research_basis="OCD research in complex comorbidity",
                         implementation="Timed verification with energy consideration",
                         contraindications=["unlimited_checking"]
                     ),
                     "safe_progression": ClinicalFeature(
                         name="Safe Progression",
                         description="Carefully paced advancement",
-                        research_basis="Multi-modal treatment research in complex cases",
+                        research_basis="Multi-modal research in complex cases",
                         implementation="Gradual progression with multiple safety nets",
                         contraindications=["rapid_changes"]
                     )
@@ -343,7 +342,7 @@ class ClinicalCombinations:
                     "mood_aware_verification": ClinicalFeature(
                         name="Mood-Aware Verification",
                         description="Verification systems that adapt to emotional state",
-                        research_basis="OCD treatment in comorbid depression and anxiety",
+                        research_basis="OCD research in comorbid depression and anxiety",
                         implementation="Adaptive checking based on mood tracking",
                         contraindications=["fixed_verification"]
                     ),
@@ -364,17 +363,20 @@ class ClinicalCombinations:
             }
         }
 
-    def get_combination(self, conditions: List[str]) -> Dict:
+    def get_combination(self, conditions: list[str]) -> dict:
         """Get the appropriate combination features for given conditions."""
         key = "_".join(sorted(conditions))
         return self.combinations.get(key, self._create_custom_combination(conditions))
 
-    def _create_custom_combination(self, conditions: List[str]) -> Dict:
+    def _create_custom_combination(self, conditions: list[str]) -> dict[str, Any]:
         """Create a custom combination for unlisted condition combinations."""
-        # Implementation for custom combinations based on individual condition features
-        pass
+        return {
+            "name": "Custom Support System",
+            "features": {},
+            "ui_preferences": {},
+        }
 
-    def get_contraindications(self, conditions: List[str]) -> Set[str]:
+    def get_contraindications(self, conditions: list[str]) -> set[str]:
         """Get all contraindicated features for a combination of conditions."""
         combination = self.get_combination(conditions)
         contraindications = set()
@@ -382,7 +384,7 @@ class ClinicalCombinations:
             contraindications.update(feature.contraindications)
         return contraindications
 
-    def get_research_basis(self, conditions: List[str]) -> Dict[str, str]:
+    def get_research_basis(self, conditions: list[str]) -> dict[str, str]:
         """Get research basis for all features in a combination."""
         combination = self.get_combination(conditions)
         research = {}
@@ -390,7 +392,8 @@ class ClinicalCombinations:
             research[feature_name] = feature.research_basis
         return research
 
-    def get_ui_recommendations(self, conditions: List[str]) -> Dict:
+    def get_ui_recommendations(self, conditions: list[str]) -> dict[str, Any]:
         """Get UI recommendations for a combination of conditions."""
         combination = self.get_combination(conditions)
-        return combination.get('ui_preferences', {})
+        ui_prefs: dict[str, Any] = combination.get('ui_preferences', {})
+        return ui_prefs

@@ -10,19 +10,15 @@ import pytest
 
 try:
     from src.wellness.breathing import (
-        BreathingManager,
         BreathingExerciseType,
+        BreathingManager,
+    )
+    from src.wellness.breathing import (
         Condition as BreathCondition,
     )
     _HAS_BREATHING = True
 except ImportError:
     _HAS_BREATHING = False
-
-try:
-    from src.wellness.grounding import GroundingType
-    _HAS_GROUNDING = True
-except ImportError:
-    _HAS_GROUNDING = False
 
 pytestmark = pytest.mark.skipif(
     not _HAS_BREATHING,

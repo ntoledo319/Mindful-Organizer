@@ -12,11 +12,11 @@ import re
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, cast
 
 try:
-    from dateutil import parser as dateutil_parser
-    from dateutil.relativedelta import relativedelta, MO, TU, WE, TH, FR, SA, SU
+    from dateutil import parser as dateutil_parser  # type: ignore[import-untyped]
+    from dateutil.relativedelta import relativedelta  # type: ignore[import-untyped]
     _HAS_DATEUTIL = True
 except ImportError:
     _HAS_DATEUTIL = False
@@ -62,15 +62,15 @@ class ParsedTask:
     """Structured data extracted from a natural language task description."""
     title: str
     original_text: str
-    due_date: Optional[date] = None
+    due_date: date | None = None
     priority: Priority = Priority.MEDIUM
     category: Category = Category.OTHER
     energy_required: EnergyRequired = EnergyRequired.MODERATE
     is_recurring: bool = False
-    recurrence_pattern: Optional[str] = None
-    confidence: Dict[str, float] = field(default_factory=dict)
+    recurrence_pattern: str | None = None
+    confidence: dict[str, float] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Serialise to a plain dict."""
         return {
             "title": self.title,
@@ -89,7 +89,7 @@ class ParsedTask:
 # Keyword dictionaries
 # ---------------------------------------------------------------------------
 
-_PRIORITY_KEYWORDS: Dict[Priority, List[str]] = {
+_PRIORITY_KEYWORDS: dict[Priority, list[str]] = {
     Priority.URGENT: [
         "urgent", "asap", "immediately", "critical", "emergency",
         "right away", "right now", "top priority",
@@ -109,7 +109,7 @@ _PRIORITY_KEYWORDS: Dict[Priority, List[str]] = {
     ],
 }
 
-_CATEGORY_KEYWORDS: Dict[Category, List[str]] = {
+_CATEGORY_KEYWORDS: dict[Category, list[str]] = {
     Category.WORK: [
         "work", "office", "meeting", "report", "project",
         "client", "email", "presentation", "deadline",
@@ -138,7 +138,7 @@ _CATEGORY_KEYWORDS: Dict[Category, List[str]] = {
     Category.ERRANDS: [
         "errand", "errands", "grocery", "groceries", "shopping",
         "pick up", "drop off", "return", "post office",
-        "bank", "pharmacy", "dry cleaner",
+        "bank", "pharmacy", "dry cleaner", "dry cleaning",
     ],
     Category.FINANCE: [
         "finance", "budget", "bill", "invoice", "tax",
@@ -151,7 +151,7 @@ _CATEGORY_KEYWORDS: Dict[Category, List[str]] = {
     ],
 }
 
-_ENERGY_KEYWORDS: Dict[EnergyRequired, List[str]] = {
+_ENERGY_KEYWORDS: dict[EnergyRequired, list[str]] = {
     EnergyRequired.VERY_LOW: [
         "very easy", "super easy", "no effort", "mindless",
         "minimal energy", "zero energy",
@@ -177,7 +177,7 @@ _ENERGY_KEYWORDS: Dict[EnergyRequired, List[str]] = {
 # Date parsing helpers
 # ---------------------------------------------------------------------------
 
-_RELATIVE_DATE_PATTERNS: List[Tuple[str, Any]] = [
+_RELATIVE_DATE_PATTERNS: list[tuple[str, Any]] = [
     # "today"
     (r"\btoday\b", lambda m, ref: ref),
     # "tonight"
@@ -222,7 +222,7 @@ _MONTH_NAMES = {
 def _add_months(d: date, months: int) -> date:
     """Add *months* calendar months to *d*."""
     if _HAS_DATEUTIL:
-        return d + relativedelta(months=months)
+        return cast(date, d + relativedelta(months=months))
     month = d.month + months
     year = d.year + (month - 1) // 12
     month = (month - 1) % 12 + 1
@@ -238,7 +238,7 @@ def _next_weekday(ref: date, weekday: int) -> date:
     return ref + timedelta(days=days_ahead)
 
 
-def _parse_date(text: str, reference: Optional[date] = None) -> Tuple[Optional[date], float, str]:
+def _parse_date(text: str, reference: date | None = None) -> tuple[date | None, float, str]:
     """Extract a date from *text*.
 
     Returns
@@ -255,7 +255,7 @@ def _parse_date(text: str, reference: Optional[date] = None) -> Tuple[Optional[d
             try:
                 result = resolver(m, ref)
                 return result, 0.95, m.group(0)
-            except Exception:
+            except (ValueError, TypeError, OverflowError):
                 continue
 
     # 2) "next <dayname>" or "this <dayname>" or just "<dayname>"
@@ -354,7 +354,7 @@ def _parse_date(text: str, reference: Optional[date] = None) -> Tuple[Optional[d
 # Recurrence parsing
 # ---------------------------------------------------------------------------
 
-_RECURRENCE_PATTERNS: List[Tuple[str, str]] = [
+_RECURRENCE_PATTERNS: list[tuple[str, str]] = [
     (r"\bevery\s+day\b", "daily"),
     (r"\bdaily\b", "daily"),
     (r"\bevery\s+week\b", "weekly"),
@@ -374,7 +374,7 @@ _RECURRENCE_PATTERNS: List[Tuple[str, str]] = [
 ]
 
 
-def _parse_recurrence(text: str) -> Tuple[Optional[str], str]:
+def _parse_recurrence(text: str) -> tuple[str | None, str]:
     """Extract recurrence pattern from text.
 
     Returns (recurrence_string_or_None, text_with_recurrence_removed).
@@ -383,7 +383,7 @@ def _parse_recurrence(text: str) -> Tuple[Optional[str], str]:
     for pattern, label in _RECURRENCE_PATTERNS:
         m = re.search(pattern, lower)
         if m:
-            matched = m.group(0)
+            m.group(0)
             if "{n}" in label:
                 label = label.replace("{n}", m.group(1))
             # Remove the matched portion from text
@@ -398,9 +398,9 @@ def _parse_recurrence(text: str) -> Tuple[Optional[str], str]:
 
 def _match_keywords(
     text: str,
-    keyword_map: Dict[Any, List[str]],
+    keyword_map: dict[Any, list[str]],
     default: Any,
-) -> Tuple[Any, float, str]:
+) -> tuple[Any, float, str]:
     """Match *text* against *keyword_map*.
 
     Returns (matched_enum_value, confidence, matched_keyword).
@@ -424,7 +424,7 @@ def _match_keywords(
     return default, 0.3, ""
 
 
-def _strip_metadata(text: str, matched_spans: List[str]) -> str:
+def _strip_metadata(text: str, matched_spans: list[str]) -> str:
     """Remove matched metadata phrases from the title."""
     result = text
     for span in matched_spans:
@@ -464,7 +464,7 @@ class NLPTaskParser:
         Defaults to ``date.today()``.
     """
 
-    def __init__(self, reference_date: Optional[date] = None) -> None:
+    def __init__(self, reference_date: date | None = None) -> None:
         self._reference = reference_date or date.today()
 
     def parse(self, text: str) -> ParsedTask:
@@ -490,16 +490,16 @@ class NLPTaskParser:
 
         original = text.strip()
         working = original
-        confidences: Dict[str, float] = {}
+        confidences: dict[str, float] = {}
         # Only spans that are pure metadata (prefixes, explicit priority/energy
         # phrases, date expressions) go here.  Keyword matches used for
         # *classification* (e.g. "dentist" -> health) are NOT stripped from
         # the title.
-        matched_spans: List[str] = []
+        matched_spans: list[str] = []
 
         # -- Recurring --------------------------------------------------------
         is_recurring = False
-        recurrence_pattern: Optional[str] = None
+        recurrence_pattern: str | None = None
 
         if re.match(r"^recurring\s*:", working, re.IGNORECASE):
             is_recurring = True
@@ -618,6 +618,6 @@ class NLPTaskParser:
             confidence=confidences,
         )
 
-    def parse_batch(self, texts: List[str]) -> List[ParsedTask]:
+    def parse_batch(self, texts: list[str]) -> list[ParsedTask]:
         """Parse multiple task descriptions."""
         return [self.parse(t) for t in texts]

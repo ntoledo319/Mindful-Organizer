@@ -12,15 +12,25 @@ import json
 import logging
 import shutil
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
-from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QFrame, QScrollArea, QSizePolicy, QComboBox, QSlider,
-    QCheckBox, QGroupBox, QMessageBox, QFileDialog,
-)
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QFont
+from PyQt6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QFileDialog,
+    QFrame,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QMessageBox,
+    QPushButton,
+    QScrollArea,
+    QSlider,
+    QVBoxLayout,
+    QWidget,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +66,7 @@ class SettingsWidget(QWidget):
 
     settings_changed = pyqtSignal()
 
-    def __init__(self, main_window: Any, parent: Optional[QWidget] = None) -> None:
+    def __init__(self, main_window: Any, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.main_window = main_window
         self._build_ui()
@@ -84,6 +94,7 @@ class SettingsWidget(QWidget):
         self._root.addWidget(_section_title("Settings"))
 
         self._build_profile_section()
+        self._build_subscription_section()
         self._build_theme_section()
         self._build_accessibility_section()
         self._build_notifications_section()
@@ -136,9 +147,85 @@ class SettingsWidget(QWidget):
 
         self._root.addWidget(group)
 
+    # -- subscription ---------------------------------------------------
+
+    def _build_subscription_section(self) -> None:
+        from gui.subscription_helpers import tier_badge_text, trial_days_text
+
+        group = QGroupBox("Subscription")
+        layout = QVBoxLayout(group)
+
+        sm = getattr(self.main_window, "subscription_manager", None)
+        tier = tier_badge_text(sm)
+        trial = trial_days_text(sm)
+
+        tier_row = QHBoxLayout()
+        tier_row.addWidget(_body_label("Current plan:"))
+        self._tier_label = QLabel(f"<b>{tier}</b>")
+        self._tier_label.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
+        tier_row.addWidget(self._tier_label)
+        if trial:
+            trial_lbl = QLabel(f"<span style='color:#27AE60;'>{trial}</span>")
+            tier_row.addWidget(trial_lbl)
+        tier_row.addStretch()
+        layout.addLayout(tier_row)
+
+        if tier == "FREE" and not trial:
+            trial_btn = _accent_button("Start 14-Day Free Trial")
+            trial_btn.clicked.connect(self._start_trial)
+            layout.addWidget(trial_btn)
+
+            upgrade_btn = _accent_button("Enter License Key")
+            upgrade_btn.clicked.connect(self._enter_license_key)
+            layout.addWidget(upgrade_btn)
+        elif trial or tier in ("PRO", "PREMIUM"):
+            deactivate_btn = _accent_button("Deactivate License")
+            deactivate_btn.clicked.connect(self._deactivate_license)
+            layout.addWidget(deactivate_btn)
+
+        self._root.addWidget(group)
+
+    def _start_trial(self) -> None:
+        sm = getattr(self.main_window, "subscription_manager", None)
+        if sm:
+            try:
+                sm.start_trial()
+                self._build_ui()
+                self._load_current_settings()
+            except Exception as e:
+                QMessageBox.warning(self, "Trial", str(e))
+
+    def _enter_license_key(self) -> None:
+        from PyQt6.QtWidgets import QInputDialog
+        key, ok = QInputDialog.getText(self, "Enter License Key", "License key:")
+        if ok and key:
+            sm = getattr(self.main_window, "subscription_manager", None)
+            if sm:
+                try:
+                    sm.activate_license(key)
+                    QMessageBox.information(self, "Success", "License activated!")
+                    self._build_ui()
+                    self._load_current_settings()
+                except Exception as e:
+                    QMessageBox.warning(self, "Invalid License", str(e))
+
+    def _deactivate_license(self) -> None:
+        sm = getattr(self.main_window, "subscription_manager", None)
+        if sm:
+            reply = QMessageBox.question(
+                self, "Deactivate",
+                "Deactivate your license and revert to Free?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            )
+            if reply == QMessageBox.StandardButton.Yes:
+                sm.deactivate()
+                self._build_ui()
+                self._load_current_settings()
+
     # -- theme ----------------------------------------------------------
 
     def _build_theme_section(self) -> None:
+        from gui.subscription_helpers import check_feature
         group = QGroupBox("Theme")
         layout = QVBoxLayout(group)
 
@@ -146,12 +233,18 @@ class SettingsWidget(QWidget):
         theme_row.addWidget(_body_label("Theme:"))
         self._theme_combo = QComboBox()
         self._theme_combo.setMinimumWidth(200)
+        all_themes: list[tuple[str, str, str]] = []
         try:
-            for name, display_name, desc in self.main_window.theme_manager.get_theme_names():
+            all_themes = list(self.main_window.theme_manager.get_theme_names())
+        except (AttributeError, TypeError):
+            all_themes = [("light", "Light", "Default light theme"), ("dark", "Dark", "Default dark theme")]
+
+        has_all_themes = check_feature("all_themes", getattr(self.main_window, "subscription_manager", None))
+        for i, (name, display_name, desc) in enumerate(all_themes):
+            if has_all_themes or i < 2:
                 self._theme_combo.addItem(f"{display_name} - {desc}", name)
-        except Exception:
-            self._theme_combo.addItem("Light", "light")
-            self._theme_combo.addItem("Dark", "dark")
+        if not has_all_themes and len(all_themes) > 2:
+            self._theme_combo.addItem("🔒 More themes in Pro...", "__upsell__")
         self._theme_combo.currentIndexChanged.connect(self._on_theme_preview)
         theme_row.addWidget(self._theme_combo)
         theme_row.addStretch()
@@ -162,6 +255,11 @@ class SettingsWidget(QWidget):
         self._preview_frame.setMinimumHeight(60)
         self._preview_frame.setFrameShape(QFrame.Shape.StyledPanel)
         layout.addWidget(self._preview_frame)
+
+        if not has_all_themes:
+            upsell = QLabel("Upgrade to Pro to unlock all 8 condition-aware themes.")
+            upsell.setStyleSheet("color: #888; font-size: 11px; padding-top: 4px;")
+            layout.addWidget(upsell)
 
         self._root.addWidget(group)
 
@@ -276,20 +374,20 @@ class SettingsWidget(QWidget):
             profile = self.main_window.profile_manager.current_profile
             if profile:
                 self._name_label.setText(getattr(profile, "name", "User"))
-                conditions = getattr(profile, "conditions", set())
+                conditions: set[Any] = getattr(profile, "conditions", set())
                 if conditions:
                     cond_text = ", ".join(
                         c.value if hasattr(c, "value") else str(c) for c in conditions
                     )
                     self._conditions_label.setText(cond_text)
-                therapy_types = getattr(profile, "therapy_types", set())
+                therapy_types: set[Any] = getattr(profile, "therapy_types", set())
                 if therapy_types:
                     tt_text = ", ".join(
                         t.value if hasattr(t, "value") else str(t) for t in therapy_types
                     )
                     self._therapy_label.setText(tt_text)
-        except Exception:
-            pass
+        except (AttributeError, TypeError) as exc:
+            logger.debug(f"Settings load error: {exc}")
 
         try:
             tm = self.main_window.theme_manager
@@ -302,8 +400,8 @@ class SettingsWidget(QWidget):
                 self._cb_combo.setCurrentIndex(cb_idx)
             self._reduced_motion_check.setChecked(tm.reduced_motion)
             self._dyslexia_font_check.setChecked(tm.dyslexia_font)
-        except Exception:
-            pass
+        except (AttributeError, TypeError) as exc:
+            logger.debug(f"Settings load error: {exc}")
 
     def _save_settings(self) -> None:
         """Apply and persist all settings."""
@@ -315,7 +413,7 @@ class SettingsWidget(QWidget):
             if theme_name:
                 try:
                     self.main_window.change_theme(theme_name)
-                except Exception:
+                except (AttributeError, TypeError):
                     tm.set_theme(theme_name)
 
             # Font scale
@@ -335,8 +433,8 @@ class SettingsWidget(QWidget):
             try:
                 stylesheet = tm.generate_stylesheet()
                 self.main_window.setStyleSheet(stylesheet)
-            except Exception:
-                pass
+            except (AttributeError, TypeError) as exc:
+                logger.debug(f"Stylesheet generation error: {exc}")
 
             self.settings_changed.emit()
             QMessageBox.information(self, "Settings", "Settings saved successfully.")
@@ -352,6 +450,12 @@ class SettingsWidget(QWidget):
         theme_name = self._theme_combo.itemData(index)
         if not theme_name:
             return
+        if theme_name == "__upsell__":
+            from gui.subscription_helpers import gated
+            gated("all_themes", getattr(self.main_window, "subscription_manager", None), self)
+            # Reset to first theme
+            self._theme_combo.setCurrentIndex(0)
+            return
         try:
             from gui.themes import THEMES
             theme = THEMES.get(theme_name)
@@ -360,14 +464,17 @@ class SettingsWidget(QWidget):
                     f"QFrame {{ background-color: {theme.background}; "
                     f"border: 3px solid {theme.accent}; border-radius: 8px; }}"
                 )
-        except Exception:
-            pass
+        except (AttributeError, TypeError) as exc:
+            logger.debug(f"Export manager error: {exc}")
 
     # ------------------------------------------------------------------
     # Data management
     # ------------------------------------------------------------------
 
     def _export_all_data(self) -> None:
+        from gui.subscription_helpers import gated
+        if not gated("data_export", getattr(self.main_window, "subscription_manager", None), self):
+            return
         try:
             em = self.main_window.export_manager
             if em and hasattr(em, "export_all"):
@@ -378,8 +485,8 @@ class SettingsWidget(QWidget):
                     em.export_all(path)
                     QMessageBox.information(self, "Export", f"Data exported to {path}")
                 return
-        except Exception:
-            pass
+        except (AttributeError, TypeError) as exc:
+            logger.debug(f"Import manager error: {exc}")
 
         path, _ = QFileDialog.getSaveFileName(
             self, "Export Data", "mindful_organizer_export.json", "JSON (*.json)"
@@ -388,13 +495,13 @@ class SettingsWidget(QWidget):
             return
         try:
             data_dir = Path(self.main_window.data_dir)
-            all_data: Dict[str, Any] = {}
+            all_data: dict[str, Any] = {}
             for f in data_dir.rglob("*.json"):
                 try:
                     with open(f) as fh:
                         all_data[str(f.relative_to(data_dir))] = json.load(fh)
-                except Exception:
-                    pass
+                except (json.JSONDecodeError, OSError) as exc:
+                    logger.debug(f"Data export read error: {exc}")
             with open(path, "w") as fh:
                 json.dump(all_data, fh, indent=2, default=str)
             QMessageBox.information(self, "Export", f"Data exported to {path}")
@@ -420,8 +527,8 @@ class SettingsWidget(QWidget):
                 em.import_all(path)
                 QMessageBox.information(self, "Import", "Data imported successfully.")
                 return
-        except Exception:
-            pass
+        except (AttributeError, TypeError) as exc:
+            logger.debug(f"Import manager error: {exc}")
         QMessageBox.information(
             self, "Import",
             "Import completed. You may need to restart the application to see changes."

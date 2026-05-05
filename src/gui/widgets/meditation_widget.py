@@ -8,19 +8,29 @@ and mood-based meditation recommendations.
 
 from __future__ import annotations
 
+import contextlib
 import json
 import logging
-from datetime import datetime, date, timedelta
+from datetime import date, datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QFrame, QScrollArea, QSizePolicy, QComboBox, QSlider,
-    QListWidget, QListWidgetItem, QGroupBox, QMessageBox,
-)
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal
 from PyQt6.QtGui import QFont
+from PyQt6.QtWidgets import (
+    QComboBox,
+    QFrame,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QListWidget,
+    QMessageBox,
+    QPushButton,
+    QScrollArea,
+    QSlider,
+    QVBoxLayout,
+    QWidget,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -82,15 +92,13 @@ class MeditationWidget(QWidget):
 
     session_completed = pyqtSignal(dict)
 
-    def __init__(self, main_window: Any, parent: Optional[QWidget] = None) -> None:
+    def __init__(self, main_window: Any, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.main_window = main_window
 
         self._meditation_manager = None
-        try:
+        with contextlib.suppress(Exception):
             self._meditation_manager = main_window.meditation_manager
-        except Exception:
-            pass
 
         # Session state
         self._running = False
@@ -104,7 +112,7 @@ class MeditationWidget(QWidget):
         self._tick_timer.timeout.connect(self._tick)
 
         # Session history (local)
-        self._sessions: List[Dict[str, Any]] = []
+        self._sessions: list[dict[str, Any]] = []
         self._load_sessions()
 
         self._build_ui()
@@ -118,7 +126,7 @@ class MeditationWidget(QWidget):
     def _data_dir(self) -> Path:
         try:
             return Path(self.main_window.data_dir)
-        except Exception:
+        except (AttributeError, TypeError):
             p = Path.home() / ".mindful_optimizer"
             p.mkdir(parents=True, exist_ok=True)
             return p
@@ -134,8 +142,8 @@ class MeditationWidget(QWidget):
             try:
                 with open(path) as fh:
                     self._sessions = json.load(fh)
-            except Exception:
-                pass
+            except (json.JSONDecodeError, OSError) as exc:
+                logger.debug(f"Meditation sessions load error: {exc}")
 
     def _save_sessions(self) -> None:
         try:
@@ -346,8 +354,8 @@ class MeditationWidget(QWidget):
         try:
             if self._meditation_manager and hasattr(self._meditation_manager, "log_session"):
                 self._meditation_manager.log_session(session)
-        except Exception:
-            pass
+        except (AttributeError, TypeError) as exc:
+            logger.debug(f"Meditation manager log error: {exc}")
 
         self._refresh_history()
 

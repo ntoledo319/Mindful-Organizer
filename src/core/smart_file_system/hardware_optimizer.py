@@ -1,11 +1,13 @@
+from typing import Any
+
 import psutil
-from typing import Dict, Any
+
 
 class HardwareOptimizer:
     def __init__(self):
         self.system_stats = self._get_system_stats()
-        
-    def _get_system_stats(self) -> Dict[str, Any]:
+
+    def _get_system_stats(self) -> dict[str, Any]:
         """Get current system resource statistics"""
         return {
             'cpu_percent': psutil.cpu_percent(),
@@ -15,11 +17,11 @@ class HardwareOptimizer:
             'memory_total': psutil.virtual_memory().total,
             'disk_total': psutil.disk_usage('/').total
         }
-        
-    def optimize_for_ai(self) -> Dict[str, Any]:
+
+    def optimize_for_ai(self) -> dict[str, Any]:
         """Determine optimal settings for AI operations based on current hardware"""
         recommendations = {}
-        
+
         # CPU optimization
         if self.system_stats['cpu_percent'] > 80:
             recommendations['cpu'] = {
@@ -31,7 +33,7 @@ class HardwareOptimizer:
                 'suggestion': 'Full capacity available',
                 'max_threads': self.system_stats['cpu_count']
             }
-            
+
         # Memory optimization
         if self.system_stats['memory_percent'] > 80:
             recommendations['memory'] = {
@@ -43,10 +45,10 @@ class HardwareOptimizer:
                 'suggestion': 'Full capacity available',
                 'max_usage_gb': round(self.system_stats['memory_total'] * 0.9 / (1024**3), 1)
             }
-            
+
         return recommendations
-    
-    def get_available_resources(self) -> Dict[str, float]:
+
+    def get_available_resources(self) -> dict[str, float]:
         """Get currently available system resources"""
         return {
             'cpu_available': 100 - self.system_stats['cpu_percent'],

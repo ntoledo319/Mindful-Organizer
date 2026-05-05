@@ -8,15 +8,18 @@ spoon recovery, warnings, historical analysis, and condition-aware defaults.
 
 from __future__ import annotations
 
+import contextlib
 import uuid
 from collections import defaultdict
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any
 
 import numpy as np
 
+from core.constants import Condition
 
 # ---------------------------------------------------------------------------
 # Enums
@@ -39,18 +42,6 @@ class ActivityType(Enum):
     NATURE = "nature"
     NAP = "nap"
     LIGHT_HOBBY = "light_hobby"
-
-
-class Condition(Enum):
-    """Mental health conditions that affect spoon defaults."""
-    DEPRESSION = "depression"
-    ANXIETY = "anxiety"
-    ADHD = "adhd"
-    OCD = "ocd"
-    PTSD = "ptsd"
-    BIPOLAR = "bipolar"
-    CHRONIC_FATIGUE = "chronic_fatigue"
-    GENERAL = "general"
 
 
 class WarningLevel(Enum):
@@ -84,7 +75,7 @@ class DailySpoonState:
     spent: float
     recovered: float
     remaining: float
-    entries: List[SpoonCostEntry] = field(default_factory=list)
+    entries: list[SpoonCostEntry] = field(default_factory=list)
     warning: WarningLevel = WarningLevel.OK
     in_debt: bool = False
     debt_amount: float = 0.0
@@ -101,12 +92,12 @@ class WeeklySpoonSummary:
     """Summary of a full week's spoon usage."""
     start_date: date
     end_date: date
-    daily_states: List[DailySpoonState]
+    daily_states: list[DailySpoonState]
     total_budget: float
     total_spent: float
     total_recovered: float
     avg_daily_spent: float
-    most_expensive_activity: Optional[str] = None
+    most_expensive_activity: str | None = None
     debt_days: int = 0
     description: str = ""
 
@@ -138,7 +129,7 @@ class RecoveryRecommendation:
 # Default spoon costs
 # ---------------------------------------------------------------------------
 
-_DEFAULT_COSTS: Dict[ActivityType, float] = {
+_DEFAULT_COSTS: dict[ActivityType, float] = {
     ActivityType.SELF_CARE: 1.0,
     ActivityType.SIMPLE_TASK: 1.0,
     ActivityType.MODERATE_TASK: 2.0,
@@ -160,7 +151,7 @@ _DEFAULT_COSTS: Dict[ActivityType, float] = {
 _DEFAULT_DAILY_SPOONS = 12.0
 
 # Condition-specific adjustments
-_CONDITION_SPOON_ADJUSTMENTS: Dict[Condition, Dict[str, Any]] = {
+_CONDITION_SPOON_ADJUSTMENTS: dict[Condition, dict[str, Any]] = {
     Condition.DEPRESSION: {
         "daily_spoons": 8.0,
         "cost_overrides": {
@@ -239,22 +230,25 @@ class SpoonBudget:
 
     def __init__(
         self,
-        daily_spoons: Optional[float] = None,
-        conditions: Optional[List[str]] = None,
-        custom_costs: Optional[Dict[str, float]] = None,
+        daily_spoons: float | None = None,
+        conditions: list[str] | None = None,
+        custom_costs: dict[str, float] | None = None,
     ) -> None:
         # Resolve conditions
-        self._conditions: List[Condition] = []
+        self._conditions: list[Condition] = []
         for c in (conditions or []):
-            try:
-                self._conditions.append(Condition(c.lower()))
-            except ValueError:
-                continue
+            matched: Condition | None = None
+            for cond in Condition:
+                if cond.name.lower() == c.lower() or cond.value.lower() == c.lower():
+                    matched = cond
+                    break
+            if matched is not None:
+                self._conditions.append(matched)
         if not self._conditions:
             self._conditions = [Condition.GENERAL]
 
         # Build effective costs
-        self._costs: Dict[ActivityType, float] = dict(_DEFAULT_COSTS)
+        self._costs: dict[ActivityType, float] = dict(_DEFAULT_COSTS)
         # Apply condition overrides (first condition is primary)
         primary = self._conditions[0]
         adjustments = _CONDITION_SPOON_ADJUSTMENTS.get(primary, {})
@@ -267,10 +261,8 @@ class SpoonBudget:
                 if isinstance(key, ActivityType):
                     self._costs[key] = val
                 else:
-                    try:
+                    with contextlib.suppress(ValueError):
                         self._costs[ActivityType(key)] = val
-                    except ValueError:
-                        pass  # ignore unknown activity types
 
         # Daily spoon allocation
         if daily_spoons is not None:
@@ -279,7 +271,7 @@ class SpoonBudget:
             self._daily_spoons = adjustments.get("daily_spoons", _DEFAULT_DAILY_SPOONS)
 
         # Daily tracking: date -> list of entries
-        self._history: Dict[date, List[SpoonCostEntry]] = defaultdict(list)
+        self._history: dict[date, list[SpoonCostEntry]] = defaultdict(list)
 
     # -- configuration --------------------------------------------------------
 
@@ -307,8 +299,8 @@ class SpoonBudget:
         *,
         activity_name: str = "",
         note: str = "",
-        when: Optional[datetime] = None,
-        cost_override: Optional[float] = None,
+        when: datetime | None = None,
+        cost_override: float | None = None,
     ) -> SpoonCostEntry:
         """Record spoons spent on an activity.
 
@@ -332,8 +324,8 @@ class SpoonBudget:
         *,
         activity_name: str = "",
         note: str = "",
-        when: Optional[datetime] = None,
-        recovery_override: Optional[float] = None,
+        when: datetime | None = None,
+        recovery_override: float | None = None,
     ) -> SpoonCostEntry:
         """Record spoon recovery from a restorative activity.
 
@@ -354,21 +346,21 @@ class SpoonBudget:
 
     # -- querying today -------------------------------------------------------
 
-    def today_state(self, for_date: Optional[date] = None) -> DailySpoonState:
+    def today_state(self, for_date: date | None = None) -> DailySpoonState:
         """Get the current spoon state for a given day (default: today)."""
         day = for_date or date.today()
         entries = self._history.get(day, [])
         return self._build_daily_state(day, entries)
 
-    def remaining_spoons(self, for_date: Optional[date] = None) -> float:
+    def remaining_spoons(self, for_date: date | None = None) -> float:
         """Shorthand for today's remaining spoons."""
         return self.today_state(for_date).remaining
 
-    def warning_level(self, for_date: Optional[date] = None) -> WarningLevel:
+    def warning_level(self, for_date: date | None = None) -> WarningLevel:
         """Get the current warning level."""
         return self.today_state(for_date).warning
 
-    def can_afford(self, activity_type: ActivityType, for_date: Optional[date] = None) -> bool:
+    def can_afford(self, activity_type: ActivityType, for_date: date | None = None) -> bool:
         """Check whether you can afford an activity without going into debt."""
         remaining = self.remaining_spoons(for_date)
         cost = abs(self._costs.get(activity_type, 1.0))
@@ -376,7 +368,7 @@ class SpoonBudget:
 
     # -- visual display -------------------------------------------------------
 
-    def display(self, for_date: Optional[date] = None) -> SpoonDisplay:
+    def display(self, for_date: date | None = None) -> SpoonDisplay:
         """Generate data for a visual spoon display."""
         state = self.today_state(for_date)
         remaining_clamped = max(0.0, state.remaining)
@@ -410,9 +402,9 @@ class SpoonBudget:
 
     # -- recovery recommendations ----------------------------------------------
 
-    def recovery_recommendations(self) -> List[RecoveryRecommendation]:
+    def recovery_recommendations(self) -> list[RecoveryRecommendation]:
         """Suggest restorative activities to recover spoons."""
-        recs: List[RecoveryRecommendation] = []
+        recs: list[RecoveryRecommendation] = []
         recovery_activities = [
             (ActivityType.NAP, "Take a 20-minute nap to recharge."),
             (ActivityType.REST, "Lie down or sit quietly for 15-30 minutes."),
@@ -431,7 +423,7 @@ class SpoonBudget:
 
     # -- debt tracking ---------------------------------------------------------
 
-    def spoon_debt(self, for_date: Optional[date] = None) -> Tuple[bool, float, str]:
+    def spoon_debt(self, for_date: date | None = None) -> tuple[bool, float, str]:
         """Check if the user is in spoon debt.
 
         Returns (is_in_debt, debt_amount, recommendation).
@@ -461,7 +453,7 @@ class SpoonBudget:
     def add_historical_day(
         self,
         day: date,
-        entries: Sequence[Dict[str, Any]],
+        entries: Sequence[dict[str, Any]],
     ) -> None:
         """Load historical data for analytics.
 
@@ -492,11 +484,11 @@ class SpoonBudget:
             )
             self._history[day].append(entry)
 
-    def weekly_summary(self, end_date: Optional[date] = None) -> WeeklySpoonSummary:
+    def weekly_summary(self, end_date: date | None = None) -> WeeklySpoonSummary:
         """Generate a summary for the 7-day window ending on *end_date*."""
         end = end_date or date.today()
         start = end - timedelta(days=6)
-        daily_states: List[DailySpoonState] = []
+        daily_states: list[DailySpoonState] = []
 
         for i in range(7):
             day = start + timedelta(days=i)
@@ -509,7 +501,7 @@ class SpoonBudget:
         debt_days = sum(1 for s in daily_states if s.in_debt)
 
         # Most expensive activity across the week
-        activity_totals: Dict[str, float] = defaultdict(float)
+        activity_totals: dict[str, float] = defaultdict(float)
         for s in daily_states:
             for e in s.entries:
                 if e.spoon_cost > 0:
@@ -547,14 +539,14 @@ class SpoonBudget:
         if not self._history:
             return 0.0
         daily_totals = []
-        for day, entries in self._history.items():
+        for _day, entries in self._history.items():
             spent = sum(e.spoon_cost for e in entries if e.spoon_cost > 0)
             daily_totals.append(spent)
         return round(float(np.mean(daily_totals)), 1) if daily_totals else 0.0
 
-    def most_expensive_activities(self, top_n: int = 5) -> List[Tuple[str, float]]:
+    def most_expensive_activities(self, top_n: int = 5) -> list[tuple[str, float]]:
         """Return the top-N most costly activities across all history."""
-        totals: Dict[str, float] = defaultdict(float)
+        totals: dict[str, float] = defaultdict(float)
         for entries in self._history.values():
             for e in entries:
                 if e.spoon_cost > 0:
@@ -565,7 +557,7 @@ class SpoonBudget:
     # -- internal helpers ------------------------------------------------------
 
     def _build_daily_state(
-        self, day: date, entries: List[SpoonCostEntry],
+        self, day: date, entries: list[SpoonCostEntry],
     ) -> DailySpoonState:
         spent = sum(e.spoon_cost for e in entries if e.spoon_cost > 0)
         recovered = sum(abs(e.spoon_cost) for e in entries if e.spoon_cost < 0)

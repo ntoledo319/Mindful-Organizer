@@ -3,13 +3,12 @@ AI-powered coping strategy recommendation engine.
 Provides condition-specific, energy-aware coping strategies
 with learning from user feedback.
 """
-from dataclasses import dataclass, field
-from datetime import datetime
-from enum import Enum, auto
-from pathlib import Path
-from typing import List, Dict, Optional, Set
 import json
-import uuid
+from dataclasses import dataclass
+from datetime import datetime
+from enum import Enum
+from pathlib import Path
+from typing import Any
 
 
 class CopingCategory(Enum):
@@ -42,15 +41,15 @@ class CopingStrategy:
     id: str
     name: str
     description: str
-    steps: List[str]
+    steps: list[str]
     time_required_minutes: int
     energy_required: EnergyLevel
-    condition_suitability: List[str]
+    condition_suitability: list[str]
     category: CopingCategory
     evidence_basis: str
     crisis_appropriate: bool = False
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         return {
             "id": self.id,
             "name": self.name,
@@ -79,31 +78,31 @@ class CopingEngine:
     def __init__(self, data_dir: Path):
         self.data_dir = data_dir
         self.feedback_file = data_dir / "coping_feedback.json"
-        self.feedback_history: List[Dict] = []
-        self._strategy_scores: Dict[str, float] = {}
+        self.feedback_history: list[dict] = []
+        self._strategy_scores: dict[str, float] = {}
         self._load_feedback()
         self._strategies = self._build_strategy_library()
 
     def _load_feedback(self):
         if self.feedback_file.exists():
             try:
-                with open(self.feedback_file, "r") as f:
+                with open(self.feedback_file) as f:
                     self.feedback_history = json.load(f)
                 # Build score map from feedback
-                counts: Dict[str, List[int]] = {}
+                counts: dict[str, list[int]] = {}
                 for fb in self.feedback_history:
                     sid = fb.get("strategy_id", "")
                     counts.setdefault(sid, []).append(fb.get("helpfulness", 3))
                 for sid, scores in counts.items():
                     self._strategy_scores[sid] = sum(scores) / len(scores)
-            except (json.JSONDecodeError, Exception):
+            except (json.JSONDecodeError, OSError, TypeError, ValueError):
                 self.feedback_history = []
 
     def _save_feedback(self):
         with open(self.feedback_file, "w") as f:
             json.dump(self.feedback_history[-500:], f, indent=2)
 
-    def _build_strategy_library(self) -> List[CopingStrategy]:
+    def _build_strategy_library(self) -> list[CopingStrategy]:
         """Build the built-in coping strategy library (50+ strategies)."""
         strategies = [
             # BEHAVIORAL
@@ -249,11 +248,11 @@ class CopingEngine:
         self,
         mood: int = 5,
         energy: int = 50,
-        conditions: Optional[Set[str]] = None,
-        symptoms: Optional[List[str]] = None,
+        conditions: set[str] | None = None,
+        symptoms: list[str] | None = None,
         time_available: int = 30,
         crisis_level: CrisisLevel = CrisisLevel.MAINTENANCE,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Get ranked coping strategy recommendations."""
         conditions = conditions or set()
         condition_names = {c.lower() for c in conditions}
@@ -262,7 +261,7 @@ class CopingEngine:
         # Filter by time and energy
         energy_level = self._energy_to_level(energy)
 
-        candidates = []
+        candidates: list[dict[str, Any]] = []
         for strategy in self._strategies:
             # Time filter
             if strategy.time_required_minutes > time_available:
@@ -278,11 +277,11 @@ class CopingEngine:
             score = self._score_strategy(strategy, mood, energy_level, condition_names, crisis_level)
             candidates.append({"strategy": strategy.to_dict(), "score": score})
 
-        candidates.sort(key=lambda x: x["score"], reverse=True)
+        candidates.sort(key=lambda x: float(x["score"]), reverse=True)
         return candidates[:10]
 
     def _score_strategy(self, strategy: CopingStrategy, mood: int, energy: EnergyLevel,
-                        conditions: Set[str], crisis_level: CrisisLevel) -> float:
+                        conditions: set[str], crisis_level: CrisisLevel) -> float:
         score = 50.0
 
         # Condition match bonus
@@ -295,13 +294,11 @@ class CopingEngine:
             score += (feedback_score - 3) * 10  # -20 to +20
 
         # Low mood: prefer behavioral activation and physical
-        if mood <= 3:
-            if strategy.category in (CopingCategory.BEHAVIORAL, CopingCategory.PHYSICAL):
-                score += 10
+        if mood <= 3 and strategy.category in (CopingCategory.BEHAVIORAL, CopingCategory.PHYSICAL):
+            score += 10
         # High anxiety: prefer sensory and breathing
-        if mood <= 4:
-            if strategy.category in (CopingCategory.SENSORY, CopingCategory.SPIRITUAL):
-                score += 10
+        if mood <= 4 and strategy.category in (CopingCategory.SENSORY, CopingCategory.SPIRITUAL):
+            score += 10
 
         # Crisis: prefer crisis-appropriate
         if crisis_level.value >= CrisisLevel.MODERATE.value and strategy.crisis_appropriate:
@@ -323,7 +320,7 @@ class CopingEngine:
         else:
             return EnergyLevel.HIGH
 
-    def get_emergency_strategies(self) -> List[Dict]:
+    def get_emergency_strategies(self) -> list[dict]:
         """Get fast-acting, low-energy strategies for crisis situations."""
         return self.get_recommendations(
             mood=2, energy=15, time_available=5,
@@ -349,10 +346,10 @@ class CopingEngine:
         else:
             self._strategy_scores[sid] = float(helpfulness)
 
-    def get_strategy_stats(self) -> Dict:
+    def get_strategy_stats(self) -> dict:
         """Get usage statistics for strategies."""
-        usage: Dict[str, int] = {}
-        helpfulness: Dict[str, List[int]] = {}
+        usage: dict[str, int] = {}
+        helpfulness: dict[str, list[int]] = {}
 
         for fb in self.feedback_history:
             sid = fb["strategy_id"]
@@ -372,10 +369,10 @@ class CopingEngine:
             "most_helpful": [{"strategy_id": sid, "avg_rating": round(avg, 1)} for sid, avg in most_helpful],
         }
 
-    def get_all_strategies(self) -> List[Dict]:
+    def get_all_strategies(self) -> list[dict]:
         """Get all strategies in the library."""
         return [s.to_dict() for s in self._strategies]
 
-    def get_strategies_by_category(self, category: CopingCategory) -> List[Dict]:
+    def get_strategies_by_category(self, category: CopingCategory) -> list[dict]:
         """Get strategies filtered by category."""
         return [s.to_dict() for s in self._strategies if s.category == category]

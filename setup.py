@@ -14,7 +14,7 @@ long_description = (Path(__file__).parent / "README.md").read_text(encoding="utf
 
 setup(
     name="mindful_organizer",
-    version="1.0.0",
+    version="1.1.0",
     description="A mental health-aware productivity and task management application",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -58,19 +58,18 @@ setup(
             "pyinstaller>=5.0",
         ],
     },
-    python_requires=">=3.9",
+    python_requires=">=3.11",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: End Users/Desktop",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.13",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Topic :: Office/Business :: Scheduling",
-        "Topic :: Scientific/Engineering :: Medical Science Apps.",
+        "Topic :: Home and Garden :: Personal Health :: Health and Fitness",
     ],
     entry_points={
         "console_scripts": [

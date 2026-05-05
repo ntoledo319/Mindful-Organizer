@@ -6,7 +6,7 @@ and mood entries that can be composed across all test modules.
 """
 
 import sys
-from datetime import datetime, date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -47,7 +47,7 @@ def sample_profile():
 def sample_tasks():
     """List of five Task objects with varying priorities and categories."""
     try:
-        from src.core.task_manager import Task, TaskPriority, TaskCategory
+        from src.core.task_manager import Task, TaskCategory, TaskPriority
     except ImportError:
         pytest.skip("task_manager module not available")
 
@@ -96,7 +96,7 @@ def sample_tasks():
 @pytest.fixture
 def sample_mood_entries():
     """List of 10 mood-entry dicts spread over 10 days."""
-    base = datetime.now() - timedelta(days=10)
+    base = datetime(2026, 1, 1, 8, 0, 0) - timedelta(days=10)
     entries = []
     for i in range(10):
         ts = base + timedelta(days=i, hours=10)

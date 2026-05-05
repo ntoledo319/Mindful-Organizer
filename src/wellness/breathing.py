@@ -6,13 +6,14 @@ session tracking, mood monitoring, and personalized recommendations
 based on mental health conditions.
 """
 
-from dataclasses import dataclass, field
-from datetime import datetime
-from enum import Enum, auto
-from typing import Dict, List, Optional, Set
-from pathlib import Path
 import json
 import uuid
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from pathlib import Path
+
+from core.constants import Condition
 
 
 class BreathingExerciseType(Enum):
@@ -31,18 +32,6 @@ class BreathPhase(Enum):
     HOLD_IN = "hold_in"
     EXHALE = "exhale"
     HOLD_OUT = "hold_out"
-
-
-class Condition(Enum):
-    """Mental health conditions for suitability mapping."""
-    ADHD = "ADHD"
-    ANXIETY = "Anxiety"
-    DEPRESSION = "Depression"
-    OCD = "OCD"
-    PTSD = "PTSD"
-    PANIC = "Panic Disorder"
-    INSOMNIA = "Insomnia"
-    GENERAL = "General Wellness"
 
 
 @dataclass
@@ -75,9 +64,9 @@ class BreathingExercise:
     exercise_type: BreathingExerciseType
     name: str
     description: str
-    phases: List[BreathPhaseData]
+    phases: list[BreathPhaseData]
     default_cycles: int
-    condition_suitability: Set[Condition]
+    condition_suitability: set[Condition]
     difficulty: int = 1
 
     @property
@@ -90,7 +79,7 @@ class BreathingExercise:
         """Total duration for all default cycles."""
         return self.cycle_duration_seconds * self.default_cycles
 
-    def get_timer_data(self, cycles: Optional[int] = None) -> List[Dict]:
+    def get_timer_data(self, cycles: int | None = None) -> list[dict]:
         """Generate timer data for the UI to render phase-by-phase.
 
         Args:
@@ -100,7 +89,7 @@ class BreathingExercise:
             List of dicts with phase timing for each step across all cycles.
         """
         num_cycles = cycles if cycles is not None else self.default_cycles
-        timer_data: List[Dict] = []
+        timer_data: list[dict] = []
         elapsed = 0.0
         for cycle_num in range(1, num_cycles + 1):
             for phase_data in self.phases:
@@ -136,14 +125,14 @@ class BreathingSession:
     exercise_type: BreathingExerciseType = BreathingExerciseType.BOX_BREATHING
     cycles_target: int = 4
     cycles_completed: int = 0
-    mood_before: Optional[int] = None
-    mood_after: Optional[int] = None
-    started_at: Optional[str] = None
-    ended_at: Optional[str] = None
+    mood_before: int | None = None
+    mood_after: int | None = None
+    started_at: str | None = None
+    ended_at: str | None = None
     completed: bool = False
-    notes: Optional[str] = None
+    notes: str | None = None
 
-    def start(self, mood_before: Optional[int] = None) -> None:
+    def start(self, mood_before: int | None = None) -> None:
         """Mark the session as started.
 
         Args:
@@ -155,7 +144,7 @@ class BreathingSession:
                 raise ValueError("mood_before must be between 1 and 10")
             self.mood_before = mood_before
 
-    def end(self, cycles_completed: int, mood_after: Optional[int] = None) -> None:
+    def end(self, cycles_completed: int, mood_after: int | None = None) -> None:
         """Mark the session as ended.
 
         Args:
@@ -171,13 +160,13 @@ class BreathingSession:
             self.mood_after = mood_after
 
     @property
-    def mood_improvement(self) -> Optional[int]:
+    def mood_improvement(self) -> int | None:
         """Calculate mood change from before to after the session."""
         if self.mood_before is not None and self.mood_after is not None:
             return self.mood_after - self.mood_before
         return None
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Serialize session to a dictionary for JSON storage."""
         return {
             "session_id": self.session_id,
@@ -193,7 +182,7 @@ class BreathingSession:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict) -> "BreathingSession":
+    def from_dict(cls, data: dict) -> "BreathingSession":
         """Deserialize a session from a dictionary."""
         return cls(
             session_id=data["session_id"],
@@ -209,9 +198,9 @@ class BreathingSession:
         )
 
 
-def _build_exercise_library() -> Dict[BreathingExerciseType, BreathingExercise]:
+def _build_exercise_library() -> dict[BreathingExerciseType, BreathingExercise]:
     """Build the full library of breathing exercises."""
-    exercises: Dict[BreathingExerciseType, BreathingExercise] = {}
+    exercises: dict[BreathingExerciseType, BreathingExercise] = {}
 
     exercises[BreathingExerciseType.BOX_BREATHING] = BreathingExercise(
         exercise_type=BreathingExerciseType.BOX_BREATHING,
@@ -359,7 +348,7 @@ class BreathingManager:
         data_dir: Directory to persist session history.
     """
 
-    EXERCISE_LIBRARY: Dict[BreathingExerciseType, BreathingExercise] = (
+    EXERCISE_LIBRARY: dict[BreathingExerciseType, BreathingExercise] = (
         _build_exercise_library()
     )
 
@@ -367,7 +356,7 @@ class BreathingManager:
         self.data_dir = data_dir
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self._sessions_file = self.data_dir / "breathing_sessions.json"
-        self._sessions: List[BreathingSession] = []
+        self._sessions: list[BreathingSession] = []
         self._load_sessions()
 
     # ── persistence ──────────────────────────────────────────────
@@ -376,7 +365,7 @@ class BreathingManager:
         """Load session history from disk."""
         if self._sessions_file.exists():
             try:
-                with open(self._sessions_file, "r") as fh:
+                with open(self._sessions_file) as fh:
                     data = json.load(fh)
                 self._sessions = [BreathingSession.from_dict(s) for s in data]
             except (json.JSONDecodeError, KeyError):
@@ -407,7 +396,7 @@ class BreathingManager:
             raise KeyError(f"Unknown exercise type: {exercise_type}")
         return self.EXERCISE_LIBRARY[exercise_type]
 
-    def list_exercises(self) -> List[BreathingExercise]:
+    def list_exercises(self) -> list[BreathingExercise]:
         """Return all available breathing exercises."""
         return list(self.EXERCISE_LIBRARY.values())
 
@@ -416,8 +405,8 @@ class BreathingManager:
     def create_session(
         self,
         exercise_type: BreathingExerciseType,
-        cycles: Optional[int] = None,
-        mood_before: Optional[int] = None,
+        cycles: int | None = None,
+        mood_before: int | None = None,
     ) -> BreathingSession:
         """Create and start a new breathing session.
 
@@ -441,7 +430,7 @@ class BreathingManager:
         self,
         session: BreathingSession,
         cycles_completed: int,
-        mood_after: Optional[int] = None,
+        mood_after: int | None = None,
     ) -> BreathingSession:
         """End a session, record it, and persist.
 
@@ -462,10 +451,10 @@ class BreathingManager:
 
     def recommend(
         self,
-        mood: Optional[int] = None,
-        energy: Optional[int] = None,
-        conditions: Optional[Set[Condition]] = None,
-    ) -> List[BreathingExercise]:
+        mood: int | None = None,
+        energy: int | None = None,
+        conditions: set[Condition] | None = None,
+    ) -> list[BreathingExercise]:
         """Recommend exercises based on current state.
 
         Scoring favours exercises whose condition suitability overlaps with
@@ -481,7 +470,7 @@ class BreathingManager:
         Returns:
             Exercises sorted by relevance (best first).
         """
-        scored: List[tuple] = []
+        scored: list[tuple] = []
         conditions = conditions or set()
 
         for exercise in self.EXERCISE_LIBRARY.values():
@@ -503,14 +492,17 @@ class BreathingManager:
                     score += exercise.difficulty * 5
 
             # Mood-based adjustments
-            if mood is not None and mood <= 4:
-                # Low mood: prefer calming, grounding exercises
-                if exercise.exercise_type in (
+            if (
+                mood is not None
+                and mood <= 4
+                and exercise.exercise_type
+                in (
                     BreathingExerciseType.CALMING_BREATH,
                     BreathingExerciseType.GROUNDING_BREATH,
                     BreathingExerciseType.DEEP_BELLY,
-                ):
-                    score += 15
+                )
+            ):
+                score += 15
 
             # Historical effectiveness for this exercise
             past = [
@@ -520,7 +512,7 @@ class BreathingManager:
             ]
             if past:
                 avg_improvement = sum(
-                    s.mood_improvement for s in past  # type: ignore[arg-type]
+                    s.mood_improvement for s in past  # type: ignore[misc]
                 ) / len(past)
                 score += avg_improvement * 5
 
@@ -531,7 +523,7 @@ class BreathingManager:
 
     # ── statistics ───────────────────────────────────────────────
 
-    def get_statistics(self) -> Dict:
+    def get_statistics(self) -> dict:
         """Compute aggregate statistics across all sessions.
 
         Returns:
@@ -551,7 +543,7 @@ class BreathingManager:
         completed = [s for s in self._sessions if s.completed]
 
         # Favourite exercise by frequency
-        type_counts: Dict[str, int] = {}
+        type_counts: dict[str, int] = {}
         for s in self._sessions:
             key = s.exercise_type.value
             type_counts[key] = type_counts.get(key, 0) + 1
@@ -584,6 +576,6 @@ class BreathingManager:
         }
 
     @property
-    def sessions(self) -> List[BreathingSession]:
+    def sessions(self) -> list[BreathingSession]:
         """Read-only access to the session history."""
         return list(self._sessions)

@@ -5,24 +5,19 @@ Covers CRUD operations, queries, persistence, undo/redo,
 recurring tasks, templates, subtasks, tags, and statistics.
 """
 
-import json
-from datetime import date, datetime, timedelta
-from pathlib import Path
+from datetime import date, timedelta
 
 import pytest
 
 try:
     from src.core.task_manager import (
-        Task,
-        TaskPriority,
-        TaskCategory,
-        TaskManager,
-        SubTask,
         RecurrenceConfig,
         RecurrencePattern,
-        TaskTemplate,
-        UndoManager,
-        UndoAction,
+        SubTask,
+        Task,
+        TaskCategory,
+        TaskManager,
+        TaskPriority,
     )
     _HAS_MODULE = True
 except ImportError:
@@ -37,12 +32,12 @@ pytestmark = pytest.mark.skipif(not _HAS_MODULE, reason="task_manager module not
 
 def _make_task(**overrides):
     """Create a Task with sensible defaults, accepting overrides."""
-    defaults = dict(
-        title="Test task",
-        priority=TaskPriority.Medium,
-        category=TaskCategory.Personal,
-        energy_required=5,
-    )
+    defaults = {
+        "title": "Test task",
+        "priority": TaskPriority.Medium,
+        "category": TaskCategory.Personal,
+        "energy_required": 5,
+    }
     defaults.update(overrides)
     return Task(**defaults)
 

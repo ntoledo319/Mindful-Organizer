@@ -9,10 +9,9 @@ import pytest
 
 try:
     from src.gui.themes import (
-        ThemeManager,
-        Theme,
-        THEMES,
         COLOR_BLIND_OVERRIDES,
+        THEMES,
+        ThemeManager,
     )
     _HAS_MODULE = True
 except ImportError:
@@ -55,7 +54,7 @@ class TestAllThemesValid:
         assert len(THEMES) >= 6
 
     def test_all_themes_have_condition_suitability(self):
-        for name, theme in THEMES.items():
+        for _name, theme in THEMES.items():
             assert isinstance(theme.condition_suitability, list)
 
     def test_color_values_look_like_colors(self):
@@ -206,22 +205,25 @@ class TestFontScaling:
         assert tm.font_scale == 1.0
 
     def test_font_scale_in_stylesheet(self, tm):
+        import re
         tm.font_scale = 1.5
         stylesheet = tm.generate_stylesheet()
         # Default 12px * 1.5 = 18px
-        assert "18px" in stylesheet
+        assert re.search(r"font-size:\s*18px", stylesheet)
 
     def test_large_font_scale(self, tm):
+        import re
         tm.font_scale = 2.0
         stylesheet = tm.generate_stylesheet()
         # 12 * 2.0 = 24px base
-        assert "24px" in stylesheet
+        assert re.search(r"font-size:\s*24px", stylesheet)
 
     def test_small_font_scale(self, tm):
+        import re
         tm.font_scale = 0.8
         stylesheet = tm.generate_stylesheet()
         # 12 * 0.8 = 9.6 -> int = 9
-        assert "9px" in stylesheet
+        assert re.search(r"font-size:\s*9px", stylesheet)
 
 
 # ---------------------------------------------------------------------------

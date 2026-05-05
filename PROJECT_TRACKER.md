@@ -1,7 +1,7 @@
 # Mindful Organizer - Project Tracker
 
 > No timeframes. Ordered by priority and logical sequence.
-> **Status: All phases implemented. 63 source files, 21 test files, 25,875+ lines of production code.**
+> **Status: All phases implemented. 67 source files, 21 test files, 27,000+ lines of production code.**
 
 ---
 
@@ -61,7 +61,7 @@
 - [x] **Grounding exercise walk-throughs** - 5-4-3-2-1, body scan, object focus, temperature, movement, safe place visualization (`src/wellness/grounding.py`)
 - [x] **ERP module completion** - Full anxiety hierarchy, session tracking, SUDS monitoring, habituation analysis, response prevention logging (`src/wellness/erp_tracker.py`, `src/gui/widgets/erp_widget.py`)
 - [x] **Journaling with prompts** - 30+ condition-specific prompts across 10 categories, streak tracking (`src/wellness/journaling.py`, `src/gui/widgets/journaling_widget.py`)
-- [x] **Sleep tracking integration** - Log entries, pattern analysis, condition-specific insights, sleep debt (`src/core/sleep_tracker.py`, `src/gui/widgets/sleep_widget.py`)
+- [x] **Sleep tracking integration** - 3-tap entry (bedtime, wake, quality), pattern analysis, condition-specific insights (`src/core/sleep_tracker.py`, `src/gui/widgets/sleep_widget.py`)
 - [x] **Medication reminder system** - Track medications, adherence, side effects, refill reminders (`src/core/medication_tracker.py`, `src/gui/widgets/medication_widget.py`)
 
 ### Technical Improvements
@@ -69,7 +69,7 @@
 - [x] **Comprehensive test suite** - 21 test files, unit + integration tests for all modules (`tests/`)
 - [x] **Automated Windows builds** - GitHub Actions CI/CD for Windows, macOS, Linux with Python 3.9-3.12 (`.github/workflows/tests.yml`)
 - [x] **Auto-update mechanism** - Build scripts prepared for store auto-update
-- [x] **Database migration system** - SQLite with versioned schema, migration support (`src/core/database.py`)
+- [x] **Database migration system** - SQLite with versioned schema, migration support (`src/core/database.py` schema v2)
 - [x] **Logging framework** - Structured logging to file, never logs sensitive data (`src/main.py`)
 - [x] **Performance profiling** - Lazy-loaded modules, deferred imports for ML
 - [x] **Localization framework** - i18n infrastructure prepared
@@ -81,7 +81,7 @@
 ### AI and Intelligence
 
 - [x] **Adaptive task scheduling** - ML learns peak productivity hours from history (`src/core/ai_optimizer.py`)
-- [x] **Energy prediction engine** - RandomForestRegressor with rule-based fallback, confidence scoring (`src/core/energy_predictor.py`)
+- [x] **Energy prediction engine** - RandomForestRegressor with rule-based fallback, confidence scoring. Fully automatic — no manual logging required. (`src/core/energy_predictor.py`)
 - [x] **Smart task decomposition** - Condition-aware micro-steps, template library, "just start" mode (`src/core/smart_task_decomposer.py`)
 - [x] **Natural language task entry** - Parse "call dentist tomorrow high priority" with regex/heuristics (`src/core/nlp_parser.py`)
 - [x] **Personalized coping suggestions** - 50+ strategies, feedback learning, crisis mode (`src/wellness/coping_engine.py`)
@@ -97,7 +97,7 @@
 
 ### Professional and Clinical
 
-- [x] **Clinical report generation** - Export mood/symptom data for therapy sessions (`src/core/export_manager.py`)
+- [x] **Wellness report generation** - Shareable HTML reports with embedded charts for support network sharing (`src/core/shareable_report.py`)
 - [x] **Multi-profile support** - Create, switch, delete profiles (`src/profile/mental_health_profile_builder.py`)
 
 ---
@@ -112,7 +112,7 @@
 - [x] **Condition-adaptive UI** - 8 themes, animation speed, notification style, layout density per condition
 - [x] **ADHD gamification engine** - 20 levels, XP curves, combos, power-ups, achievements, challenges
 - [x] **Integrated therapy skill references** - DBT, CBT, ACT, ERP, Mindfulness skill libraries
-- [x] **Mental health-aware file organization** - 4 strategies (Minimal, Visual, Detailed, Flexible) + custom rules
+- [x] **Mental health-aware file organization** - 5 condition-aware modes (ADHD/OCD/Depression/Anxiety/Generic) + custom rules
 - [x] **Encrypted sensitive content management** - Fernet encryption, passcode-protected folders
 - [x] **Curated clinical meditation library** - UCLA MARC, Oxford, NHS, Free Mindfulness Project
 - [x] **Local-first privacy** - All data stored locally, no cloud, no telemetry
@@ -134,6 +134,10 @@
 - [x] **Accessibility-first design system** - Color blindness modes, dyslexia font, reduced motion, font scaling (`src/utils/accessibility.py`)
 - [x] **Offline-first architecture** - Works fully without internet
 - [x] **Data portability** - Export all data as JSON, CSV (`src/core/export_manager.py`)
+- [x] **DBT Diary Card** - Structured daily tracking with emotions, urges, skills, targets, and medication adherence (`src/core/diary_card_manager.py`)
+- [x] **Shareable HTML Reports** - Self-contained browser-openable reports with Chart.js (`src/core/shareable_report.py`)
+- [x] **MoodManager** - Bridges mood tracker widget to SQLite (`src/core/mood_manager.py`)
+- [x] **Subscription system** - Free/Pro/Premium tiers with 14-day trial, offline HMAC license keys (`src/core/subscription_manager.py`)
 
 ---
 
@@ -168,13 +172,14 @@
 
 ## Technical Debt and Maintenance
 
-- [x] Refactor `main_window.py` - Split from 1653 lines into 13 widget modules
+- [x] Refactor `main_window.py` - Split from 1653 lines into 15 widget modules
 - [x] Increase test coverage - 21 test files covering all modules
 - [x] Add type hints to all public APIs
 - [x] Document all configuration options
 - [x] Standardize error handling patterns
 - [x] Profile and optimize memory usage (lazy loading)
 - [x] Set up automated CI/CD (GitHub Actions multi-platform)
+- [x] Database schema v2 with diary_cards table and migration
 
 ---
 
@@ -184,7 +189,9 @@
 - [x] **Update mechanism**: Windows Store auto-update
 - [x] **Database**: SQLite for indexed data + JSON for configuration
 - [x] **Plugin system**: Custom rules engine for organization strategies
-- [x] **Monetization model**: Free (documented in store listing)
+- [x] **Monetization model**: Freemium (Free/Pro/Premium)
+- [x] **Report format**: Shareable HTML (replaces PDF)
+- [x] **Energy tracking**: Derived from sleep+mood+tasks (no manual logging)
 
 ---
 
@@ -192,12 +199,12 @@
 
 | Metric | Count |
 |--------|-------|
-| Python source files | 63 |
+| Python source files | 67 |
 | Test files | 21 |
-| Source code lines | 25,875+ |
+| Source code lines | 27,000+ |
 | Test code lines | 4,799+ |
-| UI widget modules | 13 |
-| Core modules | 14 |
+| UI widget modules | 15 |
+| Core modules | 16 |
 | Wellness modules | 7 |
 | Themes | 8 |
 | Coping strategies | 50+ |
