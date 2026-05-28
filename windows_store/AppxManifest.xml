@@ -12,23 +12,30 @@
   <!-- ================================================================
        Package Identity
        ================================================================ -->
+  <!--
+    Identity:
+      The Publisher CN below is a development self-signed identity. Before
+      Microsoft Store submission, replace it with the Publisher string assigned
+      by Partner Center (e.g. "CN=<your-publisher-id>") — Partner Center will
+      reject mismatched publishers.
+  -->
   <Identity
-    Name="MindfulOrganizer"
+    Name="TheHearthProject"
     Publisher="CN=NicholasToledo"
     Version="1.0.0.0"
     ProcessorArchitecture="x64" />
 
-  <mp:PhoneIdentity PhoneProductId="a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+  <mp:PhoneIdentity PhoneProductId="c5c7a1f3-1d66-42d9-a776-b1cb9f1c8fe5"
                     PhonePublisherId="00000000-0000-0000-0000-000000000000" />
 
   <!-- ================================================================
        Package Properties
        ================================================================ -->
   <Properties>
-    <DisplayName>Mindful Organizer</DisplayName>
-    <PublisherDisplayName>Nicholas Toledo</PublisherDisplayName>
+    <DisplayName>Hearth</DisplayName>
+    <PublisherDisplayName>The Hearth Project</PublisherDisplayName>
     <Logo>assets\StoreLogo.png</Logo>
-    <Description>Mental health-aware productivity and task management application that helps you stay organized while respecting your well-being.</Description>
+    <Description>A desktop that adapts to your psychology. Hearth reconfigures your computing environment based on real-time mental state — closing apps during anxiety spikes, dimming the screen when energy is low, and protecting focus before you have to ask.</Description>
   </Properties>
 
   <!-- ================================================================
@@ -53,14 +60,14 @@
        ================================================================ -->
   <Applications>
     <Application
-      Id="MindfulOrganizer"
-      Executable="MindfulOrganizer\mindful-organizer.exe"
+      Id="Hearth"
+      Executable="Hearth\hearth.exe"
       EntryPoint="Windows.FullTrustApplication">
 
       <!-- Visual Elements -->
       <uap:VisualElements
-        DisplayName="Mindful Organizer"
-        Description="Mental health-aware productivity and task management"
+        DisplayName="Hearth"
+        Description="A desktop that adapts to your psychology"
         BackgroundColor="#3A7CA5"
         Square150x150Logo="assets\Square150x150Logo.png"
         Square44x44Logo="assets\Square44x44Logo.png">
@@ -69,7 +76,7 @@
           Wide310x150Logo="assets\Wide310x150Logo.png"
           Square310x310Logo="assets\Square310x310Logo.png"
           Square71x71Logo="assets\Square71x71Logo.png"
-          ShortName="Mindful">
+          ShortName="Hearth">
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile="square150x150Logo" />
             <uap:ShowOn Tile="wide310x150Logo" />
@@ -89,25 +96,25 @@
         <!-- App Execution Alias: allows launching via "mindful-organizer" from Run/Terminal -->
         <uap5:Extension Category="windows.appExecutionAlias">
           <uap5:AppExecutionAlias>
-            <uap5:ExecutionAlias Alias="mindful-organizer.exe" />
+            <uap5:ExecutionAlias Alias="hearth.exe" />
           </uap5:AppExecutionAlias>
         </uap5:Extension>
 
         <!-- File Type Association: .mindful project files -->
         <uap:Extension Category="windows.fileTypeAssociation">
-          <uap:FileTypeAssociation Name="mindfulproject">
+          <uap:FileTypeAssociation Name="hearthproject">
             <uap:SupportedFileTypes>
-              <uap:FileType ContentType="application/x-mindful">.mindful</uap:FileType>
+              <uap:FileType ContentType="application/x-hearth">.hearth</uap:FileType>
             </uap:SupportedFileTypes>
-            <uap:DisplayName>Mindful Organizer Project</uap:DisplayName>
+            <uap:DisplayName>Hearth Project File</uap:DisplayName>
             <uap:Logo>assets\FileTypeLogo.png</uap:Logo>
-            <uap:InfoTip>Mindful Organizer project file</uap:InfoTip>
+            <uap:InfoTip>Hearth project file</uap:InfoTip>
             <uap:EditFlags OpenIsSafe="true" />
           </uap:FileTypeAssociation>
         </uap:Extension>
 
         <!-- Background Tasks: notification reminders -->
-        <Extension Category="windows.backgroundTasks" EntryPoint="MindfulOrganizer.BackgroundTask">
+        <Extension Category="windows.backgroundTasks" EntryPoint="Hearth.BackgroundTask">
           <BackgroundTasks>
             <Task Type="timer" />
             <Task Type="systemEvent" />

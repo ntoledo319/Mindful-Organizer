@@ -19,7 +19,7 @@ class SectionTitle(QLabel):
         super().__init__(text, parent)
         self._theme = theme or {}
         self._font_size = font_size
-        self.setFont(QFont(self.font().family(), font_size, QFont.Weight.Bold))
+        self.setFont(QFont(self.font().family(), font_size, QFont.Weight.DemiBold))
         self._refresh_style()
 
     def set_theme(self, theme: dict[str, str]) -> None:
@@ -28,7 +28,12 @@ class SectionTitle(QLabel):
 
     def _refresh_style(self) -> None:
         color = self._theme.get("text", "#333333")
-        self.setStyleSheet(f"color: {color}; padding-bottom: 4px;")
+        self.setStyleSheet(
+            f"color: {color}; "
+            f"font-size: {self._font_size}px; "
+            "font-weight: 600; "
+            "padding-bottom: 6px;"
+        )
 
 
 class BodyLabel(QLabel):
@@ -50,8 +55,8 @@ class BodyLabel(QLabel):
         self._refresh_style()
 
     def _refresh_style(self) -> None:
-        color = self._theme.get("text", "#555555")
-        self.setStyleSheet(f"color: {color};")
+        color = self._theme.get("secondary", self._theme.get("text", "#555555"))
+        self.setStyleSheet(f"color: {color}; font-size: 13px;")
 
 
 class Caption(QLabel):

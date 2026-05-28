@@ -12,14 +12,11 @@ from typing import Any
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtWidgets import (
     QButtonGroup,
-    QCalendarWidget,
     QCheckBox,
-    QComboBox,
+    QDateEdit,
     QFrame,
     QGridLayout,
-    QGroupBox,
     QHBoxLayout,
-    QLabel,
     QLineEdit,
     QMessageBox,
     QRadioButton,
@@ -58,7 +55,7 @@ class DiaryCardWidget(QWidget):
         self._emotion_checks: list[QCheckBox] = []
         self._urge_spins: dict[str, QSpinBox] = {}
         self._skill_checks: list[QCheckBox] = []
-        self._target_spins: dict[str, QSpinBox] = []
+        self._target_spins: dict[str, QSpinBox] = {}
 
         self._build_ui()
         self._load_today()
@@ -74,6 +71,7 @@ class DiaryCardWidget(QWidget):
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QFrame.Shape.NoFrame)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         scroll.setStyleSheet(
             f"QScrollArea {{ background-color: {self._theme.get('background', '#f5f5f5')}; }}"
         )
@@ -90,14 +88,11 @@ class DiaryCardWidget(QWidget):
         # Date picker row
         date_row = QHBoxLayout()
         date_row.addWidget(BodyLabel("Date:", self._theme))
-        self._calendar = QCalendarWidget()
-        self._calendar.setGridVisible(True)
-        self._calendar.setMaximumHeight(220)
-        self._calendar.setStyleSheet(
-            f"QCalendarWidget {{ background-color: {self._theme.get('card_bg', '#fff')}; }}"
-        )
-        self._calendar.selectionChanged.connect(self._on_date_changed)
-        date_row.addWidget(self._calendar)
+        self._date_input = QDateEdit()
+        self._date_input.setCalendarPopup(True)
+        self._date_input.setDate(date.today())
+        self._date_input.dateChanged.connect(self._on_date_changed)
+        date_row.addWidget(self._date_input)
         date_row.addStretch()
         self._root.addLayout(date_row)
 
@@ -341,7 +336,7 @@ class DiaryCardWidget(QWidget):
     def _save_card(self) -> None:
         from core.diary_card_manager import DiaryCard
 
-        selected_date = self._calendar.selectedDate().toPyDate()
+        selected_date = self._selected_date()
 
         emotions = [cb.text() for cb in self._emotion_checks if cb.isChecked()]
         skills = [cb.text() for cb in self._skill_checks if cb.isChecked()]
@@ -375,7 +370,7 @@ class DiaryCardWidget(QWidget):
     def _load_today(self) -> None:
         if not self._manager or not hasattr(self._manager, "get"):
             return
-        selected_date = self._calendar.selectedDate().toPyDate()
+        selected_date = self._selected_date()
         try:
             card = self._manager.get(selected_date)
         except Exception as exc:
@@ -427,6 +422,9 @@ class DiaryCardWidget(QWidget):
         self._meds_no.setChecked(False)
         self._substances.clear()
         self._notes.clear()
+
+    def _selected_date(self) -> date:
+        return self._date_input.date().toPyDate()
 
     # ------------------------------------------------------------------
     # Theme

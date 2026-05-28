@@ -117,7 +117,7 @@ The codebase is functional and well-tested in core areas, but has significant ga
 - **Status:** **Fixed** during this audit. Config consolidated into `pyproject.toml`; `pytest.ini` removed.
 
 ### L2: `setup.py` and `pyproject.toml` version drift
-- **Status:** **Fixed** during this audit. `setup.py` version aligned to `1.1.0`.
+- **Status:** **Fixed** during this audit. `setup.py` is now a legacy shim and delegates package metadata to `pyproject.toml`.
 
 ### L3: `requirements.txt` versions and deps differ from `pyproject.toml`
 - **Status:** **Fixed** during this audit. Trimmed to core deps with alignment note.

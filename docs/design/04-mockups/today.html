@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Hearth — Today</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@200;300;400;500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  /* ──────────────────────────────────────────────────────────────
+     Hearth · Today
+     Tony Stark's lab at 2am — JARVIS, but tuned for someone
+     in a vulnerable state. One ember in a cool dark field.
+     The system has already done its work. What is left is to breathe.
+     ──────────────────────────────────────────────────────────── */
+
+  :root {
+    --void:           #050810;
+    --void-deep:      #03060C;
+    --surface:        #0A0F1A;
+    --line:           #161C28;
+    --line-bright:    #232B3B;
+
+    --text:           #E6E8EE;
+    --text-2:         #8B95A8;
+    --text-3:         #4C5566;
+    --text-4:         #2A3140;
+
+    --ember:          #FF8A3D;
+    --ember-bright:   #FFAA70;
+    --ember-glow:     rgba(255, 138, 61, 0.40);
+    --ember-soft:     rgba(255, 138, 61, 0.05);
+    --ember-inner:    rgba(255, 138, 61, 0.18);
+
+    --cyan:           #6BD4F2;
+    --cyan-soft:      rgba(107, 212, 242, 0.04);
+
+    --crisis:         #FF7280;
+    --crisis-soft:    rgba(255, 114, 128, 0.25);
+
+    --breath: 10s; /* 6 cycles per minute */
+    --ease: cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    background: var(--void);
+  }
+
+  body {
+    color: var(--text);
+    font-family: 'Geist', -apple-system, system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'ss01', 'ss03';
+    position: relative;
+  }
+
+  /* Atmosphere: one warm point in a cool dark field.
+     Two radial gradients only — no patterns, no grids.
+     The void has subtle vertical warmth at the bottom edge
+     and a deep cool wash to the upper right, like the room
+     has one lamp on. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 55% 45% at 42% 52%, rgba(255, 138, 61, 0.055) 0%, transparent 60%),
+      radial-gradient(ellipse 80% 60% at 80% 0%, rgba(20, 28, 44, 0.6) 0%, transparent 55%),
+      radial-gradient(ellipse 70% 50% at 30% 100%, rgba(255, 138, 61, 0.025) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Faint film grain — pure CSS, no images.
+     Hearth feels like anodized metal under low light, not glossy plastic. */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+    background-size: 3px 3px;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    z-index: 1;
+  }
+
+  .app {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    height: 100vh;
+    width: 100%;
+  }
+
+  /* ────────────────────────────────────────────
+     Rail — vertical icon column, dim, with a
+     concentric brand mark at the top.
+     ──────────────────────────────────────── */
+  .rail {
+    border-right: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 22px 0 22px;
+    background: linear-gradient(180deg,
+      rgba(10, 15, 26, 0.6) 0%,
+      rgba(5, 8, 16, 0.4) 50%,
+      rgba(10, 15, 26, 0.6) 100%);
+  }
+
+  /* The brand: a tiny illuminated concentric ring.
+     A single ember pixel at the center. The whole product mark.
+     No wordmark on this screen — restraint. */
+  .brand {
+    width: 18px;
+    height: 18px;
+    position: relative;
+    border-radius: 50%;
+    border: 1px solid var(--text-4);
+    margin-bottom: 28px;
+  }
+  .brand::before {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    border: 1px solid var(--text-4);
+  }
+  .brand::after {
+    content: '';
+    position: absolute;
+    inset: 7px;
+    border-radius: 50%;
+    background: var(--ember);
+    box-shadow:
+      0 0 6px var(--ember-glow),
+      0 0 14px rgba(255, 138, 61, 0.18);
+    animation: brand-breath var(--breath) ease-in-out infinite;
+  }
+  @keyframes brand-breath {
+    0%, 100% { opacity: 0.65; }
+    50%      { opacity: 1.0; }
+  }
+
+  .rail-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .rail-divider {
+    width: 16px;
+    height: 1px;
+    background: var(--line);
+    margin: 10px 0;
+  }
+
+  .rail-item {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-4);
+    cursor: pointer;
+    position: relative;
+    transition: color 280ms var(--ease);
+  }
+  .rail-item:hover { color: var(--text-2); }
+  .rail-item svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 1.2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .rail-item.active { color: var(--ember); }
+  .rail-item.active::after {
+    content: '';
+    position: absolute;
+    left: -22px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 12px;
+    background: var(--ember);
+    box-shadow: 0 0 4px var(--ember-glow);
+  }
+
+  .rail-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* ────────────────────────────────────────────
+     Stage — the main canvas.
+     ──────────────────────────────────────── */
+  .stage {
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Top hairline strip. Two facts. Nothing else. */
+  .strip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 36px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    z-index: 5;
+  }
+
+  .strip-left,
+  .strip-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .strip .colon {
+    color: var(--text-4);
+  }
+
+  .strip-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-2);
+  }
+
+  .strip-state .pip {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 6px rgba(107, 212, 242, 0.6);
+  }
+
+  /* Hairline beneath the strip — anodized aluminum edge. */
+  .horizon {
+    position: absolute;
+    top: 58px;
+    left: 36px;
+    right: 36px;
+    height: 1px;
+    background: linear-gradient(to right,
+      transparent,
+      var(--line-bright) 8%,
+      var(--line-bright) 92%,
+      transparent);
+    z-index: 4;
+  }
+
+  /* ────────────────────────────────────────────
+     The reactor — single concentric ring gauge.
+     Three nested rings, fine strokes, one warm
+     arc that breathes. Centered horizontally on
+     the stage, slightly above visual center to
+     leave room for the editorial sentence and
+     the next-action pill.
+     ──────────────────────────────────────── */
+  .field {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-rows: 1fr auto auto auto;
+    align-items: center;
+    justify-items: center;
+    padding: 108px 36px 32px;
+  }
+
+  .reactor-wrap {
+    position: relative;
+    width: 540px;
+    height: 540px;
+    align-self: start;
+    margin-top: 6px;
+  }
+
+  /* The breath. Subtle. 10s cycle, scale only. */
+  .reactor {
+    position: absolute;
+    inset: 0;
+    animation: breath var(--breath) ease-in-out infinite;
+    transform-origin: center;
+  }
+  @keyframes breath {
+    0%, 100% { transform: scale(0.985); }
+    50%      { transform: scale(1.015); }
+  }
+
+  /* The glow halo behind the gauge — soft, low,
+     never aggressive. Single warm light source. */
+  .reactor-halo {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 460px;
+    height: 460px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle at center,
+      rgba(255, 138, 61, 0.10) 0%,
+      rgba(255, 138, 61, 0.04) 30%,
+      transparent 65%);
+    pointer-events: none;
+    animation: halo-breath var(--breath) ease-in-out infinite;
+  }
+  @keyframes halo-breath {
+    0%, 100% { opacity: 0.75; }
+    50%      { opacity: 1.0; }
+  }
+
+  .reactor svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  /* Centered readout inside the rings. The word
+     is the headline. The number is a quiet
+     instrument-grade caption. */
+  .readout {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 320px;
+  }
+
+  .readout-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.34em;
+    margin-bottom: 18px;
+  }
+
+  .readout-eyebrow .tick {
+    display: inline-block;
+    width: 14px;
+    height: 1px;
+    background: var(--text-4);
+    vertical-align: middle;
+    margin: 0 10px 2px;
+  }
+
+  .readout-word {
+    font-family: 'Geist', sans-serif;
+    font-weight: 200;
+    font-size: 76px;
+    line-height: 0.92;
+    letter-spacing: -0.045em;
+    color: var(--text);
+    text-shadow: 0 0 40px rgba(255, 138, 61, 0.12);
+  }
+
+  .readout-qual {
+    font-family: 'Geist', sans-serif;
+    font-weight: 300;
+    font-size: 17px;
+    color: var(--text-2);
+    letter-spacing: -0.005em;
+    margin-top: 12px;
+  }
+
+  .readout-qual em {
+    font-style: normal;
+    color: var(--text);
+  }
+
+  .readout-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    margin-top: 22px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .readout-meta .index {
+    color: var(--ember);
+    letter-spacing: 0.18em;
+  }
+
+  .readout-meta .sep {
+    color: var(--text-4);
+  }
+
+  /* Peripheral instrument readings. Three of them,
+     arranged at corners around the reactor.
+     No deltas, no comparisons. One fact each.
+     Each has a fine connector tick that extends
+     toward the ring — the OP-1 / B&O detail. */
+  .periph {
+    position: absolute;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 400;
+    line-height: 1.5;
+    white-space: nowrap;
+    color: var(--text-2);
+  }
+  .periph .p-label {
+    font-size: 9px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.26em;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .periph .p-label .dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--text-4);
+  }
+  .periph .p-value {
+    font-size: 13px;
+    color: var(--text);
+    letter-spacing: 0.02em;
+    font-weight: 400;
+  }
+  .periph .p-value .unit {
+    color: var(--text-3);
+    margin-left: 4px;
+    font-size: 11px;
+  }
+
+  .periph.tl { top: 56px;  left: -28px; text-align: left; }
+  .periph.tr { top: 56px;  right: -28px; text-align: right; }
+  .periph.bl { bottom: 60px; left: -28px; text-align: left; }
+  .periph.br { bottom: 60px; right: -28px; text-align: right; }
+
+  .periph.tr .p-label,
+  .periph.br .p-label { justify-content: flex-end; }
+
+  /* ────────────────────────────────────────────
+     Editorial sentence — the one piece of prose.
+     Plain Geist, 17px, in the warm white. The
+     phrase the system gently offers.
+     ──────────────────────────────────────── */
+  .sentence {
+    max-width: 540px;
+    text-align: center;
+    font-family: 'Geist', sans-serif;
+    font-size: 17px;
+    font-weight: 300;
+    line-height: 1.55;
+    letter-spacing: -0.01em;
+    color: var(--text-2);
+    margin-top: -8px;
+    margin-bottom: 32px;
+    z-index: 3;
+  }
+
+  .sentence em {
+    font-style: normal;
+    color: var(--text);
+  }
+
+  /* ────────────────────────────────────────────
+     Next action — single glass pill.
+     The only filled ember element on the screen.
+     ──────────────────────────────────────── */
+  .next {
+    display: inline-flex;
+    align-items: stretch;
+    gap: 0;
+    padding: 6px;
+    padding-left: 24px;
+    border-radius: 999px;
+    background: rgba(10, 15, 26, 0.55);
+    border: 1px solid var(--line-bright);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.025),
+      0 8px 32px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    margin-bottom: 14px;
+  }
+
+  .next-content {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding-right: 18px;
+  }
+
+  .next-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 400;
+    color: var(--text-3);
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+  }
+
+  .next-text {
+    font-family: 'Geist', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    letter-spacing: -0.005em;
+    font-weight: 400;
+  }
+
+  .next-text .ghost {
+    color: var(--text-3);
+    font-weight: 300;
+  }
+
+  .next-btn {
+    appearance: none;
+    border: none;
+    background: var(--ember);
+    color: var(--void-deep);
+    font-family: 'Geist', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 10px 22px;
+    border-radius: 999px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow:
+      0 0 0 1px rgba(255, 138, 61, 0.4),
+      0 0 24px rgba(255, 138, 61, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transition: background-color 280ms var(--ease),
+                box-shadow 280ms var(--ease),
+                transform 280ms var(--ease);
+  }
+  .next-btn:hover {
+    background: var(--ember-bright);
+    box-shadow:
+      0 0 0 1px rgba(255, 138, 61, 0.5),
+      0 0 32px rgba(255, 138, 61, 0.42),
+      inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  }
+  .next-btn:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px var(--void),
+      0 0 0 3px var(--ember-bright),
+      0 0 32px rgba(255, 138, 61, 0.42);
+  }
+  .next-btn .arrow {
+    width: 10px;
+    height: 1px;
+    background: var(--void-deep);
+    position: relative;
+  }
+  .next-btn .arrow::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 5px;
+    height: 5px;
+    border-top: 1px solid var(--void-deep);
+    border-right: 1px solid var(--void-deep);
+    transform: translateY(-50%) rotate(45deg);
+  }
+
+  .next-skip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-3);
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    margin-top: 0;
+    text-align: center;
+    cursor: pointer;
+    display: inline-block;
+    padding-bottom: 2px;
+    border-bottom: 1px solid var(--text-4);
+    transition: color 280ms var(--ease),
+                border-color 280ms var(--ease);
+  }
+  .next-skip:hover {
+    color: var(--text-2);
+    border-bottom-color: var(--text-3);
+  }
+
+  /* ────────────────────────────────────────────
+     Crisis presence — soft, steady, always there.
+     Coral, not red. Slow breathing of the inner
+     glow only. Hover reveals the affordance.
+     ──────────────────────────────────────── */
+  .crisis {
+    position: fixed;
+    right: 32px;
+    bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.26em;
+    z-index: 20;
+  }
+
+  .crisis-label {
+    opacity: 0;
+    transition: opacity 360ms var(--ease);
+    pointer-events: none;
+  }
+  .crisis:hover .crisis-label { opacity: 1; }
+
+  .crisis-dot {
+    position: relative;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--crisis);
+    box-shadow:
+      0 0 0 4px rgba(255, 114, 128, 0.06),
+      0 0 14px rgba(255, 114, 128, 0.45);
+    cursor: pointer;
+    animation: crisis-glow 8s ease-in-out infinite;
+  }
+  @keyframes crisis-glow {
+    0%, 100% { box-shadow: 0 0 0 4px rgba(255, 114, 128, 0.05), 0 0 10px rgba(255, 114, 128, 0.35); }
+    50%      { box-shadow: 0 0 0 5px rgba(255, 114, 128, 0.08), 0 0 18px rgba(255, 114, 128, 0.55); }
+  }
+
+  /* ────────────────────────────────────────────
+     Vertical time-of-day register at the far
+     right edge. A minor instrument — a thin
+     column of mono ticks marking the hour band
+     the user is currently inside. Severance/
+     Lumon retro-future, kept quiet. Always present,
+     never the focus.
+     ──────────────────────────────────────── */
+  .register {
+    position: absolute;
+    top: 108px;
+    bottom: 108px;
+    right: 36px;
+    width: 38px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .register-cap {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-4);
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+  }
+
+  .register-axis {
+    flex: 1;
+    width: 1px;
+    background: var(--line);
+    position: relative;
+    margin: 14px 0;
+  }
+
+  .register-axis::before,
+  .register-axis::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 5px;
+    height: 1px;
+    background: var(--text-4);
+  }
+  .register-axis::before { top: 0; }
+  .register-axis::after  { bottom: 0; }
+
+  .register-pip {
+    position: absolute;
+    left: 50%;
+    width: 9px;
+    height: 1px;
+    background: var(--ember);
+    transform: translateX(-50%);
+    box-shadow: 0 0 6px var(--ember-glow);
+  }
+  .register-pip-label {
+    position: absolute;
+    right: 14px;
+    transform: translateY(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--ember);
+    letter-spacing: 0.22em;
+    white-space: nowrap;
+  }
+
+  .register-ticks {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .register-tick {
+    position: absolute;
+    left: 50%;
+    width: 4px;
+    height: 1px;
+    background: var(--line-bright);
+    transform: translateX(-50%);
+  }
+  .register-tick-label {
+    position: absolute;
+    right: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-4);
+    letter-spacing: 0.22em;
+    transform: translateY(-50%);
+  }
+
+  /* ────────────────────────────────────────────
+     Stagger reveal — page load.
+     ──────────────────────────────────────── */
+  .fade-in {
+    opacity: 0;
+    animation: fade-in 1.2s var(--ease) forwards;
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .delay-1 { animation-delay: 0.05s; }
+  .delay-2 { animation-delay: 0.35s; }
+  .delay-3 { animation-delay: 0.55s; }
+  .delay-4 { animation-delay: 0.75s; }
+  .delay-5 { animation-delay: 0.95s; }
+  .delay-6 { animation-delay: 1.15s; }
+  .delay-7 { animation-delay: 1.35s; }
+
+  /* ────────────────────────────────────────────
+     Smaller viewport (1280×800) — keep proportions
+     but pull the reactor in slightly so nothing
+     truncates.
+     ──────────────────────────────────────── */
+  @media (max-width: 1360px), (max-height: 860px) {
+    .reactor-wrap { width: 480px; height: 480px; }
+    .reactor-halo { width: 420px; height: 420px; }
+    .readout-word { font-size: 64px; }
+    .field { padding-top: 96px; }
+    .register { right: 24px; }
+  }
+
+  /* When the ring shrinks at narrower widths, push the
+     four corner instrument labels further outward so they
+     stay clear of the arc geometry. */
+  @media (max-width: 1320px) {
+    .periph.tl { top: 38px;  left: -84px; }
+    .periph.tr { top: 38px;  right: -84px; }
+    .periph.bl { bottom: 42px; left: -84px; }
+    .periph.br { bottom: 42px; right: -84px; }
+  }
+
+  /* Low viewport heights (<700px / 1280×800 and below):
+     compress the reactor and tighten vertical rhythm so
+     the editorial sentence and next-action pill stay
+     on-screen. The reactor remains the focus; nothing
+     else falls below the fold. */
+  @media (max-height: 820px) {
+    .reactor-wrap { width: 440px; height: 440px; margin-top: 0; }
+    .reactor-halo { width: 380px; height: 380px; }
+    .readout-word { font-size: 58px; }
+    .readout-qual { font-size: 15px; margin-top: 8px; }
+    .readout-meta { margin-top: 16px; }
+    .field { padding: 84px 36px 24px; }
+    .sentence { margin-top: -16px; margin-bottom: 22px; font-size: 16px; }
+    .next { margin-bottom: 10px; }
+    .register { top: 84px; bottom: 84px; }
+  }
+
+  @media (max-height: 720px) {
+    .reactor-wrap { width: 380px; height: 380px; margin-top: 0; }
+    .reactor-halo { width: 320px; height: 320px; }
+    .readout-word { font-size: 50px; }
+    .readout-eyebrow { margin-bottom: 12px; }
+    .readout-qual { font-size: 14px; margin-top: 6px; }
+    .readout-meta { margin-top: 12px; }
+    .field { padding: 72px 36px 20px; }
+    .sentence { margin-top: -24px; margin-bottom: 18px; font-size: 15px; }
+    .next { margin-bottom: 8px; }
+    .register { top: 72px; bottom: 72px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ──────────── Icon rail ──────────── -->
+  <aside class="rail">
+    <div class="brand fade-in delay-1" title="Hearth"></div>
+
+    <nav class="rail-nav">
+      <a class="rail-item active fade-in delay-2" title="Today" href="#">
+        <!-- Today: concentric circle, one filled dot -->
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="8.5"/>
+          <circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/>
+        </svg>
+      </a>
+      <a class="rail-item fade-in delay-2" title="Journal" href="#">
+        <!-- Journal: notebook -->
+        <svg viewBox="0 0 24 24">
+          <path d="M6 4h11a1 1 0 0 1 1 1v15l-3-2-3 2-3-2-3 2V5a1 1 0 0 1 1-1z"/>
+          <path d="M9 9h6M9 12h6M9 15h3"/>
+        </svg>
+      </a>
+      <a class="rail-item fade-in delay-3" title="Practice" href="#">
+        <!-- Practice: breath / nested rings -->
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9"/>
+          <circle cx="12" cy="12" r="5"/>
+          <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/>
+        </svg>
+      </a>
+
+      <div class="rail-divider"></div>
+
+      <a class="rail-item fade-in delay-3" title="Sleep &amp; Body" href="#">
+        <!-- Sleep: crescent -->
+        <svg viewBox="0 0 24 24">
+          <path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>
+        </svg>
+      </a>
+      <a class="rail-item fade-in delay-3" title="Focus" href="#">
+        <!-- Focus: shield-circle -->
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M12 7v5l3 2"/>
+        </svg>
+      </a>
+    </nav>
+
+    <div class="rail-bottom fade-in delay-4">
+      <a class="rail-item" title="Settings" href="#">
+        <!-- Settings: three sliders, not the cog cliche -->
+        <svg viewBox="0 0 24 24">
+          <path d="M4 7h10M4 12h6M4 17h12"/>
+          <circle cx="16" cy="7" r="1.8" fill="currentColor" stroke="none"/>
+          <circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/>
+          <circle cx="18" cy="17" r="1.8" fill="currentColor" stroke="none"/>
+        </svg>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ──────────── Stage ──────────── -->
+  <main class="stage">
+
+    <!-- Hairline telemetry strip — two facts, no more. -->
+    <header class="strip fade-in delay-1">
+      <div class="strip-left">
+        <span>Mon 26 May <span class="colon">·</span> 08<span class="colon">:</span>42</span>
+      </div>
+      <div class="strip-right">
+        <span class="strip-state">
+          <span class="pip"></span>
+          <span>Focus active <span class="colon">·</span> 23 min remaining</span>
+        </span>
+      </div>
+    </header>
+    <div class="horizon fade-in delay-2"></div>
+
+    <!-- Vertical time register at the right edge -->
+    <aside class="register fade-in delay-4" aria-hidden="true">
+      <div class="register-cap">Day · 26 May</div>
+      <div class="register-axis">
+        <div class="register-ticks">
+          <div class="register-tick" style="top: 0%;"></div>
+          <div class="register-tick-label" style="top: 0%;">06</div>
+          <div class="register-tick" style="top: 25%;"></div>
+          <div class="register-tick-label" style="top: 25%;">10</div>
+          <div class="register-tick" style="top: 50%;"></div>
+          <div class="register-tick-label" style="top: 50%;">14</div>
+          <div class="register-tick" style="top: 75%;"></div>
+          <div class="register-tick-label" style="top: 75%;">18</div>
+          <div class="register-tick" style="top: 100%;"></div>
+          <div class="register-tick-label" style="top: 100%;">22</div>
+
+          <!-- Current moment indicator (08:42 → ~16% across the 06–22 band) -->
+          <div class="register-pip" style="top: 16.5%;"></div>
+          <div class="register-pip-label" style="top: 16.5%;">Now</div>
+        </div>
+      </div>
+      <div class="register-cap" style="transform: none; writing-mode: horizontal-tb;">08:42</div>
+    </aside>
+
+    <!-- The field — reactor + sentence + next action -->
+    <section class="field">
+
+      <div class="reactor-wrap fade-in delay-3">
+
+        <!-- Peripheral instrument readings. Four of them. -->
+        <div class="periph tl">
+          <div class="p-label"><span class="dot"></span>Sleep</div>
+          <div class="p-value">6h 13m</div>
+        </div>
+        <div class="periph tr">
+          <div class="p-label">Mood<span class="dot"></span></div>
+          <div class="p-value">Quiet, mostly</div>
+        </div>
+        <div class="periph bl">
+          <div class="p-label"><span class="dot"></span>Last sat down</div>
+          <div class="p-value">07:48</div>
+        </div>
+        <div class="periph br">
+          <div class="p-label">Weather inside<span class="dot"></span></div>
+          <div class="p-value">Soft overcast</div>
+        </div>
+
+        <div class="reactor-halo"></div>
+
+        <div class="reactor">
+          <!--
+            Three nested rings, fine strokes.
+            • Outer (r=246): dashed marker ring, very dim — distance indicator.
+            • Mid   (r=210): hairline track, with twelve tiny azimuth ticks.
+            • Inner (r=176): the gauge. A warm arc spans 58% of the circumference,
+              from 7-o'clock counter-clockwise to 5-o'clock, leaving the top open.
+              Rendered in ember with a soft outer blur.
+            • Innermost (r=130): hairline, dashed at very low contrast — the
+              "instrument bezel".
+          -->
+          <svg viewBox="0 0 540 540" aria-hidden="true">
+            <defs>
+              <linearGradient id="emberArc" x1="0" y1="1" x2="1" y2="0">
+                <stop offset="0%"   stop-color="#FFAA70" stop-opacity="0.95"/>
+                <stop offset="55%"  stop-color="#FF8A3D" stop-opacity="1"/>
+                <stop offset="100%" stop-color="#FF8A3D" stop-opacity="0.55"/>
+              </linearGradient>
+              <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%"  stop-color="#FF8A3D" stop-opacity="0.18"/>
+                <stop offset="60%" stop-color="#FF8A3D" stop-opacity="0.04"/>
+                <stop offset="100%" stop-color="#FF8A3D" stop-opacity="0"/>
+              </radialGradient>
+              <filter id="softBloom" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="4" result="b1"/>
+                <feMerge>
+                  <feMergeNode in="b1"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+
+            <!-- Deep core glow behind the gauge -->
+            <circle cx="270" cy="270" r="160" fill="url(#coreGlow)"/>
+
+            <!-- Outer marker ring. Twelve major ticks, very dim. -->
+            <g stroke="#2A3140" stroke-width="1" fill="none">
+              <circle cx="270" cy="270" r="246" stroke-dasharray="1 9" opacity="0.65"/>
+            </g>
+
+            <!-- Twelve azimuth ticks on the outer ring -->
+            <g transform="translate(270 270)" stroke="#4C5566" stroke-width="1" stroke-linecap="round">
+              <line x1="0" y1="-240" x2="0" y2="-228"/>
+              <line x1="0" y1="-240" x2="0" y2="-228" transform="rotate(30)"/>
+              <line x1="0" y1="-240" x2="0" y2="-228" transform="rotate(60)"/>
+              <line x1="0" y1="-240" x2="0" y2="-228" transform="rotate(90)"/>
+              <line x1="0" y1="-240" x2="0" y2="-228" transform="rotate(120)"/>
+              <line x1="0" y1="-240" x2="0" y2="-228" transform="rotate(150)"/>
+              <line x1="0" y1="-240" x2="0" y2="-228" transform="rotate(180)"/>
+              <line x1="0" y1="-240" x2="0" y2="-228" transform="rotate(210)"/>
+              <line x1="0" y1="-240" x2="0" y2="-228" transform="rotate(240)"/>
+              <line x1="0" y1="-240" x2="0" y2="-228" transform="rotate(270)"/>
+              <line x1="0" y1="-240" x2="0" y2="-228" transform="rotate(300)"/>
+              <line x1="0" y1="-240" x2="0" y2="-228" transform="rotate(330)"/>
+            </g>
+
+            <!-- Outer ring intentionally unlabeled — the ring reads as
+                 an abstract psychological-state azimuth, not a clock face.
+                 The twelve tiny ticks above carry the geometry alone. -->
+
+            <!-- Mid hairline ring -->
+            <circle cx="270" cy="270" r="210" fill="none" stroke="#161C28" stroke-width="1"/>
+
+            <!-- Inner gauge track -->
+            <circle cx="270" cy="270" r="176" fill="none" stroke="#1A2030" stroke-width="2"/>
+
+            <!--
+              Inner gauge arc — the active reading.
+              Circumference at r=176 is 2π·176 ≈ 1105.8.
+              We want a 58% arc, starting from the top (12 o'clock)
+              going clockwise. So dasharray = (1105.8 * 0.58) , (rest).
+              ≈ 641, 465. We rotate -90deg so the start sits at 12 o'clock.
+              We leave the top 12 degrees open visually by offsetting
+              the start slightly (begin at ~1 o'clock, end at ~11 o'clock).
+            -->
+            <g transform="rotate(-83 270 270)" filter="url(#softBloom)">
+              <circle cx="270" cy="270" r="176" fill="none"
+                      stroke="url(#emberArc)" stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-dasharray="641 465"/>
+            </g>
+
+            <!-- Tiny ember pip at the arc start, the "you are here" point -->
+            <g transform="translate(270 270)">
+              <circle cx="22" cy="-174" r="2.5" fill="#FFAA70"/>
+              <circle cx="22" cy="-174" r="6"   fill="none" stroke="#FF8A3D" stroke-opacity="0.35"/>
+            </g>
+
+            <!-- Innermost hairline bezel -->
+            <circle cx="270" cy="270" r="130" fill="none" stroke="#161C28" stroke-width="1" stroke-dasharray="1 5"/>
+            <circle cx="270" cy="270" r="118" fill="none" stroke="#0F1420" stroke-width="1"/>
+
+          </svg>
+        </div>
+
+        <!-- The center reading — word over number. -->
+        <div class="readout">
+          <div class="readout-eyebrow">
+            <span class="tick"></span>Energy<span class="tick"></span>
+          </div>
+          <div class="readout-word">Steady</div>
+          <div class="readout-qual">a notch below your <em>usual morning</em></div>
+          <div class="readout-meta">
+            <span class="index">58</span>
+            <span class="sep">/</span>
+            <span>Baseline 70</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- The quiet sentence -->
+      <p class="sentence fade-in delay-5">
+        Sleep ran short last night. Mid-mornings like this tend to lift if you
+        give them <em>five minutes of slow breath</em> before you open anything else.
+      </p>
+
+      <!-- Next action -->
+      <div class="next fade-in delay-6">
+        <div class="next-content">
+          <span class="next-eyebrow">Next</span>
+          <span class="next-text">
+            Box breathing <span class="ghost">· 5 minutes · I'll dim the room</span>
+          </span>
+        </div>
+        <button class="next-btn" type="button">
+          Begin
+          <span class="arrow"></span>
+        </button>
+      </div>
+
+      <span class="next-skip fade-in delay-7">Not now <span style="color: var(--text-4);">·</span> Show me something else</span>
+
+    </section>
+
+  </main>
+</div>
+
+<!-- Crisis presence — always there, never alarming. -->
+<div class="crisis fade-in delay-7" title="Crisis support">
+  <span class="crisis-label">I'm here <span style="color: var(--text-4);">·</span> ⌘⇧C</span>
+  <span class="crisis-dot" role="button" aria-label="Crisis support"></span>
+</div>
+
+</body>
+</html>

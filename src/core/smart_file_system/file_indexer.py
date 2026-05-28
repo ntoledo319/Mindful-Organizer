@@ -1,6 +1,7 @@
 import hashlib
 import json
 import logging
+import re
 import sqlite3
 from pathlib import Path
 
@@ -12,7 +13,8 @@ class FileIndexer:
         try:
             from sentence_transformers import SentenceTransformer
             self.embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
-        except ImportError:
+        except Exception as exc:
+            logger.info("SentenceTransformer unavailable; using local embeddings: %s", exc)
             self.embedding_model = None
         self._init_db()
 
@@ -90,13 +92,31 @@ class FileIndexer:
 
     def _generate_embedding(self, text: str):
         """Generate embedding vector for text content"""
-        if self.embedding_model is None:
-            return None
         try:
-            return self.embedding_model.encode(text)
-        except (ValueError, TypeError):
-            logger.error("Embedding generation failed")
-            return None
+            if self.embedding_model is not None:
+                return self.embedding_model.encode(text)
+        except Exception as exc:
+            logger.info("Embedding model failed; using local embeddings: %s", exc)
+        return self._generate_local_embedding(text)
+
+    def _generate_local_embedding(self, text: str):
+        """Generate a deterministic lightweight embedding when ML deps are unavailable."""
+        import numpy as np
+
+        vector = np.zeros(64, dtype=np.float32)
+        tokens = re.findall(r"[a-z0-9_]+", text.lower())
+        if not tokens:
+            return vector
+
+        for token in tokens:
+            digest = hashlib.sha256(token.encode("utf-8")).digest()
+            idx = int.from_bytes(digest[:2], "big") % len(vector)
+            vector[idx] += 1.0
+
+        norm = np.linalg.norm(vector)
+        if norm:
+            vector /= norm
+        return vector
 
     def get_file_embedding(self, file_path: str):
         """Retrieve embedding for a file"""

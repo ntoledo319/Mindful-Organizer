@@ -23,7 +23,8 @@ class FileClusterer:
                 cluster_selection_method='eom'
             )
             self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
-        except (ImportError, ValueError):
+        except Exception as exc:
+            logger.info("ML clustering unavailable: %s", exc)
             self.cluster_model = None
             self.embedding_model = None
 
@@ -35,7 +36,7 @@ class FileClusterer:
 
         embeddings, file_paths = self._get_all_embeddings()
 
-        if not embeddings:
+        if embeddings is None or len(embeddings) == 0:
             return {'status': 'success', 'clusters_found': 0, 'file_paths': [], 'clusters': []}
 
         try:

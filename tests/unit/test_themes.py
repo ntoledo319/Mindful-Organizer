@@ -50,8 +50,8 @@ class TestAllThemesValid:
             assert theme.display_name
             assert theme.description
 
-    def test_minimum_theme_count(self):
-        assert len(THEMES) >= 6
+    def test_launch_theme_count(self):
+        assert set(THEMES) == {"ember", "linen", "quiet"}
 
     def test_all_themes_have_condition_suitability(self):
         for _name, theme in THEMES.items():
@@ -73,22 +73,22 @@ class TestAllThemesValid:
 
 class TestThemeSwitching:
 
-    def test_default_theme_is_light(self, tm):
-        assert tm.current_theme_name == "light"
-        assert tm.current_theme.name == "light"
+    def test_default_theme_is_ember(self, tm):
+        assert tm.current_theme_name == "ember"
+        assert tm.current_theme.name == "ember"
 
     def test_set_theme(self, tm):
-        tm.set_theme("dark")
-        assert tm.current_theme_name == "dark"
-        assert tm.current_theme.background == THEMES["dark"].background
+        tm.set_theme("linen")
+        assert tm.current_theme_name == "linen"
+        assert tm.current_theme.background == THEMES["linen"].background
 
     def test_set_invalid_theme_ignored(self, tm):
         tm.set_theme("nonexistent")
-        assert tm.current_theme_name == "light"
+        assert tm.current_theme_name == "ember"
 
     def test_get_theme_names(self, tm):
         names = tm.get_theme_names()
-        assert len(names) >= 6
+        assert len(names) == 3
         assert all(isinstance(n, tuple) and len(n) == 3 for n in names)
 
     def test_switch_all_themes(self, tm):
@@ -132,13 +132,13 @@ class TestColorBlindOverrides:
         tm.color_blind_mode = None
         colors = tm.get_colors()
         # Should use original theme colors
-        assert colors["success"] == THEMES["light"].success
+        assert colors["success"] == THEMES["ember"].success
 
     def test_invalid_color_blind_mode(self, tm):
         tm.color_blind_mode = "invalid"
         colors = tm.get_colors()
         # Should use original colors
-        assert colors["success"] == THEMES["light"].success
+        assert colors["success"] == THEMES["ember"].success
 
 
 # ---------------------------------------------------------------------------
@@ -156,11 +156,11 @@ class TestStylesheetGeneration:
         assert "QPushButton" in stylesheet
 
     def test_stylesheet_contains_theme_colors(self, tm):
-        tm.set_theme("dark")
+        tm.set_theme("ember")
         stylesheet = tm.generate_stylesheet()
 
-        assert THEMES["dark"].background in stylesheet
-        assert THEMES["dark"].accent in stylesheet
+        assert THEMES["ember"].background in stylesheet
+        assert THEMES["ember"].accent in stylesheet
 
     def test_stylesheet_with_color_blind(self, tm):
         tm.color_blind_mode = "protanopia"
@@ -182,6 +182,7 @@ class TestStylesheetGeneration:
     def test_stylesheet_default_font(self, tm):
         tm.dyslexia_font = False
         stylesheet = tm.generate_stylesheet()
+        assert "Söhne" in stylesheet
         assert "Segoe UI" in stylesheet
 
     def test_get_card_style(self, tm):
@@ -232,34 +233,34 @@ class TestFontScaling:
 
 class TestConditionRecommendations:
 
-    def test_anxiety_recommends_calm(self, tm):
+    def test_anxiety_recommends_quiet_or_ember(self, tm):
         recs = tm.get_recommended_themes({"anxiety"})
         names = [r[0] for r in recs]
 
-        assert "calm" in names
-        # Calm should rank highly
-        calm_idx = names.index("calm")
-        assert calm_idx < 3
+        assert "ember" in names
+        assert "quiet" in names
 
-    def test_adhd_recommends_focus(self, tm):
+    def test_adhd_recommends_quiet(self, tm):
         recs = tm.get_recommended_themes({"adhd"})
         names = [r[0] for r in recs]
-        assert "focus" in names or "high_contrast" in names
+        assert "quiet" in names
 
-    def test_depression_recommends_warm(self, tm):
+    def test_depression_keeps_general_themes(self, tm):
         recs = tm.get_recommended_themes({"depression"})
         names = [r[0] for r in recs]
-        assert "warm" in names
+        assert "ember" in names
+        assert "linen" in names
 
-    def test_ocd_recommends_structured(self, tm):
+    def test_ocd_recommends_ember(self, tm):
         recs = tm.get_recommended_themes({"ocd"})
         names = [r[0] for r in recs]
-        assert "structured" in names
+        assert "ember" in names
 
-    def test_ptsd_recommends_gentle(self, tm):
+    def test_ptsd_recommends_quiet_or_ember(self, tm):
         recs = tm.get_recommended_themes({"ptsd"})
         names = [r[0] for r in recs]
-        assert "gentle" in names
+        assert "ember" in names
+        assert "quiet" in names
 
     def test_general_condition(self, tm):
         recs = tm.get_recommended_themes({"general"})
@@ -268,9 +269,9 @@ class TestConditionRecommendations:
     def test_multiple_conditions(self, tm):
         recs = tm.get_recommended_themes({"anxiety", "ptsd"})
         assert len(recs) > 0
-        # Dark and calm/gentle should rank high for both
+        # Launch themes intentionally consolidate condition-specific variants.
         names = [r[0] for r in recs[:4]]
-        assert any(n in names for n in ("calm", "gentle", "dark"))
+        assert any(n in names for n in ("ember", "quiet"))
 
     def test_empty_conditions(self, tm):
         recs = tm.get_recommended_themes(set())

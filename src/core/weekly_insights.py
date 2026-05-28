@@ -13,7 +13,7 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from core.database import DatabaseManager, TableName
+from core.database import DatabaseManager
 from core.values_tracker import ValuesTracker
 from core.wellness_orchestrator import WellnessOrchestrator
 

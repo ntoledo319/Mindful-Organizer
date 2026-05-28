@@ -32,6 +32,8 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
+from app_metadata import APP_VERSION
+
 logger = logging.getLogger(__name__)
 
 
@@ -41,7 +43,7 @@ logger = logging.getLogger(__name__)
 
 def _section_title(text: str) -> QLabel:
     label = QLabel(text)
-    label.setFont(QFont("Segoe UI", 14, QFont.Weight.Bold))
+    label.setFont(QFont("Segoe UI", 18, QFont.Weight.DemiBold))
     return label
 
 
@@ -83,15 +85,17 @@ class SettingsWidget(QWidget):
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QFrame.Shape.NoFrame)
+        scroll.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         outer.addWidget(scroll)
 
         container = QWidget()
+        container.setMaximumWidth(860)
         self._root = QVBoxLayout(container)
-        self._root.setSpacing(16)
-        self._root.setContentsMargins(24, 24, 24, 24)
+        self._root.setSpacing(18)
+        self._root.setContentsMargins(32, 32, 32, 40)
         scroll.setWidget(container)
 
-        self._root.addWidget(_section_title("Settings"))
+        self._root.addWidget(_section_title("Profile"))
 
         self._build_profile_section()
         self._build_subscription_section()
@@ -102,8 +106,8 @@ class SettingsWidget(QWidget):
         self._build_about_section()
 
         # Save button
-        save_btn = _accent_button("Save Settings")
-        save_btn.setFont(QFont("Segoe UI", 13, QFont.Weight.Bold))
+        save_btn = _accent_button("Save")
+        save_btn.setFont(QFont("Segoe UI", 13, QFont.Weight.Medium))
         save_btn.clicked.connect(self._save_settings)
         self._root.addWidget(save_btn)
 
@@ -117,16 +121,16 @@ class SettingsWidget(QWidget):
 
         # Name
         name_row = QHBoxLayout()
-        name_row.addWidget(_body_label("Name:"))
+        name_row.addWidget(_body_label("Name"))
         self._name_label = QLabel("User")
-        self._name_label.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
+        self._name_label.setFont(QFont("Segoe UI", 12, QFont.Weight.DemiBold))
         name_row.addWidget(self._name_label)
         name_row.addStretch()
         layout.addLayout(name_row)
 
         # Conditions
         cond_row = QHBoxLayout()
-        cond_row.addWidget(_body_label("Conditions:"))
+        cond_row.addWidget(_body_label("Conditions"))
         self._conditions_label = QLabel("None")
         cond_row.addWidget(self._conditions_label)
         cond_row.addStretch()
@@ -134,14 +138,14 @@ class SettingsWidget(QWidget):
 
         # Therapy types
         therapy_row = QHBoxLayout()
-        therapy_row.addWidget(_body_label("Therapy types:"))
+        therapy_row.addWidget(_body_label("Therapy types"))
         self._therapy_label = QLabel("None")
         therapy_row.addWidget(self._therapy_label)
         therapy_row.addStretch()
         layout.addLayout(therapy_row)
 
         # Edit profile button
-        edit_btn = _accent_button("Edit Profile (Re-run Onboarding)")
+        edit_btn = _accent_button("Edit profile")
         edit_btn.clicked.connect(self._reopen_onboarding)
         layout.addWidget(edit_btn)
 
@@ -160,7 +164,7 @@ class SettingsWidget(QWidget):
         trial = trial_days_text(sm)
 
         tier_row = QHBoxLayout()
-        tier_row.addWidget(_body_label("Current plan:"))
+        tier_row.addWidget(_body_label("Current plan"))
         self._tier_label = QLabel(f"<b>{tier}</b>")
         self._tier_label.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
         tier_row.addWidget(self._tier_label)
@@ -171,15 +175,15 @@ class SettingsWidget(QWidget):
         layout.addLayout(tier_row)
 
         if tier == "FREE" and not trial:
-            trial_btn = _accent_button("Start 14-Day Free Trial")
+            trial_btn = _accent_button("Start 14-day trial")
             trial_btn.clicked.connect(self._start_trial)
             layout.addWidget(trial_btn)
 
-            upgrade_btn = _accent_button("Enter License Key")
+            upgrade_btn = _accent_button("Enter license key")
             upgrade_btn.clicked.connect(self._enter_license_key)
             layout.addWidget(upgrade_btn)
         elif trial or tier in ("PRO", "PREMIUM"):
-            deactivate_btn = _accent_button("Deactivate License")
+            deactivate_btn = _accent_button("Deactivate license")
             deactivate_btn.clicked.connect(self._deactivate_license)
             layout.addWidget(deactivate_btn)
 
@@ -225,26 +229,21 @@ class SettingsWidget(QWidget):
     # -- theme ----------------------------------------------------------
 
     def _build_theme_section(self) -> None:
-        from gui.subscription_helpers import check_feature
         group = QGroupBox("Theme")
         layout = QVBoxLayout(group)
 
         theme_row = QHBoxLayout()
-        theme_row.addWidget(_body_label("Theme:"))
+        theme_row.addWidget(_body_label("Theme"))
         self._theme_combo = QComboBox()
         self._theme_combo.setMinimumWidth(200)
         all_themes: list[tuple[str, str, str]] = []
         try:
             all_themes = list(self.main_window.theme_manager.get_theme_names())
         except (AttributeError, TypeError):
-            all_themes = [("light", "Light", "Default light theme"), ("dark", "Dark", "Default dark theme")]
+            all_themes = [("ember", "Ember", "Warm dark default")]
 
-        has_all_themes = check_feature("all_themes", getattr(self.main_window, "subscription_manager", None))
-        for i, (name, display_name, desc) in enumerate(all_themes):
-            if has_all_themes or i < 2:
-                self._theme_combo.addItem(f"{display_name} - {desc}", name)
-        if not has_all_themes and len(all_themes) > 2:
-            self._theme_combo.addItem("🔒 More themes in Pro...", "__upsell__")
+        for name, display_name, desc in all_themes:
+            self._theme_combo.addItem(f"{display_name} - {desc}", name)
         self._theme_combo.currentIndexChanged.connect(self._on_theme_preview)
         theme_row.addWidget(self._theme_combo)
         theme_row.addStretch()
@@ -256,11 +255,6 @@ class SettingsWidget(QWidget):
         self._preview_frame.setFrameShape(QFrame.Shape.StyledPanel)
         layout.addWidget(self._preview_frame)
 
-        if not has_all_themes:
-            upsell = QLabel("Upgrade to Pro to unlock all 8 condition-aware themes.")
-            upsell.setStyleSheet("color: #888; font-size: 11px; padding-top: 4px;")
-            layout.addWidget(upsell)
-
         self._root.addWidget(group)
 
     # -- accessibility ---------------------------------------------------
@@ -271,7 +265,7 @@ class SettingsWidget(QWidget):
 
         # Font size slider (0.8x to 1.5x)
         font_row = QHBoxLayout()
-        font_row.addWidget(_body_label("Font size:"))
+        font_row.addWidget(_body_label("Font size"))
         self._font_slider = QSlider(Qt.Orientation.Horizontal)
         self._font_slider.setRange(80, 150)
         self._font_slider.setValue(100)
@@ -287,7 +281,7 @@ class SettingsWidget(QWidget):
 
         # Color blindness mode
         cb_row = QHBoxLayout()
-        cb_row.addWidget(_body_label("Color blindness mode:"))
+        cb_row.addWidget(_body_label("Color blindness mode"))
         self._cb_combo = QComboBox()
         self._cb_combo.addItem("None", None)
         self._cb_combo.addItem("Protanopia", "protanopia")
@@ -314,7 +308,7 @@ class SettingsWidget(QWidget):
         layout = QVBoxLayout(group)
 
         freq_row = QHBoxLayout()
-        freq_row.addWidget(_body_label("Notification frequency:"))
+        freq_row.addWidget(_body_label("Notification frequency"))
         self._notif_combo = QComboBox()
         self._notif_combo.addItem("Off", "off")
         self._notif_combo.addItem("Low (hourly)", "low")
@@ -329,20 +323,20 @@ class SettingsWidget(QWidget):
     # -- data management -------------------------------------------------
 
     def _build_data_section(self) -> None:
-        group = QGroupBox("Data Management")
+        group = QGroupBox("Data")
         layout = QVBoxLayout(group)
 
         btn_row = QHBoxLayout()
 
-        export_btn = _accent_button("Export All Data")
+        export_btn = _accent_button("Export")
         export_btn.clicked.connect(self._export_all_data)
         btn_row.addWidget(export_btn)
 
-        import_btn = _accent_button("Import Data")
+        import_btn = _accent_button("Import")
         import_btn.clicked.connect(self._import_data)
         btn_row.addWidget(import_btn)
 
-        reset_btn = _accent_button("Reset All Data")
+        reset_btn = _accent_button("Reset")
         reset_btn.clicked.connect(self._reset_data)
         btn_row.addWidget(reset_btn)
 
@@ -355,7 +349,7 @@ class SettingsWidget(QWidget):
         group = QGroupBox("About")
         layout = QVBoxLayout(group)
 
-        layout.addWidget(_body_label("Mindful Organizer v1.0.0"))
+        layout.addWidget(_body_label(f"Hearth v{APP_VERSION}"))
         layout.addWidget(_body_label("All data stored locally on your device."))
         layout.addWidget(_body_label("Licensed under the MIT License."))
         layout.addWidget(_body_label(

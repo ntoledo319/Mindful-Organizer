@@ -7,7 +7,7 @@
 
 ## Environment Variables
 
-Mindful Organizer has **no required environment variables**. The following are optional or used only in testing/CI.
+Hearth has **no required environment variables**. The following are optional or used only in testing/CI.
 
 | Variable | Purpose | Required? | Where Used | Sensitivity |
 |----------|---------|-----------|------------|-------------|
@@ -28,7 +28,7 @@ Runtime settings are stored in `~/.mindful_optimizer/settings.json` (JSON) and t
 
 | Key | Type | Default | Purpose |
 |-----|------|---------|---------|
-| `theme` | string | `"light"` | Active theme name |
+| `theme` | string | `"ember"` | Active theme name |
 | `font_scale` | float | `1.0` | Font size multiplier |
 | `color_blind_mode` | string \| null | `null` | Accessibility mode |
 | `reduced_motion` | boolean | `false` | Reduce animations |
@@ -47,7 +47,7 @@ Runtime settings are stored in `~/.mindful_optimizer/settings.json` (JSON) and t
 
 - **Build system:** `setuptools>=61.0`
 - **Package name:** `mindful-organizer`
-- **Version:** `1.1.0`
+- **Version:** `1.0.0`
 - **Python requires:** `>=3.11`
 - **Entry points:**
   - `mindful-organizer = main:main`
@@ -56,7 +56,7 @@ Runtime settings are stored in `~/.mindful_optimizer/settings.json` (JSON) and t
 ### `setup.py` (legacy wrapper)
 
 - Kept for compatibility with older install workflows
-- Version aligned with `pyproject.toml` (`1.1.0`)
+- Metadata is delegated to `pyproject.toml`
 - Should not be edited independently
 
 ### `requirements.txt` (legacy)
@@ -82,6 +82,6 @@ There are **no explicit feature flags** in the codebase. Feature gating is done 
 | Issue | Evidence | Status |
 |-------|----------|--------|
 | `pytest.ini` duplicated pytest config | Existed alongside `pyproject.toml` | **Fixed** — removed `pytest.ini`, consolidated into `pyproject.toml` |
-| `setup.py` versions differed from `pyproject.toml` | `setup.py` had `1.0.0` vs `1.1.0` | **Fixed** — aligned versions |
+| `setup.py` duplicated package metadata | Version and dependencies could drift from `pyproject.toml` | **Fixed** — reduced to a setuptools shim |
 | `requirements.txt` had different versions and optional deps as core | `numpy>=1.21.0` vs `>=1.24.0` | **Fixed** — trimmed to core deps only with note |
 | `build.sh` referenced nonexistent paths | `mindful_organizer/` dir, `setup.py sdist` | **Fixed** — rewritten to use PyInstaller |

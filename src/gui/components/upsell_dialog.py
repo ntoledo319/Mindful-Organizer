@@ -13,8 +13,12 @@ from typing import Any
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QFrame, QSizePolicy,
+    QDialog,
+    QFrame,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QVBoxLayout,
 )
 
 
@@ -30,7 +34,7 @@ class UpsellDialog(QDialog):
     ) -> None:
         super().__init__(parent)
         self._theme = theme or {}
-        self.setWindowTitle("Upgrade to Unlock")
+        self.setWindowTitle("Upgrade")
         self.setMinimumWidth(420)
         self.setMaximumWidth(520)
         self.setStyleSheet(self._dialog_stylesheet())
@@ -40,16 +44,16 @@ class UpsellDialog(QDialog):
         layout.setContentsMargins(24, 24, 24, 24)
 
         # Header
-        header = QLabel("✨ Unlock More Features")
-        header.setFont(QFont(QFont().defaultFamily(), 16, QFont.Weight.Bold))
+        header = QLabel("Upgrade for deeper tracking")
+        header.setFont(QFont(QFont().defaultFamily(), 16, QFont.Weight.DemiBold))
         header.setStyleSheet(f"color: {self._theme.get('text', '#2C3E50')}; padding-bottom: 4px;")
         layout.addWidget(header)
 
         # Context message
         context = QLabel(
             f"<b>{feature_name}</b> is available with {required_tier}.\n\n"
-            "Your mental health data is valuable — unlock the insights that help you "
-            "and your clinician understand your patterns."
+            "Hearth can use your local history to prepare reports, surface patterns, "
+            "and make reviews with a clinician more concrete."
         )
         context.setWordWrap(True)
         context.setStyleSheet(f"color: {self._theme.get('text', '#333')}; font-size: 13px;")
@@ -61,13 +65,16 @@ class UpsellDialog(QDialog):
             card = QFrame()
             card.setStyleSheet(
                 f"background-color: {self._theme.get('card_bg', '#F8F9FA')}; "
-                f"border-radius: 10px; padding: 8px;"
+                f"border: 1px solid {self._theme.get('border', '#D4C7B2')}; "
+                "border-radius: 6px; padding: 8px;"
             )
             card_layout = QVBoxLayout(card)
             card_layout.setSpacing(6)
             for h in highlights:
-                lbl = QLabel(f"  ✓ {h}")
-                lbl.setStyleSheet("color: #444; font-size: 12px;")
+                lbl = QLabel(f"- {h}")
+                lbl.setStyleSheet(
+                    f"color: {self._theme.get('secondary', '#6B5E50')}; font-size: 12px;"
+                )
                 card_layout.addWidget(lbl)
             layout.addWidget(card)
 
@@ -83,17 +90,17 @@ class UpsellDialog(QDialog):
         btn_row = QHBoxLayout()
         btn_row.setSpacing(12)
 
-        self._trial_btn = QPushButton("Start 14-Day Free Trial")
+        self._trial_btn = QPushButton("Start 14-day trial")
         self._trial_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self._trial_btn.setStyleSheet(
-            f"QPushButton {{ background-color: {self._theme.get('accent', '#3498DB')}; color: white; "
-            f"border-radius: 8px; padding: 10px 18px; font-weight: bold; font-size: 13px; }}"
-            f"QPushButton:hover {{ background-color: {self._theme.get('accent_hover', '#2980B9')}; }}"
+            f"QPushButton {{ background-color: {self._theme.get('accent', '#A8845F')}; color: {self._theme.get('background', '#18130F')}; "
+            f"border-radius: 5px; padding: 10px 18px; font-weight: 500; font-size: 13px; }}"
+            f"QPushButton:hover {{ background-color: {self._theme.get('accent_hover', '#B89472')}; }}"
         )
         self._trial_btn.clicked.connect(self._on_trial)
         btn_row.addWidget(self._trial_btn)
 
-        maybe_btn = QPushButton("Maybe Later")
+        maybe_btn = QPushButton("Not now")
         maybe_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         maybe_btn.setStyleSheet(
             "QPushButton { background: transparent; color: #888; border: none; padding: 10px; }"
@@ -105,10 +112,7 @@ class UpsellDialog(QDialog):
         layout.addLayout(btn_row)
 
         # Trust footer
-        footer = QLabel(
-            "🔒 No credit card required for trial. Cancel anytime. "
-            "All data stays on your device."
-        )
+        footer = QLabel("No credit card required for trial. Cancel anytime. All data stays on your device.")
         footer.setWordWrap(True)
         footer.setStyleSheet("color: #999; font-size: 11px; padding-top: 8px;")
         layout.addWidget(footer)
@@ -123,7 +127,7 @@ class UpsellDialog(QDialog):
     def _tier_highlights(self, tier: str) -> list[str]:
         if tier.lower() == "premium":
             return [
-                "Beautiful Personal wellness reports for your therapist",
+                "Personal wellness reports for your therapist",
                 "Medication adherence heatmaps & values radar",
                 "Clinician sharing & priority support",
                 "Everything in Pro",

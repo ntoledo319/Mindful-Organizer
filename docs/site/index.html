@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hearth — A desktop that adapts to your psychology</title>
+  <style>
+    :root {
+      --ocean: #3A7CA5;
+      --deep: #2C5F7C;
+      --sage: #6B9F78;
+      --cloud: #F7F9FC;
+      --ink: #2D3748;
+      --muted: #718096;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--cloud);
+      color: var(--ink);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .card {
+      max-width: 560px;
+      background: white;
+      padding: 3rem 2.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 24px rgba(44, 95, 124, 0.08);
+    }
+    h1 {
+      color: var(--ocean);
+      font-size: 1.75rem;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    .tagline {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      font-style: italic;
+    }
+    p { margin-bottom: 1rem; color: var(--ink); }
+    a {
+      color: var(--ocean);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.15s;
+    }
+    a:hover { border-bottom-color: var(--ocean); }
+    ul {
+      list-style: none;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #E2E8F0;
+    }
+    li { padding: 0.5rem 0; }
+    li::before {
+      content: "→";
+      color: var(--sage);
+      margin-right: 0.75rem;
+    }
+    footer {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #E2E8F0;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Hearth</h1>
+    <p class="tagline">A desktop that adapts to your psychology.</p>
+
+    <p>The Hearth Project is a desktop-native psychological operating-system layer for people managing ADHD, anxiety, depression, OCD, PTSD, or bipolar disorder. Closes apps when anxiety spikes. Dims the screen when energy is low. Protects focus before you notice you need it. All data stays on your device — no cloud, no telemetry.</p>
+
+    <ul>
+      <li><a href="privacy.html">Privacy Policy</a></li>
+      <li><a href="https://github.com/ntoledo319/Mindful-Organizer">Source on GitHub</a></li>
+      <li><a href="https://github.com/ntoledo319/Mindful-Organizer/issues">Report an Issue</a></li>
+    </ul>
+
+    <footer>
+      Version 1.0.0 — Released 2026
+    </footer>
+  </main>
+</body>
+</html>

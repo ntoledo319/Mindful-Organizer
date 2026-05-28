@@ -1,5 +1,5 @@
 """
-Theme management system for Mindful Organizer.
+Theme management system for Hearth.
 Provides condition-aware themes with accessibility support.
 """
 from dataclasses import dataclass, field
@@ -52,197 +52,88 @@ class Theme:
             "tab_inactive": self.tab_inactive,
             "scrollbar": self.scrollbar,
             "shadow": self.shadow,
+            "accent_hover": self.hover,
         }
 
 
 # === Theme Definitions ===
 
 THEMES: dict[str, Theme] = {
-    "light": Theme(
-        name="light",
-        display_name="Light",
-        description="Clean and energizing light theme",
-        background="#FFFFFF",
-        text="#2C3E50",
-        accent="#3498DB",
-        secondary="#6C7A89",
-        success="#27AE60",
-        warning="#F39C12",
-        danger="#E74C3C",
-        card_bg="#F8F9FA",
-        border="#DEE2E6",
-        hover="#E8F4FD",
-        disabled="#BDC3C7",
-        input_bg="#FFFFFF",
-        tab_active="#3498DB",
-        tab_inactive="#ECF0F1",
-        scrollbar="#BDC3C7",
-        shadow="rgba(0,0,0,0.1)",
+    "ember": Theme(
+        name="ember",
+        display_name="Ember",
+        description="Warm dark default for focused daily use",
+        background="#18130F",
+        text="#F2E8D9",
+        accent="#A8845F",
+        secondary="#BCAE9C",
+        success="#95B776",
+        warning="#E5B16C",
+        danger="#C66860",
+        card_bg="#221C16",
+        border="#3D3128",
+        hover="#2F2620",
+        disabled="#5F5347",
+        input_bg="#2B231C",
+        tab_active="#382C24",
+        tab_inactive="#221C16",
+        scrollbar="#6B5848",
+        shadow="rgba(0,0,0,0.32)",
+        condition_suitability=["general", "anxiety", "ptsd", "ocd", "adhd"],
+        layout_density=1.0,
+        animation_speed_ms=180,
+        border_radius_scale=0.8,
+    ),
+    "linen": Theme(
+        name="linen",
+        display_name="Linen",
+        description="Warm light theme with parchment surfaces",
+        background="#F7F2EA",
+        text="#2D2520",
+        accent="#7D5E3F",
+        secondary="#6B5E50",
+        success="#5F8A47",
+        warning="#B8842E",
+        danger="#A04A42",
+        card_bg="#FFFFFF",
+        border="#D4C7B2",
+        hover="#EFE8DC",
+        disabled="#B5A695",
+        input_bg="#FAF6EE",
+        tab_active="#E8DFD0",
+        tab_inactive="#F7F2EA",
+        scrollbar="#A8957B",
+        shadow="rgba(45,37,32,0.10)",
         condition_suitability=["general"],
+        layout_density=1.0,
+        animation_speed_ms=180,
+        border_radius_scale=0.8,
     ),
-    "dark": Theme(
-        name="dark",
-        display_name="Dark",
-        description="Easy on the eyes, reduces eye strain",
-        background="#1A1A2E",
-        text="#E0E0E0",
-        accent="#4A9BD9",
-        secondary="#8899AA",
-        success="#2ECC71",
-        warning="#F1C40F",
-        danger="#E74C3C",
-        card_bg="#16213E",
-        border="#2C3E6B",
-        hover="#1F3A5F",
-        disabled="#555555",
-        input_bg="#0F3460",
-        tab_active="#4A9BD9",
-        tab_inactive="#16213E",
-        scrollbar="#2C3E6B",
-        shadow="rgba(0,0,0,0.3)",
-        condition_suitability=["general", "anxiety", "ptsd"],
-    ),
-    "calm": Theme(
-        name="calm",
-        display_name="Calm",
-        description="Soothing colors to reduce anxiety",
-        background="#F0F7F4",
-        text="#2D4A3E",
-        accent="#5B9A8B",
-        secondary="#7FB5A0",
-        success="#5B9A8B",
-        warning="#D4A574",
-        danger="#C17C74",
-        card_bg="#E8F3EE",
-        border="#C5DDD4",
-        hover="#D5EAE1",
-        disabled="#A8C5B8",
-        input_bg="#F5FAF7",
-        tab_active="#5B9A8B",
-        tab_inactive="#E0EDE7",
-        scrollbar="#B5D4C8",
-        shadow="rgba(91,154,139,0.1)",
-        condition_suitability=["anxiety", "ptsd", "ocd"],
-    ),
-    "high_contrast": Theme(
-        name="high_contrast",
-        display_name="High Contrast",
-        description="Maximum readability for accessibility",
+    "quiet": Theme(
+        name="quiet",
+        display_name="Quiet",
+        description="High contrast, reduced chrome accessibility theme",
         background="#000000",
         text="#FFFFFF",
-        accent="#FFD700",
-        secondary="#00BFFF",
+        accent="#FFD400",
+        secondary="#D4D4D4",
         success="#00FF00",
         warning="#FFA500",
-        danger="#FF0000",
-        card_bg="#1A1A1A",
+        danger="#FF4040",
+        card_bg="#0A0A0A",
         border="#FFFFFF",
-        hover="#333333",
-        disabled="#666666",
-        input_bg="#1A1A1A",
-        tab_active="#FFD700",
-        tab_inactive="#333333",
-        scrollbar="#FFD700",
-        shadow="rgba(255,215,0,0.2)",
-        condition_suitability=["general", "adhd"],
-    ),
-    "warm": Theme(
-        name="warm",
-        display_name="Warm & Uplifting",
-        description="Warm tones to combat low mood",
-        background="#FFF8F0",
-        text="#3D2C2E",
-        accent="#E07A5F",
-        secondary="#81B29A",
-        success="#81B29A",
-        warning="#F2CC8F",
-        danger="#E07A5F",
-        card_bg="#FFF1E6",
-        border="#F2CC8F",
-        hover="#FFE8D6",
-        disabled="#C4A882",
-        input_bg="#FFFAF5",
-        tab_active="#E07A5F",
-        tab_inactive="#FFF1E6",
-        scrollbar="#E07A5F",
-        shadow="rgba(224,122,95,0.1)",
-        condition_suitability=["depression"],
-    ),
-    "focus": Theme(
-        name="focus",
-        display_name="Focus Mode",
-        description="Minimal distractions for ADHD",
-        background="#FAFAFA",
-        text="#212121",
-        accent="#FF6B35",
-        secondary="#4ECDC4",
-        success="#4ECDC4",
-        warning="#FFE66D",
-        danger="#FF6B6B",
-        card_bg="#FFFFFF",
-        border="#E0E0E0",
-        hover="#FFF0E8",
-        disabled="#BDBDBD",
-        input_bg="#FFFFFF",
-        tab_active="#FF6B35",
-        tab_inactive="#F5F5F5",
-        scrollbar="#FF6B35",
-        shadow="rgba(255,107,53,0.1)",
-        condition_suitability=["adhd"],
-        layout_density=1.2,
-        animation_speed_ms=150,
-        chrome_visibility="reduced",
-    ),
-    "gentle": Theme(
-        name="gentle",
-        display_name="Gentle",
-        description="Soft, non-threatening colors for PTSD",
-        background="#FAF8F5",
-        text="#4A4543",
-        accent="#A8A0D6",
-        secondary="#B8D4C8",
-        success="#B8D4C8",
-        warning="#E8D5A3",
-        danger="#D4A0A0",
-        card_bg="#F5F2EF",
-        layout_density=0.9,
-        animation_speed_ms=400,
-        border_radius_scale=1.2,
-        border="#E0DBD5",
-        hover="#EEEAE5",
-        disabled="#C8C3BD",
-        input_bg="#FDFCFA",
-        tab_active="#A8A0D6",
-        tab_inactive="#F0EDE9",
-        scrollbar="#C8C0E0",
-        shadow="rgba(168,160,214,0.1)",
-        condition_suitability=["ptsd", "anxiety"],
-    ),
-    "structured": Theme(
-        name="structured",
-        display_name="Structured",
-        description="Clear, organized appearance for OCD",
-        background="#F5F5F5",
-        text="#333333",
-        accent="#5C6BC0",
-        secondary="#78909C",
-        success="#66BB6A",
-        warning="#FFA726",
-        danger="#EF5350",
-        card_bg="#FFFFFF",
-        border="#BDBDBD",
-        hover="#E8EAF6",
-        disabled="#9E9E9E",
-        input_bg="#FFFFFF",
-        tab_active="#5C6BC0",
-        tab_inactive="#EEEEEE",
-        scrollbar="#5C6BC0",
-        shadow="rgba(92,107,192,0.1)",
-        condition_suitability=["ocd"],
-        layout_density=1.0,
-        animation_speed_ms=100,
+        hover="#222222",
+        disabled="#777777",
+        input_bg="#0A0A0A",
+        tab_active="#111111",
+        tab_inactive="#000000",
+        scrollbar="#FFFFFF",
+        shadow="rgba(255,255,255,0.10)",
+        condition_suitability=["general", "adhd", "ptsd", "anxiety"],
+        layout_density=1.05,
+        animation_speed_ms=0,
         border_radius_scale=0.5,
-        chrome_visibility="full",
+        chrome_visibility="reduced",
     ),
 }
 
@@ -273,7 +164,7 @@ class ThemeManager:
     """Manages themes and generates stylesheets."""
 
     def __init__(self):
-        self.current_theme_name: str = "light"
+        self.current_theme_name: str = "ember"
         self.color_blind_mode: str | None = None
         self.font_scale: float = 1.0
         self.reduced_motion: bool = False
@@ -281,7 +172,7 @@ class ThemeManager:
 
     @property
     def current_theme(self) -> Theme:
-        return THEMES.get(self.current_theme_name, THEMES["light"])
+        return THEMES.get(self.current_theme_name, THEMES["ember"])
 
     def set_theme(self, name: str) -> None:
         if name in THEMES:
@@ -316,23 +207,71 @@ class ThemeManager:
         xlarge_font = int(16 * self.font_scale)
         header_font = int(20 * self.font_scale)
 
-        font_family = "OpenDyslexic, Arial, sans-serif" if self.dyslexia_font else "Segoe UI, Arial, sans-serif"
+        font_family = (
+            "OpenDyslexic, Arial, sans-serif"
+            if self.dyslexia_font
+            else '"Söhne", "SF Pro Text", "Segoe UI", Arial, sans-serif'
+        )
         density = theme.layout_density
         radius = int(6 * theme.border_radius_scale)
-        int(12 * theme.border_radius_scale)
+        selected_text = "#000000" if theme.name == "quiet" else t["text"]
+        accent_text = "#18130F" if theme.name != "linen" else "#F7F2EA"
 
         return f"""
             * {{
                 font-family: {font_family};
-                font-size: {base_font_size}px;
             }}
             QMainWindow {{
                 background-color: {t['background']};
                 color: {t['text']};
             }}
+            QFrame#appHeader {{
+                background-color: {t['card_bg']};
+                border-bottom: 1px solid {t['border']};
+            }}
+            QFrame#sideNav {{
+                background-color: {t['card_bg']};
+                border-right: 1px solid {t['border']};
+            }}
+            QLabel#sideNavHeader {{
+                color: {t['secondary']};
+                font-size: {small_font}px;
+                font-weight: 500;
+                padding: 2px 4px 10px 4px;
+            }}
+            QFrame#sideNavDivider {{
+                background-color: {t['border']};
+                border: none;
+                margin: 10px 4px;
+            }}
+            QFrame#sideNav QPushButton[class="navItem"] {{
+                background-color: transparent;
+                color: {t['secondary']};
+                border: none;
+                border-radius: {radius}px;
+                padding: {int(8 * density)}px {int(10 * density)}px;
+                min-height: 32px;
+                text-align: left;
+                font-size: {base_font_size}px;
+                font-weight: 500;
+            }}
+            QFrame#sideNav QPushButton[class="navItem"]:hover {{
+                background-color: {t['hover']};
+                color: {t['text']};
+            }}
+            QFrame#sideNav QPushButton[class="navItem"]:checked {{
+                background-color: {t['tab_active']};
+                color: {t['text']};
+                border-left: 2px solid {t['accent']};
+                padding-left: {int(8 * density)}px;
+            }}
+            QFrame#sideNav QPushButton[tone="danger"] {{
+                color: {t['danger']};
+            }}
             QWidget {{
                 background-color: {t['background']};
                 color: {t['text']};
+                font-size: {base_font_size}px;
             }}
             QLabel {{
                 color: {t['text']};
@@ -340,21 +279,21 @@ class ThemeManager:
             }}
             QLabel[class="header"] {{
                 font-size: {header_font}px;
-                font-weight: bold;
+                font-weight: 600;
             }}
             QLabel[class="subheader"] {{
                 font-size: {xlarge_font}px;
-                font-weight: bold;
+                font-weight: 600;
             }}
             QPushButton {{
                 background-color: {t['accent']};
-                color: white;
+                color: {accent_text};
                 border: none;
-                padding: {int(8 * density)}px {int(16 * density)}px;
+                padding: {int(7 * density)}px {int(14 * density)}px;
                 border-radius: {radius}px;
                 font-size: {base_font_size}px;
                 font-weight: 500;
-                min-height: 32px;
+                min-height: 34px;
             }}
             QPushButton:hover {{
                 background-color: {t['hover']};
@@ -370,6 +309,18 @@ class ThemeManager:
             }}
             QPushButton[class="danger"] {{
                 background-color: {t['danger']};
+                color: white;
+            }}
+            QPushButton#crisisButton {{
+                background-color: transparent;
+                color: {t['danger']};
+                border: 1px solid {t['danger']};
+                padding: 6px 12px;
+                min-height: 30px;
+            }}
+            QPushButton#crisisButton:hover {{
+                background-color: {t['danger']};
+                color: white;
             }}
             QPushButton[class="success"] {{
                 background-color: {t['success']};
@@ -379,7 +330,7 @@ class ThemeManager:
             }}
             QPushButton[class="outline"] {{
                 background-color: transparent;
-                border: 2px solid {t['accent']};
+                border: 1px solid {t['border']};
                 color: {t['accent']};
             }}
             QComboBox {{
@@ -402,28 +353,28 @@ class ThemeManager:
                 selection-color: white;
             }}
             QTabWidget::pane {{
-                border: 1px solid {t['border']};
+                border: none;
                 background-color: {t['background']};
-                border-radius: {radius}px;
             }}
             QTabBar::tab {{
                 background-color: {t['tab_inactive']};
-                color: {t['text']};
-                padding: {int(10 * density)}px {int(20 * density)}px;
-                border: 1px solid {t['border']};
-                border-bottom: none;
-                border-top-left-radius: {radius}px;
-                border-top-right-radius: {radius}px;
-                margin-right: 2px;
+                color: {t['secondary']};
+                padding: {int(9 * density)}px {int(16 * density)}px;
+                border: none;
+                border-bottom: 2px solid transparent;
+                margin-right: 1px;
                 font-size: {base_font_size}px;
+                min-height: 30px;
             }}
             QTabBar::tab:selected {{
                 background-color: {t['tab_active']};
-                color: white;
-                font-weight: bold;
+                color: {selected_text};
+                border-bottom: 2px solid {t['accent']};
+                font-weight: 500;
             }}
             QTabBar::tab:hover:!selected {{
                 background-color: {t['hover']};
+                color: {t['text']};
             }}
             QListWidget {{
                 background-color: {t['card_bg']};
@@ -440,8 +391,8 @@ class ThemeManager:
                 margin: 2px;
             }}
             QListWidget::item:selected {{
-                background-color: {t['accent']};
-                color: white;
+                background-color: {t['tab_active']};
+                color: {t['text']};
             }}
             QListWidget::item:hover:!selected {{
                 background-color: {t['hover']};
@@ -464,7 +415,7 @@ class ThemeManager:
                 font-size: {base_font_size}px;
             }}
             QLineEdit:focus, QTextEdit:focus {{
-                border: 2px solid {t['accent']};
+                border: 1px solid {t['accent']};
             }}
             QProgressBar {{
                 border: 1px solid {t['border']};
@@ -522,24 +473,25 @@ class ThemeManager:
             QFrame[class="card"] {{
                 background-color: {t['card_bg']};
                 border: 1px solid {t['border']};
-                border-radius: 10px;
+                border-radius: {radius}px;
                 padding: 16px;
             }}
             QGroupBox {{
                 font-size: {large_font}px;
-                font-weight: bold;
+                font-weight: 600;
                 border: 1px solid {t['border']};
-                border-radius: 8px;
-                margin-top: 12px;
-                padding-top: 20px;
+                border-radius: {radius}px;
+                margin-top: 20px;
+                padding: 20px 10px 10px 10px;
                 background-color: {t['card_bg']};
             }}
             QGroupBox::title {{
                 subcontrol-origin: margin;
-                left: 12px;
-                padding: 0 6px;
-                background-color: {t['card_bg']};
-                color: {t['accent']};
+                left: 10px;
+                top: 8px;
+                padding: 0;
+                background-color: transparent;
+                color: {t['text']};
             }}
             QScrollArea {{
                 border: none;
@@ -574,12 +526,39 @@ class ThemeManager:
             QCalendarWidget {{
                 background-color: {t['card_bg']};
                 color: {t['text']};
+                border: 1px solid {t['border']};
+                border-radius: {radius}px;
+            }}
+            QCalendarWidget QWidget {{
+                background-color: {t['card_bg']};
+                color: {t['text']};
+            }}
+            QCalendarWidget QToolButton {{
+                background-color: transparent;
+                color: {t['text']};
+                border: none;
+                border-radius: {radius}px;
+                padding: 4px 8px;
+                min-height: 24px;
+            }}
+            QCalendarWidget QToolButton:hover {{
+                background-color: {t['hover']};
+            }}
+            QCalendarWidget QMenu {{
+                background-color: {t['card_bg']};
+                color: {t['text']};
+            }}
+            QCalendarWidget QSpinBox {{
+                background-color: {t['input_bg']};
+                color: {t['text']};
+                border: 1px solid {t['border']};
             }}
             QCalendarWidget QAbstractItemView {{
                 background-color: {t['card_bg']};
                 color: {t['text']};
                 selection-background-color: {t['accent']};
-                selection-color: white;
+                selection-color: {accent_text};
+                outline: none;
             }}
             QTimeEdit, QDateEdit, QDateTimeEdit {{
                 background-color: {t['input_bg']};
@@ -608,14 +587,15 @@ class ThemeManager:
                 background-color: {t['card_bg']};
                 color: {t['secondary']};
                 font-size: {small_font}px;
+                border-top: 1px solid {t['border']};
             }}
             QMenuBar {{
                 background-color: {t['card_bg']};
                 color: {t['text']};
             }}
             QMenuBar::item:selected {{
-                background-color: {t['accent']};
-                color: white;
+                background-color: {t['hover']};
+                color: {t['text']};
             }}
             QMenu {{
                 background-color: {t['card_bg']};
@@ -623,8 +603,8 @@ class ThemeManager:
                 border: 1px solid {t['border']};
             }}
             QMenu::item:selected {{
-                background-color: {t['accent']};
-                color: white;
+                background-color: {t['hover']};
+                color: {t['text']};
             }}
         """
 

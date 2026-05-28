@@ -1,7 +1,8 @@
-# Mindful Organizer
+# Hearth
 
-A mental health-aware productivity and task management desktop application.
-Built with Python and PyQt6. All data is stored locally — no cloud sync, no telemetry.
+*A desktop that adapts to your psychology.*
+
+The Hearth Project is a desktop-native psychological operating-system layer for people managing ADHD, anxiety, depression, OCD, PTSD, or bipolar disorder. It reconfigures your computing environment in real time based on psychological state — closes apps during anxiety spikes, dims the display when energy is low, enforces Do Not Disturb during manic windows, and reorganizes files to match cognitive capacity. Built in Python and PyQt6. All data is stored locally — no cloud sync, no telemetry.
 
 ![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)
 ![PyQt6](https://img.shields.io/badge/PyQt6-6.4.0%2B-green.svg)
@@ -10,11 +11,11 @@ Built with Python and PyQt6. All data is stored locally — no cloud sync, no te
 
 ## What It Is
 
-Mindful Organizer is a single-user, offline-first desktop application that helps users manage tasks and track wellness while accounting for mental health conditions such as ADHD, Anxiety, Depression, OCD, PTSD, and Bipolar Disorder.
+Hearth is a single-user, offline-first desktop application that adapts the computing environment to the user's psychological state. It supports people managing ADHD, Anxiety, Depression, OCD, PTSD, and Bipolar Disorder — not by adding another tracking app, but by treating the desktop itself as the intervention surface.
 
 **Confirmed capabilities (from source):**
 
-- **Task management** — CRUD, subtasks, dependencies, recurring tasks, templates, undo/redo, energy-based filtering and sorting. Persists to JSON (`tasks.json`) with a migration path to SQLite.
+- **Task management** — CRUD, subtasks, dependencies, recurring tasks, templates, undo/redo, energy-based filtering and sorting. Persists to JSON (`tasks.json`); a one-time JSON→SQLite migration auto-runs on first launch.
 - **Mood tracker** — 1–10 mood scores with condition-specific symptoms. Persists to SQLite (`mood_entries` table).
 - **Sleep tracker** — Bedtime, wake time, quality (1–10), duration. Persists to SQLite (`sleep_logs` table).
 - **DBT Diary Card** — Daily structured tracking of emotions, urges, skills, effectiveness, target behaviors, substances, and medication adherence. Added in schema v2.
@@ -22,12 +23,11 @@ Mindful Organizer is a single-user, offline-first desktop application that helps
 - **Wellness orchestrator** — Cross-module intelligence that produces `WellnessSnapshot`, detects crisis heuristics (mood crash + sleep deprivation, rapid mood drop, medication miss streak), and generates daily briefings.
 - **Therapeutic tools** — Breathing exercises, grounding techniques, guided meditation metadata, journaling with prompts, ERP exposure tracking, crisis plan with contacts.
 - **File organizer** — Condition-aware organization modes (ADHD/OCD/Depression/Anxiety). Includes smart file system with optional ML clustering (`sentence-transformers`, `hdbscan`).
-- **Secure content folders** — Passcode-protected folders using Fernet encryption + scrypt. Keys are stored locally alongside data (see security caveats in `docs/security.md`).
+- **Secure content folders** — Passcode-protected folders using Fernet encryption + scrypt. Keys are stored in the OS credential store (Keychain on macOS, Credential Manager on Windows, SecretService on Linux), not next to the ciphertext.
 - **Shareable reports** — Self-contained HTML reports with Chart.js (loaded from CDN). No runtime dependency.
-- **Subscription tiers** — Free / Pro / Premium with offline HMAC license key validation and a 14-day trial.
+- **Subscription tiers** — Free / Pro / Premium. License keys are signed with Ed25519; only the public verification key ships in the binary. A 14-day Premium trial is available without a key.
 
 **Partial / stub implementations:**
-- `voice_journal.py` — Creates silent WAV placeholders; transcription depends on macOS Shortcuts.
 - `calendar_sync.py` — Stubbed ICS integration.
 - `auto_updater.py` — Checks GitHub releases but does not auto-install.
 - `wearable_sync` — Listed as a Premium feature but has no implementation.
@@ -41,9 +41,11 @@ Mindful Organizer is a single-user, offline-first desktop application that helps
 | Persistence | SQLite (WAL mode, schema v2) + JSON for legacy task data |
 | Optional ML | scikit-learn, pandas, matplotlib |
 | Optional NLP / clustering | sentence-transformers, hdbscan, umap-learn |
-| Encryption | cryptography (Fernet + scrypt) |
+| Encryption | cryptography (Fernet + scrypt for content vault; Ed25519 for license signing) |
+| Key storage | OS keyring (Keychain / Credential Manager / SecretService) |
 | Build | setuptools (`pyproject.toml`) + PyInstaller (`mindful_organizer.spec`) |
-| CI | GitHub Actions (`pytest`, `flake8`) |
+| CI | GitHub Actions (`pytest` across Linux/macOS/Windows × Py 3.9–3.12) |
+| Release | `.github/workflows/release.yml` builds MSIX (Windows) and `.app` (macOS) on `v*` tags |
 
 ## Prerequisites
 
@@ -147,4 +149,4 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ## Disclaimer
 
-Mindful Organizer is a personal wellness tracking tool. It is **not** a medical device, does not provide medical advice, diagnosis, or treatment, and is **not** a substitute for professional healthcare. If you are in crisis, call 988 (US) or your local emergency number.
+Hearth is a personal mental-health-aware desktop tool. It is **not** a medical device, does not provide medical advice, diagnosis, or treatment, and is **not** a substitute for professional healthcare. If you are in crisis, call 988 (US) or your local emergency number.

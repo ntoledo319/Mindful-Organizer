@@ -1,3 +1,0 @@
-[console_scripts]
-mindful-organizer = mindful_organizer.main:main
-

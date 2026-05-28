@@ -15,7 +15,7 @@ from __future__ import annotations
 import base64
 import io
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -27,13 +27,12 @@ try:
     from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
     from reportlab.lib.units import inch
     from reportlab.platypus import (
+        Image,
         Paragraph,
         SimpleDocTemplate,
         Spacer,
         Table,
         TableStyle,
-        Image,
-        PageBreak,
     )
 
     _HAS_REPORTLAB = True
@@ -468,7 +467,7 @@ class WellnessPDFExporter:
             angles = np.linspace(0, 2 * np.pi, len(labels), endpoint=False).tolist()
             values += values[:1]
             angles += angles[:1]
-            fig, ax = plt.subplots(figsize=(4, 4), subplot_kw=dict(polar=True))
+            fig, ax = plt.subplots(figsize=(4, 4), subplot_kw={"polar": True})
             ax.fill(angles, values, color=self.ACCENT_COLOR, alpha=0.25)
             ax.plot(angles, values, color=self.ACCENT_COLOR, linewidth=1.5)
             ax.set_xticks(angles[:-1])

@@ -10,24 +10,26 @@ class OutputGenerator:
 
     def generate_cluster_report(self) -> dict:
         """Generate a detailed report of file clusters"""
+        clusters = self.clustering_results.get('clusters', [])
         report: dict[str, Any] = {
             'timestamp': datetime.now().isoformat(),
-            'total_files': len(self.clustering_results['file_paths']),
-            'total_clusters': len(set(self.clustering_results['clusters'])) - 1,  # exclude noise
+            'total_files': len(self.clustering_results.get('file_paths', [])),
+            'total_clusters': max(0, len(set(clusters)) - (1 if -1 in clusters else 0)),
             'cluster_details': []
         }
 
         # Calculate stats for each cluster
         cluster_counts = {}
-        for cluster_id in set(self.clustering_results['clusters']):
-            count = self.clustering_results['clusters'].count(cluster_id)
+        for cluster_id in set(clusters):
+            count = clusters.count(cluster_id)
             cluster_counts[cluster_id] = count
 
         # Add details for each cluster
+        cluster_labels = self.clustering_results.get('cluster_labels', {})
         for cluster_id, count in cluster_counts.items():
             report['cluster_details'].append({
                 'cluster_id': cluster_id,
-                'label': self.clustering_results['cluster_labels'].get(cluster_id, 'Unlabeled'),
+                'label': cluster_labels.get(cluster_id, 'Unlabeled'),
                 'file_count': count,
                 'example_files': self._get_example_files(cluster_id, 3)
             })

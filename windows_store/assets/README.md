@@ -1,4 +1,4 @@
-# Mindful Organizer - Asset Requirements
+# Hearth - Asset Requirements
 
 This document specifies all visual assets required for the Windows Store (MSIX) package and Store listing. Every asset listed below must be created and placed in this directory before building the MSIX package.
 
@@ -17,13 +17,13 @@ This document specifies all visual assets required for the Windows Store (MSIX) 
 
 ### Logo Concept
 
-The Mindful Organizer logo features a **stylized brain with a leaf or small plant growing from the top**, representing mental health growth, resilience, and the nurturing of one's well-being through organization. The brain outline uses the Ocean Blue color, while the leaf/plant element uses Sage Green, symbolizing the organic connection between mental clarity and personal growth.
+The Hearth logo features a **stylized brain with a leaf or small plant growing from the top**, representing mental health growth, resilience, and the nurturing of one's well-being through organization. The brain outline uses the Ocean Blue color, while the leaf/plant element uses Sage Green, symbolizing the organic connection between mental clarity and personal growth.
 
 The logo should:
 - Be simple enough to remain recognizable at 16x16 pixels
 - Use clean vector lines with no fine detail that is lost at small sizes
 - Feature the brain-leaf icon mark alone for square icons (no text)
-- Optionally include the wordmark "Mindful Organizer" for wide/banner formats
+- Optionally include the wordmark "Hearth" for wide/banner formats
 - Use a transparent background for all icon files
 - Avoid gradients in small sizes (44x44 and below); solid colors only
 
@@ -146,7 +146,7 @@ Displayed during app launch.
 | `SplashScreen.png`               | 620 x 300   | Default fallback referenced in manifest |
 
 **Splash screen guidelines:**
-- Center the brain-leaf logo with "Mindful Organizer" text below it
+- Center the brain-leaf logo with "Hearth" text below it
 - Keep essential content within the center 400x200 area (at 100% scale)
 - Transparent background (the manifest sets `#3A7CA5` as the fill)
 

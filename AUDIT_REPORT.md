@@ -1,4 +1,4 @@
-# Mindful Organizer — Repository Audit and Professionalization Report
+# Hearth — Repository Audit and Professionalization Report
 
 **Date:** 2026-05-02  
 **Auditor:** Kimi Code CLI (autonomous audit agent)  
@@ -18,7 +18,7 @@
 
 ## 2. What the Codebase Appears To Be
 
-Mindful Organizer is a **single-user, offline-first desktop application** built with Python 3.11+ and PyQt6. It provides mental-health-aware productivity tools (task management, mood/sleep/medication tracking, DBT diary cards, therapeutic exercises) with condition-specific UI adaptation for ADHD, Anxiety, Depression, OCD, PTSD, and Bipolar Disorder. All data is stored locally in SQLite and JSON. The app includes offline subscription tier management (Free/Pro/Premium) with HMAC license keys.
+Hearth is a **single-user, offline-first desktop application** built with Python 3.11+ and PyQt6. It provides mental-health-aware productivity tools (task management, mood/sleep/medication tracking, DBT diary cards, therapeutic exercises) with condition-specific UI adaptation for ADHD, Anxiety, Depression, OCD, PTSD, and Bipolar Disorder. All data is stored locally in SQLite and JSON. The app includes offline subscription tier management (Free/Pro/Premium) with HMAC license keys.
 
 ---
 

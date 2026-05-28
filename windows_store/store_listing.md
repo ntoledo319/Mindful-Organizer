@@ -1,4 +1,4 @@
-# Mindful Organizer - Windows Store Listing
+# Hearth - Windows Store Listing
 
 ## Short Description (100 characters max)
 
@@ -6,13 +6,13 @@ Organize your life mindfully. Mental health-aware productivity and task manageme
 
 ## Full Description
 
-**Mindful Organizer** is a desktop productivity application that puts your mental well-being first. Unlike traditional task managers that pile on pressure with aggressive deadlines and overloaded dashboards, Mindful Organizer helps you stay productive while respecting your emotional state and energy levels.
+**Hearth** is a desktop productivity application that puts your mental well-being first. Unlike traditional task managers that pile on pressure with aggressive deadlines and overloaded dashboards, Hearth helps you stay productive while respecting your emotional state and energy levels.
 
-Built for people who want to get things done without burning out, Mindful Organizer combines intelligent file organization, task management, DBT diary card tracking, and wellness monitoring in a single, calming interface. Your data never leaves your device -- everything is stored locally with encryption for sensitive content.
+Built for people who want to get things done without burning out, Hearth combines intelligent file organization, task management, DBT diary card tracking, and wellness monitoring in a single, calming interface. Your data never leaves your device -- everything is stored locally with encryption for sensitive content.
 
-Whether you are managing daily tasks, organizing files across projects, tracking your mood with structured diary cards, or understanding how sleep affects your productivity, Mindful Organizer adapts to you rather than the other way around.
+Whether you are managing daily tasks, organizing files across projects, tracking your mood with structured diary cards, or understanding how sleep affects your productivity, Hearth adapts to you rather than the other way around.
 
-### Why Mindful Organizer?
+### Why Hearth?
 
 - **Privacy-first architecture**: Zero data collection. No telemetry. No cloud dependency. Your data stays on your device.
 - **Mental health awareness**: Built-in DBT diary cards, wellness tracking, mood logging, and adaptive task suggestions based on your current state.
@@ -60,7 +60,7 @@ Whether you are managing daily tasks, organizing files across projects, tracking
 ## Category Justification
 
 ### Primary Category: Health & Fitness
-Mindful Organizer integrates DBT diary cards, wellness tracking, mood logging, guided meditations, and mental health-aware task scheduling as core features. The application's fundamental design philosophy centers on protecting and promoting the user's mental well-being.
+Hearth integrates DBT diary cards, wellness tracking, mood logging, guided meditations, and mental health-aware task scheduling as core features. The application's fundamental design philosophy centers on protecting and promoting the user's mental well-being.
 
 ### Secondary Category: Productivity
 The application provides robust task management, intelligent file organization, project management, and focus session timers. It delivers full-featured productivity tooling within its wellness-aware framework.

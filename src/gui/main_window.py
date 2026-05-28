@@ -1,10 +1,11 @@
 """
-Refactored main window for Mindful Organizer.
+Refactored main window for Hearth.
 Orchestrates all widget modules and manages application state.
 """
 import json
 import logging
 import sys
+from datetime import datetime
 from pathlib import Path
 from typing import cast
 
@@ -18,24 +19,38 @@ from PyQt6.QtWidgets import (
     QLabel,
     QMainWindow,
     QMessageBox,
-    QStatusBar,
+    QPushButton,
     QTabWidget,
     QVBoxLayout,
     QWidget,
 )
 
+from app_metadata import APP_VERSION
 from core.ai_optimizer import AISystemOptimizer
 from core.constants import Condition
 from core.file_organizer import FileOrganizer
+from core.system_automation import SystemAutomationEngine
 from core.system_optimizer import SystemOptimizer
 from core.task_manager import TaskManager
 from gui.state_bus import StateBus, set_state_bus
+from gui.system_tray import SystemTrayController
 from gui.themes import ThemeManager
 from profiles.mental_health_profile_builder import ProfileManager
 from utils.accessibility import AccessibilityManager
+from utils.global_hotkeys import GlobalHotkeyManager
 from utils.keyboard_shortcuts import ShortcutManager
 
 logger = logging.getLogger(__name__)
+
+
+class StatusMessageSink:
+    """Stores transient status text without adding permanent window chrome."""
+
+    def __init__(self) -> None:
+        self.message = ""
+
+    def showMessage(self, message: str, timeout: int = 0) -> None:  # noqa: N802
+        self.message = message
 
 
 class AdaptiveMainWindow(QMainWindow):
@@ -47,9 +62,11 @@ class AdaptiveMainWindow(QMainWindow):
     energy_updated = pyqtSignal(int)
     mood_updated = pyqtSignal(str)
 
+    SECONDARY_TABS = {"sleep", "medication", "automation", "file_organizer"}
+
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Mindful Organizer")
+        self.setWindowTitle("Hearth")
         self.setMinimumSize(1200, 800)
         self.setGeometry(100, 100, 1400, 900)
 
@@ -110,8 +127,14 @@ class AdaptiveMainWindow(QMainWindow):
         self._diary_card_manager = None
         self._mood_manager = None
 
+        # System Automation Engine (the "pro" feature)
+        self._system_automation: SystemAutomationEngine | None = None
+        self._system_tray: SystemTrayController | None = None
+        self._global_hotkeys: GlobalHotkeyManager | None = None
+
         # Widget references
         self._widgets = {}
+        self._nav_buttons: dict[str, QPushButton] = {}
 
         # Load settings
         self._load_settings()
@@ -143,7 +166,18 @@ class AdaptiveMainWindow(QMainWindow):
             try:
                 with open(settings_file) as f:
                     settings = json.load(f)
-                self.theme_manager.set_theme(settings.get("theme", "light"))
+                saved_theme = settings.get("theme", "ember")
+                legacy_theme_map = {
+                    "light": "linen",
+                    "dark": "ember",
+                    "calm": "linen",
+                    "warm": "linen",
+                    "gentle": "linen",
+                    "focus": "ember",
+                    "structured": "linen",
+                    "high_contrast": "quiet",
+                }
+                self.theme_manager.set_theme(legacy_theme_map.get(saved_theme, saved_theme))
                 self.theme_manager.font_scale = settings.get("font_scale", 1.0)
                 self.theme_manager.color_blind_mode = settings.get("color_blind_mode")
                 self.theme_manager.reduced_motion = settings.get("reduced_motion", False)
@@ -215,8 +249,8 @@ class AdaptiveMainWindow(QMainWindow):
             try:
                 from core.diary_card_manager import DiaryCardManager
                 self._diary_card_manager = DiaryCardManager()
-            except ImportError:
-                logger.warning("DiaryCardManager not available")
+            except Exception as exc:
+                logger.warning("DiaryCardManager not available: %s", exc)
         return self._diary_card_manager
 
     @property
@@ -225,8 +259,8 @@ class AdaptiveMainWindow(QMainWindow):
             try:
                 from core.mood_manager import MoodManager
                 self._mood_manager = MoodManager()
-            except ImportError:
-                logger.warning("MoodManager not available")
+            except Exception as exc:
+                logger.warning("MoodManager not available: %s", exc)
         return self._mood_manager
 
     @property
@@ -386,12 +420,13 @@ class AdaptiveMainWindow(QMainWindow):
     def auto_updater(self):
         if self._auto_updater is None:
             try:
-                from core.auto_updater import AutoUpdater
                 import importlib.metadata
+
+                from core.auto_updater import AutoUpdater
                 try:
                     version = importlib.metadata.version("mindful-organizer")
                 except importlib.metadata.PackageNotFoundError:
-                    version = "1.1.0"
+                    version = APP_VERSION
                 self._auto_updater = AutoUpdater(version)
             except ImportError:
                 logger.warning("AutoUpdater not available")
@@ -406,6 +441,22 @@ class AdaptiveMainWindow(QMainWindow):
             except ImportError:
                 logger.warning("OnboardingAnalytics not available")
         return self._onboarding_analytics
+
+    @property
+    def system_automation(self):
+        if self._system_automation is None:
+            try:
+                self._system_automation = SystemAutomationEngine(
+                    data_dir=self.data_dir,
+                    wellness_orchestrator=self.wellness_orchestrator,
+                    ai_optimizer=self.ai_optimizer,
+                )
+                profile = self.profile_manager.current_profile
+                if profile and profile.conditions:
+                    self._system_automation.set_user_conditions(profile.conditions)
+            except Exception as exc:
+                logger.warning("SystemAutomationEngine not available: %s", exc)
+        return self._system_automation
 
     # === UI Setup ===
 
@@ -435,7 +486,7 @@ class AdaptiveMainWindow(QMainWindow):
         """Fallback profile setup if onboarding widget is unavailable."""
         from PyQt6.QtWidgets import QCheckBox, QDialog, QDialogButtonBox, QLineEdit
         dialog = QDialog(self)
-        dialog.setWindowTitle("Welcome to Mindful Organizer")
+        dialog.setWindowTitle("Welcome to Hearth")
         dialog.setMinimumWidth(500)
         layout = QVBoxLayout(dialog)
 
@@ -488,15 +539,27 @@ class AdaptiveMainWindow(QMainWindow):
         # Header bar
         self._setup_header(main_layout)
 
-        # Tab widget
+        content_layout = QHBoxLayout()
+        content_layout.setContentsMargins(0, 0, 0, 0)
+        content_layout.setSpacing(0)
+        main_layout.addLayout(content_layout)
+
+        self._setup_navigation(content_layout)
+
+        # The tab widget remains the compatibility content stack. Its visual
+        # tabs are hidden because navigation is owned by the side rail.
         self.tabs = QTabWidget()
         self.tabs.setDocumentMode(True)
         self.tabs.setTabPosition(QTabWidget.TabPosition.North)
-        self.tabs.setMovable(True)
-        main_layout.addWidget(self.tabs)
+        self.tabs.setMovable(False)
+        self.tabs.tabBar().hide()
+        self.tabs.currentChanged.connect(self._sync_navigation)
+        content_layout.addWidget(self.tabs, stretch=1)
 
         # Add core tabs
         self._add_tabs()
+        self._nav_layout.addStretch()
+        self._sync_navigation(self.tabs.currentIndex())
 
         # Status bar
         self._setup_status_bar()
@@ -507,21 +570,41 @@ class AdaptiveMainWindow(QMainWindow):
         # Setup keyboard shortcuts
         self._setup_shortcuts()
 
+        # Initialize system automation, tray, hotkeys
+        self._setup_system_automation()
+
         # Start background timers
         self._setup_timers()
 
         self.show()
 
+    def _setup_navigation(self, parent_layout: QHBoxLayout) -> None:
+        """Create the persistent navigation rail."""
+        self._nav_frame = QFrame()
+        self._nav_frame.setObjectName("sideNav")
+        self._nav_frame.setFixedWidth(176)
+        self._nav_layout = QVBoxLayout(self._nav_frame)
+        self._nav_layout.setContentsMargins(14, 18, 14, 18)
+        self._nav_layout.setSpacing(4)
+
+        self._nav_header = QLabel("Spaces")
+        self._nav_header.setObjectName("sideNavHeader")
+        self._nav_layout.addWidget(self._nav_header)
+
+        parent_layout.addWidget(self._nav_frame)
+
     def _setup_header(self, parent_layout: QVBoxLayout):
         """Setup the header bar with profile and theme controls."""
         header = QFrame()
-        header.setMaximumHeight(60)
+        header.setObjectName("appHeader")
+        header.setMaximumHeight(64)
         header_layout = QHBoxLayout(header)
-        header_layout.setContentsMargins(16, 8, 16, 8)
+        header_layout.setContentsMargins(24, 10, 24, 10)
+        header_layout.setSpacing(12)
 
         # App title
-        title = QLabel("Mindful Organizer")
-        title.setFont(QFont(self.font().family(), 14, QFont.Weight.Bold))
+        title = QLabel("Hearth")
+        title.setFont(QFont(self.font().family(), 17, QFont.Weight.DemiBold))
         header_layout.addWidget(title)
 
         header_layout.addStretch()
@@ -529,12 +612,12 @@ class AdaptiveMainWindow(QMainWindow):
         # Profile info
         profile = self.profile_manager.current_profile
         profile_name = profile.name if profile else "User"
-        profile_label = QLabel(f"Welcome, {profile_name}")
+        profile_label = QLabel(profile_name)
         profile_label.setFont(QFont(self.font().family(), 11))
         header_layout.addWidget(profile_label)
 
         # Theme selector
-        theme_label = QLabel("Theme:")
+        theme_label = QLabel("Theme")
         theme_label.setFont(QFont(self.font().family(), 11))
         header_layout.addWidget(theme_label)
 
@@ -556,12 +639,13 @@ class AdaptiveMainWindow(QMainWindow):
         conditions = profile.conditions if profile else set()
 
         # Core tabs (always present)
-        self._add_tab("dashboard", "Dashboard")
+        self._add_tab("dashboard", "Today")
         self._add_tab("task_manager", "Tasks")
-        self._add_tab("mood_tracker", "Mood")
-        self._add_tab("diary_card", "Diary Card")
         self._add_tab("journaling", "Journal")
-        self._add_tab("breathing", "Breathing")
+        self._add_tab("mood_tracker", "Mood")
+        self._add_tab("diary_card", "Diary")
+        self._add_tab("breathing", "Breathe")
+        self._add_tab("meditation", "Meditate")
 
         # Condition-specific tabs
         if Condition.OCD in conditions:
@@ -569,19 +653,17 @@ class AdaptiveMainWindow(QMainWindow):
         if Condition.PANIC in conditions or Condition.ANXIETY in conditions or Condition.PTSD in conditions:
             self._add_tab("panic_tracker", "Panic Log")
 
-        # Therapy tabs
-        self._add_tab("meditation", "Meditation")
-        self._add_tab("crisis", "Crisis Plan")
-
         # Tracking tabs
         self._add_tab("sleep", "Sleep")
         self._add_tab("medication", "Medication")
 
-        # File organization
-        self._add_tab("file_organizer", "Files")
+        # System Automation (available to all, gated internally)
+        self._add_tab("automation", "Focus")
 
-        # Settings (always last)
-        self._add_tab("settings", "Settings")
+        # Secondary but still available in the tabbed PyQt shell.
+        self._add_tab("file_organizer", "Library")
+        self._add_tab("crisis", "Crisis")
+        self._add_tab("settings", "Profile")
 
         # Check for updates after UI is ready
         QTimer.singleShot(2000, self._check_for_updates)
@@ -592,6 +674,34 @@ class AdaptiveMainWindow(QMainWindow):
         if widget:
             self._widgets[widget_name] = widget
             self.tabs.addTab(widget, display_name)
+            self._add_nav_button(widget_name, display_name)
+
+    def _add_nav_button(self, widget_name: str, display_name: str) -> None:
+        """Add a side navigation button for a tab."""
+        if not hasattr(self, "_nav_layout"):
+            return
+        if widget_name in self.SECONDARY_TABS and not getattr(self, "_secondary_nav_added", False):
+            self._add_nav_divider()
+            self._secondary_nav_added = True
+        if widget_name == "crisis" and not getattr(self, "_support_nav_added", False):
+            self._add_nav_divider()
+            self._support_nav_added = True
+
+        button = QPushButton(display_name)
+        button.setCheckable(True)
+        button.setCursor(Qt.CursorShape.PointingHandCursor)
+        button.setProperty("class", "navItem")
+        if widget_name == "crisis":
+            button.setProperty("tone", "danger")
+        button.clicked.connect(lambda _checked=False, name=widget_name: self._switch_to_tab(name))
+        self._nav_buttons[widget_name] = button
+        self._nav_layout.addWidget(button)
+
+    def _add_nav_divider(self) -> None:
+        divider = QFrame()
+        divider.setObjectName("sideNavDivider")
+        divider.setFixedHeight(1)
+        self._nav_layout.addWidget(divider)
 
     def _create_widget(self, name: str) -> QWidget | None:
         """Create a widget by name with graceful fallback."""
@@ -604,7 +714,7 @@ class AdaptiveMainWindow(QMainWindow):
                     theme,
                     task_manager=self.task_manager,
                     profile_manager=self.profile_manager,
-                    mood_manager=None,
+                    mood_manager=self.mood_manager,
                     energy_predictor=self.energy_predictor,
                     gamification_manager=self.gamification_manager,
                     wellness_orchestrator=self.wellness_orchestrator,
@@ -673,6 +783,13 @@ class AdaptiveMainWindow(QMainWindow):
             elif name == "settings":
                 from gui.widgets.settings_widget import SettingsWidget
                 widget = SettingsWidget(self)
+            elif name == "automation":
+                from gui.widgets.automation_widget import AutomationWidget
+                widget = AutomationWidget(
+                    theme,
+                    automation_engine=self.system_automation,
+                    subscription_manager=self.subscription_manager,
+                )
             elif name == "search":
                 from gui.widgets.search_widget import SearchWidget
                 widget = SearchWidget(self)
@@ -706,20 +823,14 @@ class AdaptiveMainWindow(QMainWindow):
 
     def _create_upsell_tab(self, feature_key: str, display_name: str, required_tier: str) -> QWidget:
         """Create an upsell placeholder for gated features."""
-        from gui.components.upsell_dialog import UpsellDialog
         from core.subscription_manager import FEATURE_DISPLAY_NAMES
 
         widget = QWidget()
         layout = QVBoxLayout(widget)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        icon = QLabel("✨")
-        icon.setFont(QFont(self.font().family(), 48))
-        icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(icon)
-
         title = QLabel(display_name)
-        title.setFont(QFont(self.font().family(), 20, QFont.Weight.Bold))
+        title.setFont(QFont(self.font().family(), 20, QFont.Weight.DemiBold))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
 
@@ -733,17 +844,17 @@ class AdaptiveMainWindow(QMainWindow):
         desc.setStyleSheet("color: #666; padding: 12px 40px;")
         layout.addWidget(desc)
 
-        trial_btn = QPushButton("Start 14-Day Free Trial")
+        trial_btn = QPushButton("Start 14-day trial")
         trial_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         trial_btn.setStyleSheet(
-            "QPushButton { background-color: #3498DB; color: white; "
-            "border-radius: 8px; padding: 12px 24px; font-weight: bold; font-size: 14px; }"
-            "QPushButton:hover { background-color: #2980B9; }"
+            "QPushButton { background-color: #A8845F; color: #18130F; "
+            "border-radius: 5px; padding: 10px 20px; font-weight: 500; font-size: 13px; }"
+            "QPushButton:hover { background-color: #B89472; }"
         )
         trial_btn.clicked.connect(lambda: self._start_trial_from_upsell(feature_key))
         layout.addWidget(trial_btn, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        maybe_later = QLabel("Maybe later — continue using the free features")
+        maybe_later = QLabel("Continue with free features")
         maybe_later.setAlignment(Qt.AlignmentFlag.AlignCenter)
         maybe_later.setStyleSheet("color: #aaa; font-size: 11px; padding-top: 12px;")
         layout.addWidget(maybe_later)
@@ -827,16 +938,15 @@ class AdaptiveMainWindow(QMainWindow):
     # === Status Bar ===
 
     def _setup_status_bar(self):
-        """Setup the status bar with useful info."""
-        self.status_bar = QStatusBar()
-        self.setStatusBar(self.status_bar)
+        """Create a status target without adding persistent visual chrome."""
+        self.status_bar = StatusMessageSink()
 
         profile = self.profile_manager.current_profile
         if profile:
             conditions_text = ", ".join(c.value for c in profile.conditions) if profile.conditions else "General"
             self.status_bar.showMessage(f"Profile: {profile.name} | Conditions: {conditions_text} | All data stored locally")
         else:
-            self.status_bar.showMessage("Mindful Organizer v1.0.0 | All data stored locally")
+            self.status_bar.showMessage(f"Hearth v{APP_VERSION} | All data stored locally")
 
     # === Keyboard Shortcuts ===
 
@@ -869,6 +979,20 @@ class AdaptiveMainWindow(QMainWindow):
             if idx >= 0:
                 self.tabs.setCurrentIndex(idx)
 
+    def _sync_navigation(self, index: int) -> None:
+        """Keep the side navigation selection aligned with the content stack."""
+        if index < 0:
+            return
+        current_widget = self.tabs.widget(index)
+        for name, widget in self._widgets.items():
+            button = self._nav_buttons.get(name)
+            if button is not None:
+                button.setChecked(widget is current_widget)
+
+    def _show_crisis(self) -> None:
+        """Keep the crisis plan reachable from every screen."""
+        self._switch_to_tab("crisis")
+
     def _show_search(self):
         """Show the global search overlay."""
         try:
@@ -882,7 +1006,7 @@ class AdaptiveMainWindow(QMainWindow):
         """Show help dialog."""
         QMessageBox.information(
             self,
-            "Mindful Organizer - Help",
+            "Hearth — Help",
             "Keyboard Shortcuts:\n\n"
             "Ctrl+N - New Task / Tasks Tab\n"
             "Ctrl+M - Mood Tracker\n"
@@ -909,6 +1033,16 @@ class AdaptiveMainWindow(QMainWindow):
         self.notification_timer = QTimer()
         self.notification_timer.timeout.connect(self._check_notifications)
         self.notification_timer.start(300000)
+
+        # Automation state evaluation (every 10 min)
+        self.automation_timer = QTimer()
+        self.automation_timer.timeout.connect(self._evaluate_automation)
+        self.automation_timer.start(600000)
+
+        # Focus mode duration check (every 1 min)
+        self.focus_check_timer = QTimer()
+        self.focus_check_timer.timeout.connect(self._check_focus_duration)
+        self.focus_check_timer.start(60000)
 
     def _update_system_stats(self):
         """Update system statistics."""
@@ -943,7 +1077,7 @@ class AdaptiveMainWindow(QMainWindow):
                 reply = QMessageBox.question(
                     self,
                     "Update Available",
-                    f"Mindful Organizer {release.version} is available.\n\n"
+                    f"Hearth {release.version} is available.\n\n"
                     f"Released: {release.published_at.strftime('%B %d, %Y')}\n\n"
                     "Would you like to open the download page?",
                     QMessageBox.StandardButton.Yes
@@ -957,10 +1091,152 @@ class AdaptiveMainWindow(QMainWindow):
         except Exception:
             logger.debug("Update check failed silently")
 
+    # === System Automation Setup ===
+
+    def _setup_system_automation(self):
+        """Initialize system tray, global hotkeys, and automation engine."""
+        # System tray
+        try:
+            self._system_tray = SystemTrayController(self)
+            self._system_tray.show_main_window.connect(self.showNormal)
+            self._system_tray.show_main_window.connect(self.raise_)
+            self._system_tray.show_main_window.connect(self.activateWindow)
+            self._system_tray.focus_mode_toggle.connect(self._on_tray_focus_toggle)
+            self._system_tray.crisis_mode_trigger.connect(self._on_tray_crisis)
+            self._system_tray.grounding_trigger.connect(self._on_tray_grounding)
+            self._system_tray.quick_mood_log.connect(self._on_tray_mood)
+            self._system_tray.quick_energy_log.connect(self._on_tray_energy)
+            self._system_tray.daily_briefing_request.connect(self._show_daily_briefing)
+            self._system_tray.quit_app.connect(self._quit_from_tray)
+        except Exception as exc:
+            logger.warning("System tray init failed: %s", exc)
+
+        # Global hotkeys
+        try:
+            self._global_hotkeys = GlobalHotkeyManager(self)
+            self._global_hotkeys.focus_toggle.connect(self._on_tray_focus_toggle)
+            self._global_hotkeys.crisis_trigger.connect(self._on_tray_crisis)
+            self._global_hotkeys.grounding_trigger.connect(self._on_tray_grounding)
+        except Exception as exc:
+            logger.warning("Global hotkeys init failed: %s", exc)
+
+        # Initial automation state sync
+        if self.system_automation:
+            QTimer.singleShot(5000, self._evaluate_automation)
+
+    def _evaluate_automation(self):
+        """Evaluate current psychological state and trigger system automations."""
+        if not self.system_automation:
+            return
+        try:
+            results = self.system_automation.evaluate_current_state()
+            if results:
+                executed = [r for r in results if r.get("status") == "executed"]
+                if executed and self._system_tray:
+                    names = ", ".join(r["rule"] for r in executed[:3])
+                    self._system_tray.set_status(f"Automation active: {names}")
+        except Exception as exc:
+            logger.debug("Automation evaluation error: %s", exc)
+
+    def _check_focus_duration(self):
+        """Check if focus mode has exceeded its planned duration."""
+        if not self.system_automation:
+            return
+        focus = self.system_automation.focus
+        if focus.state.name == "ACTIVE" and focus.current_session:
+            session = focus.current_session
+            if session.duration_minutes > 0:
+                elapsed = (datetime.now() - session.started_at).total_seconds() // 60
+                if elapsed >= session.duration_minutes and self._system_tray:
+                    self._system_tray.show_notification(
+                        "Focus Complete",
+                        f"Your {int(session.duration_minutes)}-minute focus session is done.",
+                    )
+
+    # --- Tray / hotkey handlers ---
+
+    def _on_tray_focus_toggle(self):
+        if not self.system_automation:
+            return
+        focus = self.system_automation.focus
+        if focus.state.name == "ACTIVE":
+            focus.deactivate()
+            if self._system_tray:
+                self._system_tray.set_focus_indicator(False)
+                self._system_tray.show_notification("Focus Mode", "Focus mode ended.")
+        else:
+            result = self.system_automation.manual_focus()
+            if result.get("focus_mode", {}).get("status") == "activated" and self._system_tray:
+                self._system_tray.set_focus_indicator(True)
+                self._system_tray.show_notification("Focus Mode", "Focus mode activated.")
+
+    def _on_tray_crisis(self):
+        if self.system_automation:
+            self.system_automation.manual_crisis()
+        self._switch_to_tab("crisis")
+        self.showNormal()
+        self.raise_()
+        self.activateWindow()
+
+    def _on_tray_grounding(self):
+        if self.system_automation:
+            self.system_automation.manual_grounding()
+        self._switch_to_tab("breathing")
+        self.showNormal()
+        self.raise_()
+        self.activateWindow()
+
+    def _on_tray_mood(self, score: int):
+        """Quick mood log from tray."""
+        self._switch_to_tab("mood_tracker")
+        self.showNormal()
+        self.raise_()
+        self.activateWindow()
+
+    def _on_tray_energy(self, score: int):
+        """Quick energy log from tray."""
+        self._switch_to_tab("mood_tracker")
+        self.showNormal()
+        self.raise_()
+        self.activateWindow()
+
+    def _show_daily_briefing(self):
+        """Show daily briefing from tray request."""
+        try:
+            briefing = self.wellness_orchestrator.daily_briefing()
+            lines = [
+                f"Energy: {briefing.energy_forecast or 'Not logged yet'}",
+            ]
+            if briefing.suggested_skill:
+                lines.append(f"Suggested skill: {briefing.suggested_skill}")
+            if briefing.crisis_signals:
+                lines.append(f"Attention: {briefing.crisis_signals[0].description}")
+            msg = "\n".join(lines)
+            if self._system_tray:
+                self._system_tray.show_notification("Briefing", msg, 8000)
+        except Exception as exc:
+            logger.debug("Daily briefing error: %s", exc)
+
+    def _quit_from_tray(self):
+        """Graceful quit initiated from system tray."""
+        if self._global_hotkeys:
+            self._global_hotkeys.stop()
+        self.close()
+
     # === Window Events ===
 
     def closeEvent(self, event):  # noqa: N802
-        """Handle window close - save all state."""
+        """Handle window close — minimize to tray or quit."""
+        if self._system_tray and self._system_tray.isVisible():
+            event.ignore()
+            self.hide()
+            self._system_tray.show_notification(
+                "Hearth",
+                "Running in background. Click the tray icon to restore.",
+                3000,
+            )
+            return
+
         self.save_settings()
 
         # Save any pending data in widgets
@@ -970,6 +1246,9 @@ class AdaptiveMainWindow(QMainWindow):
                     widget.save_state()
                 except Exception as e:
                     logger.error(f"Error saving widget state: {e}")
+
+        if self._global_hotkeys:
+            self._global_hotkeys.stop()
 
         event.accept()
 

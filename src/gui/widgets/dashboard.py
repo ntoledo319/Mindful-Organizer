@@ -1,8 +1,7 @@
 """
 Main dashboard widget -- the at-a-glance overview tab.
 
-Displays mood summaries, energy information, task status, streaks,
-gamification progress, personalized suggestions, and system health.
+Displays a focused Today view with mood, energy, task, and system context.
 """
 
 from __future__ import annotations
@@ -11,25 +10,19 @@ import logging
 from datetime import date, datetime
 from typing import Any
 
-from PyQt6.QtCore import QTimer, pyqtSignal
+from PyQt6.QtCore import Qt, QTimer, pyqtSignal
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (
     QFrame,
-    QGridLayout,
     QHBoxLayout,
     QLabel,
+    QPushButton,
     QScrollArea,
     QVBoxLayout,
     QWidget,
 )
 
-from gui.components import AccentButton, BodyLabel, CardFrame, SectionTitle, ThemedProgressBar
-
-try:
-    import psutil
-    _HAS_PSUTIL = True
-except ImportError:
-    _HAS_PSUTIL = False
+from gui.components import AccentButton, BodyLabel, CardFrame, GhostButton, SectionTitle
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +32,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 class DashboardWidget(QWidget):
-    """Main dashboard overview tab."""
+    """Action-oriented Today overview tab."""
 
     # Signals emitted when quick-action buttons are clicked.
     mood_track_requested = pyqtSignal()
@@ -97,25 +90,33 @@ class DashboardWidget(QWidget):
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QFrame.Shape.NoFrame)
+        scroll.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         scroll.setStyleSheet(
             f"QScrollArea {{ background-color: {self._theme.get('background', '#f5f5f5')}; }}"
         )
         outer.addWidget(scroll)
 
         container = QWidget()
+        container.setMaximumWidth(920)
         self._layout = QVBoxLayout(container)
-        self._layout.setSpacing(16)
-        self._layout.setContentsMargins(24, 24, 24, 24)
+        self._layout.setSpacing(18)
+        self._layout.setContentsMargins(32, 32, 32, 40)
         scroll.setWidget(container)
 
+        self._build_sections()
+
+    def _build_sections(self) -> None:
+        """Build the Today surface in display order."""
         self._build_tier_banner()
         self._build_crisis_banner()
         self._build_welcome_section()
+        self._build_right_now_section()
+        self._build_next_action_section()
         self._build_quick_actions()
         self._build_daily_briefing()
-        self._build_cards_grid()
+        self._build_context_section()
         self._build_suggestions_section()
-        self._build_system_health_card()
 
         self._layout.addStretch()
 
@@ -128,20 +129,21 @@ class DashboardWidget(QWidget):
         if tier == "FREE" and not trial:
             self._tier_banner = QFrame()
             self._tier_banner.setStyleSheet(
-                f"background-color: {self._theme.get('accent_light', '#EBF5FB')}; "
-                f"border-radius: 8px; padding: 8px;"
+                f"background-color: {self._theme.get('card_bg', '#221C16')}; "
+                f"border: 1px solid {self._theme.get('border', '#3D3128')}; "
+                "border-radius: 6px; padding: 8px;"
             )
             banner_layout = QHBoxLayout(self._tier_banner)
             banner_layout.setContentsMargins(12, 8, 12, 8)
-            lbl = QLabel("✨ You're on the Free plan. Start a 14-day trial to unlock insights, smart notifications, and more.")
+            lbl = QLabel("Free plan. Start a 14-day trial for insights, smart notifications, and reports.")
             lbl.setWordWrap(True)
             lbl.setStyleSheet(f"color: {self._theme.get('accent', '#3498DB')}; font-size: 12px;")
             banner_layout.addWidget(lbl, stretch=1)
-            trial_btn = QPushButton("Start Free Trial")
+            trial_btn = QPushButton("Start trial")
             trial_btn.setCursor(Qt.CursorShape.PointingHandCursor)
             trial_btn.setStyleSheet(
-                f"QPushButton {{ background-color: {self._theme.get('accent', '#3498DB')}; color: white; "
-                f"border-radius: 6px; padding: 6px 12px; font-weight: bold; font-size: 11px; }}"
+                f"QPushButton {{ background-color: {self._theme.get('accent', '#A8845F')}; color: {self._theme.get('background', '#18130F')}; "
+                f"border-radius: 5px; padding: 6px 12px; font-weight: 500; font-size: 11px; }}"
                 f"QPushButton:hover {{ background-color: {self._theme.get('accent_hover', '#2980B9')}; }}"
             )
             trial_btn.clicked.connect(self._on_trial_clicked)
@@ -150,12 +152,13 @@ class DashboardWidget(QWidget):
         elif trial:
             self._tier_banner = QFrame()
             self._tier_banner.setStyleSheet(
-                f"background-color: {self._theme.get('success_light', '#E8F8F5')}; "
-                f"border-radius: 8px; padding: 8px;"
+                f"background-color: {self._theme.get('card_bg', '#221C16')}; "
+                f"border: 1px solid {self._theme.get('success', '#95B776')}; "
+                "border-radius: 6px; padding: 8px;"
             )
             banner_layout = QHBoxLayout(self._tier_banner)
             banner_layout.setContentsMargins(12, 8, 12, 8)
-            lbl = QLabel(f"🎉 {trial}. Enjoy all features!")
+            lbl = QLabel(f"{trial}. Full access is active.")
             lbl.setStyleSheet(f"color: {self._theme.get('success', '#27AE60')}; font-size: 12px;")
             banner_layout.addWidget(lbl)
             self._layout.addWidget(self._tier_banner)
@@ -175,7 +178,7 @@ class DashboardWidget(QWidget):
         self._crisis_banner.setVisible(False)
         self._crisis_banner.setStyleSheet(
             f"background-color: {self._theme.get('warning', '#F39C12')}; "
-            f"border-radius: 8px; padding: 12px;"
+            "border-radius: 6px; padding: 12px;"
         )
         banner_layout = QHBoxLayout(self._crisis_banner)
         self._crisis_label = QLabel()
@@ -185,7 +188,7 @@ class DashboardWidget(QWidget):
         self._layout.addWidget(self._crisis_banner)
 
     def _build_daily_briefing(self) -> None:
-        self._briefing_card, briefing_layout = self._make_card("Today's Briefing")
+        self._briefing_card, briefing_layout = self._make_card("Briefing")
         self._briefing_energy = BodyLabel("", self._theme)
         self._briefing_tasks = BodyLabel("", self._theme)
         self._briefing_skill = BodyLabel("", self._theme)
@@ -203,10 +206,11 @@ class DashboardWidget(QWidget):
                 user_name = profile.name
 
         today_str = date.today().strftime("%A, %B %d, %Y")
-        self._welcome_label = QLabel(f"Welcome back, {user_name}!")
-        self._welcome_label.setFont(QFont(QFont().defaultFamily(), 20, QFont.Weight.Bold))
+        self._welcome_label = QLabel(f"Today, {user_name}")
+        self._welcome_label.setFont(QFont(QFont().defaultFamily(), 24, QFont.Weight.DemiBold))
         self._welcome_label.setStyleSheet(
-            f"color: {self._theme.get('text', '#222222')};"
+            f"color: {self._theme.get('text', '#222222')}; "
+            "font-size: 28px; font-weight: 600;"
         )
         row.addWidget(self._welcome_label)
 
@@ -215,11 +219,11 @@ class DashboardWidget(QWidget):
         self._date_label = QLabel(today_str)
         self._date_label.setFont(QFont(QFont().defaultFamily(), 13))
         self._date_label.setStyleSheet(
-            f"color: {self._theme.get('secondary', '#888888')};"
+            f"color: {self._theme.get('secondary', '#888888')}; font-size: 13px;"
         )
         row.addWidget(self._date_label)
 
-        refresh_btn = AccentButton("Refresh", self._theme)
+        refresh_btn = GhostButton("Refresh", self._theme)
         refresh_btn.clicked.connect(self.refresh)
         row.addWidget(refresh_btn)
 
@@ -232,128 +236,59 @@ class DashboardWidget(QWidget):
         row.setSpacing(12)
 
         actions = [
-            ("Track Mood", self.mood_track_requested),
-            ("Add Task", self.task_add_requested),
-            ("Breathing Exercise", self.breathing_requested),
-            ("Journal Entry", self.journal_requested),
-            ("View Stats", self.stats_requested),
+            ("Record mood", self.mood_track_requested, GhostButton),
+            ("Add task", self.task_add_requested, AccentButton),
+            ("Breathe", self.breathing_requested, GhostButton),
+            ("Write", self.journal_requested, GhostButton),
+            ("Review", self.stats_requested, GhostButton),
         ]
-        for label, signal in actions:
-            btn = AccentButton(label, self._theme)
+        for label, signal, button_class in actions:
+            btn = button_class(label, self._theme)
             btn.clicked.connect(signal.emit)
             row.addWidget(btn)
 
         self._layout.addLayout(row)
 
-    # -- main cards grid -----------------------------------------------
+    def _build_right_now_section(self) -> None:
+        self._state_card, layout = self._make_card("Right now")
+        self._state_sentence = BodyLabel("Hearth is ready. Record one signal to make this more specific.", self._theme)
+        self._state_sentence.setFont(QFont(QFont().defaultFamily(), 16))
+        layout.addWidget(self._state_sentence)
+        self._layout.addWidget(self._state_card)
 
-    def _build_cards_grid(self) -> None:
-        grid = QGridLayout()
-        grid.setSpacing(16)
+    def _build_next_action_section(self) -> None:
+        self._next_action_card, layout = self._make_card("Next action")
+        self._next_action_label = BodyLabel("Add one task or record how you feel. That gives Hearth enough context to help.", self._theme)
+        self._next_action_label.setFont(QFont(QFont().defaultFamily(), 15))
+        layout.addWidget(self._next_action_label)
+        self._layout.addWidget(self._next_action_card)
 
-        # Row 0 --  Mood | Energy
-        self._mood_card, self._mood_card_layout = self._make_card("Mood Summary")
-        self._mood_today_label = BodyLabel("No mood entries today.", self._theme)
-        self._mood_trend_label = BodyLabel("7-day trend: --", self._theme)
-        self._mood_chart_placeholder = QFrame()
-        self._mood_chart_placeholder.setFixedHeight(100)
-        self._mood_chart_placeholder.setStyleSheet(
-            f"background-color: {self._theme.get('background', '#eee')}; "
-            "border-radius: 8px;"
-        )
-        for w in (self._mood_today_label, self._mood_trend_label, self._mood_chart_placeholder):
-            self._mood_card_layout.addWidget(w)
-        grid.addWidget(self._mood_card, 0, 0)
+    # -- context -------------------------------------------------------
 
-        self._energy_card, self._energy_card_layout = self._make_card("Energy")
-        self._energy_level_label = BodyLabel("Current energy: --", self._theme)
-        self._spoon_label = BodyLabel("Spoons remaining: --", self._theme)
-        self._energy_prediction_label = BodyLabel("Prediction: --", self._theme)
-        for w in (self._energy_level_label, self._spoon_label, self._energy_prediction_label):
-            self._energy_card_layout.addWidget(w)
-        grid.addWidget(self._energy_card, 0, 1)
-
-        # Row 1 -- Tasks | Streaks
-        self._task_card, self._task_card_layout = self._make_card("Tasks")
-        self._tasks_due_label = BodyLabel("Due today: 0", self._theme)
-        self._tasks_overdue_label = BodyLabel("Overdue: 0", self._theme)
-        self._task_progress = ThemedProgressBar(self._theme, color_key="success")
-        self._task_progress.setMaximum(100)
-        self._task_progress.setValue(0)
-        self._task_progress.setFormat("Completion: %p%")
-        self._upcoming_tasks_label: QLabel = BodyLabel("", self._theme)
-        for w in (self._tasks_due_label, self._tasks_overdue_label,
-                  self._task_progress, self._upcoming_tasks_label):
-            self._task_card_layout.addWidget(w)
-        grid.addWidget(self._task_card, 1, 0)
-
-        self._streak_card, self._streak_card_layout = self._make_card("Streaks")
-        self._journal_streak_label = BodyLabel("Journaling: 0 days", self._theme)
-        self._med_streak_label = BodyLabel("Medication adherence: 0 days", self._theme)
-        self._org_streak_label = BodyLabel("Organization: 0 days", self._theme)
-        for w in (self._journal_streak_label, self._med_streak_label, self._org_streak_label):
-            self._streak_card_layout.addWidget(w)
-        grid.addWidget(self._streak_card, 1, 1)
-
-        # Row 2 -- Gamification | Values
-        self._game_card, self._game_card_layout = self._make_card("Gamification")
-        self._level_label = BodyLabel("Level: 1", self._theme)
-        self._xp_bar = ThemedProgressBar(self._theme, color_key="accent")
-        self._xp_bar.setMaximum(100)
-        self._xp_bar.setValue(0)
-        self._xp_bar.setFormat("XP: %v / %m")
-        self._achievements_label: QLabel = BodyLabel("Recent achievements: --", self._theme)
-        for w in (self._level_label, self._xp_bar, self._achievements_label):
-            self._game_card_layout.addWidget(w)
-        grid.addWidget(self._game_card, 2, 0)
-
-        self._values_card, self._values_card_layout = self._make_card("Values This Week")
-        self._values_top_label = BodyLabel("Top value: --", self._theme)
-        self._values_neglect_label = BodyLabel("Neglected: --", self._theme)
-        self._values_action_label = BodyLabel("", self._theme)
-        for w in (self._values_top_label, self._values_neglect_label, self._values_action_label):
-            self._values_card_layout.addWidget(w)
-        grid.addWidget(self._values_card, 2, 1)
-
-        self._layout.addLayout(grid)
+    def _build_context_section(self) -> None:
+        self._context_card, layout = self._make_card("Context")
+        self._context_mood_label = BodyLabel("Mood has not been recorded today.", self._theme)
+        self._context_energy_label = BodyLabel("Energy has not been forecast yet.", self._theme)
+        self._context_task_label = BodyLabel("No task pressure is visible yet.", self._theme)
+        self._context_values_label = BodyLabel("Values report unavailable.", self._theme)
+        for w in (
+            self._context_mood_label,
+            self._context_energy_label,
+            self._context_task_label,
+            self._context_values_label,
+        ):
+            layout.addWidget(w)
+        self._layout.addWidget(self._context_card)
 
     # -- suggestions ---------------------------------------------------
 
     def _build_suggestions_section(self) -> None:
-        card, layout = self._make_card("Personalized Suggestions")
+        card, layout = self._make_card("Suggestions")
         self._suggestions_label = BodyLabel(
-            "Start tracking your mood and tasks to receive personalized suggestions.",
+            "Record mood and task data to make suggestions more specific.",
             self._theme,
         )
         layout.addWidget(self._suggestions_label)
-        self._layout.addWidget(card)
-
-    # -- system health -------------------------------------------------
-
-    def _build_system_health_card(self) -> None:
-        card, layout = self._make_card("System Health")
-
-        self._cpu_bar = ThemedProgressBar(self._theme, color_key="accent")
-        self._cpu_bar.setMaximum(100)
-        self._cpu_bar.setValue(0)
-        self._cpu_bar.setFormat("CPU: %p%")
-        self._mem_bar = ThemedProgressBar(self._theme, color_key="warning")
-        self._mem_bar.setMaximum(100)
-        self._mem_bar.setValue(0)
-        self._mem_bar.setFormat("Memory: %p%")
-        self._disk_bar = ThemedProgressBar(self._theme, color_key="secondary")
-        self._disk_bar.setMaximum(100)
-        self._disk_bar.setValue(0)
-        self._disk_bar.setFormat("Disk: %p%")
-
-        for lbl_text, bar in [("CPU", self._cpu_bar),
-                               ("Memory", self._mem_bar),
-                               ("Disk", self._disk_bar)]:
-            row = QHBoxLayout()
-            row.addWidget(QLabel(lbl_text))
-            row.addWidget(bar)
-            layout.addLayout(row)
-
         self._layout.addWidget(card)
 
     # ------------------------------------------------------------------
@@ -374,16 +309,15 @@ class DashboardWidget(QWidget):
     def refresh(self) -> None:
         """Reload data from managers and update all cards."""
         self._refresh_crisis_banner()
+        self._refresh_right_now()
+        self._refresh_next_action()
         self._refresh_daily_briefing()
         self._refresh_welcome()
         self._refresh_mood()
         self._refresh_energy()
         self._refresh_tasks()
-        self._refresh_streaks()
-        self._refresh_gamification()
         self._refresh_values()
         self._refresh_suggestions()
-        self._refresh_system_health()
 
     def _refresh_crisis_banner(self) -> None:
         from gui.subscription_helpers import check_feature
@@ -417,12 +351,14 @@ class DashboardWidget(QWidget):
         from gui.subscription_helpers import check_feature
         has_pro = check_feature("full_dashboard", self._subscription_manager)
         if not has_pro:
+            self._briefing_card.setVisible(False)
             self._briefing_energy.setVisible(False)
             self._briefing_tasks.setVisible(False)
             self._briefing_skill.setVisible(False)
             if hasattr(self, '_briefing_upsell'):
                 self._briefing_upsell.setVisible(True)
             return
+        self._briefing_card.setVisible(True)
         self._briefing_energy.setVisible(True)
         self._briefing_tasks.setVisible(True)
         self._briefing_skill.setVisible(True)
@@ -446,7 +382,7 @@ class DashboardWidget(QWidget):
                 lines = [f"  • {t['title']} (energy: {t['energy_required']}/10)" for t in briefing.task_recommendations[:3]]
                 self._briefing_tasks.setText("Suggested tasks:\n" + "\n".join(lines))
             else:
-                self._briefing_tasks.setText("No pending tasks — great job!")
+                self._briefing_tasks.setText("No pending tasks.")
             if briefing.suggested_skill:
                 self._briefing_skill.setText(f"Suggested skill: {briefing.suggested_skill}")
             else:
@@ -461,8 +397,53 @@ class DashboardWidget(QWidget):
             profile = self._profile_manager.current_profile
             if profile and hasattr(profile, "name") and profile.name:
                 user_name = profile.name
-        self._welcome_label.setText(f"Welcome back, {user_name}!")
+        self._welcome_label.setText(f"Today, {user_name}")
         self._date_label.setText(date.today().strftime("%A, %B %d, %Y"))
+
+    def _refresh_right_now(self) -> None:
+        try:
+            incomplete_count = 0
+            if self._task_manager:
+                incomplete_count = len([t for t in self._task_manager.tasks if not t.completed])
+
+            energy_text = "Energy has not been logged today."
+            if self._energy_predictor:
+                energy_text = "Energy forecast is available."
+
+            if incomplete_count:
+                self._state_sentence.setText(
+                    f"{energy_text} {incomplete_count} open task{'s' if incomplete_count != 1 else ''} need a decision."
+                )
+            else:
+                self._state_sentence.setText(
+                    f"{energy_text} No open tasks are pressing right now."
+                )
+        except (AttributeError, ValueError, TypeError) as exc:
+            logger.debug("Right-now refresh error: %s", exc)
+
+    def _refresh_next_action(self) -> None:
+        try:
+            if not self._task_manager:
+                self._next_action_label.setText("Record how you feel or add one task to start shaping the day.")
+                return
+            incomplete = [t for t in self._task_manager.tasks if not t.completed]
+            if not incomplete:
+                self._next_action_label.setText("No open tasks. Record a mood entry or take a short practice.")
+                return
+            upcoming = sorted(
+                incomplete,
+                key=lambda t: (
+                    str(getattr(t, "due_date", "") or "9999-99-99"),
+                    -int(getattr(t, "priority", 0) or 0),
+                ),
+            )
+            task = upcoming[0]
+            title = getattr(task, "title", "Untitled task")
+            due = getattr(task, "due_date", None)
+            due_text = f" Due {due}." if due else ""
+            self._next_action_label.setText(f"Start with: {title}.{due_text}")
+        except (AttributeError, ValueError, TypeError) as exc:
+            logger.debug("Next-action refresh error: %s", exc)
 
     def _refresh_mood(self) -> None:
         if not self._mood_manager:
@@ -477,23 +458,21 @@ class DashboardWidget(QWidget):
                 ]
             count = len(entries)
             avg = sum(e.mood_score for e in entries) / count if count else 0
-            self._mood_today_label.setText(
-                f"Today's entries: {count}" + (f" (avg {avg:.1f}/10)" if count else "")
+            mood_text = (
+                f"Mood: {count} entr{'y' if count == 1 else 'ies'} today"
+                + (f", average {avg:.1f}/10." if count else ".")
             )
-            # Trend
             if hasattr(self._mood_manager, "mood_trend"):
                 trend = self._mood_manager.mood_trend()
-                self._mood_trend_label.setText(
-                    f"7-day trend: {trend.direction.value.capitalize()}"
-                )
+                mood_text += f" Seven-day trend: {trend.direction.value.lower()}."
+            self._context_mood_label.setText(mood_text)
         except (AttributeError, ValueError, TypeError) as exc:
             logger.debug(f"Mood refresh error: {exc}")
 
     def _refresh_energy(self) -> None:
         from gui.subscription_helpers import check_feature
         if not check_feature("energy_predictor", self._subscription_manager):
-            self._energy_level_label.setText("Energy prediction available with Pro")
-            self._energy_prediction_label.setText("")
+            self._context_energy_label.setText("Energy: forecasting is available with Pro.")
             return
         if not self._energy_predictor:
             return
@@ -515,16 +494,15 @@ class DashboardWidget(QWidget):
             state.setdefault("medication_taken", False)
 
             pred = self._energy_predictor.predict_single(state)
-            self._energy_level_label.setText(
-                f"Current energy: {pred.predicted_energy:.0f}/100 "
-                f"({pred.energy_level.value.replace('_', ' ').title()})"
+            energy_text = (
+                f"Energy: {pred.predicted_energy:.0f}/100, "
+                f"{pred.energy_level.value.replace('_', ' ').lower()}."
             )
             rest = self._energy_predictor.predict_rest_of_day(state)
             if rest:
                 avg_rest = sum(p.predicted_energy for p in rest) / len(rest)
-                self._energy_prediction_label.setText(
-                    f"Rest-of-day average: {avg_rest:.0f}/100"
-                )
+                energy_text += f" Rest-of-day average: {avg_rest:.0f}/100."
+            self._context_energy_label.setText(energy_text)
         except (AttributeError, ValueError, TypeError) as exc:
             logger.debug(f"Energy refresh error: {exc}")
 
@@ -549,53 +527,20 @@ class DashboardWidget(QWidget):
             ]
             completed = [t for t in all_tasks if t.completed]
             total = len(all_tasks)
-            pct = int(len(completed) / total * 100) if total else 0
-
-            self._tasks_due_label.setText(f"Due today: {len(due_today)}")
-            self._tasks_overdue_label.setText(f"Overdue: {len(overdue)}")
-            self._task_progress.setValue(pct)
 
             upcoming = sorted(
                 [t for t in incomplete if hasattr(t, "due_date") and t.due_date],
                 key=lambda t: str(t.due_date),
             )[:3]
+            parts = [
+                f"Tasks: {len(due_today)} due today",
+                f"{len(overdue)} overdue",
+                f"{len(completed)}/{total} completed" if total else "none logged",
+            ]
             if upcoming:
-                lines = [f"  - {t.title} (due {t.due_date})" for t in upcoming]
-                self._upcoming_tasks_label.setText("Upcoming:\n" + "\n".join(lines))
-            else:
-                self._upcoming_tasks_label.setText("No upcoming tasks.")
-        except (AttributeError, ValueError, TypeError) as exc:
-            logger.debug(f"Mood refresh error: {exc}")
-
-    def _refresh_streaks(self) -> None:
-        # Streaks come from various managers; use defaults if unavailable.
-        pass
-
-    def _refresh_gamification(self) -> None:
-        from gui.subscription_helpers import check_feature
-        if not check_feature("gamification", self._subscription_manager):
-            self._level_label.setText("Gamification available with Pro")
-            self._xp_bar.setVisible(False)
-            self._achievements_label.setText("")
-            return
-        if not self._gamification_manager:
-            return
-        try:
-            if hasattr(self._gamification_manager, "level"):
-                self._level_label.setText(
-                    f"Level: {self._gamification_manager.level}"
-                )
-            if hasattr(self._gamification_manager, "xp"):
-                xp = self._gamification_manager.xp
-                xp_next = getattr(self._gamification_manager, "xp_for_next_level", 100)
-                self._xp_bar.setMaximum(xp_next)
-                self._xp_bar.setValue(xp)
-            if hasattr(self._gamification_manager, "recent_achievements"):
-                achievements = self._gamification_manager.recent_achievements[:3]
-                if achievements:
-                    self._achievements_label.setText(
-                        "Recent: " + ", ".join(str(a) for a in achievements)
-                    )
+                next_titles = ", ".join(str(t.title) for t in upcoming)
+                parts.append(f"next: {next_titles}")
+            self._context_task_label.setText("; ".join(parts) + ".")
         except (AttributeError, ValueError, TypeError) as exc:
             logger.debug(f"Mood refresh error: {exc}")
 
@@ -609,22 +554,14 @@ class DashboardWidget(QWidget):
                     (s.tasks_aligned for s in report.value_scores if s.value_name == report.top_value),
                     0,
                 )
-                self._values_top_label.setText(
-                    f"Top value: {report.top_value} ({top_tasks} tasks)"
-                )
+                values_text = f"Values: {report.top_value} is most represented this week ({top_tasks} tasks)."
             else:
-                self._values_top_label.setText("Top value: No aligned tasks yet.")
+                values_text = "Values: no aligned tasks yet."
             if report.neglected_value:
-                self._values_neglect_label.setText(
-                    f"Neglected: {report.neglected_value}"
-                )
+                values_text += f" Least represented: {report.neglected_value}."
                 if report.suggested_action:
-                    self._values_action_label.setText(report.suggested_action)
-                else:
-                    self._values_action_label.setText("")
-            else:
-                self._values_neglect_label.setText("Neglected: None")
-                self._values_action_label.setText("")
+                    values_text += f" {report.suggested_action}"
+            self._context_values_label.setText(values_text)
         except (AttributeError, ValueError, TypeError) as exc:
             logger.debug(f"Mood refresh error: {exc}")
 
@@ -647,9 +584,7 @@ class DashboardWidget(QWidget):
                             "Start with a small, low-energy task to build momentum."
                         )
                     if "ADHD" in cond_names or "adhd" in cond_names:
-                        suggestions.append(
-                            "Break large tasks into subtasks for quick wins."
-                        )
+                        suggestions.append("Break a large task into one visible next step.")
                     if "OCD" in cond_names or "ocd" in cond_names:
                         suggestions.append(
                             "Consider an ERP session for your anxiety hierarchy."
@@ -659,25 +594,8 @@ class DashboardWidget(QWidget):
                             "A grounding breathing exercise may help you feel safe and present."
                         )
         if not suggestions:
-            suggestions.append(
-                "Track your mood and complete tasks to unlock personalized tips!"
-            )
+            suggestions.append("Record mood and task data to make suggestions more specific.")
         self._suggestions_label.setText("\n".join(f"- {s}" for s in suggestions))
-
-    def _refresh_system_health(self) -> None:
-        if not _HAS_PSUTIL:
-            self._cpu_bar.setValue(0)
-            self._mem_bar.setValue(0)
-            self._disk_bar.setValue(0)
-            return
-        try:
-            self._cpu_bar.setValue(int(psutil.cpu_percent(interval=0)))
-            mem = psutil.virtual_memory()
-            self._mem_bar.setValue(int(mem.percent))
-            disk = psutil.disk_usage("/")
-            self._disk_bar.setValue(int(disk.percent))
-        except (AttributeError, ValueError, TypeError) as exc:
-            logger.debug(f"Mood refresh error: {exc}")
 
     # ------------------------------------------------------------------
     # Theme update
@@ -687,10 +605,18 @@ class DashboardWidget(QWidget):
         try:
             from gui.state_bus import get_state_bus
             bus = get_state_bus()
-            bus.mood_logged.connect(self.refresh)
-            bus.energy_updated.connect(self.refresh)
-            bus.task_changed.connect(self.refresh)
-            bus.crisis_detected.connect(self.refresh)
+
+            def refresh(*_args, **_kwargs) -> None:
+                self.refresh()
+
+            bus.mood_logged.connect(refresh)
+            bus.energy_updated.connect(refresh)
+            bus.task_changed.connect(refresh)
+            crisis_signal = getattr(bus, "crisis_signal_detected", None)
+            if crisis_signal is None:
+                crisis_signal = getattr(bus, "crisis_detected", None)
+            if crisis_signal is not None:
+                crisis_signal.connect(refresh)
         except (ImportError, RuntimeError) as exc:
             logger.debug(f"State bus subscription error: {exc}")
 
@@ -716,10 +642,5 @@ class DashboardWidget(QWidget):
                     if cw:
                         cw.deleteLater()
 
-        self._build_welcome_section()
-        self._build_quick_actions()
-        self._build_cards_grid()
-        self._build_suggestions_section()
-        self._build_system_health_card()
-        self._layout.addStretch()
+        self._build_sections()
         self.refresh()

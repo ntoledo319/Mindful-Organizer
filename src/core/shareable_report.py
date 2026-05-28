@@ -11,7 +11,7 @@ import logging
 import random
 import string
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from pathlib import Path
 from typing import Any
 
@@ -197,9 +197,9 @@ class ShareableReport:
         if not logs:
             return
         logs = sorted(logs, key=lambda x: x.get("date", ""))
-        labels = [l.get("date", "") for l in logs]
-        qualities = [l.get("quality", 0) for l in logs]
-        durations = [l.get("duration_hours", 0) for l in logs]
+        labels = [log.get("date", "") for log in logs]
+        qualities = [log.get("quality", 0) for log in logs]
+        durations = [log.get("duration_hours", 0) for log in logs]
         chart_id = _random_id()
         avg_q = sum(qualities) / len(qualities) if qualities else 0
         avg_d = sum(durations) / len(durations) if durations else 0

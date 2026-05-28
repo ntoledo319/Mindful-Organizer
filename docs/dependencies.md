@@ -13,8 +13,13 @@ Defined in `pyproject.toml` `[project.dependencies]`:
 |---------|---------|------|-----------|
 | PyQt6 | >=6.4.0 | GUI framework | **Yes** |
 | numpy | >=1.24.0 | Numerical computing | **Yes** |
-| cryptography | >=38.0.0 | Encryption (Fernet, scrypt) | No |
+| cryptography | >=41.0.0 | Encryption (Fernet, scrypt) | No |
 | psutil | >=5.9.0 | System monitoring | No |
+| keyring | >=24.0.0 | OS credential storage | No |
+| fastapi | >=0.110.0 | Local API layer | No |
+| uvicorn | >=0.27.0 | Local API server | No |
+| pydantic | >=2.5.0 | API schema validation | No |
+| httpx | >=0.26.0 | API test client and HTTP client | No |
 
 ## Optional Dependencies
 
@@ -47,17 +52,11 @@ Defined in `pyproject.toml` `[project.dependencies]`:
 
 ## Notable Missing from pyproject.toml
 
-These packages appear in `requirements.txt` or source but are **not** in `pyproject.toml`:
+These packages appear in source or legacy documentation but are **not** in `pyproject.toml`:
 
 | Package | Where Found | Status |
 |---------|-------------|--------|
-| python-dateutil | `requirements.txt`, imports | **Inferred core** — used by NLP parser for date parsing |
-| seaborn | `requirements.txt` | Not used in source |
-| python-magic | `requirements.txt` | Not used in source |
-| joblib | `requirements.txt` | Pulled in by scikit-learn |
-| black | `requirements.txt` | Replaced by ruff |
-| flake8 | `requirements.txt` | Replaced by ruff |
-| sphinx | `requirements.txt` | Not used actively |
+| python-dateutil | source imports | **Inferred optional/core** — used by NLP parser for date parsing |
 | requests | `scripts/fetch_meditations.py` | Only used by optional script |
 
 ## SaaS / API Integrations

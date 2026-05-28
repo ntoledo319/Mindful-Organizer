@@ -32,13 +32,15 @@ flag and rewrite:
 - Sans-serif heading + slightly lighter sans-serif body with zero personality
 - Bento grid layouts copied from Vercel/Linear/Stripe marketing pages
 
-### Project Identity (run /taste-brief to fill)
-- This project believes: [FILL]
-- This project is for: [FILL]
-- This project should feel like: [FILL]
-- This project should NEVER feel like: [FILL]
-- Must-word: [FILL]
-- Never-word: [FILL]
+### Project Identity
+- Brand name: **Hearth** (casual / in-app). Legal: **The Hearth Project**.
+- Primary domain: `hearthproject.io`.
+- This project believes: Your computer should adapt to your psychology, not the other way around. Mental health tools belong in the OS layer, not buried in browser tabs.
+- This project is for: People managing ADHD, anxiety, depression, OCD, PTSD, or bipolar who are tired of apps that track but don't act. Desktop workers who need their environment to respond to their state.
+- This project should feel like: A quiet, attentive companion that dims the lights when you're drained, closes Discord when anxiety spikes, and protects your focus like a bodyguard. Not a dashboard. Not a therapist. The warm corner of the computer.
+- This project should NEVER feel like: A wellness app. Corporate mindfulness software. A journal with ads. Anything that says "Unlock your potential" or "Supercharge your productivity."
+- Must-word: hearth
+- Never-word: optimize
 
 ### Taste Verification
 Before any task is complete, run the Specificity Test:

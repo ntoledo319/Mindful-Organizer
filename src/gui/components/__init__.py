@@ -1,5 +1,5 @@
 """
-Reusable UI components for Mindful Organizer.
+Reusable UI components for Hearth.
 
 All widgets in this package are theme-aware and accessibility-friendly.
 They eliminate the copy-pasted card / label / button helpers that were

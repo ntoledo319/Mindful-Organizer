@@ -44,7 +44,7 @@
 - **What a human should verify:** Whether the CI workflow should be updated to run ruff instead of flake8.
 
 ### A7: The data directory name `.mindful_optimizer` is a typo preserved for compatibility
-- **Why inferred:** The product is "Mindful Organizer" but the directory is "optimizer". The codebase previously had mixed usage (`.mindful_organizer` in `platform_utils.py`).
+- **Why inferred:** The product is "Hearth" but the directory is "optimizer". The codebase previously had mixed usage (`.mindful_organizer` in `platform_utils.py`).
 - **Evidence:** `src/main.py`, `src/core/database.py`, `src/windows/platform_utils.py` (before fix)
 - **Confidence:** Confirmed
 - **What a human should verify:** Whether existing users have data in `.mindful_optimizer` that would break if the name changed. (Confirmed: yes, the app has been using `.mindful_optimizer` since at least the v1.0.0 era.)

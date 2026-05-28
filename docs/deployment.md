@@ -7,7 +7,7 @@
 
 ## Deployment Model
 
-Mindful Organizer is a **desktop application**, not a service. "Deployment" means packaging and distributing the app to end users.
+Hearth is a **desktop application**, not a service. "Deployment" means packaging and distributing the app to end users.
 
 ### Distribution Channels
 
@@ -37,8 +37,8 @@ There is **only one runtime environment** — the user's local machine. There ar
 
 | Artifact | Tool | Output Path |
 |----------|------|-------------|
-| macOS/Linux executable | PyInstaller | `dist/Mindful Organizer/` |
-| Windows executable | PyInstaller | `dist/Mindful Organizer.exe` |
+| macOS/Linux executable | PyInstaller | `dist/Hearth/` |
+| Windows executable | PyInstaller | `dist/Hearth.exe` |
 | Python wheel | `python -m build` | `dist/*.whl` |
 | Source distribution | `python -m build` | `dist/*.tar.gz` |
 | MSIX package | `build_msix.ps1` | `*.msix` (manual) |

@@ -472,7 +472,7 @@ class TaskManager:
 
         # Emit state change
         try:
-            from gui.state_bus import get_state_bus
+            from core.state_bus import get_state_bus
             bus = get_state_bus()
             bus.emit_task_changed("added", task_id=task.id, title=task.title)
         except RuntimeError:
@@ -557,7 +557,7 @@ class TaskManager:
 
         # Emit state change
         try:
-            from gui.state_bus import get_state_bus
+            from core.state_bus import get_state_bus
             bus = get_state_bus()
             bus.emit_task_changed("completed", task_id=task.id, title=task.title)
         except RuntimeError:

@@ -1,6 +1,6 @@
-# Contributing to Mindful Organizer 🤝
+# Contributing to Hearth 🤝
 
-First off, thank you for considering contributing to Mindful Organizer! It's people like you that make this a tool that truly helps people manage their mental health while staying productive.
+First off, thank you for considering contributing to Hearth! It's people like you that make this a tool that truly helps people manage their mental health while staying productive.
 
 ## 📋 Table of Contents
 
@@ -59,7 +59,7 @@ Before you begin, ensure you have:
 ### Setting Up Your Development Environment
 
 1. **Fork the repository**
-   - Click the "Fork" button at the top of the [Mindful Organizer repository](https://github.com/ntoledo319/Mindful-Organizer)
+   - Click the "Fork" button at the top of the [Hearth repository](https://github.com/ntoledo319/Mindful-Organizer)
 
 2. **Clone your fork**
    ```bash
@@ -102,7 +102,7 @@ Before creating bug reports, please check existing issues to avoid duplicates. W
 - **System information**:
   - OS: [e.g., macOS 12.0]
   - Python version
-  - Mindful Organizer version
+  - Hearth version
 - **Mental health profile settings** (if relevant and comfortable sharing)
 
 ### 💡 Suggesting Enhancements
@@ -371,4 +371,4 @@ If working on this project brings up mental health concerns:
 
 ---
 
-Thank you for contributing to Mindful Organizer! Together, we're building a tool that makes a real difference in people's lives. 💚
+Thank you for contributing to Hearth! Together, we're building a tool that makes a real difference in people's lives. 💚

@@ -38,6 +38,7 @@ logger = logging.getLogger(__name__)
 
 def _crisis_card() -> QFrame:
     frame = QFrame()
+    frame.setObjectName("crisisCard")
     frame.setFrameShape(QFrame.Shape.StyledPanel)
     frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
     return frame
@@ -61,6 +62,7 @@ def _contact_button(name: str, number: str) -> QPushButton:
     btn.setFont(QFont("Segoe UI", 16, QFont.Weight.Bold))
     btn.setMinimumHeight(70)
     btn.setCursor(Qt.CursorShape.PointingHandCursor)
+    btn.setProperty("class", "crisisContact")
     return btn
 
 
@@ -68,6 +70,7 @@ def _calm_button(text: str) -> QPushButton:
     btn = QPushButton(text)
     btn.setCursor(Qt.CursorShape.PointingHandCursor)
     btn.setFont(QFont("Segoe UI", 13, QFont.Weight.Bold))
+    btn.setProperty("class", "outline")
     return btn
 
 
@@ -244,6 +247,7 @@ class CrisisWidget(QWidget):
         self._data_dir = self._resolve_data_dir()
         self._load_plan()
         self._build_ui()
+        self._apply_theme()
 
     # ------------------------------------------------------------------
     # Persistence
@@ -262,11 +266,11 @@ class CrisisWidget(QWidget):
         return self._data_dir / "crisis_plan.json"
 
     def _load_plan(self) -> None:
-        if self._crisis_manager and hasattr(self._crisis_manager, "get_plan"):
+        if self._crisis_manager and hasattr(self._crisis_manager, "get_quick_access"):
             try:
-                self._plan = self._crisis_manager.get_plan()
+                self._plan.update(self._quick_access_to_plan(self._crisis_manager.get_quick_access()))
                 return
-            except (OSError, ValueError) as exc:
+            except Exception as exc:
                 logger.debug(f"Crisis manager load error: {exc}")
         path = self._plan_file()
         if path.exists():
@@ -277,12 +281,51 @@ class CrisisWidget(QWidget):
             except (json.JSONDecodeError, OSError) as exc:
                 logger.debug(f"Crisis plan load error: {exc}")
 
+    def _quick_access_to_plan(self, quick: dict[str, Any]) -> dict[str, Any]:
+        """Adapt CrisisPlanManager quick-access data to this widget's plan shape."""
+        emergency_contacts = []
+        for contact in quick.get("crisis_lines", []):
+            emergency_contacts.append({
+                "name": contact.get("name", ""),
+                "phone": contact.get("phone", "") or contact.get("instructions", ""),
+                "relationship": "Crisis line",
+            })
+        professional_contacts = []
+        for contact in quick.get("professionals", []):
+            professional_contacts.append({
+                "name": contact.get("name", ""),
+                "phone": contact.get("phone", ""),
+                "relationship": contact.get("role", "Professional"),
+            })
+        personal_contacts = []
+        for contact in quick.get("call_someone", []):
+            personal_contacts.append({
+                "name": contact.get("name", ""),
+                "phone": contact.get("phone", ""),
+                "relationship": contact.get("relationship", ""),
+            })
+        return {
+            "emergency_contacts": emergency_contacts or _DEFAULT_CRISIS_PLAN["emergency_contacts"],
+            "personal_contacts": personal_contacts,
+            "professional_contacts": professional_contacts,
+            "warning_signs": list(_DEFAULT_CRISIS_PLAN["warning_signs"]),
+            "coping_strategies": quick.get("try_first", []) or _DEFAULT_CRISIS_PLAN["coping_strategies"],
+            "reasons_for_living": quick.get("reasons_for_living", []),
+            "safe_places": quick.get("safe_places", []),
+        }
+
     def _save_plan(self) -> None:
-        if self._crisis_manager and hasattr(self._crisis_manager, "save_plan"):
+        if self._crisis_manager and hasattr(self._crisis_manager, "update_plan"):
             try:
-                self._crisis_manager.save_plan(self._plan)
+                from wellness.crisis_plan import CrisisPlan
+                self._crisis_manager.update_plan(CrisisPlan(
+                    warning_signs=self._plan.get("warning_signs", []),
+                    coping_strategies=self._plan.get("coping_strategies", []),
+                    safe_places=self._plan.get("safe_places", []),
+                    reasons_for_living=self._plan.get("reasons_for_living", []),
+                ))
                 return
-            except (OSError, ValueError) as exc:
+            except Exception as exc:
                 logger.debug(f"Crisis manager save error: {exc}")
         try:
             with open(self._plan_file(), "w") as fh:
@@ -301,18 +344,21 @@ class CrisisWidget(QWidget):
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QFrame.Shape.NoFrame)
+        scroll.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         outer.addWidget(scroll)
 
         container = QWidget()
+        container.setMaximumWidth(920)
         self._root = QVBoxLayout(container)
-        self._root.setSpacing(20)
-        self._root.setContentsMargins(32, 32, 32, 32)
+        self._root.setSpacing(16)
+        self._root.setContentsMargins(32, 32, 32, 40)
         scroll.setWidget(container)
 
         # Header
-        header = QLabel("CRISIS RESOURCES")
-        header.setFont(QFont("Segoe UI", 26, QFont.Weight.Bold))
-        header.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        header = QLabel("Crisis resources")
+        header.setObjectName("crisisHeader")
+        header.setFont(QFont("Segoe UI", 26, QFont.Weight.DemiBold))
         self._root.addWidget(header)
 
         self._build_emergency_contacts()
@@ -335,10 +381,72 @@ class CrisisWidget(QWidget):
         )
         disclaimer.setFont(QFont("Segoe UI", 12))
         disclaimer.setWordWrap(True)
-        disclaimer.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        disclaimer.setStyleSheet("font-style: italic;")
+        disclaimer.setObjectName("crisisDisclaimer")
         self._root.addWidget(disclaimer)
         self._root.addStretch()
+
+    def _apply_theme(self) -> None:
+        theme = {}
+        with contextlib.suppress(Exception):
+            theme = self.main_window.theme_manager.get_colors()
+        background = theme.get("background", "#18130F")
+        card_bg = theme.get("card_bg", "#221C16")
+        border = theme.get("border", "#3D3128")
+        text = theme.get("text", "#F2E8D9")
+        secondary = theme.get("secondary", "#BCAE9C")
+        accent = theme.get("accent", "#A8845F")
+        danger = theme.get("danger", "#C66860")
+        self.setStyleSheet(
+            f"""
+            QWidget {{ background-color: {background}; color: {text}; }}
+            QLabel {{ background-color: transparent; color: {text}; }}
+            QScrollArea {{ border: none; background-color: {background}; }}
+            QLabel#crisisHeader {{
+                color: {text};
+                font-size: 28px;
+                font-weight: 600;
+                padding-bottom: 8px;
+            }}
+            QLabel#crisisDisclaimer {{
+                color: {secondary};
+                font-size: 12px;
+                padding: 8px 0;
+            }}
+            QFrame#crisisCard {{
+                background-color: {card_bg};
+                border: 1px solid {border};
+                border-radius: 6px;
+                padding: 16px;
+            }}
+            QPushButton[class="crisisContact"] {{
+                background-color: transparent;
+                color: {text};
+                border: 1px solid {danger};
+                border-radius: 6px;
+                padding: 12px;
+                font-size: 14px;
+                font-weight: 600;
+                text-align: left;
+            }}
+            QPushButton[class="crisisContact"]:hover {{
+                background-color: {danger};
+                color: {background};
+            }}
+            QPushButton[class="outline"] {{
+                background-color: transparent;
+                color: {accent};
+                border: 1px solid {border};
+                border-radius: 6px;
+                padding: 10px 14px;
+                font-size: 13px;
+                font-weight: 500;
+            }}
+            QPushButton[class="outline"]:hover {{
+                background-color: {card_bg};
+                color: {text};
+            }}
+            """
+        )
 
     def _build_emergency_contacts(self) -> None:
         card = _crisis_card()
@@ -457,6 +565,7 @@ class CrisisWidget(QWidget):
                 if widget:
                     widget.deleteLater()
         self._build_ui()
+        self._apply_theme()
 
     # ------------------------------------------------------------------
     # Public API

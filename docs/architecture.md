@@ -8,7 +8,7 @@
 
 ## Overall Architecture
 
-Mindful Organizer follows a **layered desktop-application pattern** with reactive cross-widget communication.
+Hearth follows a **layered desktop-application pattern** with reactive cross-widget communication.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐

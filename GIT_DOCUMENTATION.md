@@ -1,4 +1,4 @@
-# Mindful Organizer Git Documentation
+# Hearth Git Documentation
 
 ## Table of Contents
 1. [Project Setup](#project-setup)

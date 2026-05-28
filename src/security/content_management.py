@@ -3,12 +3,18 @@ Secure content management system with privacy features and customizable filterin
 """
 import hashlib
 import json
+import logging
 import os
 import shutil
 from enum import Enum, auto
 from pathlib import Path
 
 from cryptography.fernet import Fernet
+
+logger = logging.getLogger(__name__)
+
+_KEYRING_SERVICE = "mindful-organizer.content-vault"
+_KEYRING_USERNAME = "fernet-key"
 
 
 class ContentCategory(Enum):
@@ -39,21 +45,66 @@ class ContentManager:
         self._initialize_secure_storage()
 
     def _initialize_secure_storage(self):
-        """Initialize secure storage system."""
+        """Initialize secure storage system.
+
+        The Fernet key is stored in the OS credential store (macOS Keychain,
+        Windows Credential Manager, freedesktop SecretService on Linux) via
+        the ``keyring`` library. Falling back to an on-disk key file defeats
+        the purpose of encryption, so we only do that with a loud warning
+        and only when keyring is genuinely unavailable.
+        """
         self.config_path.mkdir(parents=True, exist_ok=True)
         self.vault_path.mkdir(parents=True, exist_ok=True)
 
-        # Generate or load encryption key
-        key_file = self.config_path / "key.bin"
-        if not key_file.exists():
-            key = Fernet.generate_key()
-            with open(key_file, "wb") as f:
-                f.write(key)
-
-        with open(key_file, "rb") as f:
-            self.key = f.read()
-
+        self.key = self._load_or_create_key()
         self.cipher = Fernet(self.key)
+
+    def _load_or_create_key(self) -> bytes:
+        """Return the Fernet key, preferring the OS keyring.
+
+        Migrates legacy on-disk key.bin into the keyring on first launch and
+        deletes the old file afterward.
+        """
+        legacy_key_file = self.config_path / "key.bin"
+
+        try:
+            import keyring
+            stored = keyring.get_password(_KEYRING_SERVICE, _KEYRING_USERNAME)
+            if stored:
+                return stored.encode()
+
+            if legacy_key_file.exists():
+                key = legacy_key_file.read_bytes()
+                keyring.set_password(
+                    _KEYRING_SERVICE, _KEYRING_USERNAME, key.decode()
+                )
+                # Confirm migration before deleting the legacy copy.
+                if keyring.get_password(_KEYRING_SERVICE, _KEYRING_USERNAME):
+                    legacy_key_file.unlink()
+                    logger.info(
+                        "Migrated content-vault key from disk to OS keyring."
+                    )
+                return key
+
+            key = Fernet.generate_key()
+            keyring.set_password(
+                _KEYRING_SERVICE, _KEYRING_USERNAME, key.decode()
+            )
+            return key
+        except Exception as exc:  # keyring missing, no backend, locked, etc.
+            logger.warning(
+                "OS keyring unavailable (%s). Falling back to on-disk key "
+                "with restricted permissions. Encryption strength is reduced.",
+                exc,
+            )
+            if legacy_key_file.exists():
+                return legacy_key_file.read_bytes()
+            import contextlib
+            key = Fernet.generate_key()
+            legacy_key_file.write_bytes(key)
+            with contextlib.suppress(OSError):
+                os.chmod(legacy_key_file, 0o600)
+            return key
 
     def _hash_passcode(self, passcode: str, salt: bytes) -> str:
         """Hash a passcode with scrypt."""

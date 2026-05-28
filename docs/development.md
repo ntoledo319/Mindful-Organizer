@@ -1,8 +1,8 @@
 # Development Guide
 
-**Purpose:** How to set up, build, test, and contribute to Mindful Organizer.  
-**Intended audience:** Engineers.  
-**Confidence:** Confirmed by running commands where possible.  
+**Purpose:** How to set up, build, test, and contribute to Hearth.
+**Intended audience:** Engineers.
+**Confidence:** Confirmed by running commands where possible.
 **Last updated:** 2026-05-02
 
 ## Prerequisites
@@ -91,8 +91,8 @@ build_windows.bat
 ```
 
 Outputs:
-- `dist/Mindful Organizer/` (one-dir mode, per `mindful_organizer.spec`)
-- `dist/Mindful Organizer.exe` (Windows)
+- `dist/Hearth/` (one-dir mode, per `mindful_organizer.spec`)
+- `dist/Hearth.exe` (Windows)
 
 ### Wheel / sdist
 
@@ -102,8 +102,8 @@ python -m build
 ```
 
 Outputs in `dist/`:
-- `mindful_organizer-1.1.0-py3-none-any.whl`
-- `mindful_organizer-1.1.0.tar.gz`
+- `mindful_organizer-1.0.0-py3-none-any.whl`
+- `mindful_organizer-1.0.0.tar.gz`
 
 ## Release Flow
 
@@ -112,14 +112,14 @@ There is **no automated release pipeline** in CI. Release steps are manual:
 1. Update version in `pyproject.toml` and `setup.py`
 2. Update `CHANGELOG.md`
 3. Run `bash build.sh` (or `build_windows.bat`)
-4. Tag the release: `git tag v1.1.0`
-5. Push tag: `git push origin v1.1.0`
+4. Tag the release: `git tag v1.0.0`
+5. Push tag: `git push origin v1.0.0`
 6. Create GitHub Release and attach build artifacts
 
 ## Versioning
 
 The project uses **semantic versioning** (inferred from `pyproject.toml` and tags).
-- Current version: `1.1.0`
+- Current version: `1.0.0`
 - Previous version: `1.0.0` (in `mindful_organizer.spec` and legacy docs)
 
 ## CI/CD

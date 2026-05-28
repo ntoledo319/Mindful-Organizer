@@ -1,4 +1,4 @@
-# Mindful Organizer — Complete Feature List
+# Hearth — Complete Feature List
 
 > Last updated: 2026-05-02
 

@@ -234,9 +234,7 @@ _CONDITION_DELIVERY: dict[str, dict[NotificationType, DeliveryStyle]] = {
     },
 }
 
-_DEFAULT_DELIVERY: dict[NotificationType, DeliveryStyle] = {
-    nt: DeliveryStyle.SCHEDULED for nt in NotificationType
-}
+_DEFAULT_DELIVERY: dict[NotificationType, DeliveryStyle] = dict.fromkeys(NotificationType, DeliveryStyle.SCHEDULED)
 
 
 def delivery_style_for(

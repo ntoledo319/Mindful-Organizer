@@ -1,14 +1,14 @@
 # System Overview
 
-**Purpose:** High-level description of what Mindful Organizer is, who uses it, and what it does.  
-**Intended audience:** New engineers, operators, auditors, buyers.  
-**Confidence:** Mixed — product behavior is confirmed from source; user personas are inferred from feature design.  
-**Source references:** `src/main.py`, `src/gui/main_window.py`, `src/core/`, `src/profiles/`, `src/wellness/`  
+**Purpose:** High-level description of what Hearth is, who uses it, and what it does.
+**Intended audience:** New engineers, operators, auditors, buyers.
+**Confidence:** Mixed — product behavior is confirmed from source; user personas are inferred from feature design.
+**Source references:** `src/main.py`, `src/gui/main_window.py`, `src/core/`, `src/profiles/`, `src/wellness/`
 **Last updated:** 2026-05-02
 
 ## What the Product Is
 
-Mindful Organizer is a **single-user, offline-first desktop application** for mental-health-aware productivity. It runs on macOS, Linux, and Windows. All user data is stored locally in SQLite and JSON files. There is no cloud sync, no telemetry, and no network dependency for core features.
+Hearth is a **single-user, offline-first desktop application** for mental-health-aware productivity. It runs on macOS, Linux, and Windows. All user data is stored locally in SQLite and JSON files. There is no cloud sync, no telemetry, and no network dependency for core features.
 
 The application adapts its UI and recommendations based on a user-configurable mental health profile (conditions such as ADHD, Anxiety, Depression, OCD, PTSD, Bipolar, etc.).
 
@@ -49,7 +49,7 @@ There is **no multi-user support**, **no server-side API**, and **no administrat
 
 ```
 ┌─────────────────────────────────────────────┐
-│          Mindful Organizer (desktop)        │
+│          Hearth (desktop)        │
 │  ┌─────────┐  ┌─────────┐  ┌─────────────┐ │
 │  │   GUI   │  │  Core   │  │   Wellness  │ │
 │  │ (PyQt6) │  │Managers │  │   Modules   │ │

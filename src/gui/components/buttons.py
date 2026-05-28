@@ -25,7 +25,8 @@ class _ThemedButton(QPushButton):
         self._hover_key = hover_key
         self._text_color = text_color
         self.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.setFont(QFont(self.font().family(), 13, QFont.Weight.Bold))
+        self.setMinimumHeight(36)
+        self.setFont(QFont(self.font().family(), 13, QFont.Weight.Medium))
         self._refresh_style()
 
     def set_theme(self, theme: dict[str, str]) -> None:
@@ -35,11 +36,12 @@ class _ThemedButton(QPushButton):
     def _refresh_style(self) -> None:
         bg = self._theme.get(self._bg_key, "#4a90d9")
         hover = self._theme.get(self._hover_key, "#357abd")
+        accent_text = self._theme.get("background", "#18130F")
         self.setStyleSheet(
             f"QPushButton {{ background-color: {bg}; "
-            f"color: {self._text_color}; border: none; "
-            f"border-radius: 8px; padding: 10px 18px; "
-            f"font-weight: bold; font-size: 13px; }}"
+            f"color: {accent_text if self._bg_key == 'accent' else self._text_color}; border: none; "
+            f"border-radius: 5px; padding: 8px 14px; "
+            f"font-weight: 500; font-size: 13px; }}"
             f"QPushButton:hover {{ background-color: {hover}; }}"
         )
 
@@ -53,7 +55,7 @@ class AccentButton(_ThemedButton):
         theme: dict[str, str] | None = None,
         parent=None,
     ) -> None:
-        super().__init__(text, theme, bg_key="accent", hover_key="secondary", parent=parent)
+        super().__init__(text, theme, bg_key="accent", hover_key="accent_hover", parent=parent)
 
 
 class DangerButton(_ThemedButton):
@@ -65,7 +67,7 @@ class DangerButton(_ThemedButton):
         theme: dict[str, str] | None = None,
         parent=None,
     ) -> None:
-        super().__init__(text, theme, bg_key="danger", hover_key="warning", parent=parent)
+        super().__init__(text, theme, bg_key="danger", hover_key="hover", text_color="#ffffff", parent=parent)
 
 
 class GhostButton(_ThemedButton):
@@ -87,9 +89,9 @@ class GhostButton(_ThemedButton):
         )
         self.setStyleSheet(
             f"QPushButton {{ background-color: transparent; "
-            f"color: {(theme or {}).get('accent', '#4a90d9')}; "
+            f"color: {(theme or {}).get('text', '#333333')}; "
             f"border: 1px solid {(theme or {}).get('border', '#cccccc')}; "
-            f"border-radius: 8px; padding: 8px 14px; "
-            f"font-weight: bold; font-size: 13px; }}"
+            f"border-radius: 5px; padding: 8px 14px; "
+            f"font-weight: 500; font-size: 13px; }}"
             f"QPushButton:hover {{ background-color: {(theme or {}).get('hover', '#e8f4fd')}; }}"
         )

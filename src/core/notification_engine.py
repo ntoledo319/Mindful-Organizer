@@ -10,6 +10,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime, time
+from pathlib import Path
 
 from core.database import DatabaseManager, TableName
 from core.wellness_orchestrator import WellnessOrchestrator
@@ -45,10 +46,16 @@ class SmartNotificationEngine:
         self,
         db: DatabaseManager | None = None,
         orchestrator: WellnessOrchestrator | None = None,
+        data_dir: Path | None = None,
     ) -> None:
-        self.db = db or DatabaseManager()
-        self.db.initialize()
-        self.orchestrator = orchestrator or WellnessOrchestrator(self.db)
+        self.db = db
+        if self.db is not None:
+            self.db.initialize()
+        self.orchestrator = orchestrator
+        if self.orchestrator is None and self.db is not None:
+            self.orchestrator = WellnessOrchestrator(self.db)
+        elif self.orchestrator is None and data_dir is not None:
+            self.orchestrator = WellnessOrchestrator(data_dir=data_dir)
 
     def generate_notifications(
         self,
@@ -59,6 +66,9 @@ class SmartNotificationEngine:
         now = datetime.now()
 
         # Get latest snapshot
+        if self.orchestrator is None:
+            return notifications
+
         snapshot = self.orchestrator.snapshot(now)
 
         # Energy-based task suggestion
@@ -104,7 +114,11 @@ class SmartNotificationEngine:
             ))
 
         # Medication reminder with adherence context
-        if snapshot.medication_adherence is not None and snapshot.medication_adherence < 1.0:
+        if (
+            self.db is not None
+            and snapshot.medication_adherence is not None
+            and snapshot.medication_adherence < 1.0
+        ):
                 missed = self.db.query(
                     TableName.MEDICATION_LOGS,
                     where="status = 'missed' AND date(scheduled_time) = date('now')",

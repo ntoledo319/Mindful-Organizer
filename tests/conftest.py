@@ -1,5 +1,5 @@
 """
-Shared fixtures for the Mindful Organizer test suite.
+Shared fixtures for the Hearth test suite.
 
 Provides reusable temporary directories, sample profiles, tasks,
 and mood entries that can be composed across all test modules.

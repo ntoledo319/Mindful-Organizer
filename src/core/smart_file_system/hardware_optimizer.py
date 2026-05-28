@@ -9,11 +9,12 @@ class HardwareOptimizer:
 
     def _get_system_stats(self) -> dict[str, Any]:
         """Get current system resource statistics"""
+        cpu_count = psutil.cpu_count() or 1
         return {
             'cpu_percent': psutil.cpu_percent(),
             'memory_percent': psutil.virtual_memory().percent,
             'disk_percent': psutil.disk_usage('/').percent,
-            'cpu_count': psutil.cpu_count(),
+            'cpu_count': cpu_count,
             'memory_total': psutil.virtual_memory().total,
             'disk_total': psutil.disk_usage('/').total
         }

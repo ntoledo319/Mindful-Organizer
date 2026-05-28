@@ -149,7 +149,7 @@ class DiaryCardManager:
         existing = self.get(card.date)
         data = card.to_db_dict()
         if existing and existing.id is not None:
-            self._db.update(TableName.DIARY_CARDS, data, "id = ?", (existing.id,))
+            self._db.update(TableName.DIARY_CARDS, existing.id, **data)
             return existing.id
         return self._db.insert(TableName.DIARY_CARDS, **data)
 
@@ -174,7 +174,10 @@ class DiaryCardManager:
 
     def delete(self, day: date) -> bool:
         """Delete a card for a specific day."""
-        return self._db.delete(TableName.DIARY_CARDS, "date = ?", (day.isoformat(),)) > 0
+        existing = self.get(day)
+        if not existing or existing.id is None:
+            return False
+        return self._db.delete(TableName.DIARY_CARDS, existing.id) > 0
 
     # ------------------------------------------------------------------
     # Content helpers

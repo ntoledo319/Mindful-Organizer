@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-Mindful Organizer is a **single-user offline desktop app**. The security model assumes the attacker has access to the user's OS account. Defenses are focused on **opportunistic protection** (passcode-protected folders, local encryption) rather than **high-assurance security**.
+Hearth is a **single-user offline desktop app**. The security model assumes the attacker has access to the user's OS account. Defenses are focused on **opportunistic protection** (passcode-protected folders, local encryption) rather than **high-assurance security**.
 
 **Confirmed risk:** The encryption key for secure folders is stored alongside the encrypted data. A compromised user account yields both key and ciphertext.
 

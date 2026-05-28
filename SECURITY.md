@@ -2,7 +2,7 @@
 
 ## Our Commitment to Security
 
-Mindful Organizer handles sensitive mental health data, and we take security seriously. This document outlines our security practices and how to report vulnerabilities.
+Hearth handles sensitive mental health data, and we take security seriously. This document outlines our security practices and how to report vulnerabilities.
 
 ## 🛡️ Security Features
 
@@ -57,7 +57,7 @@ Please provide:
 We appreciate responsible disclosure and recognize security researchers who help us:
 - Public acknowledgment (if desired)
 - Entry in our Security Hall of Fame
-- Mindful Organizer swag for significant findings
+- Hearth swag for significant findings
 
 ## 🔍 Security Best Practices for Users
 

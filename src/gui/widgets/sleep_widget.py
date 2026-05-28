@@ -27,9 +27,6 @@ from PyQt6.QtWidgets import (
     QMessageBox,
     QPushButton,
     QScrollArea,
-    QSlider,
-    QSpinBox,
-    QTextEdit,
     QTimeEdit,
     QVBoxLayout,
     QWidget,
@@ -366,7 +363,6 @@ class SleepWidget(QWidget):
             dt = e.get("date", "?")
             dur = e.get("duration_hours", 0)
             qual = e.get("quality", "?")
-            ints = e.get("interruptions", 0)
             bed = e.get("bedtime", "?")
             wake = e.get("wake_time", "?")
             q_label = {1: "Poor", 2: "Okay", 3: "Good"}.get(qual, "?")

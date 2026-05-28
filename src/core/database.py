@@ -335,6 +335,18 @@ class QueryResult:
     row_count: int = 0
     last_row_id: int | None = None
 
+    def __bool__(self) -> bool:
+        return bool(self.rows)
+
+    def __iter__(self):
+        return iter(self.rows)
+
+    def __len__(self) -> int:
+        return len(self.rows)
+
+    def __getitem__(self, index: int) -> dict[str, Any]:
+        return self.rows[index]
+
 
 class DatabaseManager:
     """Thread-safe SQLite database manager with migration support.

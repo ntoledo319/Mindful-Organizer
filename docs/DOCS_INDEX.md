@@ -1,8 +1,8 @@
 # Documentation Index
 
-**Purpose:** Navigation hub for the Mindful Organizer documentation suite.  
-**Intended audience:** All readers — engineers, operators, auditors, buyers.  
-**Confidence:** Confirmed against repository structure and source code.  
+**Purpose:** Navigation hub for the Hearth documentation suite.
+**Intended audience:** All readers — engineers, operators, auditors, buyers.
+**Confidence:** Confirmed against repository structure and source code.
 **Last updated:** 2026-05-02
 
 ## Documents
@@ -26,6 +26,11 @@
 | [`docs/onboarding.md`](onboarding.md) | What to read first, what to run first, common traps | New engineers |
 | [`docs/contributing.md`](contributing.md) | Coding standards, PR expectations, commit guidance | Contributors |
 | [`docs/assumptions.md`](assumptions.md) | Tracked inference log: claims, evidence, confidence | Auditors, maintainers |
+| [`docs/BUSINESS_PLAN.md`](BUSINESS_PLAN.md) | Formal business plan: brand, market, product, revenue, GTM, marketing, financials | Investors, partners, founders |
+| [`docs/brand-strategy-and-positioning.md`](brand-strategy-and-positioning.md) | Brand foundation, voice, values, positioning, competitive matrix | Marketing, founders |
+| [`docs/market-analysis-gtm-strategy.md`](market-analysis-gtm-strategy.md) | TAM/SAM/SOM, competitive landscape, personas, GTM timeline, growth tactics | Growth, founders |
+| [`docs/business-plan-product-revenue.md`](business-plan-product-revenue.md) | Product architecture, feature tiers, pricing, revenue projections, unit economics | Product, founders |
+| [`docs/marketing_strategy.md`](marketing_strategy.md) | Content strategy, SEO, social media, community, paid acquisition, email | Marketing, content |
 
 ## Suggested Reading Order
 
@@ -48,6 +53,13 @@
 2. `docs/overview.md`
 3. `docs/security.md`
 4. `docs/tech-debt-and-gaps.md`
+5. `docs/assumptions.md`
+
+### Founder / Investor
+1. `README.md`
+2. `docs/BUSINESS_PLAN.md`
+3. `docs/overview.md`
+4. `docs/security.md`
 5. `docs/assumptions.md`
 
 ### Maintainer

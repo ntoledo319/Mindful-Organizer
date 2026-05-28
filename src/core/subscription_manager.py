@@ -9,19 +9,29 @@ phoning home on every launch.
 
 from __future__ import annotations
 
-import hashlib
-import hmac
+import base64
 import json
 import logging
+import os
 import secrets
-import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
 from typing import Any
 
+from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives.asymmetric.ed25519 import (
+    Ed25519PrivateKey,
+    Ed25519PublicKey,
+)
+
 logger = logging.getLogger(__name__)
+
+# Ed25519 verification key for license signatures. Public-by-design — embedding
+# this in source is safe. The private signing key lives only on the build/release
+# host and in MINDFUL_LICENSE_PRIVATE_KEY env var when issuing licenses.
+_PUBLIC_KEY_B64 = "eukkxUxlPR4XqKpD2KQp84Hk+UZPZ/+SvuX7QAidQjk="
 
 DATA_DIR = Path.home() / ".mindful_optimizer"
 LICENSE_FILE = DATA_DIR / "license.json"
@@ -89,6 +99,8 @@ FEATURES_BY_TIER: dict[SubscriptionTier, set[str]] = {
         "seven_day_history",
         "basic_dashboard",
         "basic_medication_reminders",
+        # Automation — awareness layer (suggestions only, no system changes)
+        "basic_automation",
     },
     SubscriptionTier.PRO: {
         # Everything from FREE
@@ -120,6 +132,14 @@ FEATURES_BY_TIER: dict[SubscriptionTier, set[str]] = {
         "weekly_insights",
         "data_export",
         "full_dashboard",
+        # Automation layer — execute system changes + autonomous mode
+        "basic_automation",
+        "system_actions",
+        "manual_focus_mode",
+        "display_adaptation",
+        "system_tray",
+        "global_hotkeys",
+        "autonomous_mode",
     },
     SubscriptionTier.PREMIUM: {
         # Everything from PRO (and by extension FREE)
@@ -149,6 +169,19 @@ FEATURES_BY_TIER: dict[SubscriptionTier, set[str]] = {
         "weekly_insights",
         "data_export",
         "full_dashboard",
+        "basic_automation",
+        "system_actions",
+        "manual_focus_mode",
+        "display_adaptation",
+        "system_tray",
+        "global_hotkeys",
+        "autonomous_mode",
+        # Automation Premium
+        "custom_rules",
+        "automation_analytics",
+        "scheduled_focus_blocks",
+        "multiple_automation_profiles",
+        "advanced_system_integration",
         # Premium magic
         "pdf_reports",
         "shareable_reports",
@@ -189,6 +222,17 @@ FEATURE_DISPLAY_NAMES: dict[str, str] = {
     "onboarding_analytics": "Advanced Usage Analytics",
     "priority_support": "Priority Support",
     "wearable_sync": "Wearable Integration (Apple Health, Fitbit)",
+    "basic_automation": "Basic System Automation (Suggestions + Manual Triggers)",
+    "manual_focus_mode": "Manual Focus Mode",
+    "display_adaptation": "Adaptive Display (Brightness, Night Shift, Themes)",
+    "system_tray": "System Tray Quick Actions",
+    "global_hotkeys": "Global Keyboard Shortcuts",
+    "autonomous_mode": "Autonomous Automation (Auto-Execute Rules)",
+    "custom_rules": "Custom Automation Rule Builder",
+    "automation_analytics": "Automation Effectiveness Analytics",
+    "scheduled_focus_blocks": "Scheduled Focus Blocks",
+    "multiple_automation_profiles": "Multiple Automation Profiles",
+    "advanced_system_integration": "Advanced System Integration",
 }
 
 
@@ -199,20 +243,31 @@ FEATURE_DISPLAY_NAMES: dict[str, str] = {
 class SubscriptionManager:
     """Manages subscription state, license validation, and feature access."""
 
-    # A simple shared secret for offline HMAC validation.
-    # SECURITY NOTE: This hardcoded secret is suitable only for offline
-    # demonstration and early beta.  In any production deployment it must be
-    # replaced with asymmetric crypto (Ed25519), a per-build secret injected
-    # at packaging time, or server-side API validation.
-    _SECRET = b"mindful-organizer-offline-license-v1"
-
     TRIAL_DAYS = 14
 
-    def __init__(self, data_dir: Path | None = None) -> None:
+    def __init__(
+        self,
+        data_dir: Path | None = None,
+        public_key_b64: str | None = None,
+        private_key_b64: str | None = None,
+    ) -> None:
+        """Create a SubscriptionManager.
+
+        public_key_b64 / private_key_b64 are for testing only. In production,
+        the public key is the embedded constant and the private key is held by
+        the issuer (loaded from MINDFUL_LICENSE_PRIVATE_KEY when issuing).
+        """
         self._data_dir = data_dir or DATA_DIR
         self._data_dir.mkdir(parents=True, exist_ok=True)
         self._license_file = self._data_dir / "license.json"
         self._state: dict[str, Any] = {}
+
+        pub_b64 = public_key_b64 or _PUBLIC_KEY_B64
+        self._public_key = Ed25519PublicKey.from_public_bytes(
+            base64.b64decode(pub_b64)
+        )
+        self._private_key_b64 = private_key_b64  # set in tests / issuer tools
+
         self._load_state()
 
     # -- persistence -------------------------------------------------------
@@ -316,20 +371,22 @@ class SubscriptionManager:
         tier_str, ts_str, rand, signature = parts
         try:
             tier = SubscriptionTier(tier_str.lower())
-        except ValueError:
-            raise LicenseValidationError(f"Unknown tier: {tier_str}")
+        except ValueError as exc:
+            raise LicenseValidationError(f"Unknown tier: {tier_str}") from exc
 
-        # Validate HMAC
-        payload = f"{tier_str}:{ts_str}:{rand}"
-        expected = hmac.new(self._SECRET, payload.encode(), hashlib.sha256).hexdigest()[:16]
-        if not hmac.compare_digest(expected.upper(), signature.upper()):
-            raise LicenseValidationError("License key is invalid.")
+        # Validate Ed25519 signature
+        payload = f"{tier_str}:{ts_str}:{rand}".encode()
+        try:
+            sig_bytes = base64.urlsafe_b64decode(signature + "=" * (-len(signature) % 4))
+            self._public_key.verify(sig_bytes, payload)
+        except (InvalidSignature, ValueError, base64.binascii.Error) as exc:
+            raise LicenseValidationError("License key is invalid.") from exc
 
         # Check expiration
         try:
             expires_at = datetime.fromtimestamp(int(ts_str))
-        except (ValueError, OSError):
-            raise LicenseValidationError("License timestamp is corrupt.")
+        except (ValueError, OSError) as exc:
+            raise LicenseValidationError("License timestamp is corrupt.") from exc
 
         if expires_at < datetime.now():
             raise LicenseValidationError("License has expired.")
@@ -352,13 +409,32 @@ class SubscriptionManager:
         logger.info("License deactivated")
 
     def generate_key(self, tier: SubscriptionTier, days: int = 365) -> str:
-        """Generate a license key (for admin / sales use only)."""
+        """Generate a license key.
+
+        Requires the Ed25519 private key, loaded from constructor argument
+        or the MINDFUL_LICENSE_PRIVATE_KEY environment variable. Intended for
+        issuer-side use (sales tool, build pipeline). Client builds will not
+        have the private key and will raise RuntimeError if this is called.
+        """
+        priv_b64 = self._private_key_b64 or os.environ.get(
+            "MINDFUL_LICENSE_PRIVATE_KEY"
+        )
+        if not priv_b64:
+            raise RuntimeError(
+                "No license signing key available. Set MINDFUL_LICENSE_PRIVATE_KEY "
+                "or pass private_key_b64 to SubscriptionManager. License generation "
+                "is restricted to the issuer."
+            )
+        private_key = Ed25519PrivateKey.from_private_bytes(
+            base64.b64decode(priv_b64)
+        )
         expires = datetime.now() + timedelta(days=days)
         ts = int(expires.timestamp())
         rand = secrets.token_hex(4)
-        payload = f"{tier.value}:{ts}:{rand}"
-        signature = hmac.new(self._SECRET, payload.encode(), hashlib.sha256).hexdigest()[:16]
-        return f"{tier.value}:{ts}:{rand}:{signature.upper()}"
+        payload = f"{tier.value}:{ts}:{rand}".encode()
+        sig_bytes = private_key.sign(payload)
+        signature = base64.urlsafe_b64encode(sig_bytes).rstrip(b"=").decode()
+        return f"{tier.value}:{ts}:{rand}:{signature}"
 
     # -- trial management --------------------------------------------------
 

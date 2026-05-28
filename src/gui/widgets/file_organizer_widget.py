@@ -15,7 +15,6 @@ from PyQt6.QtWidgets import (
     QFileDialog,
     QFrame,
     QHBoxLayout,
-    QLabel,
     QListWidget,
     QMessageBox,
     QProgressBar,

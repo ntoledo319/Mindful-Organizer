@@ -2,22 +2,44 @@
 
 from __future__ import annotations
 
-import pytest
+import base64
 from datetime import datetime, timedelta
 from pathlib import Path
 
+import pytest
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
 from core.subscription_manager import (
-    SubscriptionManager,
-    SubscriptionTier,
+    FeatureGateError,
     LicenseStatus,
     LicenseValidationError,
-    FeatureGateError,
+    SubscriptionManager,
+    SubscriptionTier,
 )
 
 
 @pytest.fixture
 def manager(tmp_path: Path) -> SubscriptionManager:
-    return SubscriptionManager(data_dir=tmp_path)
+    # Each test gets a fresh keypair so the manager can both sign and verify.
+    priv = Ed25519PrivateKey.generate()
+    priv_b64 = base64.b64encode(
+        priv.private_bytes(
+            serialization.Encoding.Raw,
+            serialization.PrivateFormat.Raw,
+            serialization.NoEncryption(),
+        )
+    ).decode()
+    pub_b64 = base64.b64encode(
+        priv.public_key().public_bytes(
+            serialization.Encoding.Raw, serialization.PublicFormat.Raw
+        )
+    ).decode()
+    return SubscriptionManager(
+        data_dir=tmp_path,
+        public_key_b64=pub_b64,
+        private_key_b64=priv_b64,
+    )
 
 
 class TestFreeTier:

@@ -44,7 +44,7 @@ _MEDITATION_TYPES = [
     ("Body Scan", "Systematically scan through body parts, noticing sensations."),
     ("Loving Kindness", "Cultivate feelings of goodwill toward self and others."),
     ("Breath Awareness", "Focus attention solely on the breath."),
-    ("Guided Visualization", "Follow a mental journey to a peaceful place."),
+    ("Guided Visualization", "Follow a guided image of a peaceful place."),
     ("Progressive Relaxation", "Tense and release muscle groups for deep relaxation."),
     ("Mantra", "Repeat a calming word or phrase to focus the mind."),
     ("Walking Meditation", "Bring mindful awareness to walking."),

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Hearth — Mockups</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-base:        #0A0E1A;
+    --bg-raised:      #121728;
+    --bg-floating:    #1B2030;
+    --bg-hover:       #1A1F30;
+    --border-subtle:  #1B2030;
+    --border-default: #283042;
+    --text-primary:   #F1F5F9;
+    --text-secondary: #94A3B8;
+    --text-tertiary:  #64748B;
+    --text-quaternary:#475569;
+    --ember:          #FF6B35;
+    --ember-glow:     rgba(255, 107, 53, 0.15);
+    --ember-soft:     rgba(255, 107, 53, 0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg-base);
+    color: var(--text-primary);
+    font-family: 'Geist', -apple-system, system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 22px;
+    -webkit-font-smoothing: antialiased;
+    padding: 96px 32px 96px;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse 60% 40% at 50% 0%, var(--ember-soft), transparent 60%);
+  }
+  .container { max-width: 720px; margin: 0 auto; }
+  .eyebrow {
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    color: var(--ember);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .eyebrow::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--ember);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--ember);
+  }
+  h1 {
+    font-size: 56px; line-height: 60px;
+    font-weight: 600; letter-spacing: -0.035em;
+    margin-bottom: 16px;
+  }
+  .intro {
+    font-size: 18px; line-height: 28px;
+    color: var(--text-secondary);
+    margin-bottom: 64px;
+    max-width: 580px;
+  }
+  .intro em {
+    color: var(--ember); font-style: normal; font-weight: 500;
+  }
+  .grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 64px; }
+  .mockup {
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    padding: 24px 28px;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: border-color 200ms cubic-bezier(0.2, 0, 0, 1),
+                background-color 200ms cubic-bezier(0.2, 0, 0, 1);
+    display: flex; gap: 16px; align-items: center;
+  }
+  .mockup:hover {
+    border-color: var(--ember);
+    background: var(--bg-floating);
+  }
+  .mockup-marker {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--ember), #C44A1F);
+    flex-shrink: 0;
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+  .mockup-text { flex: 1; }
+  .mockup-title {
+    font-size: 17px; font-weight: 600;
+    letter-spacing: -0.015em;
+    margin-bottom: 2px;
+  }
+  .mockup-desc {
+    color: var(--text-secondary);
+    font-size: 13px; line-height: 20px;
+  }
+  .mockup-arrow {
+    color: var(--text-tertiary);
+    font-family: 'Geist Mono', monospace;
+    font-size: 12px;
+  }
+  .meta {
+    margin-top: 64px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border-subtle);
+    font-size: 11px;
+    color: var(--text-tertiary);
+    line-height: 18px;
+    font-family: 'Geist Mono', monospace;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="eyebrow">HEARTH · MOCKUPS · DRAFT 3</div>
+  <h1>Cutting-edge mental health tech.</h1>
+  <p class="intro">
+    New direction. Deep midnight + vivid ember + Geist typography + visible system state. References: <em>Eight Sleep, Whoop, Levels, Apollo Neuro, Linear, Vercel.</em> Not: any spa, any pharmacy, any magazine.
+  </p>
+
+  <div class="grid">
+    <a class="mockup" href="today.html">
+      <div class="mockup-marker"></div>
+      <div class="mockup-text">
+        <div class="mockup-title">Today</div>
+        <div class="mockup-desc">Visible system state bar. Real metrics with sparklines. Vivid ember accent CTA. Hardware-product feel — closer to Eight Sleep or Whoop than to a journal app.</div>
+      </div>
+      <div class="mockup-arrow">→</div>
+    </a>
+    <a class="mockup" href="journal.html">
+      <div class="mockup-marker" style="background: linear-gradient(135deg, #38BDF8, #1E40AF);"></div>
+      <div class="mockup-text">
+        <div class="mockup-title">Journal · earlier draft</div>
+        <div class="mockup-desc">Still in the old warm-brown direction — kept for now so you can A/B against Today. Rebuilds next once Today lands.</div>
+      </div>
+      <div class="mockup-arrow">→</div>
+    </a>
+    <a class="mockup" href="crisis.html">
+      <div class="mockup-marker" style="background: linear-gradient(135deg, #F87171, #991B1B);"></div>
+      <div class="mockup-text">
+        <div class="mockup-title">Crisis · Quiet theme</div>
+        <div class="mockup-desc">Emergency takeover — high-contrast, single action, no aesthetic flourish. Theme-independent on purpose.</div>
+      </div>
+      <div class="mockup-arrow">→</div>
+    </a>
+  </div>
+
+  <p class="meta">
+    GEIST + GEIST MONO LOADED VIA GOOGLE FONTS. NO LICENSING REQUIRED.<br>
+    IF TODAY LANDS, JOURNAL REBUILDS IN THE SAME DIRECTION.
+  </p>
+</div>
+</body>
+</html>

@@ -1,4 +1,4 @@
-# Mindful Organizer - Project Tracker
+# Hearth - Project Tracker
 
 > No timeframes. Ordered by priority and logical sequence.
 > **Status: All phases implemented. 67 source files, 21 test files, 27,000+ lines of production code.**
@@ -118,6 +118,7 @@
 - [x] **Local-first privacy** - All data stored locally, no cloud, no telemetry
 - [x] **AI-powered system optimization** - ML resource monitoring, adaptive suggestions
 - [x] **Smart file clustering** - Semantic grouping with embeddings and HDBSCAN
+- [x] **Psychological operating system** — Desktop-native automation layer that actively reconfigures the computing environment (closes apps, dims screen, enables DND, changes themes) based on real-time psychological state. The moat: deep system access that mobile/web apps cannot replicate.
 
 ### Unique Features Added
 
@@ -138,6 +139,17 @@
 - [x] **Shareable HTML Reports** - Self-contained browser-openable reports with Chart.js (`src/core/shareable_report.py`)
 - [x] **MoodManager** - Bridges mood tracker widget to SQLite (`src/core/mood_manager.py`)
 - [x] **Subscription system** - Free/Pro/Premium tiers with 14-day trial, offline HMAC license keys (`src/core/subscription_manager.py`)
+- [x] **System Automation Engine** — Central conductor mapping psychological state to system actions (`src/core/system_automation.py`)
+- [x] **Automation Rules** — 14 evidence-informed trigger→action rules (`src/core/automation_rules.py`)
+- [x] **Platform Actions** — Cross-platform system command abstraction (`src/core/platform_actions.py`)
+- [x] **Focus Mode Manager** — Deep-work sessions with distraction closing and analytics (`src/core/focus_mode.py`)
+- [x] **Display Adaptation** — Circadian + energy + mood + condition-aware display tuning (`src/core/display_adaptation.py`)
+- [x] **App Guardian** — Blacklisted app monitoring and closure (`src/core/app_guardian.py`)
+- [x] **System Tray** — Always-on tray with quick psychological state buttons (`src/gui/system_tray.py`)
+- [x] **Global Hotkeys** — System-wide keyboard shortcuts for focus/crisis/grounding (`src/utils/global_hotkeys.py`)
+- [x] **Automation Config Manager** — Pro-tier profiles, custom rules, scheduled blocks (`src/core/automation_config.py`)
+- [x] **Automation Analytics** — Effectiveness tracking and reporting (`src/core/automation_analytics.py`)
+- [x] **Automation Widget** — Tier-aware GUI for managing automation (`src/gui/widgets/automation_widget.py`)
 
 ---
 
@@ -146,7 +158,7 @@
 ### Pre-Submission
 
 - [x] Register Microsoft Partner Center developer account (documented)
-- [x] Reserve app name "Mindful Organizer" in the Store (documented)
+- [x] Reserve app name "Hearth" in the Store (documented)
 - [x] Complete app identity in AppxManifest.xml
 - [x] Build MSIX package with all required assets (scripts ready)
 - [x] Test on Windows 10 (1809+) and Windows 11 (manifest specifies versions)
@@ -199,12 +211,12 @@
 
 | Metric | Count |
 |--------|-------|
-| Python source files | 67 |
-| Test files | 21 |
-| Source code lines | 27,000+ |
-| Test code lines | 4,799+ |
-| UI widget modules | 15 |
-| Core modules | 16 |
+| Python source files | 73 |
+| Test files | 23 |
+| Source code lines | 30,000+ |
+| Test code lines | 6,200+ |
+| UI widget modules | 16 |
+| Core modules | 22 |
 | Wellness modules | 7 |
 | Themes | 8 |
 | Coping strategies | 50+ |
@@ -214,6 +226,8 @@
 | Conditions supported | 6 |
 | Therapy types | 5 |
 | File categories | 12 (30+ extensions) |
+| Automation rules | 14 |
+| Execution modes | 3 (suggestions / ask-first / autonomous) |
 
 ---
 

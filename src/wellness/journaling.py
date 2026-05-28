@@ -222,7 +222,7 @@ def _build_prompt_library() -> list[JournalPrompt]:
     prompts.append(JournalPrompt(
         prompt_id="mood_02",
         category=PromptCategory.MOOD_EXPLORATION,
-        text="Map your emotional journey today from morning to now. What changed and why?",
+        text="Map your emotional pattern today from morning to now. What changed and why?",
         follow_up_questions=[
             "Was there a peak moment, either positive or negative?",
             "What coping strategies did you use at different points?",
@@ -855,7 +855,7 @@ class JournalingManager:
 
         entries = sorted(entries, key=lambda e: e.entry_date)
 
-        parts = ["Mindful Organizer - Journal Export", "=" * 40, ""]
+        parts = ["Hearth - Journal Export", "=" * 40, ""]
         for entry in entries:
             prompt_text = None
             if entry.prompt_id:

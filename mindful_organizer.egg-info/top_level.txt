@@ -1,2 +1,0 @@
-mindful_organizer
-src

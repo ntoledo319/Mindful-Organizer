@@ -7,7 +7,7 @@
 
 ## Public API Surfaces
 
-Mindful Organizer is a desktop application with **no external network API**. The APIs documented here are **internal public interfaces** — the contracts between GUI widgets and domain managers.
+Hearth is a desktop application with **no external network API**. The APIs documented here are **internal public interfaces** — the contracts between GUI widgets and domain managers.
 
 ---
 

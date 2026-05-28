@@ -1,4 +1,4 @@
-# Mindful Organizer — Product Strategy for Commercialization
+# Hearth — Product Strategy for Commercialization
 
 ## Current State Assessment
 
@@ -23,7 +23,7 @@
 
 ## The Pitch: What Are You Actually Selling?
 
-Mindful Organizer sits at a rare intersection: **productivity software that understands mental health**. Most task managers ignore your mood. Most mood trackers ignore your tasks. The magic is in the *correlation* — showing users how sleep → energy → mood → productivity connects.
+Hearth sits at a rare intersection: **productivity software that understands mental health**. Most task managers ignore your mood. Most mood trackers ignore your tasks. The magic is in the *correlation* — showing users how sleep → energy → mood → productivity connects.
 
 **Core value proposition:**
 > "The only task manager that adapts to your mental health instead of making it worse."

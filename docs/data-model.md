@@ -7,7 +7,7 @@
 
 ## Overview
 
-Mindful Organizer uses **SQLite** (WAL mode, foreign keys enabled) as the primary persistence layer. **One exception:** `TaskManager` persists tasks to `tasks.json` instead of SQLite. `MigrationManager` can migrate legacy JSON into SQLite but this is not automatic.
+Hearth uses **SQLite** (WAL mode, foreign keys enabled) as the primary persistence layer. **One exception:** `TaskManager` persists tasks to `tasks.json` instead of SQLite. `MigrationManager` can migrate legacy JSON into SQLite but this is not automatic.
 
 ## Schema Version
 

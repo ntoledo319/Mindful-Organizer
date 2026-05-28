@@ -136,7 +136,7 @@ class OnboardingWizard(QDialog):
         parent: QWidget | None = None,
     ) -> None:
         super().__init__(parent)
-        self.setWindowTitle("Welcome to Mindful Organizer")
+        self.setWindowTitle("Welcome to Hearth")
         self.setMinimumSize(750, 650)
         self._profile_manager = profile_manager
         self._data_dir = data_dir
@@ -146,7 +146,7 @@ class OnboardingWizard(QDialog):
             "name": "",
             "conditions": [],
             "therapy_types": [],
-            "theme": "light",
+            "theme": "ember",
         }
 
         self._current_page = 0
@@ -249,7 +249,7 @@ class OnboardingWizard(QDialog):
                 name for name, cb in self._therapy_checks.items() if cb.isChecked()
             ]
         elif page == 4:
-            self._data["theme"] = self._theme_combo.currentData() or "light"
+            self._data["theme"] = self._theme_combo.currentData() or "ember"
 
     def _finish(self) -> None:
         self._collect_page_data()
@@ -291,7 +291,7 @@ class OnboardingWizard(QDialog):
                 therapy_types=therapy_types,
                 therapy_skills=set(),
                 ui_preferences=UIPreference(
-                    color_scheme=self._data.get("theme", "light"),
+                    color_scheme=self._data.get("theme", "ember"),
                     contrast_level="normal",
                     animation_speed="normal",
                     notification_style="standard",
@@ -328,7 +328,7 @@ class OnboardingWizard(QDialog):
         try:
             parent_window = self.parent()
             if parent_window and hasattr(parent_window, "change_theme"):
-                parent_window.change_theme(self._data.get("theme", "light"))
+                parent_window.change_theme(self._data.get("theme", "ember"))
         except (AttributeError, TypeError) as exc:
             logger.debug(f"Theme change error: {exc}")
 
@@ -345,10 +345,10 @@ class OnboardingWizard(QDialog):
         layout.setSpacing(16)
         layout.addStretch()
 
-        layout.addWidget(_title_label("Mindful Organizer"))
+        layout.addWidget(_title_label("Hearth"))
 
         tagline = _body_label(
-            "Your mental health-aware productivity companion",
+            "A quieter system for daily care and practical focus",
             14,
         )
         tagline.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -445,10 +445,10 @@ class OnboardingWizard(QDialog):
         layout.setSpacing(16)
         layout.addStretch()
 
-        layout.addWidget(_title_label("Choose Your Theme"))
+        layout.addWidget(_title_label("Choose a theme"))
 
         row = QHBoxLayout()
-        row.addWidget(_body_label("Theme:", 13))
+        row.addWidget(_body_label("Theme", 13))
         self._theme_combo = QComboBox()
         self._theme_combo.setFont(QFont("Segoe UI", 13))
 
@@ -458,9 +458,9 @@ class OnboardingWizard(QDialog):
             for name, theme in THEMES.items():
                 self._theme_combo.addItem(f"{theme.display_name} - {theme.description}", name)
         except (ImportError, AttributeError):
-            self._theme_combo.addItem("Light", "light")
-            self._theme_combo.addItem("Dark", "dark")
-            self._theme_combo.addItem("Calm", "calm")
+            self._theme_combo.addItem("Ember", "ember")
+            self._theme_combo.addItem("Linen", "linen")
+            self._theme_combo.addItem("Quiet", "quiet")
 
         self._theme_combo.currentIndexChanged.connect(self._preview_theme)
         row.addWidget(self._theme_combo)
@@ -485,13 +485,13 @@ class OnboardingWizard(QDialog):
             if theme:
                 self._theme_preview.setStyleSheet(
                     f"QFrame {{ background-color: {theme.background}; "
-                    f"border: 3px solid {theme.accent}; border-radius: 12px; }}"
+                    f"border: 2px solid {theme.accent}; border-radius: 6px; }}"
                 )
                 return
         except (ImportError, AttributeError) as exc:
             logger.debug(f"Theme preview error: {exc}")
         self._theme_preview.setStyleSheet(
-            "QFrame { background-color: #f5f5f5; border: 3px solid #4a90d9; border-radius: 12px; }"
+            "QFrame { background-color: #18130F; border: 2px solid #A8845F; border-radius: 6px; }"
         )
 
     def _page_summary(self) -> QWidget:
@@ -500,14 +500,14 @@ class OnboardingWizard(QDialog):
         layout.setSpacing(16)
         layout.addStretch()
 
-        layout.addWidget(_title_label("Ready to Start!"))
+        layout.addWidget(_title_label("Ready"))
 
         self._summary_label = _body_label("", 13)
         self._summary_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self._summary_label)
 
         layout.addWidget(_body_label(
-            "You can change any of these settings later in the Settings tab.",
+            "You can change these settings later.",
             12,
         ))
         layout.addStretch()
@@ -516,7 +516,7 @@ class OnboardingWizard(QDialog):
     def _refresh_summary(self) -> None:
         self._collect_page_data()
         d = self._data
-        theme_display = self._theme_combo.currentText() if hasattr(self, "_theme_combo") else d.get("theme", "Light")
+        theme_display = self._theme_combo.currentText() if hasattr(self, "_theme_combo") else d.get("theme", "Ember")
         lines = [
             f"Name: {d.get('name') or 'Not set'}",
             f"Conditions: {', '.join(d.get('conditions', [])) or 'None selected'}",

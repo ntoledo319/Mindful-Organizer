@@ -1,5 +1,5 @@
 """
-Integration tests for Mindful Organizer.
+Integration tests for Hearth.
 
 Tests cross-module flows: profile -> task management, mood -> analytics,
 full data lifecycle (create -> export -> import -> verify), and

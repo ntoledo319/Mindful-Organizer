@@ -1,0 +1,111 @@
+name: Release Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v1.0.0)'
+        required: true
+        default: 'v1.0.0'
+
+jobs:
+  windows-msix:
+    name: Build Windows MSIX
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install pyinstaller Pillow
+
+      - name: Generate Windows Store assets
+        run: python scripts/generate_store_assets.py
+
+      - name: Run tests (non-GUI)
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: pytest -m "not gui and not slow" --no-cov -q
+
+      - name: Build with PyInstaller
+        run: pyinstaller --clean --noconfirm mindful_organizer.spec
+
+      - name: Package MSIX
+        # The license private key is injected here only at build time. It is
+        # NEVER written to disk — passed straight to the build environment so
+        # PyInstaller embeds it via a frozen-string constant if needed. The
+        # public key in source is sufficient for license verification at
+        # runtime, so the private key is only required if you bundle issuer
+        # tools (currently we do not).
+        env:
+          MINDFUL_LICENSE_PRIVATE_KEY: ${{ secrets.MINDFUL_LICENSE_PRIVATE_KEY }}
+        shell: pwsh
+        run: |
+          cd windows_store
+          if (Test-Path build_msix.ps1) {
+            ./build_msix.ps1 -SkipBuild
+          } else {
+            Write-Warning "build_msix.ps1 not found — skipping MSIX packaging."
+          }
+
+      - name: Upload MSIX artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: MindfulOrganizer-msix-${{ github.ref_name }}
+          path: |
+            windows_store/*.msix
+            dist/MindfulOrganizer/**
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            windows_store/*.msix
+            dist/MindfulOrganizer/mindful-organizer.exe
+
+  macos-app:
+    name: Build macOS .app
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install pyinstaller Pillow
+
+      - name: Build .app bundle
+        run: bash build.sh
+
+      - name: Upload .app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MindfulOrganizer-macos-${{ github.ref_name }}
+          path: dist/**/*.app
+          if-no-files-found: warn
+          retention-days: 30

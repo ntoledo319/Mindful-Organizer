@@ -11,7 +11,7 @@ import logging
 from datetime import date, datetime
 from typing import Any
 
-from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QColor, QFont
 from PyQt6.QtWidgets import (
     QCheckBox,
@@ -30,7 +30,14 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
-from gui.components import AccentButton, BodyLabel, CardFrame, SectionTitle
+from gui.components import (
+    AccentButton,
+    BodyLabel,
+    CardFrame,
+    DangerButton,
+    GhostButton,
+    SectionTitle,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -82,15 +89,18 @@ class TaskManagerWidget(QWidget):
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QFrame.Shape.NoFrame)
+        scroll.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         scroll.setStyleSheet(
             f"QScrollArea {{ background-color: {self._theme.get('background', '#f5f5f5')}; }}"
         )
         outer.addWidget(scroll)
 
         container = QWidget()
+        container.setMaximumWidth(1120)
         self._root = QVBoxLayout(container)
-        self._root.setSpacing(16)
-        self._root.setContentsMargins(24, 24, 24, 24)
+        self._root.setSpacing(18)
+        self._root.setContentsMargins(32, 32, 32, 40)
         scroll.setWidget(container)
 
         self._build_nlp_entry()
@@ -114,18 +124,18 @@ class TaskManagerWidget(QWidget):
 
         self._nlp_input = QLineEdit()
         self._nlp_input.setPlaceholderText(
-            "Type a task... e.g., 'call dentist tomorrow high priority'"
+            "Add a task in plain language..."
         )
         self._nlp_input.setStyleSheet(
-            f"QLineEdit {{ background-color: {self._theme.get('background', '#fff')}; "
+            f"QLineEdit {{ background-color: {self._theme.get('input_bg', '#fff')}; "
             f"color: {self._theme.get('text', '#333')}; border: 1px solid "
-            f"{self._theme.get('secondary', '#ccc')}; border-radius: 8px; "
+            f"{self._theme.get('border', '#ccc')}; border-radius: 5px; "
             f"padding: 12px; font-size: 14px; }}"
         )
         self._nlp_input.returnPressed.connect(self._add_task_from_nlp)
         layout.addWidget(self._nlp_input, stretch=1)
 
-        add_btn = AccentButton("Add Task", self._theme)
+        add_btn = AccentButton("Add", self._theme)
         add_btn.clicked.connect(self._add_task_from_nlp)
         layout.addWidget(add_btn)
 
@@ -139,14 +149,14 @@ class TaskManagerWidget(QWidget):
         layout.setSpacing(12)
 
         # Priority filter
-        layout.addWidget(BodyLabel("Priority:", self._theme))
+        layout.addWidget(BodyLabel("Priority", self._theme))
         self._priority_filter = QComboBox()
         self._priority_filter.addItems(["All", "Urgent", "High", "Medium", "Low"])
         self._priority_filter.currentTextChanged.connect(lambda _: self._refresh_task_list())
         layout.addWidget(self._priority_filter)
 
         # Category filter
-        layout.addWidget(BodyLabel("Category:", self._theme))
+        layout.addWidget(BodyLabel("Category", self._theme))
         self._category_filter = QComboBox()
         self._category_filter.addItems([
             "All", "Work", "Personal", "Health", "Learning", "Social", "Errands", "Other",
@@ -155,7 +165,7 @@ class TaskManagerWidget(QWidget):
         layout.addWidget(self._category_filter)
 
         # Energy filter
-        layout.addWidget(BodyLabel("Max Energy:", self._theme))
+        layout.addWidget(BodyLabel("Energy", self._theme))
         self._energy_filter = QSpinBox()
         self._energy_filter.setRange(0, 100)
         self._energy_filter.setValue(100)
@@ -164,24 +174,24 @@ class TaskManagerWidget(QWidget):
         layout.addWidget(self._energy_filter)
 
         # Show completed
-        self._show_completed = QCheckBox("Show Completed")
+        self._show_completed = QCheckBox("Completed")
         self._show_completed.setStyleSheet(f"color: {self._theme.get('text', '#333')};")
         self._show_completed.stateChanged.connect(lambda _: self._refresh_task_list())
         layout.addWidget(self._show_completed)
 
         # Search
         self._search_box = QLineEdit()
-        self._search_box.setPlaceholderText("Search tasks...")
+        self._search_box.setPlaceholderText("Search")
         self._search_box.setStyleSheet(
-            f"QLineEdit {{ background-color: {self._theme.get('background', '#fff')}; "
+            f"QLineEdit {{ background-color: {self._theme.get('input_bg', '#fff')}; "
             f"color: {self._theme.get('text', '#333')}; border: 1px solid "
-            f"{self._theme.get('secondary', '#ccc')}; border-radius: 6px; padding: 6px; }}"
+            f"{self._theme.get('border', '#ccc')}; border-radius: 5px; padding: 6px; }}"
         )
         self._search_box.textChanged.connect(lambda _: self._refresh_task_list())
         layout.addWidget(self._search_box)
 
         # Sort
-        layout.addWidget(BodyLabel("Sort:", self._theme))
+        layout.addWidget(BodyLabel("Sort", self._theme))
         self._sort_combo = QComboBox()
         self._sort_combo.addItems(["Priority", "Due Date", "Energy", "Created Date"])
         self._sort_combo.currentTextChanged.connect(lambda _: self._refresh_task_list())
@@ -199,12 +209,12 @@ class TaskManagerWidget(QWidget):
         self._task_list = QListWidget()
         self._task_list.setMinimumHeight(400)
         self._task_list.setStyleSheet(
-            f"QListWidget {{ background-color: {self._theme.get('background', '#fff')}; "
+            f"QListWidget {{ background-color: {self._theme.get('input_bg', '#fff')}; "
             f"color: {self._theme.get('text', '#333')}; border: 1px solid "
-            f"{self._theme.get('secondary', '#ccc')}; border-radius: 6px; }}"
+            f"{self._theme.get('border', '#ccc')}; border-radius: 5px; }}"
             f"QListWidget::item {{ padding: 8px; border-bottom: 1px solid "
-            f"{self._theme.get('secondary', '#eee')}; }}"
-            f"QListWidget::item:selected {{ background-color: {self._theme.get('accent', '#4a90d9')}; color: #fff; }}"
+            f"{self._theme.get('border', '#eee')}; }}"
+            f"QListWidget::item:selected {{ background-color: {self._theme.get('tab_active', '#382C24')}; color: {self._theme.get('text', '#fff')}; }}"
         )
         self._task_list.currentRowChanged.connect(self._on_task_selected)
         layout.addWidget(self._task_list)
@@ -219,7 +229,7 @@ class TaskManagerWidget(QWidget):
         self._detail_layout.addWidget(SectionTitle("Task Details", self._theme))
 
         self._detail_title = BodyLabel("Select a task to view details", self._theme)
-        self._detail_title.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
+        self._detail_title.setFont(QFont("Segoe UI", 12, QFont.Weight.DemiBold))
         self._detail_layout.addWidget(self._detail_title)
 
         self._detail_priority = BodyLabel("Priority: --", self._theme)
@@ -231,25 +241,25 @@ class TaskManagerWidget(QWidget):
                   self._detail_energy, self._detail_due):
             self._detail_layout.addWidget(w)
 
-        self._detail_layout.addWidget(BodyLabel("Notes:", self._theme))
+        self._detail_layout.addWidget(BodyLabel("Notes", self._theme))
         self._detail_notes = QTextEdit()
         self._detail_notes.setReadOnly(True)
         self._detail_notes.setMaximumHeight(100)
         self._detail_notes.setStyleSheet(
-            f"QTextEdit {{ background-color: {self._theme.get('background', '#fff')}; "
+            f"QTextEdit {{ background-color: {self._theme.get('input_bg', '#fff')}; "
             f"color: {self._theme.get('text', '#333')}; border: 1px solid "
-            f"{self._theme.get('secondary', '#ccc')}; border-radius: 6px; padding: 6px; }}"
+            f"{self._theme.get('border', '#ccc')}; border-radius: 5px; padding: 6px; }}"
         )
         self._detail_layout.addWidget(self._detail_notes)
 
         # Subtasks
-        self._detail_layout.addWidget(BodyLabel("Subtasks:", self._theme))
+        self._detail_layout.addWidget(BodyLabel("Subtasks", self._theme))
         self._subtask_list = QListWidget()
         self._subtask_list.setMaximumHeight(120)
         self._subtask_list.setStyleSheet(
-            f"QListWidget {{ background-color: {self._theme.get('background', '#fff')}; "
+            f"QListWidget {{ background-color: {self._theme.get('input_bg', '#fff')}; "
             f"color: {self._theme.get('text', '#333')}; border: 1px solid "
-            f"{self._theme.get('secondary', '#ccc')}; border-radius: 6px; }}"
+            f"{self._theme.get('border', '#ccc')}; border-radius: 5px; }}"
         )
         self._detail_layout.addWidget(self._subtask_list)
 
@@ -272,25 +282,25 @@ class TaskManagerWidget(QWidget):
         layout.setSpacing(10)
 
         actions = [
-            ("Add Task", self._add_task_dialog),
-            ("Edit Task", self._edit_task),
-            ("Delete Task", self._delete_task),
-            ("Decompose Task", self._decompose_task),
-            ("Mark Complete", self._mark_complete),
+            ("Add", self._add_task_dialog, AccentButton),
+            ("Edit", self._edit_task, GhostButton),
+            ("Delete", self._delete_task, DangerButton),
+            ("Break down", self._decompose_task, GhostButton),
+            ("Complete", self._mark_complete, GhostButton),
         ]
-        for label, slot in actions:
-            btn = AccentButton(label, self._theme)
+        for label, slot, button_class in actions:
+            btn = button_class(label, self._theme)
             btn.clicked.connect(slot)
             layout.addWidget(btn)
 
         layout.addStretch()
 
         # Undo / Redo
-        undo_btn = AccentButton("Undo", self._theme)
+        undo_btn = GhostButton("Undo", self._theme)
         undo_btn.clicked.connect(self._undo)
         layout.addWidget(undo_btn)
 
-        redo_btn = AccentButton("Redo", self._theme)
+        redo_btn = GhostButton("Redo", self._theme)
         redo_btn.clicked.connect(self._redo)
         layout.addWidget(redo_btn)
 

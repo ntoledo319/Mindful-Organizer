@@ -12,6 +12,7 @@ import logging
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -78,8 +79,13 @@ class WellnessOrchestrator:
     manager internals.
     """
 
-    def __init__(self, db: DatabaseManager | None = None) -> None:
-        self.db = db or DatabaseManager()
+    def __init__(
+        self,
+        db: DatabaseManager | None = None,
+        data_dir: Path | None = None,
+    ) -> None:
+        db_path = data_dir / "mindful_organizer.db" if data_dir else None
+        self.db = db or DatabaseManager(db_path=db_path)
         self.db.initialize()
 
     # -- data ingestion ---------------------------------------------------
