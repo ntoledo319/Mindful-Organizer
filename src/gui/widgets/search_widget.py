@@ -220,14 +220,13 @@ class SearchWidget(QDialog):
     def _search_mood(self, query: str) -> list[dict[str, Any]]:
         results: list[dict[str, Any]] = []
         try:
-            mm = self.main_window.mood_analytics
+            # Search the manager that actually holds the entries. (The old code
+            # read main_window.mood_analytics, which both crashed on construction
+            # and carried no entries, so mood search always returned nothing.)
+            mm = self.main_window.mood_manager
             if not mm:
                 return results
-            entries = []
-            if hasattr(mm, "_entries"):
-                entries = mm._entries
-            elif hasattr(mm, "entries"):
-                entries = mm.entries
+            entries = getattr(mm, "entries", None) or getattr(mm, "_entries", [])
             for entry in entries:
                 notes = ""
                 if isinstance(entry, dict):

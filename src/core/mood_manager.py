@@ -32,6 +32,15 @@ class MoodManager:
         self._entries: list[MoodEntry] = []
         self._load_entries()
 
+    @property
+    def entries(self) -> list[MoodEntry]:
+        """All loaded mood entries (most recent first)."""
+        return self._entries
+
+    def reload(self) -> None:
+        """Re-hydrate from the database (call after a new entry is logged)."""
+        self._load_entries()
+
     # ------------------------------------------------------------------
     # Persistence
     # ------------------------------------------------------------------
@@ -88,7 +97,7 @@ class MoodManager:
         from core.mood_analytics import TrendDirection
         if not self._entries:
             return MoodTrend(direction=TrendDirection.STABLE)
-        ma = MoodAnalytics(self._entries, [])
+        ma = MoodAnalytics(self._entries)
         trend = ma.mood_trend()
         return MoodTrend(
             direction=trend.direction,
@@ -98,9 +107,9 @@ class MoodManager:
     def mood_volatility(self) -> float:
         if not self._entries:
             return 0.0
-        return MoodAnalytics(self._entries, []).volatility()
+        return MoodAnalytics(self._entries).volatility()
 
     def identify_triggers(self) -> list[Any]:
         if not self._entries:
             return []
-        return MoodAnalytics(self._entries, []).identify_triggers()
+        return MoodAnalytics(self._entries).identify_triggers()

@@ -234,13 +234,17 @@ class AdaptiveMainWindow(QMainWindow):
 
     @property
     def mood_analytics(self):
-        if self._mood_analytics is None:
-            try:
-                from core.mood_analytics import MoodAnalytics
-                self._mood_analytics = MoodAnalytics()
-            except ImportError:
-                logger.warning("MoodAnalytics not available")
-        return self._mood_analytics
+        # Built fresh from the mood manager's current entries each access — a
+        # cached analytics object would go stale as new moods are logged, and
+        # MoodAnalytics() with no entries raised a TypeError the callers swallowed.
+        try:
+            from core.mood_analytics import MoodAnalytics
+            mgr = self.mood_manager
+            entries = list(mgr.entries) if mgr else []
+            return MoodAnalytics(entries)
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("MoodAnalytics not available: %s", exc)
+            return None
 
     @property
     def energy_predictor(self):
@@ -729,6 +733,18 @@ class AdaptiveMainWindow(QMainWindow):
                     wellness_orchestrator=self.wellness_orchestrator,
                     subscription_manager=self.subscription_manager,
                 )
+                # Wire the "Today" quick-action buttons to real navigation.
+                # (These signals previously had zero receivers — dead buttons.)
+                widget.mood_track_requested.connect(
+                    lambda: self._switch_to_tab("mood_tracker"))
+                widget.task_add_requested.connect(
+                    lambda: self._switch_to_tab("task_manager"))
+                widget.breathing_requested.connect(
+                    lambda: self._switch_to_tab("breathing"))
+                widget.journal_requested.connect(
+                    lambda: self._switch_to_tab("journaling"))
+                widget.stats_requested.connect(
+                    lambda: self._switch_to_tab("mood_tracker"))
             elif name == "task_manager":
                 from gui.widgets.task_manager_widget import TaskManagerWidget
                 widget = TaskManagerWidget(
