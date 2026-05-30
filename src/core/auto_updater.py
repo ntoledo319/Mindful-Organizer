@@ -46,8 +46,8 @@ class AutoUpdater:
     def __init__(
         self,
         current_version: str,
-        owner: str = "nicholastoledo",
-        repo: str = "mindful-organizer",
+        owner: str = "ntoledo319",
+        repo: str = "Mindful-Organizer",
         data_dir: Path | None = None,
     ) -> None:
         self.current_version = current_version.lstrip("v")

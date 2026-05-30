@@ -12,8 +12,10 @@ from __future__ import annotations
 
 import logging
 import platform
+import shutil
 import subprocess
 from abc import ABC, abstractmethod
+from pathlib import Path
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -138,23 +140,33 @@ class MacOSBackend(PlatformBackend):
             logger.debug("Shell exception: %s", exc)
             return False, str(exc)
 
+    @staticmethod
+    def _esc(value: str) -> str:
+        """Escape a value for safe interpolation into an AppleScript string literal.
+
+        App names arrive from a curated set and the OS process list, but escaping
+        backslashes and quotes keeps a name like ``My "App"`` from breaking — or
+        injecting into — the script.
+        """
+        return value.replace("\\", "\\\\").replace('"', '\\"')
+
     # -- applications ---------------------------------------------------------
 
     def close_application(self, app_name: str) -> bool:
-        script = f'tell application "{app_name}" to quit'
+        script = f'tell application "{self._esc(app_name)}" to quit'
         ok, _ = self._run(script)
         return ok
 
     def hide_application(self, app_name: str) -> bool:
         script = (
             f'tell application "System Events" to '
-            f'set visible of process "{app_name}" to false'
+            f'set visible of process "{self._esc(app_name)}" to false'
         )
         ok, _ = self._run(script)
         return ok
 
     def launch_application(self, app_name: str, **kwargs: Any) -> bool:
-        script = f'tell application "{app_name}" to activate'
+        script = f'tell application "{self._esc(app_name)}" to activate'
         ok, _ = self._run(script)
         return ok
 
@@ -168,20 +180,25 @@ class MacOSBackend(PlatformBackend):
     # -- display --------------------------------------------------------------
 
     def set_display_brightness(self, percent: int) -> bool:
-        """Set brightness using the ``brightness`` CLI if available, else fallback."""
+        """Set hardware brightness via the ``brightness`` CLI if available.
+
+        Returns the REAL result. macOS exposes no reliable public API for
+        programmatic backlight control, so without the ``brightness`` helper
+        (``brew install brightness``) we cannot change it and say so honestly
+        rather than reporting a success that never happened. The GUI layer
+        offers an in-app dimming overlay as a software fallback.
+        """
         pct = max(0, min(100, percent))
-        # Try the ``brightness`` Homebrew utility first
-        ok, _ = self._shell(["brightness", "-v", str(pct / 100.0)])
+        if not shutil.which("brightness"):
+            logger.info(
+                "Hardware brightness control unavailable (the 'brightness' CLI "
+                "is not installed); skipping backlight change to %d%%.", pct
+            )
+            return False
+        ok, _ = self._shell(["brightness", str(pct / 100.0)])
         if ok:
-            return True
-        # Fallback: AppleScript (limited — only works on some external displays)
-        script = (
-            'tell application "System Events" to '
-            'tell appearance preferences to set auto dark mode to false'
-        )
-        self._run(script)
-        logger.info("Display brightness adjusted to %d%% (best-effort)", pct)
-        return True  # soft-success — we tried
+            logger.info("Display brightness set to %d%%.", pct)
+        return ok
 
     def set_night_shift(self, intensity: int, enabled: bool = True) -> bool:
         """Toggle Night Shift via CoreBrightness defaults.
@@ -237,29 +254,45 @@ class MacOSBackend(PlatformBackend):
     # -- DND / focus ----------------------------------------------------------
 
     def set_dnd(self, enabled: bool) -> bool:
-        """Toggle Do-Not-Disturb via notification centre defaults.
+        """Enable or disable Do-Not-Disturb / Focus. Returns the REAL result.
 
-        macOS 12+ changed DND to Focus modes; this is a best-effort toggle.
+        macOS 12+ replaced the scriptable ``doNotDisturb`` default with Focus
+        modes that have no public CLI. The reliable modern path is a user
+        Shortcut (Shortcuts.app) named "Turn On/Off Do Not Disturb", which we
+        invoke via ``shortcuts run``. On macOS 11 and earlier we fall back to
+        the legacy ByHost default with a properly expanded home path. If neither
+        works we return False rather than faking success — the engine then tells
+        the user DND couldn't be changed instead of silently doing nothing.
         """
-        # Try the modern Focus mode path
-        ok, _ = self._shell(
-            ["defaults", "write", "com.apple.controlcenter",
-             "NSStatusItem Visible FocusModes", "-bool", str(enabled).lower()]
+        shortcut = "Turn On Do Not Disturb" if enabled else "Turn Off Do Not Disturb"
+        if shutil.which("shortcuts"):
+            ok, _ = self._shell(["shortcuts", "run", shortcut])
+            if ok:
+                logger.info("Do-Not-Disturb %s via Shortcuts.", "on" if enabled else "off")
+                return True
+
+        # Legacy path (macOS 11 and earlier). The previous implementation passed
+        # a literal "~" and a literal "$(date ...)" to subprocess with no shell,
+        # so neither expanded and the write silently failed while still claiming
+        # success. Use the real, expanded path here.
+        byhost = (
+            Path.home()
+            / "Library/Preferences/ByHost/com.apple.notificationcenterui"
         )
-        # Also toggle the older notification centre dnd key for compatibility
-        self._shell(
-            ["defaults", "-currentHost", "write", "~/Library/Preferences/ByHost/com.apple.notificationcenterui",
+        ok, _ = self._shell(
+            ["defaults", "-currentHost", "write", str(byhost),
              "doNotDisturb", "-boolean", str(enabled).lower()]
         )
-        self._shell(
-            ["defaults", "-currentHost", "write", "~/Library/Preferences/ByHost/com.apple.notificationcenterui",
-             "doNotDisturbDate", "-date", "$(date -u +'%Y-%m-%d %H:%M:%S +000')"]
+        if ok:
+            self._shell(["killall", "NotificationCenter"])
+            logger.info("Do-Not-Disturb %s via legacy default.", "on" if enabled else "off")
+            return True
+
+        logger.info(
+            "Could not change Do-Not-Disturb on this macOS version. To enable it, "
+            "create a Shortcut named '%s' in Shortcuts.app.", shortcut
         )
-        # Restart NotificationCentre
-        self._shell(["killall", "NotificationCenter"])
-        self._shell(["killall", "cfprefsd"])
-        logger.info("Do-Not-Disturb toggled: %s (best-effort on macOS)", enabled)
-        return True  # soft-success
+        return False
 
     # -- windows --------------------------------------------------------------
 
@@ -293,50 +326,54 @@ class MacOSBackend(PlatformBackend):
 
 
 class StubBackend(PlatformBackend):
-    """Fallback backend that logs actions but does not execute them.
+    """Honest fallback for platforms without a real system-action backend.
 
-    Used on unsupported platforms or when the user opts out of system automation.
+    Live OS adaptation (closing apps, DND, brightness) is implemented on macOS
+    only. On Windows/Linux these methods return False — the action did NOT
+    happen — so the automation engine and UI report reality instead of claiming
+    a success that never occurred. Everything else in the app (tracking,
+    therapeutic tools, the dashboard) works fully on every platform.
     """
 
     def close_application(self, app_name: str) -> bool:
-        logger.info("[STUB] Would close application: %s", app_name)
-        return True
+        logger.info("[unsupported-os] Cannot close %s on this platform.", app_name)
+        return False
 
     def hide_application(self, app_name: str) -> bool:
-        logger.info("[STUB] Would hide application: %s", app_name)
-        return True
+        logger.info("[unsupported-os] Cannot hide %s on this platform.", app_name)
+        return False
 
     def launch_application(self, app_name: str, **kwargs: Any) -> bool:
-        logger.info("[STUB] Would launch application: %s (%s)", app_name, kwargs)
-        return True
+        logger.info("[unsupported-os] Cannot launch %s on this platform.", app_name)
+        return False
 
     def set_display_brightness(self, percent: int) -> bool:
-        logger.info("[STUB] Would set brightness to %d%%", percent)
-        return True
+        logger.info("[unsupported-os] Cannot set brightness on this platform.")
+        return False
 
     def set_night_shift(self, intensity: int, enabled: bool = True) -> bool:
-        logger.info("[STUB] Would set night shift: enabled=%s intensity=%d", enabled, intensity)
-        return True
+        logger.info("[unsupported-os] Cannot set night shift on this platform.")
+        return False
 
     def set_system_theme(self, theme: str) -> bool:
-        logger.info("[STUB] Would set system theme: %s", theme)
-        return True
+        logger.info("[unsupported-os] Cannot set system theme on this platform.")
+        return False
 
     def set_dnd(self, enabled: bool) -> bool:
-        logger.info("[STUB] Would set DND: %s", enabled)
-        return True
+        logger.info("[unsupported-os] Cannot set DND on this platform.")
+        return False
 
     def minimize_all_windows(self) -> bool:
-        logger.info("[STUB] Would minimize all windows")
-        return True
+        logger.info("[unsupported-os] Cannot minimize windows on this platform.")
+        return False
 
     def restore_windows(self) -> bool:
-        logger.info("[STUB] Would restore windows")
-        return True
+        logger.info("[unsupported-os] Cannot restore windows on this platform.")
+        return False
 
     def play_sound(self, sound_name: str) -> bool:
-        logger.info("[STUB] Would play sound: %s", sound_name)
-        return True
+        logger.info("[unsupported-os] Cannot play sound on this platform.")
+        return False
 
     def list_running_applications(self) -> list[str]:
         return []
@@ -347,5 +384,8 @@ def get_backend() -> PlatformBackend:
     system = platform.system()
     if system == "Darwin":
         return MacOSBackend()
-    logger.warning("System automation is stubbed on %s. macOS is fully supported.", system)
+    logger.warning(
+        "Live system automation is macOS-only for now; on %s these actions are "
+        "inert. Tracking and therapeutic features work normally.", system
+    )
     return StubBackend()
