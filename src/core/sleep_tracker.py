@@ -112,7 +112,7 @@ class SleepTracker:
 
     Usage::
 
-        from src.core.database import DatabaseManager
+        from core.database import DatabaseManager
         db = DatabaseManager()
         db.initialize()
         st = SleepTracker(db)
@@ -134,7 +134,7 @@ class SleepTracker:
         self._db = db
 
     def _table(self) -> Any:
-        from src.core.database import TableName
+        from core.database import TableName
         return TableName.SLEEP_LOGS
 
     # ------------------------------------------------------------------
@@ -530,7 +530,7 @@ class SleepTracker:
     @staticmethod
     def _pearson(x: list[float], y: list[float]) -> float:
         """Compute Pearson correlation coefficient between two lists."""
-        from src.utils.statistics import pearson_correlation
+        from utils.statistics import pearson_correlation
 
         return pearson_correlation(x, y)
 

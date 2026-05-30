@@ -139,7 +139,7 @@ class MedicationTracker:
 
     Usage::
 
-        from src.core.database import DatabaseManager
+        from core.database import DatabaseManager
         db = DatabaseManager()
         db.initialize()
         mt = MedicationTracker(db)
@@ -158,7 +158,7 @@ class MedicationTracker:
         self._db = db
 
     def _table(self) -> Any:
-        from src.core.database import TableName
+        from core.database import TableName
         return TableName.MEDICATION_LOGS
 
     # ------------------------------------------------------------------

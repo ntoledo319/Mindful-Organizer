@@ -627,7 +627,7 @@ class MoodAnalytics:
     @staticmethod
     def _pearson(x: np.ndarray, y: np.ndarray) -> float:
         """Pearson correlation, returning 0 on degenerate input."""
-        from src.utils.statistics import pearson_correlation
+        from utils.statistics import pearson_correlation
 
         return pearson_correlation(x, y)
 

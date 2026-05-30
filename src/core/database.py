@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 DATA_DIR = Path.home() / ".mindful_organizer"
 DB_FILE = DATA_DIR / "mindful_organizer.db"
 
-CURRENT_SCHEMA_VERSION = 3
+CURRENT_SCHEMA_VERSION = 4
 
 _SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS schema_version (
@@ -325,6 +325,16 @@ _MIGRATIONS: dict[int, list[str]] = {
         "ALTER TABLE tasks ADD COLUMN values_alignment TEXT;",
         "ALTER TABLE tasks ADD COLUMN reminder TEXT;",
         "CREATE UNIQUE INDEX IF NOT EXISTS idx_tasks_guid ON tasks(guid);",
+    ],
+    # v4 backfills guids for tasks that pre-date the guid column. Without this,
+    # a legacy task migrated from v2 keeps guid=NULL on disk while TaskManager
+    # assigns it a fresh in-memory UUID; the first edit then INSERTs a duplicate
+    # row instead of updating, silently doubling tasks on upgrade. A UNIQUE index
+    # permits multiple NULLs in SQLite, so v3 never caught this. randomblob(16)
+    # gives each orphan a distinct id that the UNIQUE index then enforces.
+    4: [
+        "UPDATE tasks SET guid = lower(hex(randomblob(16))) "
+        "WHERE guid IS NULL OR guid = '';",
     ],
 }
 

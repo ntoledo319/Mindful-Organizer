@@ -5,7 +5,7 @@ Provides guided breathing exercises, grounding techniques, journaling,
 crisis planning, ERP tracking, meditation, and coping strategy recommendations.
 """
 
-from src.wellness.breathing import (
+from wellness.breathing import (
     BreathingExercise,
     BreathingExerciseType,
     BreathingManager,
@@ -13,7 +13,7 @@ from src.wellness.breathing import (
     BreathPhase,
     BreathPhaseData,
 )
-from src.wellness.coping_engine import (
+from wellness.coping_engine import (
     CopingCategory,
     CopingEngine,
     CopingStrategy,
@@ -21,32 +21,32 @@ from src.wellness.coping_engine import (
     EnergyLevel,
     StrategyFeedback,
 )
-from src.wellness.crisis_plan import (
+from wellness.crisis_plan import (
     CrisisPlan,
     CrisisPlanManager,
     ProfessionalContact,
     SupportContact,
 )
-from src.wellness.erp_tracker import (
+from wellness.erp_tracker import (
     ERPTracker,
     ExposureSession,
     HierarchyItem,
     ResponsePreventionLog,
     SafetyBehavior,
 )
-from src.wellness.grounding import (
+from wellness.grounding import (
     GroundingManager,
     GroundingSession,
     GroundingTechnique,
     GroundingType,
 )
-from src.wellness.journaling import (
+from wellness.journaling import (
     JournalEntry,
     JournalingManager,
     JournalPrompt,
     PromptCategory,
 )
-from src.wellness.meditation import (
+from wellness.meditation import (
     MeditationManager,
     MeditationSession,
     MeditationType,

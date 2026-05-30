@@ -261,7 +261,7 @@ class NotificationManager:
 
     Usage::
 
-        from src.core.database import DatabaseManager, TableName
+        from core.database import DatabaseManager, TableName
         db = DatabaseManager()
         db.initialize()
         nm = NotificationManager(db)
@@ -359,7 +359,7 @@ class NotificationManager:
     def _table(self) -> Any:
         """Return the TableName enum value for notifications."""
         # Avoid a hard import; works with any object that has a .value == 'notifications'
-        from src.core.database import TableName
+        from core.database import TableName
         return TableName.NOTIFICATIONS
 
     # ------------------------------------------------------------------

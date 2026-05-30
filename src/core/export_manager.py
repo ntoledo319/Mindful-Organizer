@@ -128,7 +128,7 @@ class ExportManager:
 
     Usage::
 
-        from src.core.database import DatabaseManager
+        from core.database import DatabaseManager
         db = DatabaseManager()
         db.initialize()
         em = ExportManager(db)
@@ -181,7 +181,7 @@ class ExportManager:
         end_date: date | None = None,
     ) -> list[dict[str, Any]]:
         """Fetch rows from a table, optionally filtered by date range."""
-        from src.core.database import TableName
+        from core.database import TableName
 
         table_enum = TableName(table_name)
         date_col = self._DATE_COLUMN.get(table_name)
@@ -249,7 +249,7 @@ class ExportManager:
     def _export_json(
         self, data: dict[str, Any], output: Path, options: ExportOptions,
     ) -> Path:
-        from src.core.database import CURRENT_SCHEMA_VERSION
+        from core.database import CURRENT_SCHEMA_VERSION
         data["schema_version"] = CURRENT_SCHEMA_VERSION
         output.write_text(json.dumps(data, indent=2, default=str), encoding="utf-8")
         logger.info("Exported JSON to %s", output)
@@ -355,7 +355,7 @@ class ExportManager:
 
         # Schema version
         validation.schema_version = data.get("schema_version")
-        from src.core.database import CURRENT_SCHEMA_VERSION
+        from core.database import CURRENT_SCHEMA_VERSION
         if validation.schema_version is not None and validation.schema_version > CURRENT_SCHEMA_VERSION:
                 validation.errors.append(
                     f"Import schema version {validation.schema_version} is newer "
@@ -416,7 +416,7 @@ class ExportManager:
                 )
 
         data = json.loads(file_path.read_text(encoding="utf-8"))
-        from src.core.database import TableName
+        from core.database import TableName
 
         valid_tables = {cat.value for cat in DataCategory}
         counts: dict[str, int] = {}
@@ -457,7 +457,7 @@ class ExportManager:
 
     def export_settings(self, output_path: Path | None = None) -> Path:
         """Export all settings to a JSON file."""
-        from src.core.database import TableName
+        from core.database import TableName
         result = self._db.query(TableName.SETTINGS)
         settings = {row["key"]: row["value"] for row in result.rows}
         categories = {row["key"]: row.get("category", "general") for row in result.rows}
