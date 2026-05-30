@@ -11,6 +11,7 @@ import json
 import logging
 import shutil
 import sqlite3
+import sys
 import threading
 from collections.abc import Generator, Sequence
 from contextlib import contextmanager
@@ -426,7 +427,23 @@ class DatabaseManager:
             conn.execute("PRAGMA journal_mode=WAL")
             conn.execute("PRAGMA foreign_keys=ON")
             self._local.conn = conn
+            self._restrict_file_permissions()
         return conn
+
+    def _restrict_file_permissions(self) -> None:
+        """Make the DB and its WAL/SHM sidecars owner-only (POSIX 0600).
+
+        The database holds health data; on shared machines other accounts should
+        not be able to read it. No-op on Windows (per-user profile ACL).
+        """
+        if sys.platform == "win32":
+            return
+        import contextlib
+        for suffix in ("", "-wal", "-shm"):
+            sidecar = Path(str(self._db_path) + suffix)
+            if sidecar.exists():
+                with contextlib.suppress(OSError):
+                    sidecar.chmod(0o600)
 
     @contextmanager
     def transaction(self) -> Generator[sqlite3.Connection, None, None]:

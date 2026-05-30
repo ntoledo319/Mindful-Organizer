@@ -1,7 +1,9 @@
 """
 Secure content management system with privacy features and customizable filtering.
 """
+import contextlib
 import hashlib
+import hmac
 import json
 import logging
 import os
@@ -179,7 +181,8 @@ class ContentManager:
             metadata = json.loads(decrypted_data)
             salt = bytes.fromhex(metadata.get("salt", "0" * 64))
             expected_hash: str = metadata["passcode_hash"]
-            return self._hash_passcode(passcode, salt) == expected_hash
+            # Constant-time compare to avoid leaking the passcode hash via timing.
+            return hmac.compare_digest(self._hash_passcode(passcode, salt), expected_hash)
         except (json.JSONDecodeError, KeyError, ValueError):
             return False
 
@@ -198,11 +201,43 @@ class ContentManager:
         metadata = json.loads(self.cipher.decrypt(encrypted_data))
 
         if metadata["hidden"]:
+            # Hidden vault folders are encrypted at rest: the file's bytes are
+            # Fernet-encrypted and the plaintext original is removed. (Previously
+            # this was a plain shutil.move, so "Fernet encryption" was false.)
             dest_folder = self.vault_path / folder_id
+            dest_folder.mkdir(parents=True, exist_ok=True)
+            plaintext = file_path.read_bytes()
+            ciphertext = self.cipher.encrypt(plaintext)
+            dest = dest_folder / f"{file_path.name}.enc"
+            dest.write_bytes(ciphertext)
+            with contextlib.suppress(OSError):
+                os.chmod(dest, 0o600)
+            file_path.unlink()
         else:
             dest_folder = self.root_path / metadata["name"]
+            dest_folder.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(file_path), str(dest_folder / file_path.name))
+        return True
 
-        shutil.move(str(file_path), str(dest_folder / file_path.name))
+    def extract_from_secure_folder(
+        self, folder_id: str, passcode: str, filename: str, dest_path: Path
+    ) -> bool:
+        """Decrypt a file previously stored in a hidden vault folder.
+
+        ``filename`` is the original name (without the ``.enc`` suffix). Returns
+        True on success. Visible (non-hidden) folders store plaintext and need
+        no extraction.
+        """
+        if not self.verify_access(folder_id, passcode):
+            return False
+        enc_path = self.vault_path / folder_id / f"{filename}.enc"
+        if not enc_path.exists():
+            return False
+        try:
+            plaintext = self.cipher.decrypt(enc_path.read_bytes())
+        except Exception:
+            return False
+        dest_path.write_bytes(plaintext)
         return True
 
     def get_folder_path(self, folder_id: str, passcode: str) -> Path | None:

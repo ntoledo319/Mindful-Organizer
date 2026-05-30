@@ -48,7 +48,23 @@ def get_data_dir(create: bool = True) -> Path:
 
     if create:
         data_dir.mkdir(parents=True, exist_ok=True)
+        _harden_permissions(data_dir)
     return data_dir
+
+
+def _harden_permissions(path: Path) -> None:
+    """Restrict a path to the owner only (POSIX 0700).
+
+    The local SQLite database holds health data (mood, medication, journal).
+    On macOS/Linux we make the data directory owner-only so other accounts on a
+    shared machine can't read it. Windows relies on the per-user profile ACL, so
+    chmod is a no-op there; full-disk encryption remains the primary protection
+    on every platform (see docs/security.md).
+    """
+    if sys.platform == "win32":
+        return
+    with contextlib.suppress(OSError):
+        path.chmod(0o700)
 
 
 def get_db_path() -> Path:
