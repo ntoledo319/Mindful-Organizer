@@ -2,7 +2,14 @@
 
 *A desktop that adapts to your psychology.*
 
-The Hearth Project is a desktop-native psychological operating-system layer for people managing ADHD, anxiety, depression, OCD, PTSD, or bipolar disorder. It reconfigures your computing environment in real time based on psychological state — closes apps during anxiety spikes, dims the display when energy is low, enforces Do Not Disturb during manic windows, and reorganizes files to match cognitive capacity. Built in Python and PyQt6. All data is stored locally — no cloud sync, no telemetry.
+The Hearth Project is a desktop-native psychological operating-system layer for people managing ADHD, anxiety, depression, OCD, PTSD, or bipolar disorder. It reconfigures your computing environment based on psychological state — closes distracting apps during anxiety spikes, enforces Do Not Disturb, dims the display, and organizes files. Built in Python and PyQt6. All data is stored locally — no cloud sync, no telemetry.
+
+> **Platform support.** The full app — tracking, therapeutic tools, the adaptive
+> dashboard, crisis resources — runs on macOS, Linux, and Windows. **Live OS
+> actuation** (closing apps, Do Not Disturb, display dimming) is currently
+> implemented and verified on **macOS only**; on Windows and Linux those specific
+> actions are inert (the app says so rather than pretending to act) until their
+> backends land. Hearth never reports a system change that didn't happen.
 
 ![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)
 ![PyQt6](https://img.shields.io/badge/PyQt6-6.4.0%2B-green.svg)
@@ -22,8 +29,8 @@ Hearth is a single-user, offline-first desktop application that adapts the compu
 - **Energy predictor** — Forecasts from sleep + mood + task history. Optional ML deps (`scikit-learn`) enable smarter ranking; graceful degradation without them.
 - **Wellness orchestrator** — Cross-module intelligence that produces `WellnessSnapshot`, detects crisis heuristics (mood crash + sleep deprivation, rapid mood drop, medication miss streak), and generates daily briefings.
 - **Therapeutic tools** — Breathing exercises, grounding techniques, guided meditation metadata, journaling with prompts, ERP exposure tracking, crisis plan with contacts.
-- **File organizer** — Condition-aware organization modes (ADHD/OCD/Depression/Anxiety). Includes smart file system with optional ML clustering (`sentence-transformers`, `hdbscan`).
-- **Secure content folders** — Passcode-protected folders using Fernet encryption + scrypt. Keys are stored in the OS credential store (Keychain on macOS, Credential Manager on Windows, SecretService on Linux), not next to the ciphertext.
+- **File organizer** — Sorts files into a clean type-based structure, with an optional smart file system that uses ML clustering (`sentence-transformers`, `hdbscan`) when those extras are installed.
+- **Secure content vault** *(library/API; no GUI surface yet)* — Passcode-gated folders whose file contents are Fernet-encrypted at rest, with scrypt passcode hashing. The Fernet key lives in the OS credential store (Keychain / Credential Manager / SecretService), not next to the ciphertext. Exposed as `security.content_management.ContentManager`; a dedicated UI is on the roadmap.
 - **Shareable reports** — Self-contained HTML reports with Chart.js (loaded from CDN). No runtime dependency.
 - **Calendar sync** — Exports tasks as ICS and parses external busy blocks for focus scheduling.
 - **Wearable sync** — Imports Apple Health XML and Google Fit sleep CSV exports into local sleep logs.
