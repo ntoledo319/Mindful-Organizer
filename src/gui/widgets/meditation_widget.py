@@ -127,7 +127,7 @@ class MeditationWidget(QWidget):
         try:
             return Path(self.main_window.data_dir)
         except (AttributeError, TypeError):
-            p = Path.home() / ".mindful_optimizer"
+            p = Path.home() / ".mindful_organizer"
             p.mkdir(parents=True, exist_ok=True)
             return p
 

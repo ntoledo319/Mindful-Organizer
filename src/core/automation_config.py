@@ -168,7 +168,7 @@ class AutomationConfigManager:
     """Manages automation configuration, profiles, and scheduled blocks."""
 
     def __init__(self, data_dir: Path | None = None) -> None:
-        self.data_dir = data_dir or Path.home() / ".mindful_optimizer"
+        self.data_dir = data_dir or Path.home() / ".mindful_organizer"
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.config_file = self.data_dir / "automation_config.json"
 

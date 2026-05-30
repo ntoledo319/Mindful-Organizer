@@ -4,11 +4,11 @@
 **Intended audience:** New engineers, operators, auditors, buyers.
 **Confidence:** Mixed — product behavior is confirmed from source; user personas are inferred from feature design.
 **Source references:** `src/main.py`, `src/gui/main_window.py`, `src/core/`, `src/profiles/`, `src/wellness/`
-**Last updated:** 2026-05-02
+**Last updated:** 2026-05-29
 
 ## What the Product Is
 
-Hearth is a **single-user, offline-first desktop application** for mental-health-aware productivity. It runs on macOS, Linux, and Windows. All user data is stored locally in SQLite and JSON files. There is no cloud sync, no telemetry, and no network dependency for core features.
+Hearth is a **single-user, offline-first desktop application** for mental-health-aware productivity. It runs on macOS, Linux, and Windows. User records are stored locally in SQLite, with small JSON files for settings/templates. There is no cloud sync, no telemetry, and no network dependency for core features.
 
 The application adapts its UI and recommendations based on a user-configurable mental health profile (conditions such as ADHD, Anxiety, Depression, OCD, PTSD, Bipolar, etc.).
 
@@ -36,7 +36,7 @@ There is **no multi-user support**, **no server-side API**, and **no administrat
 ### 2. Task Creation & Prioritization
 1. User navigates to **Tasks** tab → `TaskManagerWidget`.
 2. User adds task (or uses NLP parser for natural language input).
-3. `TaskManager.add_task()` persists to `tasks.json`.
+3. `TaskManager.add_task()` persists to SQLite (`tasks` table).
 4. `StateBus.emit_task_changed()` notifies dashboard.
 5. User sorts by energy or priority; `TaskManager` filters in-memory.
 
@@ -58,7 +58,7 @@ There is **no multi-user support**, **no server-side API**, and **no administrat
 │                   │                         │
 │            ┌──────┴──────┐                  │
 │            │  SQLite DB  │                  │
-│            │  + JSON     │                  │
+│            │ + config    │                  │
 │            └─────────────┘                  │
 └─────────────────────────────────────────────┘
          │ Optional: GitHub API (update check)
@@ -68,8 +68,8 @@ There is **no multi-user support**, **no server-side API**, and **no administrat
 
 **In-bounds:**
 - All code in `src/`
-- Local SQLite database (`~/.mindful_optimizer/mindful_organizer.db`)
-- Local JSON files (`tasks.json`, `task_templates.json`, `settings.json`)
+- Local SQLite database (`~/.mindful_organizer/mindful_organizer.db`)
+- Local JSON files for templates, custom categories, settings, and license state
 - In-app HTML reports (self-contained, CDN-loaded Chart.js)
 
 **Out-of-bounds:**
@@ -94,7 +94,7 @@ There is **no multi-user support**, **no server-side API**, and **no administrat
 | Claim | Status | Evidence |
 |-------|--------|----------|
 | Single-user desktop app | **Confirmed** | `src/main.py` single-instance lock, no auth system |
-| Offline-first | **Confirmed** | No network calls in core paths; SQLite + JSON only |
+| Offline-first | **Confirmed** | No network calls in core paths; SQLite plus local config only |
 | No telemetry | **Confirmed** | No network logging or analytics SDKs found |
 | Target users have ADHD/Anxiety/Depression | **High-confidence inference** | Condition enum, profile builder, feature design |
 | Intended for clinical use | **Unclear / false** | Disclaimer says "not a medical device"; crisis plan is self-help |

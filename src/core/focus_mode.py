@@ -96,7 +96,7 @@ class FocusModeManager:
         data_dir: Path | None = None,
         backend: PlatformBackend | None = None,
     ) -> None:
-        self.data_dir = data_dir or Path.home() / ".mindful_optimizer"
+        self.data_dir = data_dir or Path.home() / ".mindful_organizer"
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.session_file = self.data_dir / "focus_sessions.json"
         self.config_file = self.data_dir / "focus_config.json"

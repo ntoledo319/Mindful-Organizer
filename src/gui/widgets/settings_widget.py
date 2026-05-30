@@ -336,6 +336,10 @@ class SettingsWidget(QWidget):
         import_btn.clicked.connect(self._import_data)
         btn_row.addWidget(import_btn)
 
+        sync_btn = _accent_button("Wearable Sync")
+        sync_btn.clicked.connect(self._sync_wearables)
+        btn_row.addWidget(sync_btn)
+
         reset_btn = _accent_button("Reset")
         reset_btn.clicked.connect(self._reset_data)
         btn_row.addWidget(reset_btn)
@@ -562,6 +566,40 @@ class SettingsWidget(QWidget):
             )
         except Exception as e:
             QMessageBox.warning(self, "Error", f"Reset failed: {e}")
+
+    def _sync_wearables(self) -> None:
+        from gui.subscription_helpers import gated
+        if not gated("wearable_sync", getattr(self.main_window, "subscription_manager", None), self):
+            return
+
+        from core.wearable_sync import WearableSyncManager
+        path = QFileDialog.getExistingDirectory(
+            self, "Select Export Directory", str(Path.home())
+        )
+        if not path:
+            return
+
+        try:
+            manager = WearableSyncManager()
+            results = manager.sync_all_available(Path(path))
+            total = sum(results.values())
+
+            if total > 0:
+                msg = (
+                    f"Successfully imported {total} records:\n"
+                    f"• Apple Health: {results.get('apple_health', 0)}\n"
+                    f"• Google Fit: {results.get('google_fit', 0)}"
+                )
+                QMessageBox.information(self, "Wearable Sync", msg)
+            else:
+                QMessageBox.information(
+                    self, "Wearable Sync",
+                    "No valid sleep data found in the selected directory.\n"
+                    "Please select an unzipped Apple Health or Google Fit export."
+                )
+        except Exception as e:
+            logger.error("Failed to sync wearables: %s", e)
+            QMessageBox.warning(self, "Error", f"Failed to sync wearables: {e}")
 
     # ------------------------------------------------------------------
     # Onboarding

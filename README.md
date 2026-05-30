@@ -15,7 +15,7 @@ Hearth is a single-user, offline-first desktop application that adapts the compu
 
 **Confirmed capabilities (from source):**
 
-- **Task management** — CRUD, subtasks, dependencies, recurring tasks, templates, undo/redo, energy-based filtering and sorting. Persists to JSON (`tasks.json`); a one-time JSON→SQLite migration auto-runs on first launch.
+- **Task management** — CRUD, subtasks, dependencies, recurring tasks, templates, undo/redo, energy-based filtering and sorting. Persists task records to SQLite; legacy JSON task data is migrated on first launch.
 - **Mood tracker** — 1–10 mood scores with condition-specific symptoms. Persists to SQLite (`mood_entries` table).
 - **Sleep tracker** — Bedtime, wake time, quality (1–10), duration. Persists to SQLite (`sleep_logs` table).
 - **DBT Diary Card** — Daily structured tracking of emotions, urges, skills, effectiveness, target behaviors, substances, and medication adherence. Added in schema v2.
@@ -25,12 +25,12 @@ Hearth is a single-user, offline-first desktop application that adapts the compu
 - **File organizer** — Condition-aware organization modes (ADHD/OCD/Depression/Anxiety). Includes smart file system with optional ML clustering (`sentence-transformers`, `hdbscan`).
 - **Secure content folders** — Passcode-protected folders using Fernet encryption + scrypt. Keys are stored in the OS credential store (Keychain on macOS, Credential Manager on Windows, SecretService on Linux), not next to the ciphertext.
 - **Shareable reports** — Self-contained HTML reports with Chart.js (loaded from CDN). No runtime dependency.
+- **Calendar sync** — Exports tasks as ICS and parses external busy blocks for focus scheduling.
+- **Wearable sync** — Imports Apple Health XML and Google Fit sleep CSV exports into local sleep logs.
 - **Subscription tiers** — Free / Pro / Premium. License keys are signed with Ed25519; only the public verification key ships in the binary. A 14-day Premium trial is available without a key.
 
-**Partial / stub implementations:**
-- `calendar_sync.py` — Stubbed ICS integration.
+**Partial implementations:**
 - `auto_updater.py` — Checks GitHub releases but does not auto-install.
-- `wearable_sync` — Listed as a Premium feature but has no implementation.
 
 ## Tech Stack
 
@@ -38,7 +38,7 @@ Hearth is a single-user, offline-first desktop application that adapts the compu
 |-------|------------|
 | Language | Python 3.11+ |
 | GUI | PyQt6 |
-| Persistence | SQLite (WAL mode, schema v2) + JSON for legacy task data |
+| Persistence | SQLite (WAL mode, schema v3) + JSON for lightweight local config/templates |
 | Optional ML | scikit-learn, pandas, matplotlib |
 | Optional NLP / clustering | sentence-transformers, hdbscan, umap-learn |
 | Encryption | cryptography (Fernet + scrypt for content vault; Ed25519 for license signing) |
@@ -137,11 +137,9 @@ Quick pointers:
 
 ## Known Caveats
 
-1. **Data directory naming quirk** — The app uses `.mindful_optimizer` (a legacy typo) as the data directory name. This is consistent across all running code, but it differs from the product name.
-2. **TaskManager uses JSON, not SQLite** — Tasks are stored in `tasks.json` while mood, sleep, medications, etc. use SQLite. `MigrationManager` can migrate legacy JSON to SQLite but the app does not do this automatically on boot.
-3. **CI runs `flake8`, not `ruff`** — The GitHub Actions workflow still uses `flake8` for legacy reasons. Local development uses `ruff`.
-4. **Windows Store assets missing** — `windows_store/assets/` contains no PNG images; store submission would fail without them.
-5. **Hardcoded license secret** — `subscription_manager.py` contains an offline HMAC secret. This is acceptable for offline-only validation but must be replaced before any commercial distribution.
+1. **Auto-updater is check-only** — `auto_updater.py` checks release metadata but does not download or install updates.
+2. **Commercial license hardening remains** — license validation should be reviewed before paid distribution.
+3. **GUI coverage remains thin** — most automated tests exercise core modules rather than rendered PyQt flows.
 
 ## License
 

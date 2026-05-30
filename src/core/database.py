@@ -22,10 +22,10 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-DATA_DIR = Path.home() / ".mindful_optimizer"
+DATA_DIR = Path.home() / ".mindful_organizer"
 DB_FILE = DATA_DIR / "mindful_organizer.db"
 
-CURRENT_SCHEMA_VERSION = 2
+CURRENT_SCHEMA_VERSION = 3
 
 _SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS schema_version (
@@ -64,18 +64,28 @@ CREATE TABLE IF NOT EXISTS diary_cards (
 );
 
 CREATE TABLE IF NOT EXISTS tasks (
-    id              INTEGER PRIMARY KEY AUTOINCREMENT,
-    title           TEXT    NOT NULL,
-    description     TEXT,
-    priority        TEXT    NOT NULL DEFAULT 'medium',
-    category        TEXT    NOT NULL DEFAULT 'Other',
-    energy_required INTEGER DEFAULT 5,
-    due_date        TEXT,
-    completed       INTEGER NOT NULL DEFAULT 0,
-    completed_at    TEXT,
-    notes           TEXT,
-    created_at      TEXT    NOT NULL DEFAULT (datetime('now')),
-    updated_at      TEXT    NOT NULL DEFAULT (datetime('now'))
+    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    guid                TEXT    UNIQUE,
+    title               TEXT    NOT NULL,
+    description         TEXT,
+    priority            TEXT    NOT NULL DEFAULT 'medium',
+    category            TEXT    NOT NULL DEFAULT 'Other',
+    energy_required     INTEGER DEFAULT 5,
+    due_date            TEXT,
+    completed           INTEGER NOT NULL DEFAULT 0,
+    completed_at        TEXT,
+    notes               TEXT,
+    subtasks_json       TEXT,
+    tags_json           TEXT,
+    custom_category     TEXT,
+    recurrence_json     TEXT,
+    blocked_by_json     TEXT,
+    estimated_duration  INTEGER,
+    actual_duration     INTEGER,
+    values_alignment    TEXT,
+    reminder            TEXT,
+    created_at          TEXT    NOT NULL DEFAULT (datetime('now')),
+    updated_at          TEXT    NOT NULL DEFAULT (datetime('now'))
 );
 
 CREATE TABLE IF NOT EXISTS sleep_logs (
@@ -303,6 +313,19 @@ _MIGRATIONS: dict[int, list[str]] = {
         );""",
         "CREATE INDEX IF NOT EXISTS idx_diary_cards_date ON diary_cards(date);",
     ],
+    3: [
+        "ALTER TABLE tasks ADD COLUMN guid TEXT;",
+        "ALTER TABLE tasks ADD COLUMN subtasks_json TEXT;",
+        "ALTER TABLE tasks ADD COLUMN tags_json TEXT;",
+        "ALTER TABLE tasks ADD COLUMN custom_category TEXT;",
+        "ALTER TABLE tasks ADD COLUMN recurrence_json TEXT;",
+        "ALTER TABLE tasks ADD COLUMN blocked_by_json TEXT;",
+        "ALTER TABLE tasks ADD COLUMN estimated_duration INTEGER;",
+        "ALTER TABLE tasks ADD COLUMN actual_duration INTEGER;",
+        "ALTER TABLE tasks ADD COLUMN values_alignment TEXT;",
+        "ALTER TABLE tasks ADD COLUMN reminder TEXT;",
+        "CREATE UNIQUE INDEX IF NOT EXISTS idx_tasks_guid ON tasks(guid);",
+    ],
 }
 
 
@@ -441,6 +464,8 @@ class DatabaseManager:
                 continue
             logger.info("Applying migration to version %d", version)
             for sql in _MIGRATIONS[version]:
+                if self._is_existing_column_migration(conn, sql):
+                    continue
                 conn.execute(sql)
             conn.execute(
                 "INSERT INTO schema_version (version) VALUES (?)", (version,)
@@ -454,6 +479,26 @@ class DatabaseManager:
                 (CURRENT_SCHEMA_VERSION,),
             )
             conn.commit()
+
+    @staticmethod
+    def _is_existing_column_migration(conn: sqlite3.Connection, sql: str) -> bool:
+        """Return True when an ADD COLUMN migration is already present.
+
+        Fresh databases are created from the latest schema, so older ADD COLUMN
+        migrations may already be reflected in the base tables.
+        """
+        parts = sql.strip().rstrip(";").split()
+        if len(parts) < 6:
+            return False
+
+        operation = [parts[0].upper(), parts[1].upper(), parts[3].upper(), parts[4].upper()]
+        if operation != ["ALTER", "TABLE", "ADD", "COLUMN"]:
+            return False
+
+        table_name = parts[2]
+        column_name = parts[5]
+        rows = conn.execute(f"PRAGMA table_info({table_name})").fetchall()
+        return any(row["name"] == column_name for row in rows)
 
     # ------------------------------------------------------------------
     # CRUD helpers

@@ -257,6 +257,17 @@ _TEMPLATES: dict[str, list[tuple]] = {
         ("Attend the appointment", 15, EnergyLevel.MODERATE),
         ("Write down key takeaways afterwards", 3, EnergyLevel.LOW),
     ],
+    "taxes": [
+        ("Create one folder or pile for tax documents", 3, EnergyLevel.LOW),
+        ("Gather income forms such as W-2s, 1099s, or pay summaries", 8, EnergyLevel.MODERATE),
+        ("Gather deductible expense records and receipts", 10, EnergyLevel.MODERATE),
+        ("Open your tax software or choose the filing method", 3, EnergyLevel.LOW),
+        ("Enter personal information and income forms", 15, EnergyLevel.HIGH),
+        ("Enter deductions, credits, and payment information", 15, EnergyLevel.HIGH),
+        ("Review warnings, missing fields, and refund or payment amount", 10, EnergyLevel.MODERATE),
+        ("Save a copy of the return and confirmation records", 5, EnergyLevel.LOW),
+        ("Set a reminder for any payment, refund, or follow-up deadline", 3, EnergyLevel.LOW),
+    ],
 }
 
 # Map keywords to template names
@@ -278,6 +289,8 @@ _TEMPLATE_KEYWORD_MAP: dict[str, str] = {
     "appointment": "appointment", "doctor": "appointment",
     "dentist": "appointment", "therapist": "appointment",
     "meeting": "appointment",
+    "tax": "taxes", "taxes": "taxes", "tax return": "taxes",
+    "irs": "taxes", "1099": "taxes", "w-2": "taxes",
 }
 
 

@@ -29,7 +29,7 @@ class Settings:
             base = Path.home() / "Library" / "Application Support"
         else:
             base = Path.home()
-        return base / ".mindful_optimizer"
+        return base / ".mindful_organizer"
 
     # Host / port for the local API
     host: str = os.environ.get("HEARTH_API_HOST", "127.0.0.1")

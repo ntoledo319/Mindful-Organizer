@@ -3,7 +3,7 @@
 **Purpose:** Breakdown of major subsystems with responsibilities, entry points, and risks.  
 **Intended audience:** Engineers, maintainers.  
 **Confidence:** Confirmed from source.  
-**Last updated:** 2026-05-02
+**Last updated:** 2026-05-29
 
 ## Core Subsystems
 
@@ -19,7 +19,7 @@
 - `src/main.py`
 
 **Responsibilities:**
-- Determine data directory (`~/.mindful_optimizer` on all platforms)
+- Determine data directory (`~/.mindful_organizer`, with startup migration from the legacy `.mindful_optimizer` path)
 - Configure rotating file + stdout logging
 - Enforce single-instance via file lock (POSIX) or `O_CREAT|O_EXCL` (Windows)
 - Configure high-DPI scaling before `QApplication` creation
@@ -46,7 +46,7 @@
 - `src/core/database.py`
 
 **Responsibilities:**
-- Create and maintain SQLite schema (v2)
+- Create and maintain SQLite schema (v3)
 - Run migrations from `_MIGRATIONS` dict
 - Provide parameterized CRUD helpers
 - Export data to JSON/CSV
@@ -57,7 +57,7 @@
 - `threading` (stdlib)
 
 **Interactions:**
-- Used by almost all core managers except `TaskManager`
+- Used by core managers including `TaskManager`
 - `MigrationManager` uses it to migrate legacy JSON data
 
 **Risks:**
@@ -80,14 +80,15 @@
 - `src/core/task_manager.py`
 
 **Responsibilities:**
-- Maintain in-memory task list loaded from `tasks.json`
+- Maintain in-memory task list loaded from SQLite
 - Support subtasks, recurrence, dependencies, tags, custom categories
 - Provide sorting and search
 - Track task completion statistics
 
 **Dependencies:**
 - `json`, `uuid`, `dataclasses`
-- `gui.state_bus` (for emitting signals) — **inverted dependency**
+- `core.database`
+- `core.state_bus` (for emitting task change signals)
 
 **Interactions:**
 - `AdaptiveMainWindow` owns the instance
@@ -95,10 +96,9 @@
 - `EnergyPredictor` may read tasks for forecasting
 
 **Risks:**
-- Uses JSON instead of SQLite, unlike all other managers
-- No file locking on `tasks.json`; concurrent writes could corrupt data
+- Templates and custom category labels still use JSON sidecar files
 - `get_task_by_id()` is O(n) over the task list
-- Emits signals by importing `gui.state_bus` from core layer
+- Emits signals through process-global state bus
 
 ---
 

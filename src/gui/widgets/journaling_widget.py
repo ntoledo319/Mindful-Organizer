@@ -138,7 +138,7 @@ class JournalingWidget(QWidget):
     def _data_file(self) -> Path | None:
         if self._journal_manager and hasattr(self._journal_manager, "data_dir"):
             return Path(self._journal_manager.data_dir) / "journal_entries.json"
-        home = Path.home() / ".mindful_optimizer" / "journal_entries.json"
+        home = Path.home() / ".mindful_organizer" / "journal_entries.json"
         home.parent.mkdir(parents=True, exist_ok=True)
         return home
 

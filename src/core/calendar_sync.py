@@ -8,6 +8,7 @@ to block focus time during predicted peak energy hours.
 from __future__ import annotations
 
 import uuid
+from contextlib import suppress
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -180,3 +181,42 @@ class CalendarSync:
             suggestions.append(suggested)
 
         return suggestions
+
+    def parse_busy_blocks(self, ics_content: str) -> list[tuple[datetime, datetime]]:
+        """Zero-dependency parser for external ICS files to find busy blocks.
+
+        Extracts start and end times for all VEVENTs to avoid scheduling
+        focus blocks during existing meetings.
+        """
+        import re
+
+        blocks = []
+        in_event = False
+        start_time = None
+        end_time = None
+
+        lines = ics_content.splitlines()
+        for line in lines:
+            line = line.strip()
+            if line == "BEGIN:VEVENT":
+                in_event = True
+                start_time = None
+                end_time = None
+            elif line == "END:VEVENT":
+                in_event = False
+                if start_time and end_time:
+                    blocks.append((start_time, end_time))
+            elif in_event:
+                # Basic parsing for DTSTART:20231025T140000Z or DTSTART;TZID=...:20231025T140000
+                if line.startswith("DTSTART"):
+                    match = re.search(r':(\d{8}T\d{6}Z?)', line)
+                    if match:
+                        with suppress(ValueError):
+                            start_time = datetime.strptime(match.group(1).replace("Z", ""), "%Y%m%dT%H%M%S")
+                elif line.startswith("DTEND"):
+                    match = re.search(r':(\d{8}T\d{6}Z?)', line)
+                    if match:
+                        with suppress(ValueError):
+                            end_time = datetime.strptime(match.group(1).replace("Z", ""), "%Y%m%dT%H%M%S")
+
+        return sorted(blocks, key=lambda x: x[0])

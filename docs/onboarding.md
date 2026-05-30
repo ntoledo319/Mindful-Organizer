@@ -74,7 +74,7 @@ ruff check src/ tests/
 1. **Import style** — Some core files use `from core.X` while tests use `from src.core.X`. Both work because `src/` is added to `sys.path` in `main.py`, but it can confuse IDEs. Prefer `from src.core.X` in tests.
 2. **GUI tests need a display** — Skip them with `-m "not gui"`. On Linux, set `QT_QPA_PLATFORM=offscreen`.
 3. **Manager properties return None** — If an optional dependency is missing, lazy-loaded properties return `None`. Widgets must handle this or crash.
-4. **Data directory typo** — The app uses `~/.mindful_optimizer` (not `.mindful_organizer`). Don't fight it; it's preserved for backward compatibility.
+4. **Data directory typo** — The app used to use `~/.mindful_optimizer` (not `.mindful_organizer`). This has been fixed.
 5. **Changing schema** — Edit `_SCHEMA_SQL` in `database.py` and bump `CURRENT_SCHEMA_VERSION`. Add migration SQL to `_MIGRATIONS`.
 6. **Subscription gating** — Check `subscription_manager.has_feature("feature_name")` before exposing Premium functionality.
 

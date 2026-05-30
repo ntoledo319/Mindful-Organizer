@@ -18,7 +18,7 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-DATA_DIR = Path.home() / ".mindful_optimizer"
+DATA_DIR = Path.home() / ".mindful_organizer"
 ANALYTICS_FILE = DATA_DIR / "onboarding_analytics.json"
 
 

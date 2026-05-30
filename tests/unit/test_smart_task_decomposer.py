@@ -254,6 +254,15 @@ class TestTemplates:
         assert len(steps) > 0
         assert all("title" in s for s in steps)
 
+    def test_taxes_template_is_specific(self):
+        result = SmartTaskDecomposer().decompose("Do taxes")
+        titles = [step.title.lower() for step in result.subtasks]
+
+        assert result.complexity == TaskComplexity.COMPLEX
+        assert any("income forms" in title for title in titles)
+        assert any("deductible" in title for title in titles)
+        assert any("return" in title for title in titles)
+
     def test_nonexistent_template(self):
         assert SmartTaskDecomposer.template_steps("nonexistent") is None
 

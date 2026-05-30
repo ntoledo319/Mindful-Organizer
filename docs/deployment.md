@@ -3,7 +3,7 @@
 **Purpose:** Deployment packaging, operational runbook, and troubleshooting.  
 **Intended audience:** Operators, release engineers, founders.  
 **Confidence:** Confirmed from build scripts and source; some operational guidance is inferred.  
-**Last updated:** 2026-05-02
+**Last updated:** 2026-05-29
 
 ## Deployment Model
 
@@ -27,11 +27,11 @@ There is **only one runtime environment** — the user's local machine. There ar
 
 | OS | Data Directory | Config | Logs |
 |----|---------------|--------|------|
-| macOS | `~/.mindful_optimizer/` | `~/Library/Preferences/MindfulOrganizer/` | `~/Library/Logs/MindfulOrganizer/` |
-| Linux | `~/.mindful_optimizer/` | `~/.config/mindful_optimizer/` | `~/.mindful_optimizer/logs/` |
-| Windows | `~/.mindful_optimizer/` | `%APPDATA%/MindfulOrganizer/` | `%APPDATA%/MindfulOrganizer/logs/` |
+| macOS | `~/.mindful_organizer/` | `~/Library/Preferences/MindfulOrganizer/` | `~/Library/Logs/MindfulOrganizer/` |
+| Linux | `~/.mindful_organizer/` | `~/.config/mindful_organizer/` | `~/.mindful_organizer/logs/` |
+| Windows | `~/.mindful_organizer/` | `%APPDATA%/MindfulOrganizer/` | `%APPDATA%/MindfulOrganizer/logs/` |
 
-**Note:** `platform_utils.py` uses `MindfulOrganizer` (no dot, no underscore) for macOS/Windows config paths. The data dir is `.mindful_optimizer` everywhere.
+**Note:** `platform_utils.py` uses `MindfulOrganizer` (no dot, no underscore) for macOS/Windows config paths. The data dir is `.mindful_organizer` everywhere.
 
 ## Build Artifacts
 
@@ -58,19 +58,19 @@ There is **only one runtime environment** — the user's local machine. There ar
 
 - `windows_store/AppxManifest.xml` defines the package
 - `build_msix.ps1` automates build, layout, PRI generation, packaging, and WACK validation
-- **Missing:** Visual assets (PNG images) in `windows_store/assets/`. Store submission will fail without 44×44, 150×150, and 620×300 images.
+- **Assets:** Windows Store PNG/ICO assets are generated in `windows_store/assets/` by `scripts/generate_store_assets.py`.
 - **Invalid:** `PhoneProductId` is a placeholder; background task extension references a nonexistent class.
 
 ## Secrets and Config Needs
 
 - **No runtime secrets** required for core functionality.
-- **License validation** uses a hardcoded HMAC secret in `src/core/subscription_manager.py`. For commercial distribution, this must be replaced with a per-build or asymmetric secret.
-- **Encryption keys** for secure folders are generated per-installation and stored locally (`key.bin`).
+- **License validation** uses an embedded Ed25519 public key in `src/core/subscription_manager.py`. The private signing key must stay in release secrets only.
+- **Encryption keys** for secure folders are generated per-installation and stored in the OS keyring when available, with an on-disk fallback.
 
 ## Migration Concerns
 
 - **Database schema migrations** run automatically on app start via `DatabaseManager.initialize()`.
-- **JSON-to-SQLite migration** is available via `MigrationManager` but is **not triggered automatically**.
+- **JSON-to-SQLite migration** runs on first launch for remaining legacy JSON records and writes a completion marker.
 - **No downgrade path** for schema migrations.
 
 ## Rollback
@@ -81,7 +81,7 @@ There is **only one runtime environment** — the user's local machine. There ar
 ## Operational Gotchas
 
 1. **Single-instance enforcement** — If the app crashes on Windows, the `.lock` file may persist. The startup code attempts to delete it, but this is a file-based lock, not a mutex.
-2. **Log rotation** — There is no log rotation. `mindful_organizer.log` grows indefinitely.
+2. **Log rotation** — Runtime logs rotate at 5 MB per file with five backups.
 3. **No auto-update installation** — `AutoUpdater` checks for releases but does not download or install them. Users must manually update.
 4. **WAL mode** — SQLite uses WAL. If the app crashes, `-wal` and `-shm` files may be left behind. SQLite handles this gracefully on next open.
 
@@ -96,13 +96,13 @@ There is **only one runtime environment** — the user's local machine. There ar
 
 ## Routine Maintenance
 
-- **Backups:** `DatabaseManager.backup()` creates timestamped copies in `~/.mindful_optimizer/backups/`.
+- **Backups:** `DatabaseManager.backup()` creates timestamped copies in `~/.mindful_organizer/backups/`.
 - **Cleanup:** `scripts/cleanup.py` removes build artifacts (rewritten to be safe and portable).
-- **Log monitoring:** Check `~/.mindful_optimizer/logs/mindful_organizer.log` for errors.
+- **Log monitoring:** Check `~/.mindful_organizer/logs/mindful_organizer.log` for errors.
 
 ## Logs and Observability
 
-- **Log location:** `~/.mindful_optimizer/logs/mindful_organizer.log`
+- **Log location:** `~/.mindful_organizer/logs/mindful_organizer.log`
 - **Format:** `%(asctime)s [%(levelname)s] %(name)s: %(message)s`
 - **Levels:** INFO and above to file; INFO and above to stdout
 - **No structured logging** — plain text only
@@ -113,11 +113,11 @@ There is **only one runtime environment** — the user's local machine. There ar
 
 | Symptom | Likely Cause | Where to Inspect |
 |---------|-------------|------------------|
-| App won't start | Missing PyQt6, or single-instance lock stuck | Logs, `~/.mindful_optimizer/.lock` |
-| Data missing | Wrong data directory, or DB corruption | `~/.mindful_optimizer/`, backup files |
+| App won't start | Missing PyQt6, or single-instance lock stuck | Logs, `~/.mindful_organizer/.lock` |
+| Data missing | Wrong data directory, or DB corruption | `~/.mindful_organizer/`, backup files |
 | Crashes on theme change | Stylesheet syntax error | `src/gui/themes.py`, log traceback |
-| Tasks not persisting | JSON write failure (permissions) | `tasks.json`, filesystem permissions |
-| Slow startup | Large `tasks.json` or many SQLite rows | File sizes, `PRAGMA wal_checkpoint` |
+| Tasks not persisting | SQLite write failure or migration issue | `mindful_organizer.db`, logs |
+| Slow startup | Many SQLite rows or large JSON sidecars | File sizes, `PRAGMA wal_checkpoint` |
 
 ## Restart Guidance
 

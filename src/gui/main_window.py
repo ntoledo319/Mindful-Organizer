@@ -157,7 +157,7 @@ class AdaptiveMainWindow(QMainWindow):
                 base = Path.home() / "Library" / "Application Support"
             else:
                 base = Path.home()
-            return base / ".mindful_optimizer"
+            return base / ".mindful_organizer"
 
     def _load_settings(self):
         """Load application settings."""

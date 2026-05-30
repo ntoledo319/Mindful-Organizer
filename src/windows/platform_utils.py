@@ -76,7 +76,7 @@ def get_data_dir() -> Path:
 
     - Windows:  ``%APPDATA%/MindfulOrganizer``
     - macOS:    ``~/Library/Application Support/MindfulOrganizer``
-    - Linux:    ``~/.mindful_optimizer``
+    - Linux:    ``~/.mindful_organizer``
     """
     current_os = detect_os()
 
@@ -89,7 +89,7 @@ def get_data_dir() -> Path:
     elif current_os == OperatingSystem.MACOS:
         data_dir = Path.home() / "Library" / "Application Support" / "MindfulOrganizer"
     else:
-        data_dir = Path.home() / ".mindful_optimizer"
+        data_dir = Path.home() / ".mindful_organizer"
 
     data_dir.mkdir(parents=True, exist_ok=True)
     return data_dir
@@ -105,9 +105,9 @@ def get_config_dir() -> Path:
     else:
         xdg = os.environ.get("XDG_CONFIG_HOME")
         if xdg:
-            config = Path(xdg) / "mindful_optimizer"
+            config = Path(xdg) / "mindful_organizer"
         else:
-            config = Path.home() / ".config" / "mindful_optimizer"
+            config = Path.home() / ".config" / "mindful_organizer"
     config.mkdir(parents=True, exist_ok=True)
     return config
 

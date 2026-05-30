@@ -34,10 +34,10 @@ Application bootstrap. Configures logging, enforces single-instance lock, sets u
 
 | File | Lines | Status | Notes |
 |------|-------|--------|-------|
-| `database.py` | ~716 | **Core / stable** | Thread-safe SQLite manager with migrations (schema v2) |
-| `task_manager.py` | ~871 | **Core / stable** | Task CRUD, templates, undo/redo, statistics. Uses JSON, **not** SQLite |
+| `database.py` | ~716 | **Core / stable** | Thread-safe SQLite manager with migrations (schema v3) |
+| `task_manager.py` | ~871 | **Core / stable** | Task CRUD, templates, undo/redo, statistics. Task records use SQLite |
 | `wellness_orchestrator.py` | ~421 | **Core / stable** | Cross-module intelligence, crisis detection, daily briefings |
-| `subscription_manager.py` | ~446 | **Core / stable** | Tier management, offline HMAC license validation |
+| `subscription_manager.py` | ~446 | **Core / stable** | Tier management, offline Ed25519 license validation |
 | `diary_card_manager.py` | ~200 | **Confirmed** | DBT diary card CRUD |
 | `mood_manager.py` | ~150 | **Confirmed** | Mood entry bridge to database |
 | `energy_predictor.py` | ~300 | **Confirmed** | Energy forecasting with optional ML |
@@ -49,7 +49,7 @@ Application bootstrap. Configures logging, enforces single-instance lock, sets u
 | `export_manager.py` | ~300 | **Confirmed** | Data export (JSON/CSV) and report generation |
 | `shareable_report.py` | ~250 | **Confirmed** | Self-contained HTML report with Chart.js |
 | `pdf_export.py` | ~150 | **Stub** | PDF generation stub |
-| `calendar_sync.py` | ~100 | **Stub** | ICS calendar sync stub |
+| `calendar_sync.py` | ~100 | **Confirmed** | ICS export and busy-block parsing |
 | `auto_updater.py` | ~200 | **Confirmed** | GitHub release check; does not auto-install |
 | `migration_manager.py` | ~281 | **Confirmed** | JSON-to-SQLite data migration tool |
 | `system_optimizer.py` | ~150 | **Confirmed** | System stats (CPU, memory, disk) |

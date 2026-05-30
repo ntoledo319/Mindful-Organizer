@@ -21,7 +21,7 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-DATA_DIR = Path.home() / ".mindful_optimizer"
+DATA_DIR = Path.home() / ".mindful_organizer"
 UPDATE_STATE_FILE = DATA_DIR / "update_state.json"
 
 GITHUB_API_URL = "https://api.github.com/repos/{owner}/{repo}/releases/latest"

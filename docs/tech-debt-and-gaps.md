@@ -3,37 +3,32 @@
 **Purpose:** Prioritized register of known technical debt, missing features, and risks.  
 **Intended audience:** Maintainers, tech leads, auditors.  
 **Confidence:** Confirmed from source code and test results. Inferences labeled.  
-**Last updated:** 2026-05-02
+**Last updated:** 2026-05-29
 
 ## Executive Summary
 
-The codebase is functional and well-tested in core areas, but has significant gaps in GUI test coverage, dual persistence (JSON + SQLite), and security hardening for commercial distribution.
+The codebase is functional and well-tested in core areas, but still has significant gaps in GUI test coverage, database encryption at rest, and commercial packaging hardening.
 
 ## Critical
 
-### C1: Encryption key stored alongside encrypted data
-- **Why it matters:** If the data directory is copied, the attacker gets both ciphertext and key, nullifying the encryption.
-- **Evidence:** `src/security/content_management.py` line 46: `key_file = self.config_path / "key.bin"`
-- **Impact:** Reduced encryption value for any threat model involving data exfiltration.
-- **Recommended fix:** Integrate OS keychain (Keychain on macOS, DPAPI on Windows, Secret Service on Linux).
+### C1: Secure content keyring fallback still reduces protection
+- **Why it matters:** OS keyring storage is preferred, but fallback to an on-disk `key.bin` is still possible when keyring is unavailable.
+- **Evidence:** `src/security/content_management.py` migrates keys into keyring but falls back to restricted-permission disk storage on keyring errors.
+- **Impact:** Reduced encryption value on systems without a working keyring backend.
+- **Recommended fix:** Make fallback opt-in, warn in-app, and document OS keyring requirements.
 - **Effort:** M
 - **Confidence:** Confirmed
 
-### C2: Hardcoded HMAC license secret
-- **Why it matters:** License keys are trivially forgeable if the secret is known.
-- **Evidence:** `src/core/subscription_manager.py` line 204: `_SECRET = b"mindful-organizer-offline-license-v1"`
-- **Impact:** Anyone can generate valid Pro/Premium license keys.
-- **Recommended fix:** Replace with per-build secret injected at packaging time, or switch to Ed25519 asymmetric signatures.
+### C2: License issuing process needs release hardening
+- **Why it matters:** Runtime verification now uses an embedded Ed25519 public key, but private-key handling must be locked down for commercial distribution.
+- **Evidence:** `src/core/subscription_manager.py` verifies Ed25519 signatures and `issue_license.py` depends on private signing material.
+- **Impact:** Weak release controls could still compromise license issuance.
+- **Recommended fix:** Store the private key only in the release secret manager, rotate test keys, and document issuance controls.
 - **Effort:** S
 - **Confidence:** Confirmed
 
-### C3: TaskManager uses JSON instead of SQLite
-- **Why it matters:** Dual persistence complicates backups, migrations, and consistency. JSON has no concurrency protection.
-- **Evidence:** `src/core/task_manager.py` lines 383-408: reads/writes `tasks.json` directly.
-- **Impact:** Data corruption risk if two instances somehow run; inconsistent backup strategy.
-- **Recommended fix:** Migrate `TaskManager` to `DatabaseManager` (TableName.TASKS). `MigrationManager` already has the transform logic.
-- **Effort:** M
-- **Confidence:** Confirmed
+### C3: TaskManager now uses SQLite
+- **Status:** **Fixed** during this pass. `TaskManager` stores task records in `TableName.TASKS`; JSON remains only for templates/custom categories and legacy migration input.
 
 ## High
 
@@ -61,13 +56,8 @@ The codebase is functional and well-tested in core areas, but has significant ga
 - **Effort:** S
 - **Confidence:** Confirmed
 
-### H4: Windows Store assets missing
-- **Why it matters:** Store submission requires specific PNG assets.
-- **Evidence:** `windows_store/assets/` contains only `README.md`, no images.
-- **Impact:** Cannot publish to Microsoft Store.
-- **Recommended fix:** Generate or source 44×44, 150×150, 620×300 PNGs and place in `assets/`.
-- **Effort:** XS
-- **Confidence:** Confirmed
+### H4: Windows Store assets generated
+- **Status:** **Fixed** during this pass. `scripts/generate_store_assets.py` generated the required PNG/ICO assets in `windows_store/assets/`.
 
 ## Medium
 
@@ -87,13 +77,8 @@ The codebase is functional and well-tested in core areas, but has significant ga
 - **Effort:** L
 - **Confidence:** Confirmed
 
-### M3: No log rotation
-- **Why it matters:** Log file grows indefinitely.
-- **Evidence:** `src/main.py` lines 27-34: `FileHandler` with no `RotatingFileHandler`.
-- **Impact:** Disk space exhaustion on long-running systems.
-- **Recommended fix:** Replace with `logging.handlers.RotatingFileHandler` (max 5MB × 3 backups).
-- **Effort:** XS
-- **Confidence:** Confirmed
+### M3: Log rotation added
+- **Status:** **Fixed** during this pass. `src/main.py` uses `RotatingFileHandler` with 5 MB files and five backups.
 
 ### M4: Inconsistent import style
 - **Why it matters:** `from core.X` vs `from src.core.X` causes IDE confusion and potential import errors.
@@ -122,11 +107,11 @@ The codebase is functional and well-tested in core areas, but has significant ga
 ### L3: `requirements.txt` versions and deps differ from `pyproject.toml`
 - **Status:** **Fixed** during this audit. Trimmed to core deps with alignment note.
 
-### L4: Data directory name inconsistency
-- **Why it matters:** `.mindful_optimizer` is a typo for `.mindful_organizer`.
-- **Evidence:** `src/main.py` uses `.mindful_optimizer`; `src/windows/platform_utils.py` previously used `.mindful_organizer`.
-- **Impact:** Potential for data fragmentation if different code paths use different directories.
-- **Recommended fix:** **Fixed** — standardized on `.mindful_optimizer` everywhere to preserve existing user data. Documented as known quirk.
+### L4: Data directory name typo corrected
+- **Why it matters:** `.mindful_optimizer` was a typo for `.mindful_organizer`.
+- **Evidence:** `src/main.py` used `.mindful_optimizer`; `src/windows/platform_utils.py` previously used `.mindful_organizer`.
+- **Impact:** Fixed data consistency.
+- **Recommended fix:** **Fixed** — corrected to `.mindful_organizer` everywhere. Added migration logic in `src/main.py`.
 - **Effort:** XS (already done)
 - **Confidence:** Confirmed
 
@@ -151,14 +136,12 @@ The codebase is functional and well-tested in core areas, but has significant ga
 | Feature | Status | Evidence |
 |---------|--------|----------|
 | Voice journal | Stub — silent audio | `src/wellness/voice_journal.py` |
-| Calendar sync | Stub — ICS integration skeleton | `src/core/calendar_sync.py` |
 | PDF export | Stub — minimal implementation | `src/core/pdf_export.py` |
 | Community insights | Stub | `src/core/community_insights.py` |
-| Wearable sync | Listed as Premium feature, no code | `src/core/subscription_manager.py` FEATURES_BY_TIER |
 | Auto-updater | Checks releases, does not install | `src/core/auto_updater.py` |
 
 ## Best Next Three Fixes
 
 1. **Add GUI widget tests for critical flows** (task creation, diary card, crisis plan, dashboard) — highest user-impact gap.
-2. **Migrate TaskManager from JSON to SQLite** — eliminates dual persistence, simplifies backups, reduces corruption risk.
-3. **Replace hardcoded HMAC secret with per-build secret** — required before any commercial distribution.
+2. **Harden keyring fallback behavior** — avoid silently weakening secure content encryption.
+3. **Finalize release/license operations** — document private key handling and packaging controls.

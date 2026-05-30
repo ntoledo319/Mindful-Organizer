@@ -152,7 +152,7 @@ class PanicTrackerWidget(QWidget):
         try:
             return Path(self.main_window.data_dir) / "panic_logs"
         except (AttributeError, TypeError):
-            return Path.home() / ".mindful_optimizer" / "panic_logs"
+            return Path.home() / ".mindful_organizer" / "panic_logs"
 
     def _load_entries(self) -> None:
         file_path = self._data_dir / "panic_logs.json"

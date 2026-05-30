@@ -3,19 +3,20 @@
 **Purpose:** Document entities, tables, relationships, and schema evolution.  
 **Intended audience:** Backend engineers, DBAs, auditors.  
 **Confidence:** Confirmed from `src/core/database.py` and migration code.  
-**Last updated:** 2026-05-02
+**Last updated:** 2026-05-29
 
 ## Overview
 
-Hearth uses **SQLite** (WAL mode, foreign keys enabled) as the primary persistence layer. **One exception:** `TaskManager` persists tasks to `tasks.json` instead of SQLite. `MigrationManager` can migrate legacy JSON into SQLite but this is not automatic.
+Hearth uses **SQLite** (WAL mode, foreign keys enabled) as the primary persistence layer. `TaskManager` now stores task records in SQLite; JSON files remain for lightweight local settings, task templates, custom categories, and legacy import sources.
 
 ## Schema Version
 
-Current version: **2**
+Current version: **3**
 
 Version history:
 - v1 — Initial schema (implicit, created by `executescript`)
 - v2 — Added `diary_cards` table (migration defined in `src/core/database.py` `_MIGRATIONS`)
+- v3 — Expanded `tasks` with GUIDs, subtasks/tags JSON fields, recurrence, dependencies, duration, values alignment, and reminders.
 
 ## Entity Diagram (SQLite Tables)
 
@@ -53,6 +54,7 @@ erDiagram
 
     TASKS {
         INTEGER id PK
+        TEXT guid UK
         TEXT title
         TEXT description
         TEXT priority
@@ -62,6 +64,15 @@ erDiagram
         INTEGER completed
         TEXT completed_at
         TEXT notes
+        TEXT subtasks_json
+        TEXT tags_json
+        TEXT custom_category
+        TEXT recurrence_json
+        TEXT blocked_by_json
+        INTEGER estimated_duration
+        INTEGER actual_duration
+        TEXT values_alignment
+        TEXT reminder
         TEXT created_at
         TEXT updated_at
     }
@@ -252,15 +263,16 @@ erDiagram
     }
 ```
 
-## JSON Files (Legacy / Non-SQLite)
+## JSON Files (Local Config / Legacy Inputs)
 
 | File | Location | Managed by |
 |------|----------|------------|
-| `tasks.json` | `~/.mindful_optimizer/tasks.json` | `TaskManager` |
-| `task_templates.json` | `~/.mindful_optimizer/task_templates.json` | `TaskManager` |
-| `custom_categories.json` | `~/.mindful_optimizer/custom_categories.json` | `TaskManager` |
-| `settings.json` | `~/.mindful_optimizer/settings.json` | `AdaptiveMainWindow` |
-| `license.json` | `~/.mindful_optimizer/license.json` | `SubscriptionManager` |
+| `tasks.json` | `~/.mindful_organizer/tasks.json` | Legacy task migration input |
+| `task_templates.json` | `~/.mindful_organizer/task_templates.json` | `TaskManager` templates |
+| `custom_categories.json` | `~/.mindful_organizer/custom_categories.json` | `TaskManager` custom category labels |
+| `settings.json` | `~/.mindful_organizer/settings.json` | `AdaptiveMainWindow` |
+| `license.json` | `~/.mindful_organizer/license.json` | `SubscriptionManager` |
+
 
 ## Validation Rules
 

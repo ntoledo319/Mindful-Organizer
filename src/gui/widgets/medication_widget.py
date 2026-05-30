@@ -169,7 +169,7 @@ class MedicationWidget(QWidget):
         try:
             base = Path(self.main_window.data_dir)
         except (AttributeError, TypeError):
-            base = Path.home() / ".mindful_optimizer"
+            base = Path.home() / ".mindful_organizer"
         p = base / "medication"
         p.mkdir(parents=True, exist_ok=True)
         return p

@@ -4,7 +4,7 @@
 **Intended audience:** Engineers, architects, auditors.  
 **Confidence:** Confirmed from source code. Inferences are labeled.  
 **Source references:** `src/main.py`, `src/gui/main_window.py`, `src/core/database.py`, `src/core/wellness_orchestrator.py`, `src/gui/state_bus.py`  
-**Last updated:** 2026-05-02
+**Last updated:** 2026-05-29
 
 ## Overall Architecture
 
@@ -24,7 +24,7 @@ Hearth follows a **layered desktop-application pattern** with reactive cross-wid
 │                    Domain / Service Layer                    │
 │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌────────────────┐ │
 │  │ TaskMgr  │ │ MoodMgr  │ │ DiaryCard│ │ WellnessOrch   │ │
-│  │ (JSON)   │ │ (SQLite) │ │ (SQLite) │ │ (cross-module) │ │
+│  │ (SQLite) │ │ (SQLite) │ │ (SQLite) │ │ (cross-module) │ │
 │  └────┬─────┘ └────┬─────┘ └────┬─────┘ └───────┬────────┘ │
 │       └─────────────┴────────────┴────────────────┘          │
 └─────────────────────────────────────────────────────────────┘
@@ -33,7 +33,7 @@ Hearth follows a **layered desktop-application pattern** with reactive cross-wid
 │                      Data Layer                              │
 │  ┌──────────────┐          ┌─────────────────────────────┐  │
 │  │   SQLite     │          │          JSON files         │  │
-│  │ (WAL mode)   │          │  tasks.json, templates.json │  │
+│  │ (WAL mode)   │          │  settings, templates, keys  │  │
 │  └──────────────┘          └─────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -50,12 +50,12 @@ Hearth follows a **layered desktop-application pattern** with reactive cross-wid
 - **Managers** encapsulate business logic and persistence.
 - **`WellnessOrchestrator`** reads aggregated DB state to produce `WellnessSnapshot` and `CrisisSignal` objects.
 - **`SubscriptionManager`** gates features by tier without network calls.
-- **`TaskManager`** is an exception: it persists to JSON instead of SQLite for historical reasons.
+- **`TaskManager`** persists task records to SQLite and keeps templates/custom category labels in JSON.
 
 ### Data Layer (`src/core/database.py`)
 - **`DatabaseManager`** provides thread-local SQLite connections, CRUD helpers, schema versioning, and migrations.
-- **Schema version** is tracked in the `schema_version` table (currently v2).
-- **JSON files** are used by `TaskManager` and some legacy wellness modules.
+- **Schema version** is tracked in the `schema_version` table (currently v3).
+- **JSON files** are used for settings, templates, custom category labels, license state, and some legacy wellness resources.
 
 ## Request / Interaction Lifecycle
 
@@ -66,7 +66,8 @@ sequenceDiagram
     actor User
     User->>TaskManagerWidget: clicks "Add Task"
     TaskManagerWidget->>TaskManager: add_task(task)
-    TaskManager->>tasks.json: write
+    TaskManager->>DatabaseManager: insert/update(TableName.TASKS, ...)
+    DatabaseManager->>SQLite: execute
     TaskManager->>StateBus: emit_task_changed("added")
     StateBus->>DashboardWidget: refresh()
     TaskManager-->>TaskManagerWidget: return task
@@ -130,13 +131,12 @@ sequenceDiagram
 ## Important Coupling Points
 
 1. **`AdaptiveMainWindow` → all managers** — The main window instantiates or lazy-loads every manager. This is a known god-object pattern that centralizes wiring but creates a large dependency surface.
-2. **`TaskManager` → JSON** — Unlike all other managers, `TaskManager` does not use `DatabaseManager`. This creates a two-headed persistence layer.
-3. **`gui.state_bus` imports in core modules** — `TaskManager` imports `gui.state_bus` to emit signals, creating a core→GUI dependency inversion.
+2. **Core event emission** — `TaskManager` emits through `core.state_bus`, so persistence and UI refresh behavior are coupled by process-global state.
 
 ## Known Architectural Weaknesses
 
 1. **Inconsistent import style** — Some modules use `from core.X`, tests use `from src.core.X`. Both work because `src/` is added to `sys.path` at boot, but this is technical debt.
 2. **God object main window** — `AdaptiveMainWindow` knows about ~20 managers. Extraction into a dedicated application controller would improve testability.
-3. **Dual persistence** — JSON for tasks, SQLite for everything else. `MigrationManager` can migrate tasks to SQLite but the app does not trigger it automatically.
+3. **Residual JSON config** — Task templates, custom category labels, settings, and license state still live outside SQLite.
 4. **No schema migration framework** — Migrations are hardcoded in `database.py` `_MIGRATIONS` dict. Alembic or a similar tool would scale better.
 5. **Lazy loading by string import** — Managers are imported inside `try/except` blocks in properties. This makes static analysis difficult and hides dependency errors until runtime.

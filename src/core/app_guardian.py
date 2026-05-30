@@ -49,7 +49,7 @@ class AppGuardian:
         data_dir: Path | None = None,
         backend: PlatformBackend | None = None,
     ) -> None:
-        self.data_dir = data_dir or Path.home() / ".mindful_optimizer"
+        self.data_dir = data_dir or Path.home() / ".mindful_organizer"
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.history_file = self.data_dir / "app_guardian_history.json"
         self.config_file = self.data_dir / "app_guardian_config.json"

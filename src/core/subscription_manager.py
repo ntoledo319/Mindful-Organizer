@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 # host and in MINDFUL_LICENSE_PRIVATE_KEY env var when issuing licenses.
 _PUBLIC_KEY_B64 = "eukkxUxlPR4XqKpD2KQp84Hk+UZPZ/+SvuX7QAidQjk="
 
-DATA_DIR = Path.home() / ".mindful_optimizer"
+DATA_DIR = Path.home() / ".mindful_organizer"
 LICENSE_FILE = DATA_DIR / "license.json"
 
 

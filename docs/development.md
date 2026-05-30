@@ -31,11 +31,11 @@ pip install -e ".[dev,ml,nlp]"
 ## Environment Setup
 
 No `.env` file is required. The app creates its data directory automatically:
-- macOS: `~/.mindful_optimizer/`
-- Linux: `~/.mindful_optimizer/`
-- Windows: `%APPDATA%/.mindful_optimizer/` or `~/.mindful_optimizer/`
+- macOS: `~/.mindful_organizer/`
+- Linux: `~/.mindful_organizer/`
+- Windows: `%APPDATA%/.mindful_organizer/` or `~/.mindful_organizer/`
 
-**Note:** The directory name `.mindful_optimizer` is a legacy typo but is used consistently across the codebase to avoid breaking existing user data.
+**Note:** The directory name was previously `.mindful_optimizer` (a legacy typo), but has been corrected to `.mindful_organizer`.
 
 ## Database Setup
 
@@ -76,7 +76,7 @@ pytest tests/unit/test_task_manager.py -v
 1. **Import errors in tests** — `src/` is added to `sys.path` in `src/main.py`. If running tests outside pytest, you may need `PYTHONPATH=src`.
 2. **GUI tests fail without display** — Tests marked `@pytest.mark.gui` require a display. Skip them with `pytest -m "not gui"`.
 3. **PyQt6 platform plugin missing on Linux** — Install system deps: `sudo apt-get install -y libgl1-mesa-glx libegl1 libxkbcommon0`.
-4. **Data directory inconsistency** — `src/windows/platform_utils.py` previously used `.mindful_organizer` while the rest of the app used `.mindful_optimizer`. This has been fixed to use `.mindful_optimizer` everywhere.
+4. **Data directory migration** — The legacy `.mindful_optimizer` directory is renamed to `.mindful_organizer` on startup when the new directory does not already exist.
 
 ## Build Steps
 

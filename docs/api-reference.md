@@ -3,7 +3,7 @@
 **Purpose:** Document all detected public API surfaces.  
 **Intended audience:** Engineers, integrators.  
 **Confidence:** Confirmed from source code. Gaps are labeled.  
-**Last updated:** 2026-05-02
+**Last updated:** 2026-05-29
 
 ## Public API Surfaces
 
@@ -44,7 +44,7 @@ Hearth is a desktop application with **no external network API**. The APIs docum
 
 | Method | Signature | Purpose |
 |--------|-----------|---------|
-| `__init__` | `(data_dir: Path)` | Load tasks from JSON |
+| `__init__` | `(data_dir: Path)` | Load task records from SQLite |
 | `add_task` | `(task: Task) -> Task` | Add with undo support |
 | `delete_task` | `(task_id: str) -> Task \| None` | Delete with undo support |
 | `update_task` | `(task_id: str, **kwargs) -> Task \| None` | Update fields with undo |

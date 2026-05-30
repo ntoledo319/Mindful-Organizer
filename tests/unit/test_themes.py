@@ -51,7 +51,7 @@ class TestAllThemesValid:
             assert theme.description
 
     def test_launch_theme_count(self):
-        assert set(THEMES) == {"ember", "linen", "quiet"}
+        assert set(THEMES) == {"onyx", "alabaster", "slate", "quiet"}
 
     def test_all_themes_have_condition_suitability(self):
         for _name, theme in THEMES.items():
@@ -73,22 +73,28 @@ class TestAllThemesValid:
 
 class TestThemeSwitching:
 
-    def test_default_theme_is_ember(self, tm):
-        assert tm.current_theme_name == "ember"
-        assert tm.current_theme.name == "ember"
+    def test_default_theme_is_onyx(self, tm):
+        assert tm.current_theme_name == "onyx"
+        assert tm.current_theme.name == "onyx"
 
     def test_set_theme(self, tm):
+        tm.set_theme("alabaster")
+        assert tm.current_theme_name == "alabaster"
+        assert tm.current_theme.background == THEMES["alabaster"].background
+
+    def test_legacy_theme_names_map_to_new_themes(self, tm):
         tm.set_theme("linen")
-        assert tm.current_theme_name == "linen"
-        assert tm.current_theme.background == THEMES["linen"].background
+        assert tm.current_theme_name == "alabaster"
+        tm.set_theme("ember")
+        assert tm.current_theme_name == "onyx"
 
     def test_set_invalid_theme_ignored(self, tm):
         tm.set_theme("nonexistent")
-        assert tm.current_theme_name == "ember"
+        assert tm.current_theme_name == "onyx"
 
     def test_get_theme_names(self, tm):
         names = tm.get_theme_names()
-        assert len(names) == 3
+        assert len(names) == 4
         assert all(isinstance(n, tuple) and len(n) == 3 for n in names)
 
     def test_switch_all_themes(self, tm):
@@ -132,13 +138,13 @@ class TestColorBlindOverrides:
         tm.color_blind_mode = None
         colors = tm.get_colors()
         # Should use original theme colors
-        assert colors["success"] == THEMES["ember"].success
+        assert colors["success"] == THEMES["onyx"].success
 
     def test_invalid_color_blind_mode(self, tm):
         tm.color_blind_mode = "invalid"
         colors = tm.get_colors()
         # Should use original colors
-        assert colors["success"] == THEMES["ember"].success
+        assert colors["success"] == THEMES["onyx"].success
 
 
 # ---------------------------------------------------------------------------
@@ -156,17 +162,17 @@ class TestStylesheetGeneration:
         assert "QPushButton" in stylesheet
 
     def test_stylesheet_contains_theme_colors(self, tm):
-        tm.set_theme("ember")
+        tm.set_theme("onyx")
         stylesheet = tm.generate_stylesheet()
 
-        assert THEMES["ember"].background in stylesheet
-        assert THEMES["ember"].accent in stylesheet
+        assert THEMES["onyx"].background in stylesheet
+        assert THEMES["onyx"].accent in stylesheet
 
     def test_stylesheet_with_color_blind(self, tm):
         tm.color_blind_mode = "protanopia"
         stylesheet = tm.generate_stylesheet()
 
-        assert COLOR_BLIND_OVERRIDES["protanopia"]["success"] in stylesheet
+        assert COLOR_BLIND_OVERRIDES["protanopia"]["accent"] in stylesheet
 
     def test_stylesheet_with_reduced_motion(self, tm):
         tm.reduced_motion = True
@@ -182,7 +188,7 @@ class TestStylesheetGeneration:
     def test_stylesheet_default_font(self, tm):
         tm.dyslexia_font = False
         stylesheet = tm.generate_stylesheet()
-        assert "Söhne" in stylesheet
+        assert "SF Pro Text" in stylesheet
         assert "Segoe UI" in stylesheet
 
     def test_get_card_style(self, tm):
@@ -233,11 +239,11 @@ class TestFontScaling:
 
 class TestConditionRecommendations:
 
-    def test_anxiety_recommends_quiet_or_ember(self, tm):
+    def test_anxiety_recommends_quiet_or_onyx(self, tm):
         recs = tm.get_recommended_themes({"anxiety"})
         names = [r[0] for r in recs]
 
-        assert "ember" in names
+        assert "onyx" in names
         assert "quiet" in names
 
     def test_adhd_recommends_quiet(self, tm):
@@ -248,18 +254,18 @@ class TestConditionRecommendations:
     def test_depression_keeps_general_themes(self, tm):
         recs = tm.get_recommended_themes({"depression"})
         names = [r[0] for r in recs]
-        assert "ember" in names
-        assert "linen" in names
+        assert "onyx" in names
+        assert "alabaster" in names
 
-    def test_ocd_recommends_ember(self, tm):
+    def test_ocd_recommends_onyx(self, tm):
         recs = tm.get_recommended_themes({"ocd"})
         names = [r[0] for r in recs]
-        assert "ember" in names
+        assert "onyx" in names
 
-    def test_ptsd_recommends_quiet_or_ember(self, tm):
+    def test_ptsd_recommends_quiet_or_onyx(self, tm):
         recs = tm.get_recommended_themes({"ptsd"})
         names = [r[0] for r in recs]
-        assert "ember" in names
+        assert "onyx" in names
         assert "quiet" in names
 
     def test_general_condition(self, tm):
@@ -271,7 +277,7 @@ class TestConditionRecommendations:
         assert len(recs) > 0
         # Launch themes intentionally consolidate condition-specific variants.
         names = [r[0] for r in recs[:4]]
-        assert any(n in names for n in ("ember", "quiet"))
+        assert any(n in names for n in ("onyx", "quiet"))
 
     def test_empty_conditions(self, tm):
         recs = tm.get_recommended_themes(set())

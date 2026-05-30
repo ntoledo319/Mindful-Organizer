@@ -25,16 +25,15 @@ Hearth is a **single-user offline desktop app**. The security model assumes the 
 
 | Secret | Location | Risk |
 |--------|----------|------|
-| License HMAC key | Hardcoded in `src/core/subscription_manager.py` (`_SECRET`) | **High** — trivially forgeable licenses if secret is known |
-| Fernet key for secure folders | `~/.mindful_optimizer/.content_config/key.bin` | **High** — key stored with ciphertext |
-| Folder passcode hashes | `~/.mindful_optimizer/.content_config/*_meta` (encrypted with Fernet) | **Medium** — protected by Fernet, but Fernet key is local |
-| User's SQLite DB | `~/.mindful_optimizer/mindful_organizer.db` | **Low** — unencrypted; assumes OS account security |
-| User's task JSON | `~/.mindful_optimizer/tasks.json` | **Low** — unencrypted; assumes OS account security |
+| License public key | Embedded in `src/core/subscription_manager.py` | **Low** — public verification key by design; private signing key must remain out of repo |
+| Fernet key for secure folders | OS keyring, with `~/.mindful_organizer/.content_config/key.bin` fallback | **Medium** — fallback stores key near ciphertext when keyring is unavailable |
+| Folder passcode hashes | `~/.mindful_organizer/.content_config/*_meta` (encrypted with Fernet) | **Medium** — protected by Fernet, but local key fallback is possible |
+| User's SQLite DB | `~/.mindful_organizer/mindful_organizer.db` | **Low** — unencrypted; assumes OS account security |
 
 ## Access Control
 
 - **No RBAC or ACLs.** All features are available to the single user, gated only by subscription tier.
-- **Subscription gating** is enforced locally via `SubscriptionManager.has_feature()`. This is trivially bypassed by modifying `license.json` or source code.
+- **Subscription gating** is enforced locally via `SubscriptionManager.has_feature()`. This is bypassable by modifying local source/runtime state, which is accepted for an offline desktop app.
 
 ## Input Validation
 
@@ -43,7 +42,7 @@ Hearth is a **single-user offline desktop app**. The security model assumes the 
 | Task title/notes | No length limits or sanitization | Low — local only, no XSS vector |
 | Folder name in `ContentManager` | Path traversal rejected (`len(Path(name).parts) != 1`) | **Medium fixed** — previously allowed traversal |
 | Database `where` clauses | Parameterized SQL required by convention | **Medium** — no runtime guard against interpolation |
-| License key | Format validated (`TIER:TS:RAND:HMAC`) | Low — invalid keys rejected |
+| License key | Ed25519 signature validated | Low — invalid keys rejected |
 
 ## Data Exposure Risk
 
@@ -55,8 +54,8 @@ Hearth is a **single-user offline desktop app**. The security model assumes the 
 
 | Default | Issue | Recommended Fix |
 |---------|-------|-----------------|
-| Hardcoded HMAC secret | License keys are forgeable | Replace with per-build secret or Ed25519 |
-| Fernet key in data dir | Encryption provides limited value | Integrate OS keychain (Keychain/DPAPI/Secret Service) |
+| Private license key ops | Issuance controls are not documented | Store private key only in release secrets and document rotation |
+| Fernet key fallback file | Encryption provides limited value without keyring | Make fallback opt-in and warn in app |
 | No passcode on app launch | Anyone with OS access can open the app | Document as accepted risk for single-user desktop software |
 
 ## Dependency Risk Points
@@ -95,8 +94,8 @@ For a system handling sensitive mental health data, the following protections ar
 
 ## Recommendations
 
-1. **P1:** Replace hardcoded HMAC secret with a per-build or asymmetric secret before any commercial distribution.
-2. **P1:** Integrate OS keychain for Fernet key storage.
+1. **P1:** Document and lock down Ed25519 private-key handling before commercial distribution.
+2. **P1:** Make secure-folder keyring fallback explicit to the user.
 3. **P2:** Add optional database encryption (SQLCipher or similar).
 4. **P2:** Add an optional app-level passcode for launch.
 5. **P3:** Encrypt shareable report HTML with a user-provided password if they contain sensitive data.

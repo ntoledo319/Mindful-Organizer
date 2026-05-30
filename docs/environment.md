@@ -3,7 +3,7 @@
 **Purpose:** Inventory of runtime configuration, env vars, and tool config.  
 **Intended audience:** Operators, developers, release engineers.  
 **Confidence:** Confirmed from source and config files.  
-**Last updated:** 2026-05-02
+**Last updated:** 2026-05-29
 
 ## Environment Variables
 
@@ -22,7 +22,7 @@ Hearth has **no required environment variables**. The following are optional or 
 
 ## Runtime Configuration
 
-Runtime settings are stored in `~/.mindful_optimizer/settings.json` (JSON) and the SQLite `settings` table.
+Runtime settings are stored in `~/.mindful_organizer/settings.json` (JSON) and the SQLite `settings` table.
 
 ### `settings.json` (managed by `AdaptiveMainWindow`)
 

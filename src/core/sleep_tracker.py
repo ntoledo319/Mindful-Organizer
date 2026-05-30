@@ -15,7 +15,7 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-DATA_DIR = Path.home() / ".mindful_optimizer"
+DATA_DIR = Path.home() / ".mindful_organizer"
 
 # Recommended sleep duration (hours) by general guidance
 _RECOMMENDED_SLEEP_HOURS = 8.0

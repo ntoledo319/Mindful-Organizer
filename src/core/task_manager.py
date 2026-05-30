@@ -13,6 +13,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
+from core.database import DatabaseManager, TableName
+
 
 class TaskPriority(Enum):
     """Priority levels for tasks."""
@@ -153,6 +155,75 @@ class Task:
         if isinstance(self.tags, list):
             self.tags = set(self.tags)
 
+    def to_db_row(self) -> dict[str, Any]:
+        """Convert task to database row format."""
+        return {
+            "guid": self.id,
+            "title": self.title,
+            "priority": self.priority.name if isinstance(self.priority, TaskPriority) else str(self.priority),
+            "category": self.category.value if isinstance(self.category, TaskCategory) else str(self.category),
+            "energy_required": self.energy_required,
+            "due_date": self.due_date,
+            "completed": 1 if self.completed else 0,
+            "completed_at": self.completed_at,
+            "notes": self.notes,
+            "subtasks_json": json.dumps([s.to_dict() for s in self.subtasks]),
+            "tags_json": json.dumps(list(self.tags)),
+            "custom_category": self.custom_category,
+            "recurrence_json": json.dumps(self.recurrence.to_dict()) if self.recurrence else None,
+            "blocked_by_json": json.dumps(self.blocked_by),
+            "estimated_duration": self.estimated_duration,
+            "actual_duration": self.actual_duration,
+            "values_alignment": self.values_alignment,
+            "reminder": self.reminder,
+            "created_at": self.created_at,
+        }
+
+    @staticmethod
+    def from_db_row(row: dict[str, Any]) -> "Task":
+        """Create task from database row."""
+        # Map DB columns back to Task fields
+        data = {
+            "id": row.get("guid"),
+            "title": row.get("title"),
+            "priority": row.get("priority", "Medium"),
+            "category": row.get("category", "Other"),
+            "energy_required": row.get("energy_required", 5),
+            "due_date": row.get("due_date"),
+            "completed": bool(row.get("completed")),
+            "completed_at": row.get("completed_at"),
+            "notes": row.get("notes"),
+            "custom_category": row.get("custom_category"),
+            "estimated_duration": row.get("estimated_duration"),
+            "actual_duration": row.get("actual_duration"),
+            "values_alignment": row.get("values_alignment"),
+            "reminder": row.get("reminder"),
+            "created_at": row.get("created_at"),
+        }
+
+        # Handle JSON fields
+        if row.get("subtasks_json"):
+            data["subtasks"] = [SubTask.from_dict(s) for s in json.loads(row["subtasks_json"])]
+        else:
+            data["subtasks"] = []
+
+        if row.get("tags_json"):
+            data["tags"] = set(json.loads(row["tags_json"]))
+        else:
+            data["tags"] = set()
+
+        if row.get("recurrence_json"):
+            data["recurrence"] = RecurrenceConfig.from_dict(json.loads(row["recurrence_json"]))
+        else:
+            data["recurrence"] = None
+
+        if row.get("blocked_by_json"):
+            data["blocked_by"] = json.loads(row["blocked_by_json"])
+        else:
+            data["blocked_by"] = []
+
+        return Task.from_dict(data)
+
     def to_dict(self) -> dict[str, Any]:
         """Serialize task to dictionary."""
         return {
@@ -215,7 +286,7 @@ class Task:
 
         # Handle tags
         tags_data = data.get("tags", [])
-        tags = set(tags_data) if isinstance(tags_data, list) else set()
+        tags = set(tags_data) if isinstance(tags_data, list | set | tuple) else set()
 
         # Handle due_date - convert date objects to string
         due_date = data.get("due_date")
@@ -385,12 +456,18 @@ class UndoManager:
 class TaskManager:
     """Manages tasks with persistence, undo/redo, templates, and statistics."""
 
-    def __init__(self, data_dir: Path):
-        self.data_dir = data_dir
+    def __init__(self, data_dir: Path | None = None, db_manager: DatabaseManager | None = None):
+        if data_dir is None:
+            from core.database import DATA_DIR
+            self.data_dir = DATA_DIR
+        else:
+            self.data_dir = data_dir
+
         self.data_dir.mkdir(parents=True, exist_ok=True)
-        self.tasks_file = data_dir / "tasks.json"
-        self.templates_file = data_dir / "task_templates.json"
-        self.custom_categories_file = data_dir / "custom_categories.json"
+        self.db = db_manager or DatabaseManager(self.data_dir / "mindful_organizer.db")
+        self.db.initialize()
+        self.templates_file = self.data_dir / "task_templates.json"
+        self.custom_categories_file = self.data_dir / "custom_categories.json"
         self.tasks: list[Task] = []
         self.templates: dict[str, TaskTemplate] = {}
         self.custom_categories: list[str] = []
@@ -402,18 +479,34 @@ class TaskManager:
     # ── Persistence ───────────────────────────────────────────────
 
     def _load_tasks(self) -> None:
-        """Load tasks from JSON file, migrating legacy format if needed."""
-        if not self.tasks_file.exists():
-            self.tasks = []
-            return
-        with open(self.tasks_file) as f:
-            tasks_data = json.load(f)
-        self.tasks = [Task.from_dict(t) for t in tasks_data]
+        """Load tasks from database."""
+        result = self.db.query(TableName.TASKS)
+        self.tasks = [Task.from_db_row(row) for row in result.rows]
+
+    def _save_task(self, task: Task) -> None:
+        """Save or update a single task in the database."""
+        row_data = task.to_db_row()
+        # Check if task exists by guid
+        existing = self.db.query(TableName.TASKS, where="guid = ?", params=(task.id,))
+        if existing:
+            row_id = existing[0]["id"]
+            self.db.update(TableName.TASKS, row_id, **row_data)
+        else:
+            self.db.insert(TableName.TASKS, **row_data)
+
+    def _delete_task_from_db(self, guid: str) -> None:
+        """Delete a task from the database by guid."""
+        existing = self.db.query(TableName.TASKS, where="guid = ?", params=(guid,))
+        if existing:
+            self.db.delete(TableName.TASKS, existing[0]["id"])
 
     def _save_tasks(self) -> None:
-        """Persist tasks to JSON."""
-        with open(self.tasks_file, "w") as f:
-            json.dump([t.to_dict() for t in self.tasks], f, indent=2, default=str)
+        """Legacy method - now only for backward compatibility in internal calls.
+        In the new DB-backed version, we prefer saving individual tasks.
+        """
+        # For now, we'll just keep it as a no-op or a full sync if really needed.
+        # But most methods already call _save_task or db directly.
+        pass
 
     def _load_templates(self) -> None:
         """Load task templates."""
@@ -468,7 +561,7 @@ class TaskManager:
     def add_task(self, task: Task) -> Task:
         """Add a task with undo support."""
         self.tasks.append(task)
-        self._save_tasks()
+        self._save_task(task)
 
         # Emit state change
         try:
@@ -478,15 +571,17 @@ class TaskManager:
         except RuntimeError:
             pass
 
+        task_id = task.id
         task_copy = deepcopy(task)
 
         def undo():
-            self.tasks = [t for t in self.tasks if t.id != task_copy.id]
-            self._save_tasks()
+            self.tasks = [t for t in self.tasks if t.id != task_id]
+            self._delete_task_from_db(task_id)
 
         def redo():
-            self.tasks.append(deepcopy(task_copy))
-            self._save_tasks()
+            new_task = deepcopy(task_copy)
+            self.tasks.append(new_task)
+            self._save_task(new_task)
 
         self.undo_manager.push(UndoAction(f"Add task: {task.title}", undo, redo))
         return task
@@ -499,15 +594,16 @@ class TaskManager:
         task_copy = deepcopy(task)
         idx = next(i for i, t in enumerate(self.tasks) if t.id == task_id)
         self.tasks.pop(idx)
-        self._save_tasks()
+        self._delete_task_from_db(task_id)
 
         def undo():
-            self.tasks.insert(idx, deepcopy(task_copy))
-            self._save_tasks()
+            new_task = deepcopy(task_copy)
+            self.tasks.insert(idx, new_task)
+            self._save_task(new_task)
 
         def redo():
-            self.tasks = [t for t in self.tasks if t.id != task_copy.id]
-            self._save_tasks()
+            self.tasks = [t for t in self.tasks if t.id != task_id]
+            self._delete_task_from_db(task_id)
 
         self.undo_manager.push(UndoAction(f"Delete task: {task_copy.title}", undo, redo))
         return task_copy
@@ -522,14 +618,14 @@ class TaskManager:
             if hasattr(task, key):
                 old_values[key] = deepcopy(getattr(task, key))
                 setattr(task, key, value)
-        self._save_tasks()
+        self._save_task(task)
 
         def undo():
             t = self.get_task_by_id(task_id)
             if t:
                 for key, val in old_values.items():
                     setattr(t, key, val)
-                self._save_tasks()
+                self._save_task(t)
 
         def redo():
             t = self.get_task_by_id(task_id)
@@ -537,7 +633,7 @@ class TaskManager:
                 for key, val in kwargs.items():
                     if hasattr(t, key):
                         setattr(t, key, val)
-                self._save_tasks()
+                self._save_task(t)
 
         self.undo_manager.push(UndoAction(f"Update task: {task.title}", undo, redo))
         return task
@@ -553,7 +649,7 @@ class TaskManager:
         old_completed_at = task.completed_at
         task.completed = True
         task.completed_at = datetime.now().isoformat()
-        self._save_tasks()
+        self._save_task(task)
 
         # Emit state change
         try:
@@ -570,14 +666,14 @@ class TaskManager:
             if t:
                 t.completed = old_completed
                 t.completed_at = old_completed_at
-                self._save_tasks()
+                self._save_task(t)
 
         def redo():
             t = self.get_task_by_id(task_id)
             if t:
                 t.completed = True
                 t.completed_at = datetime.now().isoformat()
-                self._save_tasks()
+                self._save_task(t)
 
         self.undo_manager.push(UndoAction(f"Complete task: {task.title}", undo, redo))
 
@@ -613,7 +709,7 @@ class TaskManager:
             reminder=None,
         )
         self.tasks.append(new_task)
-        self._save_tasks()
+        self._save_task(new_task)
         return new_task
 
     def complete_subtask(self, task_id: str, subtask_index: int) -> SubTask | None:
@@ -624,7 +720,7 @@ class TaskManager:
         subtask = task.subtasks[subtask_index]
         subtask.completed = True
         subtask.completed_at = datetime.now().isoformat()
-        self._save_tasks()
+        self._save_task(task)
         return subtask
 
     def get_task_by_id(self, task_id: str) -> Task | None:

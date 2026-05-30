@@ -13,6 +13,7 @@ import logging
 import os
 import sys
 import traceback
+from contextlib import suppress
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
@@ -55,7 +56,15 @@ def get_data_dir() -> Path:
         base = Path.home() / "Library" / "Application Support"
     else:
         base = Path.home()
-    data_dir = base / ".mindful_optimizer"
+
+    data_dir = base / ".mindful_organizer"
+    old_data_dir = base / ".mindful_optimizer"
+
+    # Migrate legacy directory if it exists and the new one doesn't
+    if old_data_dir.exists() and not data_dir.exists():
+        with suppress(OSError):
+            old_data_dir.rename(data_dir)
+
     data_dir.mkdir(exist_ok=True, parents=True)
     return data_dir
 
