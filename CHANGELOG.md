@@ -5,6 +5,45 @@ All notable changes to Hearth will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] — 2026-05-30
+
+Release-hardening pass. The previous internal 1.0.0 snapshot looked complete but
+hid several data-safety and clinical-safety defects beneath a green test suite;
+this release fixes them and makes the product's claims honest.
+
+### Fixed — data integrity
+- **Task duplication on upgrade** — legacy tasks migrated from schema v2 kept
+  `guid = NULL` while a fresh in-memory UUID was assigned, so the first edit
+  inserted a duplicate row, silently doubling tasks. A v4 migration backfills
+  guids; covered by regression tests.
+- **Split-brain data directory** — the entry point, the database layer, and the
+  GUI resolved three different locations, splitting a user's tasks/moods/meds
+  across separate databases. All components now share one canonical path and one
+  injected `DatabaseManager`.
+
+### Fixed — clinical safety
+- Crisis signals are **never paywalled** (removed the `full_dashboard` gate).
+- 988 / Crisis Text Line buttons are now **functional** (copy + dial + confirm).
+- Crisis severity **scales with magnitude**; a severe mood crash is now `urgent`
+  and surfaces 988 + the crisis plan instead of suggesting a walk.
+- Journal entries are scanned for explicit self-harm/ideation language, which
+  surfaces crisis resources.
+- Medication adherence now persists to SQLite, making the medication-miss crisis
+  heuristic actually reachable.
+
+### Fixed — honesty & UI
+- OS adaptation no longer **fakes success**: DND/brightness return real results,
+  and Windows/Linux report that live actuation is macOS-only (the full tracking
+  app still works everywhere).
+- Dashboard "Today" quick-actions, global mood search, and mood analytics —
+  previously dead/crashing — now work.
+
+### Changed
+- Removed the orphaned, broken FastAPI layer (no frontend consumed it); dropped
+  fastapi/uvicorn/pydantic/httpx from runtime dependencies.
+- Secure vault now genuinely encrypts file contents at rest; data dir/DB are
+  permission-hardened (0700/0600) on POSIX.
+
 ## [1.0.0] — 2026-05-23
 
 First public release. Code-complete for Windows Store submission once the
@@ -73,26 +112,6 @@ Center publisher identity, trademark) are resolved.
 ### Fixed
 - **Mood data persistence** — `main_window.py` now passes `mood_manager` and `diary_card_manager` to widgets instead of `None`.
 
-## [1.0.0] - 2024-01-XX
-
-### Added
-- Initial release of Hearth
-- Mental health profile system supporting ADHD, Anxiety, Depression, OCD, PTSD
-- Energy-based task management and prioritization
-- Adaptive UI based on mental health profiles
-- Multiple calming themes (Light, Dark, Calm, High Contrast)
-- Guided meditation library from UCLA MARC, Oxford Mindfulness, NHS
-- Smart file organization system
-- Mood and sleep tracking
-- Break suggestions based on energy levels
-- Local data storage with encryption
-- Cross-platform support (macOS, Linux, Windows)
-
-### Security
-- All data stored locally with encryption
-- No telemetry or data collection
-- Secure deletion of sensitive data
-
 ## Pre-Release History
 
 ### [0.9.0] - 2023-12-XX
@@ -124,6 +143,7 @@ Center publisher identity, trademark) are resolved.
 - **Minor releases**: Quarterly
 - **Patch releases**: As needed for bugs
 
-[Unreleased]: https://github.com/ntoledo319/Mindful-Organizer/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/ntoledo319/Mindful-Organizer/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/ntoledo319/Mindful-Organizer/releases/tag/v1.1.0
 [1.0.0]: https://github.com/ntoledo319/Mindful-Organizer/releases/tag/v1.0.0
 [0.9.0]: https://github.com/ntoledo319/Mindful-Organizer/releases/tag/v0.9.0

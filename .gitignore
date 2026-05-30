@@ -28,7 +28,9 @@ ENV/
 
 # Testing / Coverage
 .coverage
+.coverage.*
 .pytest_cache/
+.ruff_cache/
 htmlcov/
 .tox/
 
@@ -44,6 +46,12 @@ Thumbs.db
 
 # Backup (legacy code, should not be tracked)
 backup/
+
+# Editor / assistant tooling
+.continue/
+.qodo/
+.aider*
+tmp_design_screenshots/
 
 # Node (if any frontend assets)
 node_modules/
