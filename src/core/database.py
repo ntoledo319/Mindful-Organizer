@@ -22,7 +22,12 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-DATA_DIR = Path.home() / ".mindful_organizer"
+from core.paths import get_data_dir as _get_data_dir  # noqa: E402
+
+# Canonical, platform-appropriate locations (single source of truth in core.paths).
+# Computed at import without creating directories, so importing this module is a
+# read-only act; the directory is created lazily when a DatabaseManager opens.
+DATA_DIR = _get_data_dir(create=False)
 DB_FILE = DATA_DIR / "mindful_organizer.db"
 
 CURRENT_SCHEMA_VERSION = 4

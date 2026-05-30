@@ -77,9 +77,18 @@ class AdaptiveMainWindow(QMainWindow):
         # Initialize theme manager
         self.theme_manager = ThemeManager()
 
+        # One shared database for the whole app. Every DB-backed manager is
+        # injected with this instance so tasks, moods, sleep, medication, and
+        # the wellness orchestrator all read and write the SAME SQLite file.
+        # (Previously some managers fell back to their own default path, which
+        # silently split a user's data across multiple databases.)
+        from core.database import DatabaseManager
+        self.db = DatabaseManager(self.data_dir / "mindful_organizer.db")
+        self.db.initialize()
+
         # Initialize core managers
         self.profile_manager = ProfileManager(self.data_dir)
-        self.task_manager = TaskManager(self.data_dir)
+        self.task_manager = TaskManager(self.data_dir, db_manager=self.db)
         self.file_organizer = FileOrganizer(self.data_dir, profile=self.profile_manager.current_profile)
         self.system_optimizer = SystemOptimizer(self.data_dir)
         self.ai_optimizer = AISystemOptimizer(self.data_dir)
@@ -208,7 +217,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._sleep_tracker is None:
             try:
                 from core.sleep_tracker import SleepTracker
-                self._sleep_tracker = SleepTracker(self.data_dir)
+                self._sleep_tracker = SleepTracker(self.db)
             except ImportError:
                 logger.warning("SleepTracker not available")
         return self._sleep_tracker
@@ -218,7 +227,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._medication_tracker is None:
             try:
                 from core.medication_tracker import MedicationTracker
-                self._medication_tracker = MedicationTracker(self.data_dir)
+                self._medication_tracker = MedicationTracker(self.db)
             except ImportError:
                 logger.warning("MedicationTracker not available")
         return self._medication_tracker
@@ -248,7 +257,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._diary_card_manager is None:
             try:
                 from core.diary_card_manager import DiaryCardManager
-                self._diary_card_manager = DiaryCardManager()
+                self._diary_card_manager = DiaryCardManager(self.db)
             except Exception as exc:
                 logger.warning("DiaryCardManager not available: %s", exc)
         return self._diary_card_manager
@@ -258,7 +267,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._mood_manager is None:
             try:
                 from core.mood_manager import MoodManager
-                self._mood_manager = MoodManager()
+                self._mood_manager = MoodManager(self.db)
             except Exception as exc:
                 logger.warning("MoodManager not available: %s", exc)
         return self._mood_manager
@@ -391,7 +400,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._wellness_orchestrator is None:
             try:
                 from core.wellness_orchestrator import WellnessOrchestrator
-                self._wellness_orchestrator = WellnessOrchestrator()
+                self._wellness_orchestrator = WellnessOrchestrator(db=self.db)
             except ImportError:
                 logger.warning("WellnessOrchestrator not available")
         return self._wellness_orchestrator

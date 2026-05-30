@@ -379,12 +379,35 @@ class MedicationWidget(QWidget):
 
     def _mark_taken(self, med_name: str, taken: bool) -> None:
         today_str = date.today().isoformat()
+        status = "taken" if taken else "missed"
         if today_str not in self._adherence:
             self._adherence[today_str] = {}
-        self._adherence[today_str][med_name] = "taken" if taken else "missed"
+        self._adherence[today_str][med_name] = status
         self._save_data()
+        self._sync_status_to_db(med_name, today_str, status)
         self.medication_taken.emit(med_name)
         self._refresh_adherence()
+
+    def _sync_status_to_db(self, med_name: str, day: str, status: str) -> None:
+        """Mirror an adherence change into MEDICATION_LOGS (SQLite).
+
+        The widget keeps a JSON model for its own display, but adherence must
+        also reach the database so the wellness orchestrator's medication-miss
+        crisis heuristic can see it. Best-effort: a DB hiccup must never block
+        the user from checking off a dose.
+        """
+        tracker = self._medication_tracker
+        if tracker is None or not hasattr(tracker, "record_status"):
+            return
+        dosage = ""
+        for med in self._medications:
+            if med.get("name") == med_name:
+                dosage = med.get("dosage", "") or ""
+                break
+        try:
+            tracker.record_status(med_name, day, status, dosage=dosage)
+        except Exception as exc:  # noqa: BLE001 - persistence must not crash the UI
+            logger.debug("Medication DB sync failed for %s: %s", med_name, exc)
 
     def _refresh_adherence(self) -> None:
         total = 0

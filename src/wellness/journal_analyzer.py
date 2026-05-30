@@ -30,6 +30,27 @@ _NEGATIVE_WORDS = {
     "rejected", "abandoned", "failure", "stupid", "pathetic", "weak",
 }
 
+# Explicit risk phrases. Deliberately conservative and multi-word to minimise
+# false positives — this is a supportive nudge toward real help, never a
+# diagnosis. A match surfaces the crisis plan and 988 above every other insight.
+_RISK_PHRASES = {
+    "kill myself", "killing myself", "end my life", "ending my life",
+    "want to die", "wanna die", "wish i was dead", "wish i were dead",
+    "better off dead", "better off without me", "no reason to live",
+    "nothing to live for", "don't want to be here", "do not want to be here",
+    "can't go on", "cannot go on", "can't do this anymore",
+    "hurt myself", "hurting myself", "harm myself", "harming myself",
+    "self harm", "self-harm", "cut myself", "cutting myself",
+    "suicidal", "suicide", "take my own life", "end it all",
+}
+
+_RISK_RESOURCE_INSIGHT = (
+    "It sounds like you may be going through something really painful. "
+    "You deserve support right now — call or text 988 (Suicide & Crisis Lifeline, US), "
+    "or open your crisis plan from the sidebar for your contacts and coping steps. "
+    "If you're in immediate danger, call your local emergency number."
+)
+
 _COGNITIVE_DISTORTIONS: dict[str, tuple[set[str], str]] = {
     "all_or_nothing": (
         {"always", "never", "everyone", "no one", "nobody", "everybody",
@@ -94,6 +115,7 @@ class JournalAnalysis:
     emotional_trend: str = "neutral"  # improving, declining, volatile, stable
     dominant_emotion: str = ""
     insights: list[str] = field(default_factory=list)
+    risk_flagged: bool = False  # explicit self-harm / ideation language detected
 
 
 # ---------------------------------------------------------------------------
@@ -120,10 +142,18 @@ class JournalAnalyzer:
         # Dominant emotion
         result.dominant_emotion = self._dominant_emotion(words)
 
+        # Risk language (checked on the raw lowercased text for multi-word phrases)
+        result.risk_flagged = self._detect_risk(text_lower)
+
         # Insights
         result.insights = self._generate_insights(result)
 
         return result
+
+    @staticmethod
+    def _detect_risk(text_lower: str) -> bool:
+        """Return True when explicit self-harm / ideation language is present."""
+        return any(phrase in text_lower for phrase in _RISK_PHRASES)
 
     def _analyze_sentiment(self, words: list[str]) -> SentimentResult:
         pos = sum(1 for w in words if w in _POSITIVE_WORDS)
@@ -182,6 +212,10 @@ class JournalAnalyzer:
 
     def _generate_insights(self, analysis: JournalAnalysis) -> list[str]:
         insights: list[str] = []
+
+        # Risk language takes priority over every other insight.
+        if analysis.risk_flagged:
+            insights.append(_RISK_RESOURCE_INSIGHT)
 
         # Sentiment insight
         if analysis.sentiment.polarity < -0.5:

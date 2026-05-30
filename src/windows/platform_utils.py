@@ -72,27 +72,18 @@ def detect_os() -> OperatingSystem:
 # ---------------------------------------------------------------------------
 
 def get_data_dir() -> Path:
-    """Return the platform-appropriate application data directory.
+    """Return the canonical application data directory.
 
-    - Windows:  ``%APPDATA%/MindfulOrganizer``
-    - macOS:    ``~/Library/Application Support/MindfulOrganizer``
+    Delegates to :mod:`core.paths` so every component — main.py, the database
+    layer, and the GUI — agrees on a single location and never splits data.
+
+    - Windows:  ``%APPDATA%/.mindful_organizer``
+    - macOS:    ``~/Library/Application Support/.mindful_organizer``
     - Linux:    ``~/.mindful_organizer``
     """
-    current_os = detect_os()
+    from core.paths import get_data_dir as _canonical
 
-    if current_os == OperatingSystem.WINDOWS:
-        appdata = os.environ.get("APPDATA")
-        if appdata:
-            data_dir = Path(appdata) / "MindfulOrganizer"
-        else:
-            data_dir = Path.home() / "AppData" / "Roaming" / "MindfulOrganizer"
-    elif current_os == OperatingSystem.MACOS:
-        data_dir = Path.home() / "Library" / "Application Support" / "MindfulOrganizer"
-    else:
-        data_dir = Path.home() / ".mindful_organizer"
-
-    data_dir.mkdir(parents=True, exist_ok=True)
-    return data_dir
+    return _canonical()
 
 
 def get_config_dir() -> Path:

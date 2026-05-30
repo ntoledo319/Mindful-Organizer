@@ -230,6 +230,52 @@ class MedicationTracker:
             kwargs["notes"] = notes
         return int(self._db.update(self._table(), log_id, **kwargs))
 
+    def record_status(
+        self,
+        medication_name: str,
+        scheduled_date: str,
+        status: str,
+        *,
+        dosage: str = "",
+        frequency: str = "daily",
+    ) -> int:
+        """Upsert the status of a medication for a given day.
+
+        One row per (medication, day): if a log already exists for that med on
+        that date it is updated, otherwise one is inserted. This is the bridge
+        the GUI uses so adherence lands in MEDICATION_LOGS, where the wellness
+        orchestrator's miss-streak crisis heuristic can actually see it.
+        Returns the affected row id.
+        """
+        try:
+            status = MedicationStatus(status).value
+        except ValueError:
+            status = MedicationStatus.PENDING.value
+
+        existing = self._db.query(
+            self._table(),
+            where="medication_name = ? AND date(scheduled_time) = date(?)",
+            params=(medication_name, scheduled_date),
+            order_by="id DESC",
+            limit=1,
+        )
+        rows = existing.rows if hasattr(existing, "rows") else existing
+        taken_time = (
+            datetime.now().isoformat()
+            if status in (MedicationStatus.TAKEN.value, MedicationStatus.LATE.value)
+            else None
+        )
+        if rows:
+            log_id = rows[0]["id"]
+            self._db.update(
+                self._table(), log_id, status=status, taken_time=taken_time,
+            )
+            return int(log_id)
+        return self.log_dose(
+            medication_name, dosage, frequency, scheduled_date,
+            status=status, taken_time=taken_time,
+        )
+
     def get_log(self, log_id: int) -> MedicationLogEntry | None:
         row = self._db.get_by_id(self._table(), log_id)
         return self._row_to_entry(row) if row else None

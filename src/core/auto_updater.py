@@ -21,7 +21,9 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-DATA_DIR = Path.home() / ".mindful_organizer"
+from core.paths import get_data_dir as _get_data_dir  # noqa: E402
+
+DATA_DIR = _get_data_dir(create=False)
 UPDATE_STATE_FILE = DATA_DIR / "update_state.json"
 
 GITHUB_API_URL = "https://api.github.com/repos/{owner}/{repo}/releases/latest"

@@ -33,7 +33,9 @@ logger = logging.getLogger(__name__)
 # host and in MINDFUL_LICENSE_PRIVATE_KEY env var when issuing licenses.
 _PUBLIC_KEY_B64 = "eukkxUxlPR4XqKpD2KQp84Hk+UZPZ/+SvuX7QAidQjk="
 
-DATA_DIR = Path.home() / ".mindful_organizer"
+from core.paths import get_data_dir as _get_data_dir  # noqa: E402
+
+DATA_DIR = _get_data_dir(create=False)
 LICENSE_FILE = DATA_DIR / "license.json"
 
 

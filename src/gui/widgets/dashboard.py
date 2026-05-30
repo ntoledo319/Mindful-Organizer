@@ -320,10 +320,9 @@ class DashboardWidget(QWidget):
         self._refresh_suggestions()
 
     def _refresh_crisis_banner(self) -> None:
-        from gui.subscription_helpers import check_feature
-        if not check_feature("full_dashboard", self._subscription_manager):
-            self._crisis_banner.setVisible(False)
-            return
+        # Crisis signals are NEVER paywalled. Surfacing a wellness check-in when
+        # mood/sleep/medication patterns look concerning is safety-critical and
+        # must reach every user regardless of subscription tier.
         if not self._wellness_orchestrator:
             self._crisis_banner.setVisible(False)
             return

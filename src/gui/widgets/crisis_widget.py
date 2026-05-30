@@ -14,9 +14,10 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QFont
+from PyQt6.QtCore import Qt, QUrl, pyqtSignal
+from PyQt6.QtGui import QCursor, QDesktopServices, QFont
 from PyQt6.QtWidgets import (
+    QApplication,
     QDialog,
     QDialogButtonBox,
     QFrame,
@@ -25,11 +26,41 @@ from PyQt6.QtWidgets import (
     QScrollArea,
     QSizePolicy,
     QTextEdit,
+    QToolTip,
     QVBoxLayout,
     QWidget,
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _dialable_digits(number: str) -> str:
+    """Extract a dialable digit string from a free-form contact number.
+
+    "Text HOME to 741741" -> "741741"; "1-800-662-4357" -> "18006624357".
+    Returns "" when the string carries no digits.
+    """
+    return "".join(ch for ch in number if ch.isdigit())
+
+
+def _activate_contact(number: str) -> None:
+    """Copy a crisis number to the clipboard and attempt to place the call.
+
+    On desktop a `tel:` handler may or may not exist, so the reliable, always-on
+    behaviour is putting the number on the clipboard with visible confirmation —
+    a distressed user should never tap a crisis button and get nothing.
+    """
+    digits = _dialable_digits(number)
+    clip = QApplication.clipboard()
+    if clip is not None:
+        clip.setText(digits or number)
+    if digits:
+        with contextlib.suppress(Exception):
+            QDesktopServices.openUrl(QUrl(f"tel:{digits}"))
+    QToolTip.showText(
+        QCursor.pos(),
+        f"Copied {number} to your clipboard.\nCall it from your phone if dialing isn't available here.",
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -63,6 +94,9 @@ def _contact_button(name: str, number: str) -> QPushButton:
     btn.setMinimumHeight(70)
     btn.setCursor(Qt.CursorShape.PointingHandCursor)
     btn.setProperty("class", "crisisContact")
+    if number.strip():
+        btn.setToolTip(f"Click to copy {number} and try to call it")
+        btn.clicked.connect(lambda _=False, num=number: _activate_contact(num))
     return btn
 
 

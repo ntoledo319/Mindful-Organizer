@@ -13,7 +13,6 @@ import logging
 import os
 import sys
 import traceback
-from contextlib import suppress
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
@@ -49,24 +48,15 @@ def setup_logging(data_dir: Path) -> None:
 
 
 def get_data_dir() -> Path:
-    """Get platform-appropriate data directory."""
-    if sys.platform == "win32":
-        base = Path(os.environ.get("APPDATA", Path.home() / "AppData" / "Roaming"))
-    elif sys.platform == "darwin":
-        base = Path.home() / "Library" / "Application Support"
-    else:
-        base = Path.home()
+    """Get the canonical platform-appropriate data directory.
 
-    data_dir = base / ".mindful_organizer"
-    old_data_dir = base / ".mindful_optimizer"
+    Delegates to :mod:`core.paths`, which also performs the legacy
+    ``.mindful_optimizer`` -> ``.mindful_organizer`` rename, so the entry point,
+    the database layer, and the GUI all resolve to the same location.
+    """
+    from core.paths import get_data_dir as _canonical
 
-    # Migrate legacy directory if it exists and the new one doesn't
-    if old_data_dir.exists() and not data_dir.exists():
-        with suppress(OSError):
-            old_data_dir.rename(data_dir)
-
-    data_dir.mkdir(exist_ok=True, parents=True)
-    return data_dir
+    return _canonical()
 
 
 def configure_high_dpi() -> None:

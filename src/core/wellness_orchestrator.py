@@ -22,6 +22,18 @@ from core.database import DatabaseManager, TableName
 
 logger = logging.getLogger(__name__)
 
+# Shown verbatim for the highest-severity signals. Mental-health heuristics must
+# err toward surfacing real help: name the lifeline and the in-app crisis plan
+# directly rather than suggesting a walk. These thresholds are conservative
+# heuristics, not a clinical instrument — see docs/security.md and the in-app
+# disclaimers; clinician review is recommended before tuning them.
+_CRISIS_RECOMMENDATION = (
+    "If you're struggling right now, you don't have to handle it alone. "
+    "Call or text 988 (Suicide & Crisis Lifeline, US) or open your crisis plan "
+    "from the sidebar for your contacts and coping steps. If you're in immediate "
+    "danger, call your local emergency number."
+)
+
 
 # ---------------------------------------------------------------------------
 # Data structures
@@ -202,20 +214,46 @@ class WellnessOrchestrator:
                     ),
                 ))
 
-            # --- Rapid mood drop ---
+            # --- Very low absolute mood (urgent regardless of trend) ---
+            # A sustained low baseline is the strongest single-signal concern, so
+            # it is surfaced at the highest severity with direct crisis access.
+            latest_mood = mood_values[0] if mood_values else None
+            if latest_mood is not None and latest_mood <= 2:
+                signals.append(CrisisSignal(
+                    severity="urgent",
+                    source_modules=["mood"],
+                    description=(
+                        f"Your most recent mood rating is very low ({latest_mood}/10)."
+                    ),
+                    recommendation=_CRISIS_RECOMMENDATION,
+                ))
+
+            # --- Rapid mood drop (severity scales with magnitude) ---
             if len(mood_values) >= 2:
                 latest = mood_values[0]
                 previous = mood_values[1]
-                if previous - latest >= 4:
-                    signals.append(CrisisSignal(
-                        severity="mild",
-                        source_modules=["mood"],
-                        description=f"Your mood dropped from {previous} to {latest} recently.",
-                        recommendation=(
+                drop = previous - latest
+                if drop >= 4:
+                    # A 4-point slide warrants attention; a 6+ point collapse or a
+                    # landing point at/below 2 is urgent and routes to crisis help.
+                    if drop >= 6 or latest <= 2:
+                        severity = "urgent"
+                        recommendation = _CRISIS_RECOMMENDATION
+                    else:
+                        severity = "moderate"
+                        recommendation = (
                             "A grounding exercise or brief walk may help stabilise "
-                            "your emotional baseline."
-                        ),
-                    ))
+                            "your emotional baseline. If it keeps sliding, open your "
+                            "crisis plan from the sidebar."
+                        )
+                    # Avoid double-flagging when the urgent absolute-low rule already fired.
+                    if not (latest <= 2 and latest_mood is not None and latest_mood <= 2):
+                        signals.append(CrisisSignal(
+                            severity=severity,
+                            source_modules=["mood"],
+                            description=f"Your mood dropped from {previous} to {latest} recently.",
+                            recommendation=recommendation,
+                        ))
 
         # --- Medication miss streak ---
         missed_meds = self.db.query(

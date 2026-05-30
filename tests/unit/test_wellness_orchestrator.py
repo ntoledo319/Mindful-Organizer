@@ -86,10 +86,29 @@ class TestCrisisSignals:
     def test_rapid_mood_drop_crisis(self, tmp_data_dir: Path) -> None:
         db = DatabaseManager(tmp_data_dir / "test.db")
         db.initialize()
-        self._insert_moods(db, [3, 8])
+        self._insert_moods(db, [3, 8])  # a 5-point slide landing at 3
         orch = WellnessOrchestrator(db)
         signals = orch.detect_crisis_signals(conditions=[])
-        assert any(s.severity == "mild" and "mood" in s.source_modules for s in signals)
+        mood_signals = [s for s in signals if "mood" in s.source_modules]
+        assert mood_signals, "a 5-point mood drop must produce a signal"
+        # Severity scales with magnitude: a 5-point drop is at least 'moderate',
+        # never the old under-reacting 'mild'.
+        assert all(s.severity in {"moderate", "urgent"} for s in mood_signals)
+        db.close()
+
+    def test_severe_mood_crash_is_urgent_and_surfaces_crisis_line(
+        self, tmp_data_dir: Path
+    ) -> None:
+        db = DatabaseManager(tmp_data_dir / "test.db")
+        db.initialize()
+        self._insert_moods(db, [2, 9])  # catastrophic 7-point crash to 2/10
+        orch = WellnessOrchestrator(db)
+        signals = orch.detect_crisis_signals(conditions=[])
+        urgent = [s for s in signals if s.severity == "urgent"]
+        assert urgent, "a crash to 2/10 must be urgent, not mild"
+        assert any("988" in s.recommendation for s in urgent), (
+            "urgent signals must surface the 988 crisis line"
+        )
         db.close()
 
     def test_medication_miss_streak(self, tmp_data_dir: Path) -> None:
