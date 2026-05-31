@@ -9,17 +9,9 @@ previously unfixed runtime bugs.
 from datetime import datetime, timedelta
 from pathlib import Path
 
-import pytest
-
-try:
-    from src.core.constants import Condition
-    from src.core.database import DatabaseManager, TableName
-    from src.core.wellness_orchestrator import WellnessOrchestrator
-    _HAS_MODULE = True
-except ImportError:
-    _HAS_MODULE = False
-
-pytestmark = pytest.mark.skipif(not _HAS_MODULE, reason="wellness_orchestrator module not available")
+from core.constants import Condition
+from core.database import DatabaseManager, TableName
+from core.wellness_orchestrator import WellnessOrchestrator
 
 
 class TestCrisisSignals:

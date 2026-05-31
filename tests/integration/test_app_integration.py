@@ -14,13 +14,13 @@ import pytest
 # --- Conditional imports -------------------------------------------------------
 
 try:
-    from src.core.database import DatabaseManager, TableName
+    from core.database import DatabaseManager, TableName
     _HAS_DB = True
 except ImportError:
     _HAS_DB = False
 
 try:
-    from src.core.task_manager import (
+    from core.task_manager import (
         Task,
         TaskCategory,
         TaskManager,
@@ -31,13 +31,13 @@ except ImportError:
     _HAS_TASKS = False
 
 try:
-    from src.core.mood_analytics import MoodAnalytics
+    from core.mood_analytics import MoodAnalytics
     _HAS_ANALYTICS = True
 except ImportError:
     _HAS_ANALYTICS = False
 
 try:
-    from src.core.export_manager import (
+    from core.export_manager import (
         DataCategory,
         ExportFormat,
         ExportManager,
@@ -48,19 +48,19 @@ except ImportError:
     _HAS_EXPORT = False
 
 try:
-    from src.core.nlp_parser import NLPTaskParser
+    from core.nlp_parser import NLPTaskParser
     _HAS_NLP = True
 except ImportError:
     _HAS_NLP = False
 
 try:
-    from src.core.smart_task_decomposer import SmartTaskDecomposer
+    from core.smart_task_decomposer import SmartTaskDecomposer
     _HAS_DECOMPOSER = True
 except ImportError:
     _HAS_DECOMPOSER = False
 
 try:
-    from src.core.notification_manager import (
+    from core.notification_manager import (
         NotificationManager,
         NotificationType,
     )
@@ -69,20 +69,20 @@ except ImportError:
     _HAS_NOTIFICATIONS = False
 
 try:
-    from src.core.file_organizer import FileOrganizer
+    from core.file_organizer import FileOrganizer
     _HAS_FILE_ORG = True
 except ImportError:
     _HAS_FILE_ORG = False
 
 try:
-    from src.wellness.breathing import BreathingManager
-    from src.wellness.breathing import Condition as BreathCondition
+    from wellness.breathing import BreathingManager
+    from wellness.breathing import Condition as BreathCondition
     _HAS_BREATHING = True
 except ImportError:
     _HAS_BREATHING = False
 
 try:
-    from src.profiles.spoon_theory import SpoonBudget
+    from profiles.spoon_theory import SpoonBudget
     _HAS_SPOONS = True
 except ImportError:
     _HAS_SPOONS = False
@@ -372,7 +372,7 @@ class TestNotificationConditionFlow:
             datetime.now() + timedelta(hours=1),
         )
 
-        from src.core.notification_manager import DeliveryStyle
+        from core.notification_manager import DeliveryStyle
         style = nm.get_delivery_style(NotificationType.TASK_DEADLINE)
         assert style == DeliveryStyle.IMMEDIATE
         assert n.id is not None
@@ -386,7 +386,7 @@ class TestNotificationConditionFlow:
         nm.snooze(n.id, duration=timedelta(minutes=10))
         snoozed = nm.get_by_id(n.id)
 
-        from src.core.notification_manager import NotificationStatus
+        from core.notification_manager import NotificationStatus
         assert snoozed.status == NotificationStatus.SNOOZED
 
 

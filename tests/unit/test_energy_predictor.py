@@ -9,21 +9,14 @@ from datetime import datetime, timedelta
 
 import pytest
 
-try:
-    from src.core.energy_predictor import (
-        _HAS_SKLEARN,
-        EnergyLevel,
-        EnergyPrediction,
-        EnergyPredictor,
-        TaskEnergyRequirement,
-        _energy_to_level,
-    )
-    _HAS_MODULE = True
-except ImportError:
-    _HAS_MODULE = False
-
-pytestmark = pytest.mark.skipif(not _HAS_MODULE, reason="energy_predictor module not available")
-
+from core.energy_predictor import (
+_HAS_SKLEARN,
+EnergyLevel,
+EnergyPrediction,
+EnergyPredictor,
+TaskEnergyRequirement,
+_energy_to_level,
+)
 
 # ---------------------------------------------------------------------------
 # Helpers

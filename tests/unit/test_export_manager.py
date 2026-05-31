@@ -10,19 +10,13 @@ from datetime import date, timedelta
 
 import pytest
 
-try:
-    from src.core.database import DatabaseManager, TableName
-    from src.core.export_manager import (
-        DataCategory,
-        ExportFormat,
-        ExportManager,
-        ExportOptions,
-    )
-    _HAS_MODULE = True
-except ImportError:
-    _HAS_MODULE = False
-
-pytestmark = pytest.mark.skipif(not _HAS_MODULE, reason="export_manager module not available")
+from core.database import DatabaseManager, TableName
+from core.export_manager import (
+    DataCategory,
+    ExportFormat,
+    ExportManager,
+    ExportOptions,
+)
 
 
 @pytest.fixture

@@ -8,15 +8,7 @@ and section ordering.
 from datetime import date
 from pathlib import Path
 
-import pytest
-
-try:
-    from src.core.shareable_report import ShareableReport
-    _HAS_MODULE = True
-except ImportError:
-    _HAS_MODULE = False
-
-pytestmark = pytest.mark.skipif(not _HAS_MODULE, reason="shareable_report module not available")
+from core.shareable_report import ShareableReport
 
 
 class TestReportStructure:

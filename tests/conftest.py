@@ -47,7 +47,7 @@ def sample_profile():
 def sample_tasks():
     """List of five Task objects with varying priorities and categories."""
     try:
-        from src.core.task_manager import Task, TaskCategory, TaskPriority
+        from core.task_manager import Task, TaskCategory, TaskPriority
     except ImportError:
         pytest.skip("task_manager module not available")
 

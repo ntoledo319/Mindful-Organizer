@@ -7,21 +7,14 @@ mood improvement statistics, and condition-based recommendations.
 
 import pytest
 
-try:
-    from src.wellness.breathing import (
-        BreathingExercise,
-        BreathingExerciseType,
-        BreathingManager,
-        BreathingSession,
-        BreathPhase,
-        Condition,
-    )
-    _HAS_MODULE = True
-except ImportError:
-    _HAS_MODULE = False
-
-pytestmark = pytest.mark.skipif(not _HAS_MODULE, reason="breathing module not available")
-
+from wellness.breathing import (
+BreathingExercise,
+BreathingExerciseType,
+BreathingManager,
+BreathingSession,
+BreathPhase,
+Condition,
+)
 
 # ---------------------------------------------------------------------------
 # Exercise access

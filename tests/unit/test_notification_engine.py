@@ -7,15 +7,7 @@ when wellness data is missing or ambiguous.
 
 from dataclasses import dataclass
 
-import pytest
-
-try:
-    from src.core.notification_engine import SmartNotification, SmartNotificationEngine
-    _HAS_MODULE = True
-except ImportError:
-    _HAS_MODULE = False
-
-pytestmark = pytest.mark.skipif(not _HAS_MODULE, reason="notification_engine module not available")
+from core.notification_engine import SmartNotification, SmartNotificationEngine
 
 
 @dataclass

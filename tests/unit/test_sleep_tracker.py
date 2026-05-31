@@ -9,14 +9,8 @@ from datetime import date, timedelta
 
 import pytest
 
-try:
-    from src.core.database import DatabaseManager
-    from src.core.sleep_tracker import SleepStats, SleepTracker
-    _HAS_MODULE = True
-except ImportError:
-    _HAS_MODULE = False
-
-pytestmark = pytest.mark.skipif(not _HAS_MODULE, reason="sleep_tracker module not available")
+from core.database import DatabaseManager
+from core.sleep_tracker import SleepStats, SleepTracker
 
 
 @pytest.fixture

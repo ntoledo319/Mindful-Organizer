@@ -7,17 +7,10 @@ auto-detection.
 
 from __future__ import annotations
 
-import pytest
+import pytest  # noqa: F401
 
-try:
-    from src.core.database import DatabaseManager, TableName
-    from src.core.wearable_sync import WearableSyncManager
-
-    _HAS_MODULE = True
-except ImportError:
-    _HAS_MODULE = False
-
-pytestmark = pytest.mark.skipif(not _HAS_MODULE, reason="wearable_sync module not available")
+from core.database import DatabaseManager, TableName
+from core.wearable_sync import WearableSyncManager
 
 
 @pytest.fixture

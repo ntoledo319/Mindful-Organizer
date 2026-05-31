@@ -7,17 +7,11 @@ stylesheet generation, font scaling, and condition recommendations.
 
 import pytest
 
-try:
-    from src.gui.themes import (
-        COLOR_BLIND_OVERRIDES,
-        THEMES,
-        ThemeManager,
-    )
-    _HAS_MODULE = True
-except ImportError:
-    _HAS_MODULE = False
-
-pytestmark = pytest.mark.skipif(not _HAS_MODULE, reason="themes module not available")
+from gui.themes import (
+    COLOR_BLIND_OVERRIDES,
+    THEMES,
+    ThemeManager,
+)
 
 
 @pytest.fixture

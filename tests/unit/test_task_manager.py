@@ -7,24 +7,15 @@ recurring tasks, templates, subtasks, tags, and statistics.
 
 from datetime import date, timedelta
 
-import pytest
-
-try:
-    from src.core.task_manager import (
-        RecurrenceConfig,
-        RecurrencePattern,
-        SubTask,
-        Task,
-        TaskCategory,
-        TaskManager,
-        TaskPriority,
-    )
-    _HAS_MODULE = True
-except ImportError:
-    _HAS_MODULE = False
-
-pytestmark = pytest.mark.skipif(not _HAS_MODULE, reason="task_manager module not available")
-
+from core.task_manager import (
+    RecurrenceConfig,
+    RecurrencePattern,
+    SubTask,
+    Task,
+    TaskCategory,
+    TaskManager,
+    TaskPriority,
+)
 
 # ---------------------------------------------------------------------------
 # Helpers

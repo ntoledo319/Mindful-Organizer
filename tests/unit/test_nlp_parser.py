@@ -9,20 +9,13 @@ from datetime import date, timedelta
 
 import pytest
 
-try:
-    from src.core.nlp_parser import (
-        Category,
-        EnergyRequired,
-        NLPTaskParser,
-        ParsedTask,
-        Priority,
-    )
-    _HAS_MODULE = True
-except ImportError:
-    _HAS_MODULE = False
-
-pytestmark = pytest.mark.skipif(not _HAS_MODULE, reason="nlp_parser module not available")
-
+from core.nlp_parser import (
+Category,
+EnergyRequired,
+NLPTaskParser,
+ParsedTask,
+Priority,
+)
 
 # Use a fixed reference date so tests are deterministic.
 _REF_DATE = date(2026, 4, 6)  # a Monday

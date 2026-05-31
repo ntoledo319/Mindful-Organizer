@@ -7,21 +7,12 @@ and condition-specific defaults.
 
 from datetime import date, timedelta
 
-import pytest
-
-try:
-    from src.profiles.spoon_theory import (
-        ActivityType,
-        SpoonBudget,
-        SpoonCostEntry,
-        WarningLevel,
-    )
-    _HAS_MODULE = True
-except ImportError:
-    _HAS_MODULE = False
-
-pytestmark = pytest.mark.skipif(not _HAS_MODULE, reason="spoon_theory module not available")
-
+from profiles.spoon_theory import (
+    ActivityType,
+    SpoonBudget,
+    SpoonCostEntry,
+    WarningLevel,
+)
 
 # ---------------------------------------------------------------------------
 # Daily allocation

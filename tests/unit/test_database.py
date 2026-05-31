@@ -9,18 +9,12 @@ import json
 
 import pytest
 
-try:
-    from src.core.database import (
-        CURRENT_SCHEMA_VERSION,
-        DatabaseManager,
-        QueryResult,
-        TableName,
-    )
-    _HAS_MODULE = True
-except ImportError:
-    _HAS_MODULE = False
-
-pytestmark = pytest.mark.skipif(not _HAS_MODULE, reason="database module not available")
+from core.database import (
+    CURRENT_SCHEMA_VERSION,
+    DatabaseManager,
+    QueryResult,
+    TableName,
+)
 
 
 @pytest.fixture

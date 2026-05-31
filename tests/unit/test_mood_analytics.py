@@ -7,20 +7,11 @@ empty data handling, insight generation, and condition-specific insights.
 
 from datetime import datetime, timedelta
 
-import pytest
-
-try:
-    from src.core.mood_analytics import (
-        AnalyticsReport,
-        MoodAnalytics,
-        TrendDirection,
-    )
-    _HAS_MODULE = True
-except ImportError:
-    _HAS_MODULE = False
-
-pytestmark = pytest.mark.skipif(not _HAS_MODULE, reason="mood_analytics module not available")
-
+from core.mood_analytics import (
+    AnalyticsReport,
+    MoodAnalytics,
+    TrendDirection,
+)
 
 # ---------------------------------------------------------------------------
 # Helpers

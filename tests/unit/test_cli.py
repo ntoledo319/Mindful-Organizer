@@ -6,13 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
-try:
-    from src.core.smart_file_system.cli import main
-    _HAS_MODULE = True
-except ImportError:
-    _HAS_MODULE = False
-
-pytestmark = pytest.mark.skipif(not _HAS_MODULE, reason="smart_file_system.cli module not available")
+from core.smart_file_system.cli import main
 
 
 class TestCLI:

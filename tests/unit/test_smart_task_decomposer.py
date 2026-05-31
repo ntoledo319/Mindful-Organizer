@@ -5,23 +5,15 @@ Covers simple decomposition, condition-specific styles (ADHD, depression,
 anxiety, OCD), the just-start mode, template matching, and edge cases.
 """
 
-import pytest
 
-try:
-    from src.core.smart_task_decomposer import (
-        Condition,
-        DecompositionResult,
-        EnergyLevel,
-        SmartTaskDecomposer,
-        SubTask,
-        TaskComplexity,
-    )
-    _HAS_MODULE = True
-except ImportError:
-    _HAS_MODULE = False
-
-pytestmark = pytest.mark.skipif(not _HAS_MODULE, reason="smart_task_decomposer module not available")
-
+from core.smart_task_decomposer import (
+Condition,
+DecompositionResult,
+EnergyLevel,
+SmartTaskDecomposer,
+SubTask,
+TaskComplexity,
+)
 
 # ---------------------------------------------------------------------------
 # Simple decomposition

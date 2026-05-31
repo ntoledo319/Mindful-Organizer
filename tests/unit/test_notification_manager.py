@@ -9,23 +9,17 @@ from datetime import datetime, timedelta
 
 import pytest
 
-try:
-    from src.core.database import DatabaseManager
-    from src.core.notification_manager import (
-        DeliveryStyle,
-        Notification,
-        NotificationManager,
-        NotificationStatus,
-        NotificationType,
-        Priority,
-        RecurringPattern,
-        delivery_style_for,
-    )
-    _HAS_MODULE = True
-except ImportError:
-    _HAS_MODULE = False
-
-pytestmark = pytest.mark.skipif(not _HAS_MODULE, reason="notification_manager module not available")
+from core.database import DatabaseManager
+from core.notification_manager import (
+    DeliveryStyle,
+    Notification,
+    NotificationManager,
+    NotificationStatus,
+    NotificationType,
+    Priority,
+    RecurringPattern,
+    delivery_style_for,
+)
 
 
 @pytest.fixture

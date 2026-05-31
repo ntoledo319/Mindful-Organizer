@@ -9,18 +9,12 @@ from datetime import datetime
 
 import pytest
 
-try:
-    from src.core.database import DatabaseManager
-    from src.core.medication_tracker import (
-        Frequency,
-        Medication,
-        MedicationTracker,
-    )
-    _HAS_MODULE = True
-except ImportError:
-    _HAS_MODULE = False
-
-pytestmark = pytest.mark.skipif(not _HAS_MODULE, reason="medication_tracker module not available")
+from core.database import DatabaseManager
+from core.medication_tracker import (
+    Frequency,
+    Medication,
+    MedicationTracker,
+)
 
 
 @pytest.fixture
