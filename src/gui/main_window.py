@@ -845,7 +845,13 @@ class AdaptiveMainWindow(QMainWindow):
         label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(label)
 
-        subtitle = QLabel("This module is loading...")
+        # This placeholder shows when a widget FAILED to construct (caught in
+        # _create_widget), so it is a permanent failure, not a transient load.
+        # Say so honestly instead of implying it will finish loading.
+        subtitle = QLabel(
+            "This section couldn't load on your system.\n"
+            "See the log for details (Help → logs) or try restarting Hearth."
+        )
         subtitle.setFont(QFont(self.font().family(), 12))
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         subtitle.setStyleSheet("color: #888;")

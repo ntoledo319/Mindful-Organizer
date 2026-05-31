@@ -50,3 +50,25 @@ def test_wrong_passcode_blocks_move(tmp_path):
     src.write_bytes(_SECRET)
     assert cm.move_to_secure_folder(src, folder.name, "nope") is False
     assert src.exists(), "a failed access check must not consume the file"
+
+
+def test_get_folder_path_requires_correct_passcode(tmp_path):
+    cm = _vault(tmp_path)
+    folder = cm.create_secure_folder(
+        "private", ContentCategory.SENSITIVE, SecurityLevel.HIGH, "pw", hide_folder=True
+    )
+    assert cm.get_folder_path(folder.name, "pw") is not None
+    assert cm.get_folder_path(folder.name, "wrong") is None
+
+
+def test_change_passcode_rotates_access(tmp_path):
+    cm = _vault(tmp_path)
+    folder = cm.create_secure_folder(
+        "private", ContentCategory.SENSITIVE, SecurityLevel.HIGH, "old", hide_folder=True
+    )
+    assert cm.change_passcode(folder.name, "old", "new") is True
+    # old passcode no longer works; new one does
+    assert cm.verify_access(folder.name, "old") is False
+    assert cm.verify_access(folder.name, "new") is True
+    # wrong old passcode cannot rotate
+    assert cm.change_passcode(folder.name, "wrong", "x") is False

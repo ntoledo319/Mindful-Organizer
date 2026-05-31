@@ -152,3 +152,56 @@ class TestCrisisSignals:
         signals = orch.detect_crisis_signals(conditions=[Condition.BIPOLAR])
         assert isinstance(signals, list)
         db.close()
+
+
+class TestBriefingAndSummary:
+    """Cover the dashboard-facing snapshot / daily_briefing / wellness_summary."""
+
+    def _seed(self, db: DatabaseManager) -> None:
+        now = datetime.now()
+        for i, m in enumerate([6, 5, 4, 5, 6, 7, 6]):
+            db.insert(
+                TableName.MOOD_ENTRIES,
+                timestamp=(now - timedelta(days=i)).isoformat(),
+                mood_score=m, energy_level=m, notes="", context="t",
+            )
+        for i, h in enumerate([5.0, 4.5, 6.0, 5.5, 5.0, 6.0, 5.0]):
+            db.insert(
+                TableName.SLEEP_LOGS,
+                date=(now - timedelta(days=i)).date().isoformat(),
+                duration_hours=h, quality=4, bedtime="00:00", wake_time="06:00",
+                interruptions=1, notes="",
+            )
+        db.insert(TableName.TASKS, guid="g1", title="Reply to email",
+                  energy_required=2, completed=0, created_at=now.isoformat())
+
+    def test_snapshot_reads_latest_values(self, tmp_data_dir: Path) -> None:
+        db = DatabaseManager(tmp_data_dir / "t.db")
+        db.initialize()
+        self._seed(db)
+        snap = WellnessOrchestrator(db).snapshot()
+        assert snap.mood_score == 6  # most recent
+        assert snap.sleep_hours == 5.0
+        assert snap.tasks_pending >= 1
+        db.close()
+
+    def test_daily_briefing_has_recommendations_and_skill(self, tmp_data_dir: Path) -> None:
+        db = DatabaseManager(tmp_data_dir / "t.db")
+        db.initialize()
+        self._seed(db)
+        briefing = WellnessOrchestrator(db).daily_briefing(conditions=[Condition.ANXIETY])
+        assert briefing.suggested_skill and "Breathing" in briefing.suggested_skill
+        # low-energy-first ordering: the 2-energy task should be recommended
+        assert any("email" in t["title"].lower() for t in briefing.task_recommendations)
+        assert isinstance(briefing.wellness_insights, list)
+
+    def test_wellness_summary_aggregates(self, tmp_data_dir: Path) -> None:
+        db = DatabaseManager(tmp_data_dir / "t.db")
+        db.initialize()
+        self._seed(db)
+        summary = WellnessOrchestrator(db).wellness_summary(days=30)
+        assert summary["mood"]["count"] == 7
+        assert summary["mood"]["average"] is not None
+        assert summary["sleep"]["average_hours"] is not None
+        assert summary["mood"]["trend"] in {"improving", "declining", "stable"}
+        db.close()

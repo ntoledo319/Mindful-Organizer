@@ -8,6 +8,7 @@ data management, and about information.
 
 from __future__ import annotations
 
+import contextlib
 import logging
 import shutil
 from pathlib import Path
@@ -538,6 +539,13 @@ class SettingsWidget(QWidget):
             return
 
         try:
+            # Close the live DB connection first so we don't unlink the file out
+            # from under an open WAL handle (which would leave an orphaned inode).
+            db = getattr(self.main_window, "db", None)
+            if db is not None:
+                with contextlib.suppress(Exception):
+                    db.close()
+
             data_dir = Path(self.main_window.data_dir)
             for item in data_dir.iterdir():
                 if item.is_file():
