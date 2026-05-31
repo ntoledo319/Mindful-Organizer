@@ -29,6 +29,23 @@ UPDATE_STATE_FILE = DATA_DIR / "update_state.json"
 GITHUB_API_URL = "https://api.github.com/repos/{owner}/{repo}/releases/latest"
 
 
+def _ssl_context():
+    """Return an SSL context with a usable CA bundle.
+
+    A PyInstaller-frozen app ships its own Python without the system trust store,
+    so urllib's default context fails CERTIFICATE_VERIFY_FAILED. Prefer certifi's
+    bundled CA file (also bundled into the app); fall back to the default context
+    in a normal install where system certs exist.
+    """
+    import ssl
+
+    try:
+        import certifi
+        return ssl.create_default_context(cafile=certifi.where())
+    except Exception:
+        return ssl.create_default_context()
+
+
 @dataclass
 class ReleaseInfo:
     version: str
@@ -95,7 +112,7 @@ class AutoUpdater:
                 url,
                 headers={"Accept": "application/vnd.github.v3+json", "User-Agent": "Mindful-Organizer-Updater"},
             )
-            with urllib.request.urlopen(req, timeout=15) as resp:
+            with urllib.request.urlopen(req, timeout=15, context=_ssl_context()) as resp:
                 data = json.loads(resp.read().decode("utf-8"))
         except Exception as e:
             logger.warning("Update check failed: %s", e)
