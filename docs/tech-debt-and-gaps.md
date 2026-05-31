@@ -3,7 +3,29 @@
 **Purpose:** Prioritized register of known technical debt, missing features, and risks.  
 **Intended audience:** Maintainers, tech leads, auditors.  
 **Confidence:** Confirmed from source code and test results. Inferences labeled.  
-**Last updated:** 2026-05-29
+**Last updated:** 2026-05-31 (v1.1.0 release-hardening)
+
+## v1.1.0 status (release-hardening pass)
+
+Fixed this pass (see CHANGELOG and docs/RELEASE_READINESS.md): the task-duplication
+migration bug, the three-way data-directory split, crisis paywalling, the dead journal
+988-detection, crisis-signal severity ordering, dead dashboard/search actions, fake OS
+"success" returns, the plaintext "secure" vault, broken data export, the orphaned FastAPI
+layer, and pervasive test-theater (the suite is now hard-imported and honest: ~780 tests,
+the only skips are the optional scikit-learn path).
+
+**Remaining, honestly:**
+- **Code signing / notarization** — not done (no Apple Developer ID / Windows cert). The
+  single biggest blocker to frictionless public distribution. *External — owner-provided.*
+- **Live OS adaptation is macOS-only.** Windows/Linux run the full app but their system
+  backends are honest no-ops. macOS DND/brightness need a user Shortcut / the `brightness`
+  CLI respectively, and report honestly when unavailable.
+- **DB is plaintext SQLite** (filesystem-permission-hardened, 0700/0600). App-level DB
+  encryption (SQLCipher) is an explicit owner decision, not implemented.
+- **GUI widget coverage** remains low (logic is well-covered; rendered-widget tests are
+  high-effort). The shipped app was launch-verified manually + via the built `.app`.
+- The medication widget keeps a JSON display model and mirrors adherence into SQLite;
+  unifying it fully on SQLite is follow-up.
 
 ## Executive Summary
 
