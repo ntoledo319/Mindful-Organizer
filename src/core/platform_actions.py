@@ -300,14 +300,20 @@ class MacOSBackend(PlatformBackend):
         script = 'tell application "System Events" to keystroke "m" using {command down, option down}'
         ok, _ = self._run(script)
         if not ok:
-            # Fallback: hide all visible apps
-            self._run('tell application "Finder" to set visible of every process whose visible is true to false')
-        return True
+            # Fallback: hide all visible apps; report the fallback's real result.
+            ok, _ = self._run(
+                'tell application "Finder" to set visible of every process '
+                'whose visible is true to false'
+            )
+        return ok
 
     def restore_windows(self) -> bool:
-        # macOS doesn't have a single "restore all" command; best effort
-        self._run('tell application "Finder" to set visible of every process whose visible is false to true')
-        return True
+        # macOS has no single "restore all"; report the real result of the attempt.
+        ok, _ = self._run(
+            'tell application "Finder" to set visible of every process '
+            'whose visible is false to true'
+        )
+        return ok
 
     # -- audio ----------------------------------------------------------------
 

@@ -50,16 +50,17 @@ $ErrorActionPreference = "Stop"
 
 $ProjectRoot    = Split-Path -Parent (Split-Path -Parent $PSCommandPath)
 $SpecFile       = Join-Path $ProjectRoot "mindful_organizer.spec"
-$DistDir        = Join-Path $ProjectRoot "dist" "MindfulOrganizer"
+# The spec emits dist/Hearth/hearth.exe (matching AppxManifest Executable="Hearth\hearth.exe").
+$DistDir        = Join-Path $ProjectRoot "dist" "Hearth"
 $WindowsStore   = Join-Path $ProjectRoot "windows_store"
 $AssetsDir      = Join-Path $WindowsStore "assets"
 $ManifestFile   = Join-Path $WindowsStore "AppxManifest.xml"
 
 $LayoutDir      = Join-Path $ProjectRoot "msix_layout"
-$OutputMsix     = Join-Path $ProjectRoot "dist" "MindfulOrganizer.msix"
+$OutputMsix     = Join-Path $ProjectRoot "dist" "Hearth.msix"
 
-$AppName        = "MindfulOrganizer"
-$AppVersion     = "1.0.0.0"
+$AppName        = "Hearth"
+$AppVersion     = "1.1.0.0"
 
 # Windows SDK paths -- adjust if your SDK is installed elsewhere
 $SdkBinRoot     = "C:\Program Files (x86)\Windows Kits\10\bin"

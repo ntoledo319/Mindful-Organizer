@@ -105,6 +105,16 @@ class TestMacOSBackendBehavior:
         assert MacOSBackend().set_dnd(True) is True
         assert calls[0][0] == "shortcuts" and calls[0][1] == "run"
 
+    def test_minimize_and_restore_report_real_failure(self, monkeypatch):
+        self._capture(monkeypatch, returncode=1)  # every AppleScript fails
+        assert MacOSBackend().minimize_all_windows() is False
+        assert MacOSBackend().restore_windows() is False
+
+    def test_minimize_reports_success_when_applescript_succeeds(self, monkeypatch):
+        self._capture(monkeypatch, returncode=0)
+        assert MacOSBackend().minimize_all_windows() is True
+        assert MacOSBackend().restore_windows() is True
+
 
 class TestGetBackend:
     """Test backend selection."""

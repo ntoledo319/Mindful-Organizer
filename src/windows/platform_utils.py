@@ -353,13 +353,20 @@ def _windows_notification(
 
 
 def _macos_notification(title: str, message: str) -> bool:
+    # Escape backslashes and double-quotes so a title/message can't break out of
+    # the AppleScript string literal (latent osascript injection).
+    def esc(s: str) -> str:
+        return s.replace("\\", "\\\\").replace('"', '\\"')
+
     try:
         script = (
-            f'display notification "{message}" with title "{title}" '
+            f'display notification "{esc(message)}" with title "{esc(title)}" '
             f'sound name "default"'
         )
-        subprocess.run(["osascript", "-e", script], capture_output=True, timeout=5)
-        return True
+        result = subprocess.run(
+            ["osascript", "-e", script], capture_output=True, timeout=5
+        )
+        return result.returncode == 0
     except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
         return False
 

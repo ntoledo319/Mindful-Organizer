@@ -102,10 +102,22 @@ jobs:
       - name: Build .app bundle
         run: bash build.sh
 
+      - name: Zip the .app (GitHub Releases don't preserve bundle structure)
+        run: |
+          ditto -c -k --keepParent dist/Hearth.app dist/Hearth-macos.zip
+          ls -la dist/
+
       - name: Upload .app artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MindfulOrganizer-macos-${{ github.ref_name }}
-          path: dist/**/*.app
+          name: Hearth-macos-${{ github.ref_name }}
+          path: dist/Hearth-macos.zip
           if-no-files-found: warn
           retention-days: 30
+
+      - name: Attach .app to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: dist/Hearth-macos.zip
