@@ -1,68 +1,64 @@
 # -*- mode: python ; coding: utf-8 -*-
 #
-# PyInstaller spec file for Mindful Organizer
-# Builds a one-dir Windows executable (windowed mode, no console)
+# PyInstaller spec for Hearth.
 #
-# Usage:
-#   pyinstaller mindful_organizer.spec
+#   macOS:    produces dist/Hearth.app (windowed .app bundle)
+#   Windows:  produces dist/Hearth/hearth.exe (one-dir, windowed)
 #
+# Usage:  pyinstaller mindful_organizer.spec --clean --noconfirm
+#
+# The optional ML/NLP stacks (scikit-learn, hdbscan, umap, matplotlib) are
+# collected ONLY when they are actually installed, so a lean install without the
+# [ml,nlp] extras still builds — the app degrades gracefully at runtime.
 
 import os
 import sys
-from PyInstaller.utils.hooks import collect_submodules, collect_data_files
 
-# ---------------------------------------------------------------------------
-# Path configuration
-# ---------------------------------------------------------------------------
-SPEC_DIR = os.path.abspath(os.path.dirname(SPECPATH))
-SRC_DIR = os.path.join(SPEC_DIR, 'src')
+from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
-# ---------------------------------------------------------------------------
-# Hidden imports
-# PyQt6 and ML libraries need explicit enumeration because PyInstaller
-# cannot always detect runtime imports in these packages.
-# ---------------------------------------------------------------------------
+# SPECPATH is the directory containing this spec file (the project root).
+SPEC_DIR = os.path.abspath(SPECPATH)
+SRC_DIR = os.path.join(SPEC_DIR, "src")
+IS_MACOS = sys.platform == "darwin"
+
+
+def _maybe(pkg):
+    """Return submodules of an optional package, or [] if it isn't installed."""
+    import importlib.util
+
+    if importlib.util.find_spec(pkg) is None:
+        return []
+    return collect_submodules(pkg)
+
+
+def _maybe_data(pkg):
+    import importlib.util
+
+    if importlib.util.find_spec(pkg) is None:
+        return []
+    return collect_data_files(pkg)
+
+
+# --- Hidden imports -------------------------------------------------------
 hidden_imports = []
-hidden_imports += collect_submodules('PyQt6')
-hidden_imports += collect_submodules('PyQt6.QtCore')
-hidden_imports += collect_submodules('PyQt6.QtGui')
-hidden_imports += collect_submodules('PyQt6.QtWidgets')
-hidden_imports += collect_submodules('numpy')
-hidden_imports += collect_submodules('sklearn')
-hidden_imports += collect_submodules('cryptography')
-hidden_imports += [
-    'hdbscan',
-    'umap',
-    'matplotlib',
-    'matplotlib.backends.backend_qt5agg',
-    'seaborn',
-    'sqlite3',
-    'json',
-    'csv',
-    'dateutil',
-    'dateutil.parser',
-    'dateutil.tz',
-]
+hidden_imports += collect_submodules("PyQt6")
+hidden_imports += collect_submodules("cryptography")
+hidden_imports += ["sqlite3", "json", "csv"]
+# Optional, only if installed:
+for _pkg in ("numpy", "sklearn", "pandas", "matplotlib", "hdbscan", "umap"):
+    hidden_imports += _maybe(_pkg)
 
-# ---------------------------------------------------------------------------
-# Data files
-# Resources directory (meditations, guided sessions, etc.)
-# Windows Store assets (icons, logos)
-# ---------------------------------------------------------------------------
+# --- Data files -----------------------------------------------------------
 added_data = [
-    (os.path.join(SPEC_DIR, 'resources'), 'resources'),
-    (os.path.join(SPEC_DIR, 'windows_store', 'assets'), os.path.join('windows_store', 'assets')),
+    (os.path.join(SPEC_DIR, "resources"), "resources"),
+    (os.path.join(SPEC_DIR, "windows_store", "assets"), os.path.join("windows_store", "assets")),
 ]
+for _pkg in ("sklearn", "hdbscan"):
+    added_data += _maybe_data(_pkg)
 
-# Collect additional data files from ML libraries that ship models/config
-added_data += collect_data_files('sklearn')
-added_data += collect_data_files('hdbscan')
-
-# ---------------------------------------------------------------------------
-# Analysis
-# ---------------------------------------------------------------------------
+# --- Analysis -------------------------------------------------------------
 a = Analysis(
-    [os.path.join(SRC_DIR, 'main.py')],
+    [os.path.join(SRC_DIR, "main.py")],
     pathex=[SRC_DIR],
     binaries=[],
     datas=added_data,
@@ -70,78 +66,63 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[
-        'tkinter',
-        '_tkinter',
-        'test',
-        'unittest',
-        'pytest',
-        'sphinx',
-        'setuptools',
-        'pip',
-        'distutils',
-    ],
-    win_no_prefer_redirects=False,
-    win_private_assemblies=False,
-    cipher=None,
+    excludes=["tkinter", "_tkinter", "test", "unittest", "pytest", "sphinx"],
     noarchive=False,
 )
 
-# ---------------------------------------------------------------------------
-# PYZ archive (compressed Python bytecode)
-# ---------------------------------------------------------------------------
-pyz = PYZ(
-    a.pure,
-    a.zipped_data,
-    cipher=None,
-)
+pyz = PYZ(a.pure, a.zipped_data)
 
-# ---------------------------------------------------------------------------
-# EXE
-# one-file mode disabled (one-dir) for faster startup
-# console disabled (windowed GUI application)
-# ---------------------------------------------------------------------------
+# Brand the executable. macOS app bundles wrap a plain unix executable; Windows
+# uses hearth.exe to match the MSIX manifest (Executable="Hearth\\hearth.exe").
+_icon = os.path.join(SPEC_DIR, "windows_store", "assets", "app_icon.ico")
+
 exe = EXE(
     pyz,
     a.scripts,
     [],
     exclude_binaries=True,
-    name='mindful-organizer',
+    name="hearth",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=True,
+    upx=False,  # UPX can corrupt PyQt6/macOS binaries; not worth the risk
     console=False,
     disable_windowed_traceback=False,
-    icon=os.path.join(SPEC_DIR, 'windows_store', 'assets', 'app_icon.ico'),
-    version_info={
-        'FileVersion': (1, 0, 0, 0),
-        'ProductVersion': (1, 0, 0, 0),
-        'FileDescription': 'Mindful Organizer - Mental health-aware productivity',
-        'InternalName': 'mindful-organizer',
-        'OriginalFilename': 'mindful-organizer.exe',
-        'ProductName': 'Mindful Organizer',
-        'CompanyName': 'Nicholas Toledo',
-        'LegalCopyright': 'Copyright 2026 Nicholas Toledo. MIT License.',
-    },
-    uac_admin=False,          # asInvoker -- no elevation required
-    uac_uiaccess=False,
-    manifest=None,            # use default manifest (asInvoker)
+    icon=_icon if os.path.exists(_icon) else None,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
 )
 
-# ---------------------------------------------------------------------------
-# COLLECT (one-dir bundle)
-# ---------------------------------------------------------------------------
 coll = COLLECT(
     exe,
     a.binaries,
     a.zipfiles,
     a.datas,
     strip=False,
-    upx=True,
+    upx=False,
     upx_exclude=[],
-    name='MindfulOrganizer',
+    name="Hearth",
 )
+
+# macOS application bundle -------------------------------------------------
+if IS_MACOS:
+    _icns = os.path.join(SPEC_DIR, "windows_store", "assets", "Hearth.icns")
+    app = BUNDLE(
+        coll,
+        name="Hearth.app",
+        icon=_icns if os.path.exists(_icns) else None,
+        bundle_identifier="io.hearthproject.hearth",
+        version="1.1.0",
+        info_plist={
+            "CFBundleName": "Hearth",
+            "CFBundleDisplayName": "Hearth",
+            "CFBundleShortVersionString": "1.1.0",
+            "CFBundleVersion": "1.1.0",
+            "NSHighResolutionCapable": True,
+            "LSMinimumSystemVersion": "11.0",
+            # Single-user local tool; explicitly opt out of App Sandbox file
+            # prompts for the user's own home-dir data directory.
+            "LSApplicationCategoryType": "public.app-category.healthcare-fitness",
+        },
+    )

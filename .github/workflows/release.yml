@@ -64,10 +64,10 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: MindfulOrganizer-msix-${{ github.ref_name }}
+          name: Hearth-msix-${{ github.ref_name }}
           path: |
             windows_store/*.msix
-            dist/MindfulOrganizer/**
+            dist/Hearth/**
           if-no-files-found: warn
           retention-days: 30
 
@@ -78,7 +78,7 @@ jobs:
           generate_release_notes: true
           files: |
             windows_store/*.msix
-            dist/MindfulOrganizer/mindful-organizer.exe
+            dist/Hearth/hearth.exe
 
   macos-app:
     name: Build macOS .app
