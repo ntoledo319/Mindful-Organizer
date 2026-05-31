@@ -1,4 +1,5 @@
 """Tests for the Display Adaptation Engine."""
+
 from __future__ import annotations
 
 from core.display_adaptation import DisplayAdaptationEngine, DisplayProfile
@@ -34,13 +35,17 @@ class TestEnergyAdjustment:
 
     def test_high_energy_brightens(self):
         engine = DisplayAdaptationEngine(backend=StubBackend())
-        base = DisplayProfile(brightness=50, night_shift_intensity=30, night_shift_enabled=False, system_theme="light")
+        base = DisplayProfile(
+            brightness=50, night_shift_intensity=30, night_shift_enabled=False, system_theme="light"
+        )
         adjusted = engine._adjust_for_energy(base, 8)
         assert adjusted.brightness >= 75
 
     def test_low_energy_dims(self):
         engine = DisplayAdaptationEngine(backend=StubBackend())
-        base = DisplayProfile(brightness=50, night_shift_intensity=30, night_shift_enabled=False, system_theme="light")
+        base = DisplayProfile(
+            brightness=50, night_shift_intensity=30, night_shift_enabled=False, system_theme="light"
+        )
         adjusted = engine._adjust_for_energy(base, 2)
         assert adjusted.brightness <= 35
 
@@ -50,14 +55,18 @@ class TestMoodAdjustment:
 
     def test_low_mood_enables_warmth(self):
         engine = DisplayAdaptationEngine(backend=StubBackend())
-        base = DisplayProfile(brightness=50, night_shift_intensity=0, night_shift_enabled=False, system_theme="light")
+        base = DisplayProfile(
+            brightness=50, night_shift_intensity=0, night_shift_enabled=False, system_theme="light"
+        )
         adjusted = engine._adjust_for_mood(base, 2)
         assert adjusted.night_shift_enabled is True
         assert adjusted.night_shift_intensity >= 50
 
     def test_good_mood_reduces_warmth(self):
         engine = DisplayAdaptationEngine(backend=StubBackend())
-        base = DisplayProfile(brightness=50, night_shift_intensity=50, night_shift_enabled=True, system_theme="light")
+        base = DisplayProfile(
+            brightness=50, night_shift_intensity=50, night_shift_enabled=True, system_theme="light"
+        )
         adjusted = engine._adjust_for_mood(base, 9)
         assert adjusted.night_shift_intensity <= 20
 
@@ -96,7 +105,7 @@ class TestFullAdaptation:
     def test_anxiety_overrides_energy(self):
         engine = DisplayAdaptationEngine(backend=StubBackend())
         profile = engine.adapt(
-            energy_score=8,   # would normally be bright
+            energy_score=8,  # would normally be bright
             mood_score=7,
             anxiety_detected=True,
         )
@@ -114,6 +123,8 @@ class TestFullAdaptation:
 
     def test_manual_override_bypasses_computation(self):
         engine = DisplayAdaptationEngine(backend=StubBackend())
-        manual = DisplayProfile(brightness=99, night_shift_intensity=0, night_shift_enabled=False, system_theme="light")
+        manual = DisplayProfile(
+            brightness=99, night_shift_intensity=0, night_shift_enabled=False, system_theme="light"
+        )
         profile = engine.adapt(energy_score=2, manual_override=manual)
         assert profile.brightness == 99

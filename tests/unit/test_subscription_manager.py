@@ -31,9 +31,7 @@ def manager(tmp_path: Path) -> SubscriptionManager:
         )
     ).decode()
     pub_b64 = base64.b64encode(
-        priv.public_key().public_bytes(
-            serialization.Encoding.Raw, serialization.PublicFormat.Raw
-        )
+        priv.public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw)
     ).decode()
     return SubscriptionManager(
         data_dir=tmp_path,

@@ -1,6 +1,5 @@
 """Reusable card frame component."""
 
-
 from PyQt6.QtWidgets import QFrame
 
 

@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 # Dashboard widget
 # ---------------------------------------------------------------------------
 
+
 class DashboardWidget(QWidget):
     """Action-oriented Today overview tab."""
 
@@ -124,6 +125,7 @@ class DashboardWidget(QWidget):
 
     def _build_tier_banner(self) -> None:
         from gui.subscription_helpers import tier_badge_text, trial_days_text
+
         tier = tier_badge_text(self._subscription_manager)
         trial = trial_days_text(self._subscription_manager)
         if tier == "FREE" and not trial:
@@ -135,7 +137,9 @@ class DashboardWidget(QWidget):
             )
             banner_layout = QHBoxLayout(self._tier_banner)
             banner_layout.setContentsMargins(12, 8, 12, 8)
-            lbl = QLabel("Free plan. Start a 14-day trial for insights, smart notifications, and reports.")
+            lbl = QLabel(
+                "Free plan. Start a 14-day trial for insights, smart notifications, and reports."
+            )
             lbl.setWordWrap(True)
             lbl.setStyleSheet(f"color: {self._theme.get('accent', '#3498DB')}; font-size: 12px;")
             banner_layout.addWidget(lbl, stretch=1)
@@ -209,8 +213,7 @@ class DashboardWidget(QWidget):
         self._welcome_label = QLabel(f"Today, {user_name}")
         self._welcome_label.setFont(QFont(QFont().defaultFamily(), 24, QFont.Weight.DemiBold))
         self._welcome_label.setStyleSheet(
-            f"color: {self._theme.get('text', '#222222')}; "
-            "font-size: 28px; font-weight: 600;"
+            f"color: {self._theme.get('text', '#222222')}; font-size: 28px; font-weight: 600;"
         )
         row.addWidget(self._welcome_label)
 
@@ -251,14 +254,19 @@ class DashboardWidget(QWidget):
 
     def _build_right_now_section(self) -> None:
         self._state_card, layout = self._make_card("Right now")
-        self._state_sentence = BodyLabel("Hearth is ready. Record one signal to make this more specific.", self._theme)
+        self._state_sentence = BodyLabel(
+            "Hearth is ready. Record one signal to make this more specific.", self._theme
+        )
         self._state_sentence.setFont(QFont(QFont().defaultFamily(), 16))
         layout.addWidget(self._state_sentence)
         self._layout.addWidget(self._state_card)
 
     def _build_next_action_section(self) -> None:
         self._next_action_card, layout = self._make_card("Next action")
-        self._next_action_label = BodyLabel("Add one task or record how you feel. That gives Hearth enough context to help.", self._theme)
+        self._next_action_label = BodyLabel(
+            "Add one task or record how you feel. That gives Hearth enough context to help.",
+            self._theme,
+        )
         self._next_action_label.setFont(QFont(QFont().defaultFamily(), 15))
         layout.addWidget(self._next_action_label)
         self._layout.addWidget(self._next_action_card)
@@ -336,8 +344,7 @@ class DashboardWidget(QWidget):
             if signals:
                 sig = signals[0]
                 self._crisis_label.setText(
-                    f"Wellness check-in: {sig.description}\n"
-                    f"Suggestion: {sig.recommendation}"
+                    f"Wellness check-in: {sig.description}\nSuggestion: {sig.recommendation}"
                 )
                 self._crisis_banner.setVisible(True)
             else:
@@ -348,20 +355,21 @@ class DashboardWidget(QWidget):
 
     def _refresh_daily_briefing(self) -> None:
         from gui.subscription_helpers import check_feature
+
         has_pro = check_feature("full_dashboard", self._subscription_manager)
         if not has_pro:
             self._briefing_card.setVisible(False)
             self._briefing_energy.setVisible(False)
             self._briefing_tasks.setVisible(False)
             self._briefing_skill.setVisible(False)
-            if hasattr(self, '_briefing_upsell'):
+            if hasattr(self, "_briefing_upsell"):
                 self._briefing_upsell.setVisible(True)
             return
         self._briefing_card.setVisible(True)
         self._briefing_energy.setVisible(True)
         self._briefing_tasks.setVisible(True)
         self._briefing_skill.setVisible(True)
-        if hasattr(self, '_briefing_upsell'):
+        if hasattr(self, "_briefing_upsell"):
             self._briefing_upsell.setVisible(False)
         if not self._wellness_orchestrator:
             self._briefing_card.setVisible(False)
@@ -378,7 +386,10 @@ class DashboardWidget(QWidget):
                 briefing.energy_forecast or "Energy forecast unavailable."
             )
             if briefing.task_recommendations:
-                lines = [f"  • {t['title']} (energy: {t['energy_required']}/10)" for t in briefing.task_recommendations[:3]]
+                lines = [
+                    f"  • {t['title']} (energy: {t['energy_required']}/10)"
+                    for t in briefing.task_recommendations[:3]
+                ]
                 self._briefing_tasks.setText("Suggested tasks:\n" + "\n".join(lines))
             else:
                 self._briefing_tasks.setText("No pending tasks.")
@@ -414,20 +425,22 @@ class DashboardWidget(QWidget):
                     f"{energy_text} {incomplete_count} open task{'s' if incomplete_count != 1 else ''} need a decision."
                 )
             else:
-                self._state_sentence.setText(
-                    f"{energy_text} No open tasks are pressing right now."
-                )
+                self._state_sentence.setText(f"{energy_text} No open tasks are pressing right now.")
         except (AttributeError, ValueError, TypeError) as exc:
             logger.debug("Right-now refresh error: %s", exc)
 
     def _refresh_next_action(self) -> None:
         try:
             if not self._task_manager:
-                self._next_action_label.setText("Record how you feel or add one task to start shaping the day.")
+                self._next_action_label.setText(
+                    "Record how you feel or add one task to start shaping the day."
+                )
                 return
             incomplete = [t for t in self._task_manager.tasks if not t.completed]
             if not incomplete:
-                self._next_action_label.setText("No open tasks. Record a mood entry or take a short practice.")
+                self._next_action_label.setText(
+                    "No open tasks. Record a mood entry or take a short practice."
+                )
                 return
             upcoming = sorted(
                 incomplete,
@@ -452,14 +465,14 @@ class DashboardWidget(QWidget):
             entries = []
             if hasattr(self._mood_manager, "_entries"):
                 entries = [
-                    e for e in self._mood_manager._entries
+                    e
+                    for e in self._mood_manager._entries
                     if hasattr(e, "timestamp") and e.timestamp.date() == today
                 ]
             count = len(entries)
             avg = sum(e.mood_score for e in entries) / count if count else 0
-            mood_text = (
-                f"Mood: {count} entr{'y' if count == 1 else 'ies'} today"
-                + (f", average {avg:.1f}/10." if count else ".")
+            mood_text = f"Mood: {count} entr{'y' if count == 1 else 'ies'} today" + (
+                f", average {avg:.1f}/10." if count else "."
             )
             if hasattr(self._mood_manager, "mood_trend"):
                 trend = self._mood_manager.mood_trend()
@@ -470,6 +483,7 @@ class DashboardWidget(QWidget):
 
     def _refresh_energy(self) -> None:
         from gui.subscription_helpers import check_feature
+
         if not check_feature("energy_predictor", self._subscription_manager):
             self._context_energy_label.setText("Energy: forecasting is available with Pro.")
             return
@@ -513,15 +527,25 @@ class DashboardWidget(QWidget):
             today = date.today()
             incomplete = [t for t in all_tasks if not t.completed]
             due_today = [
-                t for t in incomplete
-                if hasattr(t, "due_date") and t.due_date and (
-                    t.due_date == today if isinstance(t.due_date, date) else str(t.due_date) == str(today)
+                t
+                for t in incomplete
+                if hasattr(t, "due_date")
+                and t.due_date
+                and (
+                    t.due_date == today
+                    if isinstance(t.due_date, date)
+                    else str(t.due_date) == str(today)
                 )
             ]
             overdue = [
-                t for t in incomplete
-                if hasattr(t, "due_date") and t.due_date and (
-                    t.due_date < today if isinstance(t.due_date, date) else str(t.due_date) < str(today)
+                t
+                for t in incomplete
+                if hasattr(t, "due_date")
+                and t.due_date
+                and (
+                    t.due_date < today
+                    if isinstance(t.due_date, date)
+                    else str(t.due_date) < str(today)
                 )
             ]
             completed = [t for t in all_tasks if t.completed]
@@ -546,14 +570,21 @@ class DashboardWidget(QWidget):
     def _refresh_values(self) -> None:
         try:
             from core.values_tracker import ValuesTracker
+
             tracker = ValuesTracker()
             report = tracker.generate_weekly_report()
             if report.top_value:
                 top_tasks = next(
-                    (s.tasks_aligned for s in report.value_scores if s.value_name == report.top_value),
+                    (
+                        s.tasks_aligned
+                        for s in report.value_scores
+                        if s.value_name == report.top_value
+                    ),
                     0,
                 )
-                values_text = f"Values: {report.top_value} is most represented this week ({top_tasks} tasks)."
+                values_text = (
+                    f"Values: {report.top_value} is most represented this week ({top_tasks} tasks)."
+                )
             else:
                 values_text = "Values: no aligned tasks yet."
             if report.neglected_value:
@@ -579,15 +610,11 @@ class DashboardWidget(QWidget):
                             "Try a breathing exercise to ease anxiety before tackling tasks."
                         )
                     if "Depression" in cond_names or "depression" in cond_names:
-                        suggestions.append(
-                            "Start with a small, low-energy task to build momentum."
-                        )
+                        suggestions.append("Start with a small, low-energy task to build momentum.")
                     if "ADHD" in cond_names or "adhd" in cond_names:
                         suggestions.append("Break a large task into one visible next step.")
                     if "OCD" in cond_names or "ocd" in cond_names:
-                        suggestions.append(
-                            "Consider an ERP session for your anxiety hierarchy."
-                        )
+                        suggestions.append("Consider an ERP session for your anxiety hierarchy.")
                     if "PTSD" in cond_names or "ptsd" in cond_names:
                         suggestions.append(
                             "A grounding breathing exercise may help you feel safe and present."
@@ -603,6 +630,7 @@ class DashboardWidget(QWidget):
     def _subscribe_state_bus(self) -> None:
         try:
             from gui.state_bus import get_state_bus
+
             bus = get_state_bus()
 
             def refresh(*_args, **_kwargs) -> None:

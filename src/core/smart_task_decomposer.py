@@ -21,10 +21,11 @@ from core.constants import Condition
 
 class TaskComplexity(Enum):
     """Estimated complexity of a task."""
-    TRIVIAL = "trivial"        # already micro-sized
-    SIMPLE = "simple"          # 1-3 steps
-    MODERATE = "moderate"      # 4-8 steps
-    COMPLEX = "complex"        # 9+ steps
+
+    TRIVIAL = "trivial"  # already micro-sized
+    SIMPLE = "simple"  # 1-3 steps
+    MODERATE = "moderate"  # 4-8 steps
+    COMPLEX = "complex"  # 9+ steps
 
 
 class EnergyLevel(Enum):
@@ -37,9 +38,11 @@ class EnergyLevel(Enum):
 # Data-classes
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class SubTask:
     """A single micro-step within a decomposed task."""
+
     title: str
     estimated_minutes: int
     energy_required: EnergyLevel
@@ -69,6 +72,7 @@ class SubTask:
 @dataclass
 class DecompositionResult:
     """Complete decomposition of a task."""
+
     task_title: str
     task_id: str
     complexity: TaskComplexity
@@ -124,21 +128,57 @@ def _pick_reward(index: int) -> str:
 # ---------------------------------------------------------------------------
 
 _COMPLEX_KEYWORDS = [
-    "project", "report", "presentation", "thesis", "paper", "plan",
-    "organize", "organise", "reorganize", "renovate", "move",
-    "deep clean", "spring clean", "meal prep for the week",
-    "tax", "taxes", "budget", "application", "proposal",
+    "project",
+    "report",
+    "presentation",
+    "thesis",
+    "paper",
+    "plan",
+    "organize",
+    "organise",
+    "reorganize",
+    "renovate",
+    "move",
+    "deep clean",
+    "spring clean",
+    "meal prep for the week",
+    "tax",
+    "taxes",
+    "budget",
+    "application",
+    "proposal",
 ]
 
 _MODERATE_KEYWORDS = [
-    "clean", "cook", "study", "prepare", "write", "email",
-    "shopping", "grocery", "groceries", "laundry", "pack",
-    "exercise", "workout", "errand", "appointment",
+    "clean",
+    "cook",
+    "study",
+    "prepare",
+    "write",
+    "email",
+    "shopping",
+    "grocery",
+    "groceries",
+    "laundry",
+    "pack",
+    "exercise",
+    "workout",
+    "errand",
+    "appointment",
 ]
 
 _SIMPLE_KEYWORDS = [
-    "call", "text", "message", "reply", "send", "pick up",
-    "buy", "take out", "water", "feed", "charge",
+    "call",
+    "text",
+    "message",
+    "reply",
+    "send",
+    "pick up",
+    "buy",
+    "take out",
+    "water",
+    "feed",
+    "charge",
 ]
 
 
@@ -272,25 +312,53 @@ _TEMPLATES: dict[str, list[tuple]] = {
 
 # Map keywords to template names
 _TEMPLATE_KEYWORD_MAP: dict[str, str] = {
-    "clean": "cleaning", "cleaning": "cleaning", "tidy": "cleaning",
-    "deep clean": "cleaning", "declutter": "cleaning",
-    "study": "studying", "studying": "studying", "homework": "studying",
-    "learn": "studying", "revision": "studying", "revise": "studying",
-    "exam": "studying", "research": "studying",
-    "project": "work_project", "report": "work_project",
-    "presentation": "work_project", "proposal": "work_project",
-    "errand": "errands", "errands": "errands", "shopping": "errands",
-    "grocery": "errands", "groceries": "errands",
-    "cook": "cooking", "cooking": "cooking", "meal prep": "cooking",
-    "bake": "cooking", "recipe": "cooking",
-    "exercise": "exercise", "workout": "exercise", "gym": "exercise",
-    "run": "exercise", "jog": "exercise", "yoga": "exercise",
-    "email": "email", "emails": "email", "inbox": "email",
-    "appointment": "appointment", "doctor": "appointment",
-    "dentist": "appointment", "therapist": "appointment",
+    "clean": "cleaning",
+    "cleaning": "cleaning",
+    "tidy": "cleaning",
+    "deep clean": "cleaning",
+    "declutter": "cleaning",
+    "study": "studying",
+    "studying": "studying",
+    "homework": "studying",
+    "learn": "studying",
+    "revision": "studying",
+    "revise": "studying",
+    "exam": "studying",
+    "research": "studying",
+    "project": "work_project",
+    "report": "work_project",
+    "presentation": "work_project",
+    "proposal": "work_project",
+    "errand": "errands",
+    "errands": "errands",
+    "shopping": "errands",
+    "grocery": "errands",
+    "groceries": "errands",
+    "cook": "cooking",
+    "cooking": "cooking",
+    "meal prep": "cooking",
+    "bake": "cooking",
+    "recipe": "cooking",
+    "exercise": "exercise",
+    "workout": "exercise",
+    "gym": "exercise",
+    "run": "exercise",
+    "jog": "exercise",
+    "yoga": "exercise",
+    "email": "email",
+    "emails": "email",
+    "inbox": "email",
+    "appointment": "appointment",
+    "doctor": "appointment",
+    "dentist": "appointment",
+    "therapist": "appointment",
     "meeting": "appointment",
-    "tax": "taxes", "taxes": "taxes", "tax return": "taxes",
-    "irs": "taxes", "1099": "taxes", "w-2": "taxes",
+    "tax": "taxes",
+    "taxes": "taxes",
+    "tax return": "taxes",
+    "irs": "taxes",
+    "1099": "taxes",
+    "w-2": "taxes",
 }
 
 
@@ -308,6 +376,7 @@ def _find_template(title: str) -> str | None:
 # ---------------------------------------------------------------------------
 # Condition-aware step modifiers
 # ---------------------------------------------------------------------------
+
 
 def _apply_adhd_style(steps: list[SubTask]) -> list[SubTask]:
     """ADHD: very small steps, action verbs, estimated time per step (already done).
@@ -394,7 +463,10 @@ def _apply_anxiety_style(steps: list[SubTask]) -> list[SubTask]:
 
     for s in steps:
         s.order = order
-        s.prep_note = s.prep_note or f"You only need to do this one step. It should take about {s.estimated_minutes} minutes."
+        s.prep_note = (
+            s.prep_note
+            or f"You only need to do this one step. It should take about {s.estimated_minutes} minutes."
+        )
         if not s.completion_criteria:
             s.completion_criteria = f"You have finished: {s.title.lower()}"
         s.reward = _pick_reward(order)
@@ -425,48 +497,65 @@ def _apply_ocd_style(steps: list[SubTask]) -> list[SubTask]:
 # Generic decomposition (no template match)
 # ---------------------------------------------------------------------------
 
+
 def _generic_decompose(title: str, task_id: str) -> list[SubTask]:
     """Generate generic micro-steps when no template matches."""
     return [
         SubTask(
             title=f"Decide specifically what '{title}' means right now",
-            estimated_minutes=2, energy_required=EnergyLevel.LOW,
-            order=1, parent_task_id=task_id,
+            estimated_minutes=2,
+            energy_required=EnergyLevel.LOW,
+            order=1,
+            parent_task_id=task_id,
         ),
         SubTask(
             title="Gather any materials, tools, or information you need",
-            estimated_minutes=3, energy_required=EnergyLevel.LOW,
-            order=2, parent_task_id=task_id,
+            estimated_minutes=3,
+            energy_required=EnergyLevel.LOW,
+            order=2,
+            parent_task_id=task_id,
         ),
         SubTask(
             title="Set up your workspace and remove distractions",
-            estimated_minutes=2, energy_required=EnergyLevel.LOW,
-            order=3, parent_task_id=task_id,
+            estimated_minutes=2,
+            energy_required=EnergyLevel.LOW,
+            order=3,
+            parent_task_id=task_id,
         ),
         SubTask(
             title=f"Do the first small piece of '{title}'",
-            estimated_minutes=10, energy_required=EnergyLevel.MODERATE,
-            order=4, parent_task_id=task_id,
+            estimated_minutes=10,
+            energy_required=EnergyLevel.MODERATE,
+            order=4,
+            parent_task_id=task_id,
         ),
         SubTask(
             title="Take a short break (2-3 minutes)",
-            estimated_minutes=3, energy_required=EnergyLevel.LOW,
-            order=5, parent_task_id=task_id,
+            estimated_minutes=3,
+            energy_required=EnergyLevel.LOW,
+            order=5,
+            parent_task_id=task_id,
         ),
         SubTask(
             title=f"Continue working on '{title}'",
-            estimated_minutes=15, energy_required=EnergyLevel.HIGH,
-            order=6, parent_task_id=task_id,
+            estimated_minutes=15,
+            energy_required=EnergyLevel.HIGH,
+            order=6,
+            parent_task_id=task_id,
         ),
         SubTask(
             title="Review what you have done so far",
-            estimated_minutes=3, energy_required=EnergyLevel.LOW,
-            order=7, parent_task_id=task_id,
+            estimated_minutes=3,
+            energy_required=EnergyLevel.LOW,
+            order=7,
+            parent_task_id=task_id,
         ),
         SubTask(
             title="Finish up or plan the next session",
-            estimated_minutes=5, energy_required=EnergyLevel.MODERATE,
-            order=8, parent_task_id=task_id,
+            estimated_minutes=5,
+            energy_required=EnergyLevel.MODERATE,
+            order=8,
+            parent_task_id=task_id,
         ),
     ]
 
@@ -500,6 +589,7 @@ _ENCOURAGEMENTS: dict[Condition, str] = {
 # Public API
 # ---------------------------------------------------------------------------
 
+
 class SmartTaskDecomposer:
     """Decompose overwhelming tasks into manageable micro-steps.
 
@@ -512,7 +602,7 @@ class SmartTaskDecomposer:
 
     def __init__(self, conditions: list[str] | None = None) -> None:
         self._conditions: list[Condition] = []
-        for c in (conditions or []):
+        for c in conditions or []:
             cond = Condition.from_string(c)
             if cond != Condition.GENERAL or c.lower() == "general":
                 self._conditions.append(cond)
@@ -570,27 +660,31 @@ class SmartTaskDecomposer:
             raw_steps = _TEMPLATES[template_name]
             steps: list[SubTask] = []
             for i, (step_title, est_min, energy) in enumerate(raw_steps):
-                steps.append(SubTask(
-                    title=step_title,
-                    estimated_minutes=est_min,
-                    energy_required=energy,
-                    order=i + 1,
-                    parent_task_id=tid,
-                ))
+                steps.append(
+                    SubTask(
+                        title=step_title,
+                        estimated_minutes=est_min,
+                        energy_required=energy,
+                        order=i + 1,
+                        parent_task_id=tid,
+                    )
+                )
         else:
             steps = _generic_decompose(title, tid)
 
         # Trivial tasks don't need decomposition
         if complexity == TaskComplexity.TRIVIAL:
-            steps = [SubTask(
-                title=f"Do: {title}",
-                estimated_minutes=5,
-                energy_required=EnergyLevel.LOW,
-                order=1,
-                parent_task_id=tid,
-                is_first_step=True,
-                reward="Done! That was quick.",
-            )]
+            steps = [
+                SubTask(
+                    title=f"Do: {title}",
+                    estimated_minutes=5,
+                    energy_required=EnergyLevel.LOW,
+                    order=1,
+                    parent_task_id=tid,
+                    is_first_step=True,
+                    reward="Done! That was quick.",
+                )
+            ]
         else:
             # Apply condition-specific modifications
             steps = self._apply_condition_style(steps, condition)
@@ -633,7 +727,9 @@ class SmartTaskDecomposer:
         return result.just_start_step
 
     def _apply_condition_style(
-        self, steps: list[SubTask], condition: Condition,
+        self,
+        steps: list[SubTask],
+        condition: Condition,
     ) -> list[SubTask]:
         """Apply condition-specific modifications to the step list."""
         if condition == Condition.ADHD:
@@ -662,7 +758,4 @@ class SmartTaskDecomposer:
         raw = _TEMPLATES.get(template_name)
         if raw is None:
             return None
-        return [
-            {"title": t, "estimated_minutes": m, "energy_required": e.value}
-            for t, m, e in raw
-        ]
+        return [{"title": t, "estimated_minutes": m, "energy_required": e.value} for t, m, e in raw]

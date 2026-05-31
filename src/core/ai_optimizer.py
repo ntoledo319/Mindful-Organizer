@@ -1,6 +1,7 @@
 """
 AI-powered system optimization, adaptive task scheduling, and burnout/hypomania detection.
 """
+
 import contextlib
 import json
 import logging
@@ -13,6 +14,7 @@ import numpy as np
 try:
     import joblib
     from sklearn.ensemble import RandomForestRegressor
+
     HAS_SKLEARN = True
 except ImportError:
     HAS_SKLEARN = False
@@ -26,7 +28,9 @@ class AISystemOptimizer:
         self.model_file = data_dir / "ai_model.joblib"
         self.history_file = data_dir / "optimization_history.json"
         self.productivity_file = data_dir / "productivity_data.json"
-        self.model = RandomForestRegressor(n_estimators=50, random_state=42) if HAS_SKLEARN else None
+        self.model = (
+            RandomForestRegressor(n_estimators=50, random_state=42) if HAS_SKLEARN else None
+        )
         self._model_fitted = False
         self.history: list[dict] = []
         self.productivity_data: list[dict] = []
@@ -113,13 +117,15 @@ class AISystemOptimizer:
         features = []
         targets = []
         for entry in self.productivity_data:
-            features.append([
-                entry.get("hour", 12),
-                entry.get("day_of_week", 0),
-                entry.get("energy_required", 3),
-                entry.get("energy_level", 50),
-                entry.get("mood_score", 5),
-            ])
+            features.append(
+                [
+                    entry.get("hour", 12),
+                    entry.get("day_of_week", 0),
+                    entry.get("energy_required", 3),
+                    entry.get("energy_level", 50),
+                    entry.get("mood_score", 5),
+                ]
+            )
             # Target: task efficiency (inverse of duration for energy level)
             duration = max(entry.get("duration_minutes", 30), 1)
             targets.append(100.0 / duration)
@@ -143,12 +149,14 @@ class AISystemOptimizer:
         for hour, efficiencies in sorted(hourly_counts.items()):
             avg_eff = np.mean(efficiencies)
             count = len(efficiencies)
-            peak_hours.append({
-                "hour": hour,
-                "average_efficiency": round(float(avg_eff), 2),
-                "tasks_completed": count,
-                "label": f"{hour:02d}:00",
-            })
+            peak_hours.append(
+                {
+                    "hour": hour,
+                    "average_efficiency": round(float(avg_eff), 2),
+                    "tasks_completed": count,
+                    "label": f"{hour:02d}:00",
+                }
+            )
 
         peak_hours.sort(key=lambda x: x["average_efficiency"], reverse=True)
         return peak_hours
@@ -156,14 +164,31 @@ class AISystemOptimizer:
     def _default_peak_hours(self) -> list[dict]:
         """Default peak hours when insufficient data."""
         return [
-            {"hour": 10, "average_efficiency": 80, "tasks_completed": 0, "label": "10:00 (estimated)"},
-            {"hour": 14, "average_efficiency": 70, "tasks_completed": 0, "label": "14:00 (estimated)"},
-            {"hour": 9, "average_efficiency": 75, "tasks_completed": 0, "label": "09:00 (estimated)"},
+            {
+                "hour": 10,
+                "average_efficiency": 80,
+                "tasks_completed": 0,
+                "label": "10:00 (estimated)",
+            },
+            {
+                "hour": 14,
+                "average_efficiency": 70,
+                "tasks_completed": 0,
+                "label": "14:00 (estimated)",
+            },
+            {
+                "hour": 9,
+                "average_efficiency": 75,
+                "tasks_completed": 0,
+                "label": "09:00 (estimated)",
+            },
         ]
 
     # === Smart Task Ordering ===
 
-    def suggest_task_order(self, tasks: list[dict], current_energy: int = 50, current_mood: int = 5) -> list[dict]:
+    def suggest_task_order(
+        self, tasks: list[dict], current_energy: int = 50, current_mood: int = 5
+    ) -> list[dict]:
         """Suggest optimal task ordering for the day based on energy and patterns."""
         current_hour = datetime.now().hour
         peak_hours = self.get_peak_productivity_hours()
@@ -213,7 +238,9 @@ class AISystemOptimizer:
         scored_tasks.sort(key=lambda x: x["_score"], reverse=True)
         return scored_tasks
 
-    def generate_daily_plan(self, tasks: list[dict], energy_level: int = 50, mood: int = 5) -> list[dict]:
+    def generate_daily_plan(
+        self, tasks: list[dict], energy_level: int = 50, mood: int = 5
+    ) -> list[dict]:
         """Generate a suggested daily plan with time slots."""
         ordered = self.suggest_task_order(tasks, energy_level, mood)
         plan = []
@@ -221,13 +248,15 @@ class AISystemOptimizer:
 
         for task in ordered[:8]:  # Max 8 tasks per day
             est_duration = task.get("estimated_minutes", 30)
-            plan.append({
-                "task": task.get("title", "Unknown"),
-                "suggested_time": f"{current_hour:02d}:00",
-                "estimated_duration": est_duration,
-                "energy_required": task.get("energy_required", 3),
-                "priority": task.get("priority", 2),
-            })
+            plan.append(
+                {
+                    "task": task.get("title", "Unknown"),
+                    "suggested_time": f"{current_hour:02d}:00",
+                    "estimated_duration": est_duration,
+                    "energy_required": task.get("energy_required", 3),
+                    "priority": task.get("priority", 2),
+                }
+            )
             current_hour += max(1, est_duration // 60 + 1)
             if current_hour >= 22:
                 break
@@ -239,13 +268,18 @@ class AISystemOptimizer:
     def detect_burnout_risk(self, recent_days: int = 7) -> dict:
         """Detect burnout risk based on task load and patterns."""
         cutoff = datetime.now() - timedelta(days=recent_days)
-        recent = [
-            e for e in self.productivity_data
-            if datetime.fromisoformat(e["timestamp"]) > cutoff
-        ] if self.productivity_data else []
+        recent = (
+            [e for e in self.productivity_data if datetime.fromisoformat(e["timestamp"]) > cutoff]
+            if self.productivity_data
+            else []
+        )
 
         if not recent:
-            return {"risk_level": "unknown", "score": 0, "message": "Not enough data to assess burnout risk."}
+            return {
+                "risk_level": "unknown",
+                "score": 0,
+                "message": "Not enough data to assess burnout risk.",
+            }
 
         daily_counts: dict[str, int] = {}
         daily_energy: dict[str, list[int]] = {}
@@ -292,10 +326,11 @@ class AISystemOptimizer:
     def detect_hypomania_signs(self, recent_days: int = 5) -> dict:
         """Detect potential hypomanic patterns for bipolar users."""
         cutoff = datetime.now() - timedelta(days=recent_days)
-        recent = [
-            e for e in self.productivity_data
-            if datetime.fromisoformat(e["timestamp"]) > cutoff
-        ] if self.productivity_data else []
+        recent = (
+            [e for e in self.productivity_data if datetime.fromisoformat(e["timestamp"]) > cutoff]
+            if self.productivity_data
+            else []
+        )
 
         if len(recent) < 3:
             return {"detected": False, "score": 0, "message": "Not enough data."}
@@ -330,16 +365,20 @@ class AISystemOptimizer:
         # Rapid task switching (many tasks in short time)
         timestamps = sorted([datetime.fromisoformat(e["timestamp"]) for e in recent])
         if len(timestamps) >= 5:
-            gaps = [(timestamps[i+1] - timestamps[i]).seconds / 60 for i in range(len(timestamps)-1)]
+            gaps = [
+                (timestamps[i + 1] - timestamps[i]).seconds / 60 for i in range(len(timestamps) - 1)
+            ]
             if np.mean(gaps) < 10:
                 score += 15
                 signs.append("Very rapid task switching")
 
         detected = score >= 40
         if detected:
-            msg = ("Patterns consistent with elevated mood/hypomania detected. "
-                   "This is informational - please discuss with your mental health provider. "
-                   "Signs: " + "; ".join(signs))
+            msg = (
+                "Patterns consistent with elevated mood/hypomania detected. "
+                "This is informational - please discuss with your mental health provider. "
+                "Signs: " + "; ".join(signs)
+            )
         else:
             msg = "No concerning patterns detected."
 
@@ -349,12 +388,14 @@ class AISystemOptimizer:
 
     def record_optimization(self, stats: dict, action: str, result: dict):
         """Record an optimization action."""
-        self.history.append({
-            "timestamp": datetime.now().isoformat(),
-            "stats": stats,
-            "action": action,
-            "result": result,
-        })
+        self.history.append(
+            {
+                "timestamp": datetime.now().isoformat(),
+                "stats": stats,
+                "action": action,
+                "result": result,
+            }
+        )
         self._save_history()
 
     def get_optimization_suggestions(self, current_stats: dict) -> list[str]:
@@ -367,16 +408,22 @@ class AISystemOptimizer:
         disk = current_stats.get("disk_percent", 0)
 
         if cpu > 80:
-            suggestions.append("High CPU usage detected. Consider closing resource-intensive applications.")
+            suggestions.append(
+                "High CPU usage detected. Consider closing resource-intensive applications."
+            )
         if mem > 80:
-            suggestions.append("High memory usage. Consider closing unused applications or browser tabs.")
+            suggestions.append(
+                "High memory usage. Consider closing unused applications or browser tabs."
+            )
         if disk > 90:
             suggestions.append("Low disk space. Consider cleaning up unnecessary files.")
 
         # Task-based suggestions
         task_count = current_stats.get("task_count", 0)
         if task_count > 10:
-            suggestions.append("You have many pending tasks. Consider prioritizing or breaking them down.")
+            suggestions.append(
+                "You have many pending tasks. Consider prioritizing or breaking them down."
+            )
         if task_count > 20:
             suggestions.append("Task overload detected. Focus on your top 3 priorities today.")
 
@@ -390,7 +437,9 @@ class AISystemOptimizer:
         if hour >= 21:
             suggestions.append("It's getting late. Consider wrapping up and preparing for rest.")
         elif hour >= 14 and hour <= 15:
-            suggestions.append("Afternoon energy dip is common. A short walk or breathing exercise can help.")
+            suggestions.append(
+                "Afternoon energy dip is common. A short walk or breathing exercise can help."
+            )
 
         if not suggestions:
             suggestions.append("Everything looks good! Keep up the great work.")

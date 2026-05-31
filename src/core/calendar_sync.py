@@ -18,9 +18,11 @@ from typing import Any
 # Data structures
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class CalendarEvent:
     """A single calendar event."""
+
     uid: str
     summary: str
     description: str
@@ -34,6 +36,7 @@ class CalendarEvent:
 # ---------------------------------------------------------------------------
 # ICS generation
 # ---------------------------------------------------------------------------
+
 
 class CalendarSync:
     """Sync tasks with external calendars via ICS format."""
@@ -127,13 +130,15 @@ class CalendarSync:
             lines.append(f"URL:{event.url}")
 
         # Alarm
-        lines.extend([
-            "BEGIN:VALARM",
-            "ACTION:DISPLAY",
-            f"DESCRIPTION:Reminder: {self._ics_escape(event.summary)}",
-            f"TRIGGER:-PT{event.alarm_minutes_before}M",
-            "END:VALARM",
-        ])
+        lines.extend(
+            [
+                "BEGIN:VALARM",
+                "ACTION:DISPLAY",
+                f"DESCRIPTION:Reminder: {self._ics_escape(event.summary)}",
+                f"TRIGGER:-PT{event.alarm_minutes_before}M",
+                "END:VALARM",
+            ]
+        )
 
         lines.append("END:VEVENT")
         return lines
@@ -141,7 +146,9 @@ class CalendarSync:
     @staticmethod
     def _ics_escape(value: str) -> str:
         """Escape special characters for ICS format."""
-        return value.replace("\\", "\\\\").replace(";", "\\;").replace(",", "\\,").replace("\n", "\\n")
+        return (
+            value.replace("\\", "\\\\").replace(";", "\\;").replace(",", "\\,").replace("\n", "\\n")
+        )
 
     def export_tasks_to_file(
         self,
@@ -167,8 +174,7 @@ class CalendarSync:
             return tasks
 
         high_energy_tasks = [
-            t for t in tasks
-            if not t.get("completed") and t.get("energy_required", 5) >= 7
+            t for t in tasks if not t.get("completed") and t.get("energy_required", 5) >= 7
         ]
 
         suggestions: list[dict[str, Any]] = []
@@ -209,14 +215,18 @@ class CalendarSync:
             elif in_event:
                 # Basic parsing for DTSTART:20231025T140000Z or DTSTART;TZID=...:20231025T140000
                 if line.startswith("DTSTART"):
-                    match = re.search(r':(\d{8}T\d{6}Z?)', line)
+                    match = re.search(r":(\d{8}T\d{6}Z?)", line)
                     if match:
                         with suppress(ValueError):
-                            start_time = datetime.strptime(match.group(1).replace("Z", ""), "%Y%m%dT%H%M%S")
+                            start_time = datetime.strptime(
+                                match.group(1).replace("Z", ""), "%Y%m%dT%H%M%S"
+                            )
                 elif line.startswith("DTEND"):
-                    match = re.search(r':(\d{8}T\d{6}Z?)', line)
+                    match = re.search(r":(\d{8}T\d{6}Z?)", line)
                     if match:
                         with suppress(ValueError):
-                            end_time = datetime.strptime(match.group(1).replace("Z", ""), "%Y%m%dT%H%M%S")
+                            end_time = datetime.strptime(
+                                match.group(1).replace("Z", ""), "%Y%m%dT%H%M%S"
+                            )
 
         return sorted(blocks, key=lambda x: x[0])

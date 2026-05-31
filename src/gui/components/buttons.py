@@ -1,6 +1,5 @@
 """Reusable button components."""
 
-
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import QPushButton
@@ -67,7 +66,9 @@ class DangerButton(_ThemedButton):
         theme: dict[str, str] | None = None,
         parent=None,
     ) -> None:
-        super().__init__(text, theme, bg_key="danger", hover_key="hover", text_color="#ffffff", parent=parent)
+        super().__init__(
+            text, theme, bg_key="danger", hover_key="hover", text_color="#ffffff", parent=parent
+        )
 
 
 class GhostButton(_ThemedButton):

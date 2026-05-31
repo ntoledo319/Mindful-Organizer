@@ -1,6 +1,5 @@
 """Reusable progress bar component."""
 
-
 from PyQt6.QtWidgets import QProgressBar
 
 

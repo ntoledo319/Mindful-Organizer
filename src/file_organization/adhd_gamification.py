@@ -3,6 +3,7 @@ Enhanced gamification system for ADHD-friendly productivity.
 Features levels, XP curves, combos, power-ups, weekly challenges,
 and condition-specific motivational content.
 """
+
 import json
 import random
 from dataclasses import dataclass
@@ -14,32 +15,32 @@ from typing import Any
 # === Level System ===
 
 LEVEL_NAMES = [
-    "Novice Organizer",        # 0
-    "Apprentice Sorter",       # 1
-    "File Wrangler",           # 2
-    "Task Tamer",              # 3
-    "Focus Fighter",           # 4
-    "Productivity Scout",      # 5
-    "Organization Knight",     # 6
-    "Efficiency Warrior",      # 7
-    "Master Planner",          # 8
-    "Mind Marshal",            # 9
-    "Focus Sage",              # 10
-    "Zen Organizer",           # 11
-    "Clarity Champion",        # 12
-    "Mental Architect",        # 13
-    "Mindful Commander",       # 14
-    "Legendary Achiever",      # 15
-    "Transcendent Planner",    # 16
-    "Cosmic Organizer",        # 17
-    "Infinite Focus Master",   # 18
-    "Legendary Mind Master",   # 19
+    "Novice Organizer",  # 0
+    "Apprentice Sorter",  # 1
+    "File Wrangler",  # 2
+    "Task Tamer",  # 3
+    "Focus Fighter",  # 4
+    "Productivity Scout",  # 5
+    "Organization Knight",  # 6
+    "Efficiency Warrior",  # 7
+    "Master Planner",  # 8
+    "Mind Marshal",  # 9
+    "Focus Sage",  # 10
+    "Zen Organizer",  # 11
+    "Clarity Champion",  # 12
+    "Mental Architect",  # 13
+    "Mindful Commander",  # 14
+    "Legendary Achiever",  # 15
+    "Transcendent Planner",  # 16
+    "Cosmic Organizer",  # 17
+    "Infinite Focus Master",  # 18
+    "Legendary Mind Master",  # 19
 ]
 
 
 def xp_for_level(level: int) -> int:
     """XP required to reach a given level (exponential curve)."""
-    return int(100 * (1.5 ** level))
+    return int(100 * (1.5**level))
 
 
 class Achievement(Enum):
@@ -164,17 +165,21 @@ class ADHDGameManager:
             if self.total_xp >= sum(xp_for_level(i) for i in range(self.level + 2)):
                 self.level += 1
                 level_name = LEVEL_NAMES[self.level]
-                result["level_ups"].append({
-                    "new_level": self.level,
-                    "name": level_name,
-                    "message": f"Level Up! You are now a {level_name}!",
-                })
-                self.milestones.append({
-                    "type": "level_up",
-                    "level": self.level,
-                    "name": level_name,
-                    "date": datetime.now().isoformat(),
-                })
+                result["level_ups"].append(
+                    {
+                        "new_level": self.level,
+                        "name": level_name,
+                        "message": f"Level Up! You are now a {level_name}!",
+                    }
+                )
+                self.milestones.append(
+                    {
+                        "type": "level_up",
+                        "level": self.level,
+                        "name": level_name,
+                        "date": datetime.now().isoformat(),
+                    }
+                )
             else:
                 break
 
@@ -188,9 +193,7 @@ class ADHDGameManager:
         # threshold the level-up check crossed to enter L. (The previous code
         # used range(level+1) unconditionally, so level 0's floor was
         # xp_for_level(0) instead of 0, producing a negative progress_percent.)
-        current_threshold = (
-            sum(xp_for_level(i) for i in range(self.level + 1)) if self.level else 0
-        )
+        current_threshold = sum(xp_for_level(i) for i in range(self.level + 1)) if self.level else 0
         next_threshold = sum(xp_for_level(i) for i in range(self.level + 2))
         progress_xp = self.total_xp - current_threshold
         needed_xp = next_threshold - current_threshold
@@ -335,21 +338,25 @@ class ADHDGameManager:
     def _check_achievement(self, category: str, achievement_name: str):
         if achievement_name not in self.achievements:
             self.achievements.add(achievement_name)
-            self.milestones.append({
-                "type": "achievement",
-                "achievement": achievement_name,
-                "date": datetime.now().isoformat(),
-            })
+            self.milestones.append(
+                {
+                    "type": "achievement",
+                    "achievement": achievement_name,
+                    "date": datetime.now().isoformat(),
+                }
+            )
 
     def get_achievements(self) -> list[dict]:
         """Get all achievements with unlock status."""
         all_achievements = []
         for ach in Achievement:
-            all_achievements.append({
-                "name": ach.value,
-                "key": ach.name,
-                "unlocked": ach.name in self.achievements,
-            })
+            all_achievements.append(
+                {
+                    "name": ach.value,
+                    "key": ach.name,
+                    "unlocked": ach.name in self.achievements,
+                }
+            )
         return all_achievements
 
     # === Challenges ===
@@ -357,14 +364,54 @@ class ADHDGameManager:
     def generate_daily_challenges(self) -> list[dict]:
         """Generate daily challenges."""
         challenges = [
-            {"title": "Speed Sort", "description": "Sort 10 files in under 2 minutes", "xp": 50, "icon": "lightning"},
-            {"title": "Folder Focus", "description": "Create and organize a new folder", "xp": 30, "icon": "folder"},
-            {"title": "Clean Sweep", "description": "Remove or archive 5 old files", "xp": 40, "icon": "broom"},
-            {"title": "Task Blitz", "description": "Complete 5 tasks today", "xp": 60, "icon": "target"},
-            {"title": "Mood Check", "description": "Log your mood 3 times today", "xp": 35, "icon": "heart"},
-            {"title": "Breathing Break", "description": "Complete 2 breathing exercises", "xp": 30, "icon": "wind"},
-            {"title": "Journal Time", "description": "Write a journal entry", "xp": 25, "icon": "book"},
-            {"title": "Mindful Minute", "description": "Complete a 5-minute meditation", "xp": 30, "icon": "lotus"},
+            {
+                "title": "Speed Sort",
+                "description": "Sort 10 files in under 2 minutes",
+                "xp": 50,
+                "icon": "lightning",
+            },
+            {
+                "title": "Folder Focus",
+                "description": "Create and organize a new folder",
+                "xp": 30,
+                "icon": "folder",
+            },
+            {
+                "title": "Clean Sweep",
+                "description": "Remove or archive 5 old files",
+                "xp": 40,
+                "icon": "broom",
+            },
+            {
+                "title": "Task Blitz",
+                "description": "Complete 5 tasks today",
+                "xp": 60,
+                "icon": "target",
+            },
+            {
+                "title": "Mood Check",
+                "description": "Log your mood 3 times today",
+                "xp": 35,
+                "icon": "heart",
+            },
+            {
+                "title": "Breathing Break",
+                "description": "Complete 2 breathing exercises",
+                "xp": 30,
+                "icon": "wind",
+            },
+            {
+                "title": "Journal Time",
+                "description": "Write a journal entry",
+                "xp": 25,
+                "icon": "book",
+            },
+            {
+                "title": "Mindful Minute",
+                "description": "Complete a 5-minute meditation",
+                "xp": 30,
+                "icon": "lotus",
+            },
         ]
         rng = random.Random(datetime.now().strftime("%Y%m%d"))
         return rng.sample(challenges, min(3, len(challenges)))
@@ -372,10 +419,30 @@ class ADHDGameManager:
     def generate_weekly_challenges(self) -> list[dict]:
         """Generate weekly challenges."""
         challenges = [
-            {"title": "Consistency Champion", "description": "Complete tasks 5 out of 7 days", "xp": 200, "icon": "trophy"},
-            {"title": "Wellness Week", "description": "Do a wellness activity daily for 7 days", "xp": 250, "icon": "star"},
-            {"title": "Organization Marathon", "description": "Organize 50 files this week", "xp": 150, "icon": "medal"},
-            {"title": "Mood Mapper", "description": "Track mood every day this week", "xp": 175, "icon": "chart"},
+            {
+                "title": "Consistency Champion",
+                "description": "Complete tasks 5 out of 7 days",
+                "xp": 200,
+                "icon": "trophy",
+            },
+            {
+                "title": "Wellness Week",
+                "description": "Do a wellness activity daily for 7 days",
+                "xp": 250,
+                "icon": "star",
+            },
+            {
+                "title": "Organization Marathon",
+                "description": "Organize 50 files this week",
+                "xp": 150,
+                "icon": "medal",
+            },
+            {
+                "title": "Mood Mapper",
+                "description": "Track mood every day this week",
+                "xp": 175,
+                "icon": "chart",
+            },
         ]
         week_num = datetime.now().isocalendar()[1]
         rng = random.Random(week_num)

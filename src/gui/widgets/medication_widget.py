@@ -46,6 +46,7 @@ logger = logging.getLogger(__name__)
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _section_title(text: str) -> QLabel:
     label = QLabel(text)
     label.setFont(QFont("Segoe UI", 14, QFont.Weight.Bold))
@@ -67,6 +68,7 @@ def _accent_button(text: str) -> QPushButton:
 # ---------------------------------------------------------------------------
 # Add/Edit medication dialog
 # ---------------------------------------------------------------------------
+
 
 class _MedicationDialog(QDialog):
     """Dialog for adding or editing a medication."""
@@ -98,9 +100,14 @@ class _MedicationDialog(QDialog):
         # Frequency
         layout.addWidget(_body_label("Frequency:"))
         self._frequency = QComboBox()
-        self._frequency.addItems([
-            "Daily", "Twice daily", "Weekly", "As needed",
-        ])
+        self._frequency.addItems(
+            [
+                "Daily",
+                "Twice daily",
+                "Weekly",
+                "As needed",
+            ]
+        )
         if med and med.get("frequency"):
             idx = self._frequency.findText(med["frequency"])
             if idx >= 0:
@@ -141,6 +148,7 @@ class _MedicationDialog(QDialog):
 # ---------------------------------------------------------------------------
 # Widget
 # ---------------------------------------------------------------------------
+
 
 class MedicationWidget(QWidget):
     """Medication tracking tab with schedule, adherence, and export."""
@@ -304,8 +312,7 @@ class MedicationWidget(QWidget):
         self._late_label = _body_label("Late: 0")
         self._rate_label = _body_label("Adherence rate: --")
 
-        for w in (self._taken_label, self._missed_label,
-                  self._late_label, self._rate_label):
+        for w in (self._taken_label, self._missed_label, self._late_label, self._rate_label):
             layout.addWidget(w)
         parent.addWidget(group)
 
@@ -470,7 +477,8 @@ class MedicationWidget(QWidget):
             return
         name = self._medications[row].get("name", "")
         reply = QMessageBox.question(
-            self, "Remove",
+            self,
+            "Remove",
             f"Remove '{name}'?",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
         )
@@ -484,8 +492,7 @@ class MedicationWidget(QWidget):
 
     def _export_for_doctor(self) -> None:
         path, _ = QFileDialog.getSaveFileName(
-            self, "Export Medication Report",
-            "medication_report.json", "JSON (*.json)"
+            self, "Export Medication Report", "medication_report.json", "JSON (*.json)"
         )
         if not path:
             return

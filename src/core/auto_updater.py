@@ -41,6 +41,7 @@ def _ssl_context():
 
     try:
         import certifi
+
         return ssl.create_default_context(cafile=certifi.where())
     except Exception:
         return ssl.create_default_context()
@@ -85,7 +86,9 @@ class AutoUpdater:
 
     def _save_state(self) -> None:
         try:
-            self._state_file.write_text(json.dumps(self._state, indent=2, default=str), encoding="utf-8")
+            self._state_file.write_text(
+                json.dumps(self._state, indent=2, default=str), encoding="utf-8"
+            )
         except OSError:
             logger.exception("Failed to save update state")
 
@@ -110,7 +113,10 @@ class AutoUpdater:
         try:
             req = urllib.request.Request(
                 url,
-                headers={"Accept": "application/vnd.github.v3+json", "User-Agent": "Mindful-Organizer-Updater"},
+                headers={
+                    "Accept": "application/vnd.github.v3+json",
+                    "User-Agent": "Mindful-Organizer-Updater",
+                },
             )
             with urllib.request.urlopen(req, timeout=15, context=_ssl_context()) as resp:
                 data = json.loads(resp.read().decode("utf-8"))
@@ -131,7 +137,9 @@ class AutoUpdater:
 
         return ReleaseInfo(
             version=version,
-            published_at=datetime.fromisoformat(data.get("published_at", "").replace("Z", "+00:00")),
+            published_at=datetime.fromisoformat(
+                data.get("published_at", "").replace("Z", "+00:00")
+            ),
             release_notes=data.get("body", ""),
             download_url=asset_url,
             asset_name=asset_name,
@@ -192,7 +200,7 @@ class AutoUpdater:
         """Download the update asset to the given directory."""
         if not release.download_url or not release.asset_name:
             return None
-        dest = (dest_dir or self._data_dir / "updates")
+        dest = dest_dir or self._data_dir / "updates"
         dest.mkdir(parents=True, exist_ok=True)
         target = dest / release.asset_name
 

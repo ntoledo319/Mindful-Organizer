@@ -88,9 +88,7 @@ class TestCrisisSignals:
         assert all(s.severity in {"moderate", "urgent"} for s in mood_signals)
         db.close()
 
-    def test_severe_mood_crash_is_urgent_and_surfaces_crisis_line(
-        self, tmp_data_dir: Path
-    ) -> None:
+    def test_severe_mood_crash_is_urgent_and_surfaces_crisis_line(self, tmp_data_dir: Path) -> None:
         db = DatabaseManager(tmp_data_dir / "test.db")
         db.initialize()
         self._insert_moods(db, [2, 9])  # catastrophic 7-point crash to 2/10
@@ -109,8 +107,8 @@ class TestCrisisSignals:
         it — not whichever heuristic happened to append first."""
         db = DatabaseManager(tmp_data_dir / "test.db")
         db.initialize()
-        self._insert_moods(db, [2, 3, 3])          # latest 2/10 -> urgent absolute-low
-        self._insert_sleep(db, [4.0, 4.0, 4.0])    # avg <5h -> moderate mood+sleep
+        self._insert_moods(db, [2, 3, 3])  # latest 2/10 -> urgent absolute-low
+        self._insert_sleep(db, [4.0, 4.0, 4.0])  # avg <5h -> moderate mood+sleep
         orch = WellnessOrchestrator(db)
         signals = orch.detect_crisis_signals(conditions=[])
 
@@ -163,17 +161,30 @@ class TestBriefingAndSummary:
             db.insert(
                 TableName.MOOD_ENTRIES,
                 timestamp=(now - timedelta(days=i)).isoformat(),
-                mood_score=m, energy_level=m, notes="", context="t",
+                mood_score=m,
+                energy_level=m,
+                notes="",
+                context="t",
             )
         for i, h in enumerate([5.0, 4.5, 6.0, 5.5, 5.0, 6.0, 5.0]):
             db.insert(
                 TableName.SLEEP_LOGS,
                 date=(now - timedelta(days=i)).date().isoformat(),
-                duration_hours=h, quality=4, bedtime="00:00", wake_time="06:00",
-                interruptions=1, notes="",
+                duration_hours=h,
+                quality=4,
+                bedtime="00:00",
+                wake_time="06:00",
+                interruptions=1,
+                notes="",
             )
-        db.insert(TableName.TASKS, guid="g1", title="Reply to email",
-                  energy_required=2, completed=0, created_at=now.isoformat())
+        db.insert(
+            TableName.TASKS,
+            guid="g1",
+            title="Reply to email",
+            energy_required=2,
+            completed=0,
+            created_at=now.isoformat(),
+        )
 
     def test_snapshot_reads_latest_values(self, tmp_data_dir: Path) -> None:
         db = DatabaseManager(tmp_data_dir / "t.db")

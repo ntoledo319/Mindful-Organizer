@@ -112,7 +112,9 @@ class UpsellDialog(QDialog):
         layout.addLayout(btn_row)
 
         # Trust footer
-        footer = QLabel("No credit card required for trial. Cancel anytime. All data stays on your device.")
+        footer = QLabel(
+            "No credit card required for trial. Cancel anytime. All data stays on your device."
+        )
         footer.setWordWrap(True)
         footer.setStyleSheet("color: #999; font-size: 11px; padding-top: 8px;")
         layout.addWidget(footer)
@@ -120,9 +122,7 @@ class UpsellDialog(QDialog):
         self._result: str | None = None
 
     def _dialog_stylesheet(self) -> str:
-        return (
-            f"QDialog {{ background-color: {self._theme.get('background', '#ffffff')}; }}"
-        )
+        return f"QDialog {{ background-color: {self._theme.get('background', '#ffffff')}; }}"
 
     def _tier_highlights(self, tier: str) -> list[str]:
         if tier.lower() == "premium":
@@ -141,14 +141,8 @@ class UpsellDialog(QDialog):
 
     def _pricing_text(self, tier: str) -> str:
         if tier.lower() == "premium":
-            return (
-                "<b>Premium</b> — $9.99/month or $79.99/year "
-                "(save 33%)"
-            )
-        return (
-            "<b>Pro</b> — $4.99/month or $39.99/year "
-            "(save 33%)"
-        )
+            return "<b>Premium</b> — $9.99/month or $79.99/year (save 33%)"
+        return "<b>Pro</b> — $4.99/month or $39.99/year (save 33%)"
 
     def _on_trial(self) -> None:
         self._result = "trial"

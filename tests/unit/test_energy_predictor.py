@@ -10,17 +10,18 @@ from datetime import datetime, timedelta
 import pytest
 
 from core.energy_predictor import (
-_HAS_SKLEARN,
-EnergyLevel,
-EnergyPrediction,
-EnergyPredictor,
-TaskEnergyRequirement,
-_energy_to_level,
+    _HAS_SKLEARN,
+    EnergyLevel,
+    EnergyPrediction,
+    EnergyPredictor,
+    TaskEnergyRequirement,
+    _energy_to_level,
 )
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_data_point(hour=10, sleep=7.0, mood=6, **kwargs):
     """Create a single data-point dict."""
@@ -46,17 +47,19 @@ def _generate_training_data(n=30):
         for hour in (9, 14, 20):
             ts = base + timedelta(days=i, hours=hour)
             energy = 70 - abs(hour - 10) * 3 + (i % 5)
-            data.append({
-                "timestamp": ts.isoformat(),
-                "energy_score": max(10, min(95, energy)),
-                "sleep_hours": 6.5 + (i % 3) * 0.5,
-                "sleep_quality": 5 + (i % 4),
-                "mood_score": 5 + (i % 3),
-                "tasks_completed_yesterday": i % 5,
-                "medication_taken": i % 2 == 0,
-                "weather": ["sunny", "cloudy", "rainy"][i % 3],
-                "exercise": i % 3 == 0,
-            })
+            data.append(
+                {
+                    "timestamp": ts.isoformat(),
+                    "energy_score": max(10, min(95, energy)),
+                    "sleep_hours": 6.5 + (i % 3) * 0.5,
+                    "sleep_quality": 5 + (i % 4),
+                    "mood_score": 5 + (i % 3),
+                    "tasks_completed_yesterday": i % 5,
+                    "medication_taken": i % 2 == 0,
+                    "weather": ["sunny", "cloudy", "rainy"][i % 3],
+                    "exercise": i % 3 == 0,
+                }
+            )
     return data
 
 
@@ -64,8 +67,8 @@ def _generate_training_data(n=30):
 # Rule-based prediction
 # ---------------------------------------------------------------------------
 
-class TestRuleBasedPrediction:
 
+class TestRuleBasedPrediction:
     def test_rule_based_with_few_data_points(self, tmp_data_dir):
         """With fewer than 7 data points, predictor uses rule-based engine."""
         predictor = EnergyPredictor(model_dir=tmp_data_dir)
@@ -129,8 +132,8 @@ class TestRuleBasedPrediction:
 # ML prediction (requires sklearn)
 # ---------------------------------------------------------------------------
 
-class TestMLPrediction:
 
+class TestMLPrediction:
     @pytest.mark.skipif(not _HAS_SKLEARN, reason="scikit-learn not installed")
     def test_ml_prediction_with_sufficient_data(self, tmp_data_dir):
         """With enough data, the ML model trains and is used."""
@@ -176,8 +179,8 @@ class TestMLPrediction:
 # Optimal task timing
 # ---------------------------------------------------------------------------
 
-class TestOptimalTaskTiming:
 
+class TestOptimalTaskTiming:
     def test_suggest_task_timing_rule_based(self):
         """Without rest-of-day data, returns default suggestions."""
         predictor = EnergyPredictor()
@@ -210,8 +213,8 @@ class TestOptimalTaskTiming:
 # Model persistence
 # ---------------------------------------------------------------------------
 
-class TestSaveLoadModel:
 
+class TestSaveLoadModel:
     @pytest.mark.skipif(not _HAS_SKLEARN, reason="scikit-learn not installed")
     def test_save_load_model(self, tmp_data_dir):
         """Train, save, and reload the model in a new predictor."""

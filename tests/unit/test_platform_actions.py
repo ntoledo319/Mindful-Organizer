@@ -1,4 +1,5 @@
 """Tests for platform-specific action backends."""
+
 from __future__ import annotations
 
 import platform
@@ -13,6 +14,7 @@ class TestStubBackend:
         """On unsupported platforms the stub must report the action did NOT
         happen (False), not fake success — and log why."""
         import logging
+
         with caplog.at_level(logging.INFO):
             backend = StubBackend()
             result = backend.close_application("TestApp")
@@ -21,6 +23,7 @@ class TestStubBackend:
 
     def test_stub_set_brightness_is_honest_failure(self, caplog):
         import logging
+
         with caplog.at_level(logging.INFO):
             backend = StubBackend()
             result = backend.set_display_brightness(50)

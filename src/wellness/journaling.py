@@ -18,6 +18,7 @@ from core.constants import Condition
 
 class PromptCategory(Enum):
     """Categories of journal prompts."""
+
     GRATITUDE = "gratitude"
     CBT_THOUGHT_RECORD = "cbt_thought_record"
     MOOD_EXPLORATION = "mood_exploration"
@@ -41,6 +42,7 @@ class JournalPrompt:
         follow_up_questions: Additional questions to deepen reflection.
         condition_suitability: Conditions this prompt is designed for.
     """
+
     prompt_id: str
     category: PromptCategory
     text: str
@@ -72,6 +74,7 @@ class JournalEntry:
         tags: User-assigned tags for categorization.
         created_at: Timestamp when entry was created.
     """
+
     entry_id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
     entry_date: str = field(default_factory=lambda: date.today().isoformat())
     prompt_id: str | None = None
@@ -155,261 +158,329 @@ def _build_prompt_library() -> list[JournalPrompt]:
     prompts: list[JournalPrompt] = []
 
     # -- Gratitude --
-    prompts.append(JournalPrompt(
-        prompt_id="grat_01",
-        category=PromptCategory.GRATITUDE,
-        text="Write about three things you are grateful for today, no matter how small.",
-        follow_up_questions=[
-            "Why does each one matter to you?",
-            "How did each of these things make you feel in the moment?",
-            "Is there someone you could thank for one of these things?",
-        ],
-        condition_suitability={Condition.DEPRESSION, Condition.GENERAL, Condition.ANXIETY},
-    ))
-    prompts.append(JournalPrompt(
-        prompt_id="grat_02",
-        category=PromptCategory.GRATITUDE,
-        text="Describe a person in your life you appreciate. What do they bring to your world?",
-        follow_up_questions=[
-            "When was the last time you told them how you feel?",
-            "What specific memory with this person makes you smile?",
-        ],
-        condition_suitability={Condition.DEPRESSION, Condition.GENERAL},
-    ))
+    prompts.append(
+        JournalPrompt(
+            prompt_id="grat_01",
+            category=PromptCategory.GRATITUDE,
+            text="Write about three things you are grateful for today, no matter how small.",
+            follow_up_questions=[
+                "Why does each one matter to you?",
+                "How did each of these things make you feel in the moment?",
+                "Is there someone you could thank for one of these things?",
+            ],
+            condition_suitability={Condition.DEPRESSION, Condition.GENERAL, Condition.ANXIETY},
+        )
+    )
+    prompts.append(
+        JournalPrompt(
+            prompt_id="grat_02",
+            category=PromptCategory.GRATITUDE,
+            text="Describe a person in your life you appreciate. What do they bring to your world?",
+            follow_up_questions=[
+                "When was the last time you told them how you feel?",
+                "What specific memory with this person makes you smile?",
+            ],
+            condition_suitability={Condition.DEPRESSION, Condition.GENERAL},
+        )
+    )
 
     # -- CBT Thought Record --
-    prompts.append(JournalPrompt(
-        prompt_id="cbt_01",
-        category=PromptCategory.CBT_THOUGHT_RECORD,
-        text=(
-            "Identify a situation today that triggered a strong emotion. "
-            "Write the situation, the automatic thought, the emotion and its intensity (0-100), "
-            "then look for evidence for and against the thought."
-        ),
-        follow_up_questions=[
-            "What cognitive distortion might be at play (e.g., catastrophizing, black-and-white thinking)?",
-            "What would you say to a friend who had this thought?",
-            "Can you write a more balanced alternative thought?",
-            "After considering the evidence, how intense is the emotion now (0-100)?",
-        ],
-        condition_suitability={Condition.ANXIETY, Condition.DEPRESSION, Condition.OCD, Condition.GENERAL},
-    ))
-    prompts.append(JournalPrompt(
-        prompt_id="cbt_02",
-        category=PromptCategory.CBT_THOUGHT_RECORD,
-        text="What is a recurring negative thought you have noticed this week? Let's examine it together.",
-        follow_up_questions=[
-            "How often does this thought appear?",
-            "What situations tend to trigger it?",
-            "What evidence supports this thought? What evidence contradicts it?",
-            "Write one compassionate reframe of this thought.",
-        ],
-        condition_suitability={Condition.ANXIETY, Condition.DEPRESSION, Condition.OCD},
-    ))
+    prompts.append(
+        JournalPrompt(
+            prompt_id="cbt_01",
+            category=PromptCategory.CBT_THOUGHT_RECORD,
+            text=(
+                "Identify a situation today that triggered a strong emotion. "
+                "Write the situation, the automatic thought, the emotion and its intensity (0-100), "
+                "then look for evidence for and against the thought."
+            ),
+            follow_up_questions=[
+                "What cognitive distortion might be at play (e.g., catastrophizing, black-and-white thinking)?",
+                "What would you say to a friend who had this thought?",
+                "Can you write a more balanced alternative thought?",
+                "After considering the evidence, how intense is the emotion now (0-100)?",
+            ],
+            condition_suitability={
+                Condition.ANXIETY,
+                Condition.DEPRESSION,
+                Condition.OCD,
+                Condition.GENERAL,
+            },
+        )
+    )
+    prompts.append(
+        JournalPrompt(
+            prompt_id="cbt_02",
+            category=PromptCategory.CBT_THOUGHT_RECORD,
+            text="What is a recurring negative thought you have noticed this week? Let's examine it together.",
+            follow_up_questions=[
+                "How often does this thought appear?",
+                "What situations tend to trigger it?",
+                "What evidence supports this thought? What evidence contradicts it?",
+                "Write one compassionate reframe of this thought.",
+            ],
+            condition_suitability={Condition.ANXIETY, Condition.DEPRESSION, Condition.OCD},
+        )
+    )
 
     # -- Mood Exploration --
-    prompts.append(JournalPrompt(
-        prompt_id="mood_01",
-        category=PromptCategory.MOOD_EXPLORATION,
-        text="How are you feeling right now? Try to name at least three specific emotions.",
-        follow_up_questions=[
-            "Where do you notice each emotion in your body?",
-            "What might have contributed to each feeling?",
-            "Are any of these emotions in conflict with each other?",
-        ],
-        condition_suitability={Condition.GENERAL, Condition.BPD, Condition.DEPRESSION, Condition.ANXIETY},
-    ))
-    prompts.append(JournalPrompt(
-        prompt_id="mood_02",
-        category=PromptCategory.MOOD_EXPLORATION,
-        text="Map your emotional pattern today from morning to now. What changed and why?",
-        follow_up_questions=[
-            "Was there a peak moment, either positive or negative?",
-            "What coping strategies did you use at different points?",
-            "What patterns do you notice in your daily emotional rhythm?",
-        ],
-        condition_suitability={Condition.GENERAL, Condition.BPD, Condition.DEPRESSION},
-    ))
+    prompts.append(
+        JournalPrompt(
+            prompt_id="mood_01",
+            category=PromptCategory.MOOD_EXPLORATION,
+            text="How are you feeling right now? Try to name at least three specific emotions.",
+            follow_up_questions=[
+                "Where do you notice each emotion in your body?",
+                "What might have contributed to each feeling?",
+                "Are any of these emotions in conflict with each other?",
+            ],
+            condition_suitability={
+                Condition.GENERAL,
+                Condition.BPD,
+                Condition.DEPRESSION,
+                Condition.ANXIETY,
+            },
+        )
+    )
+    prompts.append(
+        JournalPrompt(
+            prompt_id="mood_02",
+            category=PromptCategory.MOOD_EXPLORATION,
+            text="Map your emotional pattern today from morning to now. What changed and why?",
+            follow_up_questions=[
+                "Was there a peak moment, either positive or negative?",
+                "What coping strategies did you use at different points?",
+                "What patterns do you notice in your daily emotional rhythm?",
+            ],
+            condition_suitability={Condition.GENERAL, Condition.BPD, Condition.DEPRESSION},
+        )
+    )
 
     # -- Anxiety Challenge --
-    prompts.append(JournalPrompt(
-        prompt_id="anx_01",
-        category=PromptCategory.ANXIETY_CHALLENGE,
-        text="What are you most worried about right now? Write it out in full detail.",
-        follow_up_questions=[
-            "On a scale of 0-100, how likely is this feared outcome?",
-            "What is the worst that could realistically happen?",
-            "What is the most likely outcome?",
-            "If the worst happened, how would you cope?",
-            "What can you control about this situation, and what is outside your control?",
-        ],
-        condition_suitability={Condition.ANXIETY, Condition.PANIC, Condition.OCD, Condition.GENERAL},
-    ))
-    prompts.append(JournalPrompt(
-        prompt_id="anx_02",
-        category=PromptCategory.ANXIETY_CHALLENGE,
-        text="List all the things on your mental 'worry list' right now. Get them all out onto paper.",
-        follow_up_questions=[
-            "Which of these can you take action on today?",
-            "Which are hypothetical and may never happen?",
-            "Can you assign a 'worry time' for the rest and set them aside for now?",
-        ],
-        condition_suitability={Condition.ANXIETY, Condition.GENERAL},
-    ))
+    prompts.append(
+        JournalPrompt(
+            prompt_id="anx_01",
+            category=PromptCategory.ANXIETY_CHALLENGE,
+            text="What are you most worried about right now? Write it out in full detail.",
+            follow_up_questions=[
+                "On a scale of 0-100, how likely is this feared outcome?",
+                "What is the worst that could realistically happen?",
+                "What is the most likely outcome?",
+                "If the worst happened, how would you cope?",
+                "What can you control about this situation, and what is outside your control?",
+            ],
+            condition_suitability={
+                Condition.ANXIETY,
+                Condition.PANIC,
+                Condition.OCD,
+                Condition.GENERAL,
+            },
+        )
+    )
+    prompts.append(
+        JournalPrompt(
+            prompt_id="anx_02",
+            category=PromptCategory.ANXIETY_CHALLENGE,
+            text="List all the things on your mental 'worry list' right now. Get them all out onto paper.",
+            follow_up_questions=[
+                "Which of these can you take action on today?",
+                "Which are hypothetical and may never happen?",
+                "Can you assign a 'worry time' for the rest and set them aside for now?",
+            ],
+            condition_suitability={Condition.ANXIETY, Condition.GENERAL},
+        )
+    )
 
     # -- Depression Activation --
-    prompts.append(JournalPrompt(
-        prompt_id="dep_01",
-        category=PromptCategory.DEPRESSION_ACTIVATION,
-        text=(
-            "Write about one small thing you accomplished today, even if it feels insignificant. "
-            "Getting out of bed counts."
-        ),
-        follow_up_questions=[
-            "What made this accomplishment possible?",
-            "How did you feel while doing it versus before?",
-            "What is one small step you could take tomorrow?",
-        ],
-        condition_suitability={Condition.DEPRESSION, Condition.GENERAL},
-    ))
-    prompts.append(JournalPrompt(
-        prompt_id="dep_02",
-        category=PromptCategory.DEPRESSION_ACTIVATION,
-        text="Plan three activities for tomorrow: one for pleasure, one for mastery, one for connection.",
-        follow_up_questions=[
-            "What barriers might get in the way?",
-            "How can you make each activity as easy as possible to start?",
-            "Who could you reach out to for the connection activity?",
-        ],
-        condition_suitability={Condition.DEPRESSION, Condition.GENERAL},
-    ))
+    prompts.append(
+        JournalPrompt(
+            prompt_id="dep_01",
+            category=PromptCategory.DEPRESSION_ACTIVATION,
+            text=(
+                "Write about one small thing you accomplished today, even if it feels insignificant. "
+                "Getting out of bed counts."
+            ),
+            follow_up_questions=[
+                "What made this accomplishment possible?",
+                "How did you feel while doing it versus before?",
+                "What is one small step you could take tomorrow?",
+            ],
+            condition_suitability={Condition.DEPRESSION, Condition.GENERAL},
+        )
+    )
+    prompts.append(
+        JournalPrompt(
+            prompt_id="dep_02",
+            category=PromptCategory.DEPRESSION_ACTIVATION,
+            text="Plan three activities for tomorrow: one for pleasure, one for mastery, one for connection.",
+            follow_up_questions=[
+                "What barriers might get in the way?",
+                "How can you make each activity as easy as possible to start?",
+                "Who could you reach out to for the connection activity?",
+            ],
+            condition_suitability={Condition.DEPRESSION, Condition.GENERAL},
+        )
+    )
 
     # -- ADHD Reflection --
-    prompts.append(JournalPrompt(
-        prompt_id="adhd_01",
-        category=PromptCategory.ADHD_REFLECTION,
-        text="What captured your attention today? What did you hyperfocus on, and what slipped away?",
-        follow_up_questions=[
-            "Was the hyperfocus on something aligned with your goals?",
-            "What strategies helped you redirect attention when needed?",
-            "What would make tomorrow's focus easier?",
-        ],
-        condition_suitability={Condition.ADHD, Condition.GENERAL},
-    ))
-    prompts.append(JournalPrompt(
-        prompt_id="adhd_02",
-        category=PromptCategory.ADHD_REFLECTION,
-        text="Reflect on your energy levels today. When were you most and least focused?",
-        follow_up_questions=[
-            "What patterns do you notice in your energy throughout the day?",
-            "Are you scheduling demanding tasks during your peak focus times?",
-            "What environment helps you focus best?",
-        ],
-        condition_suitability={Condition.ADHD},
-    ))
+    prompts.append(
+        JournalPrompt(
+            prompt_id="adhd_01",
+            category=PromptCategory.ADHD_REFLECTION,
+            text="What captured your attention today? What did you hyperfocus on, and what slipped away?",
+            follow_up_questions=[
+                "Was the hyperfocus on something aligned with your goals?",
+                "What strategies helped you redirect attention when needed?",
+                "What would make tomorrow's focus easier?",
+            ],
+            condition_suitability={Condition.ADHD, Condition.GENERAL},
+        )
+    )
+    prompts.append(
+        JournalPrompt(
+            prompt_id="adhd_02",
+            category=PromptCategory.ADHD_REFLECTION,
+            text="Reflect on your energy levels today. When were you most and least focused?",
+            follow_up_questions=[
+                "What patterns do you notice in your energy throughout the day?",
+                "Are you scheduling demanding tasks during your peak focus times?",
+                "What environment helps you focus best?",
+            ],
+            condition_suitability={Condition.ADHD},
+        )
+    )
 
     # -- Values Clarification --
-    prompts.append(JournalPrompt(
-        prompt_id="val_01",
-        category=PromptCategory.VALUES_CLARIFICATION,
-        text="What matters most to you in life? List your top five values and reflect on each.",
-        follow_up_questions=[
-            "Are your current daily actions aligned with these values?",
-            "Which value feels most neglected right now?",
-            "What is one change you could make to live more in line with a core value?",
-        ],
-        condition_suitability={Condition.GENERAL, Condition.DEPRESSION, Condition.BPD},
-    ))
-    prompts.append(JournalPrompt(
-        prompt_id="val_02",
-        category=PromptCategory.VALUES_CLARIFICATION,
-        text="Imagine your life five years from now at its best. What does it look like?",
-        follow_up_questions=[
-            "What values are reflected in that vision?",
-            "What is one step you could take this week toward that vision?",
-            "What obstacles do you anticipate, and how might you navigate them?",
-        ],
-        condition_suitability={Condition.GENERAL, Condition.DEPRESSION},
-    ))
+    prompts.append(
+        JournalPrompt(
+            prompt_id="val_01",
+            category=PromptCategory.VALUES_CLARIFICATION,
+            text="What matters most to you in life? List your top five values and reflect on each.",
+            follow_up_questions=[
+                "Are your current daily actions aligned with these values?",
+                "Which value feels most neglected right now?",
+                "What is one change you could make to live more in line with a core value?",
+            ],
+            condition_suitability={Condition.GENERAL, Condition.DEPRESSION, Condition.BPD},
+        )
+    )
+    prompts.append(
+        JournalPrompt(
+            prompt_id="val_02",
+            category=PromptCategory.VALUES_CLARIFICATION,
+            text="Imagine your life five years from now at its best. What does it look like?",
+            follow_up_questions=[
+                "What values are reflected in that vision?",
+                "What is one step you could take this week toward that vision?",
+                "What obstacles do you anticipate, and how might you navigate them?",
+            ],
+            condition_suitability={Condition.GENERAL, Condition.DEPRESSION},
+        )
+    )
 
     # -- Self-Compassion --
-    prompts.append(JournalPrompt(
-        prompt_id="comp_01",
-        category=PromptCategory.SELF_COMPASSION,
-        text="Write a letter to yourself from the perspective of a loving, wise friend.",
-        follow_up_questions=[
-            "What would this friend say about your struggles?",
-            "What strengths would they point out?",
-            "How does it feel to receive these words?",
-        ],
-        condition_suitability={Condition.GENERAL, Condition.DEPRESSION, Condition.ANXIETY, Condition.BPD},
-    ))
-    prompts.append(JournalPrompt(
-        prompt_id="comp_02",
-        category=PromptCategory.SELF_COMPASSION,
-        text="What is something you have been criticizing yourself for? Can you offer yourself understanding instead?",
-        follow_up_questions=[
-            "Is this something you would judge a friend for?",
-            "What circumstances contributed to this situation?",
-            "What do you need right now to feel supported?",
-        ],
-        condition_suitability={Condition.GENERAL, Condition.DEPRESSION, Condition.BPD, Condition.OCD},
-    ))
+    prompts.append(
+        JournalPrompt(
+            prompt_id="comp_01",
+            category=PromptCategory.SELF_COMPASSION,
+            text="Write a letter to yourself from the perspective of a loving, wise friend.",
+            follow_up_questions=[
+                "What would this friend say about your struggles?",
+                "What strengths would they point out?",
+                "How does it feel to receive these words?",
+            ],
+            condition_suitability={
+                Condition.GENERAL,
+                Condition.DEPRESSION,
+                Condition.ANXIETY,
+                Condition.BPD,
+            },
+        )
+    )
+    prompts.append(
+        JournalPrompt(
+            prompt_id="comp_02",
+            category=PromptCategory.SELF_COMPASSION,
+            text="What is something you have been criticizing yourself for? Can you offer yourself understanding instead?",
+            follow_up_questions=[
+                "Is this something you would judge a friend for?",
+                "What circumstances contributed to this situation?",
+                "What do you need right now to feel supported?",
+            ],
+            condition_suitability={
+                Condition.GENERAL,
+                Condition.DEPRESSION,
+                Condition.BPD,
+                Condition.OCD,
+            },
+        )
+    )
 
     # -- Daily Review --
-    prompts.append(JournalPrompt(
-        prompt_id="daily_01",
-        category=PromptCategory.DAILY_REVIEW,
-        text="Briefly review your day. What went well, what was challenging, and what did you learn?",
-        follow_up_questions=[
-            "What are you proud of today?",
-            "What would you do differently?",
-            "What are you looking forward to tomorrow?",
-        ],
-        condition_suitability={Condition.GENERAL, Condition.ADHD, Condition.DEPRESSION},
-    ))
-    prompts.append(JournalPrompt(
-        prompt_id="daily_02",
-        category=PromptCategory.DAILY_REVIEW,
-        text="Rate your day from 1-10 and explain why you chose that number.",
-        follow_up_questions=[
-            "What would have made it one point higher?",
-            "Did anything surprise you today?",
-            "How did you take care of yourself today?",
-        ],
-        condition_suitability={Condition.GENERAL},
-    ))
+    prompts.append(
+        JournalPrompt(
+            prompt_id="daily_01",
+            category=PromptCategory.DAILY_REVIEW,
+            text="Briefly review your day. What went well, what was challenging, and what did you learn?",
+            follow_up_questions=[
+                "What are you proud of today?",
+                "What would you do differently?",
+                "What are you looking forward to tomorrow?",
+            ],
+            condition_suitability={Condition.GENERAL, Condition.ADHD, Condition.DEPRESSION},
+        )
+    )
+    prompts.append(
+        JournalPrompt(
+            prompt_id="daily_02",
+            category=PromptCategory.DAILY_REVIEW,
+            text="Rate your day from 1-10 and explain why you chose that number.",
+            follow_up_questions=[
+                "What would have made it one point higher?",
+                "Did anything surprise you today?",
+                "How did you take care of yourself today?",
+            ],
+            condition_suitability={Condition.GENERAL},
+        )
+    )
 
     # -- Crisis Processing --
-    prompts.append(JournalPrompt(
-        prompt_id="crisis_01",
-        category=PromptCategory.CRISIS_PROCESSING,
-        text=(
-            "You are safe now. Write about what happened, only as much as feels manageable. "
-            "You can stop at any time."
-        ),
-        follow_up_questions=[
-            "What helped you get through it?",
-            "What do you need right now?",
-            "Who can you reach out to for support?",
-            "What would you tell someone else who went through the same thing?",
-        ],
-        condition_suitability={
-            Condition.PTSD, Condition.BPD, Condition.ANXIETY,
-            Condition.DEPRESSION, Condition.GENERAL,
-        },
-    ))
-    prompts.append(JournalPrompt(
-        prompt_id="crisis_02",
-        category=PromptCategory.CRISIS_PROCESSING,
-        text="Write about the coping strategies you used during a recent difficult moment. Which ones helped?",
-        follow_up_questions=[
-            "Are there strategies you wish you had tried?",
-            "How did your body feel during and after the crisis?",
-            "What early warning signs can you watch for next time?",
-        ],
-        condition_suitability={Condition.GENERAL, Condition.PTSD, Condition.BPD},
-    ))
+    prompts.append(
+        JournalPrompt(
+            prompt_id="crisis_01",
+            category=PromptCategory.CRISIS_PROCESSING,
+            text=(
+                "You are safe now. Write about what happened, only as much as feels manageable. "
+                "You can stop at any time."
+            ),
+            follow_up_questions=[
+                "What helped you get through it?",
+                "What do you need right now?",
+                "Who can you reach out to for support?",
+                "What would you tell someone else who went through the same thing?",
+            ],
+            condition_suitability={
+                Condition.PTSD,
+                Condition.BPD,
+                Condition.ANXIETY,
+                Condition.DEPRESSION,
+                Condition.GENERAL,
+            },
+        )
+    )
+    prompts.append(
+        JournalPrompt(
+            prompt_id="crisis_02",
+            category=PromptCategory.CRISIS_PROCESSING,
+            text="Write about the coping strategies you used during a recent difficult moment. Which ones helped?",
+            follow_up_questions=[
+                "Are there strategies you wish you had tried?",
+                "How did your body feel during and after the crisis?",
+                "What early warning signs can you watch for next time?",
+            ],
+            condition_suitability={Condition.GENERAL, Condition.PTSD, Condition.BPD},
+        )
+    )
 
     return prompts
 
@@ -524,14 +595,10 @@ class JournalingManager:
                         PromptCategory.MOOD_EXPLORATION,
                     ):
                         score += 15
-                elif (
-                    mood >= 7
-                    and prompt.category
-                    in (
-                        PromptCategory.VALUES_CLARIFICATION,
-                        PromptCategory.DAILY_REVIEW,
-                        PromptCategory.GRATITUDE,
-                    )
+                elif mood >= 7 and prompt.category in (
+                    PromptCategory.VALUES_CLARIFICATION,
+                    PromptCategory.DAILY_REVIEW,
+                    PromptCategory.GRATITUDE,
                 ):
                     score += 10
 
@@ -542,16 +609,12 @@ class JournalingManager:
                 score += 10
 
             # ADHD-specific boost
-            if (
-                Condition.ADHD in conditions
-                and prompt.category == PromptCategory.ADHD_REFLECTION
-            ):
+            if Condition.ADHD in conditions and prompt.category == PromptCategory.ADHD_REFLECTION:
                 score += 10
 
             # Avoid recently used prompts
             recent_prompt_ids = {
-                e.prompt_id for e in self._entries[-10:]
-                if e.prompt_id is not None
+                e.prompt_id for e in self._entries[-10:] if e.prompt_id is not None
             }
             if prompt.prompt_id in recent_prompt_ids:
                 score -= 20
@@ -794,14 +857,8 @@ class JournalingManager:
         avg_words = total_words / len(self._entries)
 
         # Mood improvement
-        improvements = [
-            e.mood_improvement for e in self._entries
-            if e.mood_improvement is not None
-        ]
-        avg_improvement = (
-            round(sum(improvements) / len(improvements), 2)
-            if improvements else None
-        )
+        improvements = [e.mood_improvement for e in self._entries if e.mood_improvement is not None]
+        avg_improvement = round(sum(improvements) / len(improvements), 2) if improvements else None
 
         # Entries by prompt category
         category_counts: dict[str, int] = {}

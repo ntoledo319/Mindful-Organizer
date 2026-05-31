@@ -28,6 +28,7 @@ DATA_DIR = get_data_dir(create=False)
 # Enums & data classes
 # ---------------------------------------------------------------------------
 
+
 class ExportFormat(Enum):
     JSON = "json"
     CSV = "csv"
@@ -51,6 +52,7 @@ class DataCategory(Enum):
 @dataclass
 class ExportOptions:
     """Controls what gets exported and how."""
+
     format: ExportFormat = ExportFormat.JSON
     categories: list[DataCategory] = field(default_factory=lambda: list(DataCategory))
     start_date: date | None = None
@@ -71,6 +73,7 @@ class ExportOptions:
 @dataclass
 class ImportValidation:
     """Result of validating an import file before applying."""
+
     is_valid: bool = False
     errors: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
@@ -89,12 +92,17 @@ class WellnessReportSection:
 # Anonymizer
 # ---------------------------------------------------------------------------
 
+
 class _Anonymizer:
     """Strips or hashes personally identifiable information."""
 
     _SENSITIVE_KEYS = {
-        "prescriber", "support_contacts", "professional_contacts",
-        "emergency_numbers", "personal_notes", "dreams",
+        "prescriber",
+        "support_contacts",
+        "professional_contacts",
+        "emergency_numbers",
+        "personal_notes",
+        "dreams",
     }
     _NAME_LIKE_KEYS = {"medication_name", "name", "title"}
 
@@ -124,6 +132,7 @@ class _Anonymizer:
 # ---------------------------------------------------------------------------
 # ExportManager
 # ---------------------------------------------------------------------------
+
 
 class ExportManager:
     """Handles data export, import, and wellness report generation.
@@ -249,9 +258,13 @@ class ExportManager:
         return payload
 
     def _export_json(
-        self, data: dict[str, Any], output: Path, options: ExportOptions,
+        self,
+        data: dict[str, Any],
+        output: Path,
+        options: ExportOptions,
     ) -> Path:
         from core.database import CURRENT_SCHEMA_VERSION
+
         data["schema_version"] = CURRENT_SCHEMA_VERSION
         output.write_text(json.dumps(data, indent=2, default=str), encoding="utf-8")
         logger.info("Exported JSON to %s", output)
@@ -321,9 +334,7 @@ class ExportManager:
         except ImportError:
             txt_output = output.with_suffix(".txt")
             txt_output.write_text(text, encoding="utf-8")
-            logger.info(
-                "reportlab not installed; exported text report to %s", txt_output
-            )
+            logger.info("reportlab not installed; exported text report to %s", txt_output)
             return txt_output
 
     # ------------------------------------------------------------------
@@ -358,11 +369,15 @@ class ExportManager:
         # Schema version
         validation.schema_version = data.get("schema_version")
         from core.database import CURRENT_SCHEMA_VERSION
-        if validation.schema_version is not None and validation.schema_version > CURRENT_SCHEMA_VERSION:
-                validation.errors.append(
-                    f"Import schema version {validation.schema_version} is newer "
-                    f"than current {CURRENT_SCHEMA_VERSION}"
-                )
+
+        if (
+            validation.schema_version is not None
+            and validation.schema_version > CURRENT_SCHEMA_VERSION
+        ):
+            validation.errors.append(
+                f"Import schema version {validation.schema_version} is newer "
+                f"than current {CURRENT_SCHEMA_VERSION}"
+            )
 
         valid_tables = {cat.value for cat in DataCategory}
 
@@ -379,15 +394,11 @@ class ExportManager:
             # Spot-check each row is a dict
             for i, row in enumerate(rows):
                 if not isinstance(row, dict):
-                    validation.errors.append(
-                        f"'{key}' row {i} is not a dict"
-                    )
+                    validation.errors.append(f"'{key}' row {i} is not a dict")
                     break
 
         if data.get("anonymized"):
-            validation.warnings.append(
-                "This export was anonymized; some data has been redacted"
-            )
+            validation.warnings.append("This export was anonymized; some data has been redacted")
 
         validation.is_valid = len(validation.errors) == 0
         return validation
@@ -413,9 +424,7 @@ class ExportManager:
         if validate_first:
             validation = self.validate_import(file_path)
             if not validation.is_valid:
-                raise ValueError(
-                    "Import validation failed:\n" + "\n".join(validation.errors)
-                )
+                raise ValueError("Import validation failed:\n" + "\n".join(validation.errors))
 
         data = json.loads(file_path.read_text(encoding="utf-8"))
         from core.database import TableName
@@ -460,6 +469,7 @@ class ExportManager:
     def export_settings(self, output_path: Path | None = None) -> Path:
         """Export all settings to a JSON file."""
         from core.database import TableName
+
         result = self._db.query(TableName.SETTINGS)
         settings = {row["key"]: row["value"] for row in result.rows}
         categories = {row["key"]: row.get("category", "general") for row in result.rows}
@@ -508,14 +518,16 @@ class ExportManager:
         sections: list[WellnessReportSection] = []
 
         # -- Header --
-        sections.append(WellnessReportSection(
-            title="Report Overview",
-            content=(
-                f"Wellness summary for the period {start.isoformat()} to "
-                f"{end.isoformat()} ({days} days)."
-            ),
-            data={"start_date": start.isoformat(), "end_date": end.isoformat()},
-        ))
+        sections.append(
+            WellnessReportSection(
+                title="Report Overview",
+                content=(
+                    f"Wellness summary for the period {start.isoformat()} to "
+                    f"{end.isoformat()} ({days} days)."
+                ),
+                data={"start_date": start.isoformat(), "end_date": end.isoformat()},
+            )
+        )
 
         # -- Mood trends --
         mood_rows = self._fetch_table("mood_entries", start, end)
@@ -541,27 +553,23 @@ class ExportManager:
                     f"(range {mood_data['mood_range'][0]}-{mood_data['mood_range'][1]})."
                 )
             if anxiety:
-                summary_parts.append(
-                    f"Average anxiety: {mood_data['mean_anxiety']}/10."
-                )
+                summary_parts.append(f"Average anxiety: {mood_data['mean_anxiety']}/10.")
 
-            sections.append(WellnessReportSection(
-                title="Mood Trends",
-                content=" ".join(summary_parts),
-                data=mood_data,
-            ))
+            sections.append(
+                WellnessReportSection(
+                    title="Mood Trends",
+                    content=" ".join(summary_parts),
+                    data=mood_data,
+                )
+            )
 
         # -- Sleep patterns --
         sleep_rows = self._fetch_table("sleep_logs", start, end)
         if sleep_rows:
             durations = [
-                r["duration_hours"] for r in sleep_rows
-                if r.get("duration_hours") is not None
+                r["duration_hours"] for r in sleep_rows if r.get("duration_hours") is not None
             ]
-            qualities = [
-                r["quality"] for r in sleep_rows
-                if r.get("quality") is not None
-            ]
+            qualities = [r["quality"] for r in sleep_rows if r.get("quality") is not None]
             sleep_data: dict[str, Any] = {"total_entries": len(sleep_rows)}
             if durations:
                 sleep_data["mean_duration_hours"] = round(statistics.mean(durations), 2)
@@ -575,11 +583,13 @@ class ExportManager:
             if qualities:
                 parts.append(f"Average quality: {sleep_data['mean_quality']}/10.")
 
-            sections.append(WellnessReportSection(
-                title="Sleep Patterns",
-                content=" ".join(parts),
-                data=sleep_data,
-            ))
+            sections.append(
+                WellnessReportSection(
+                    title="Sleep Patterns",
+                    content=" ".join(parts),
+                    data=sleep_data,
+                )
+            )
 
         # -- Medication adherence --
         med_rows = self._fetch_table("medication_logs", start, end)
@@ -611,14 +621,16 @@ class ExportManager:
                     by_med[name][status] += 1
             med_data["by_medication"] = by_med
 
-            sections.append(WellnessReportSection(
-                title="Medication Adherence",
-                content=(
-                    f"Overall adherence: {adherence_pct}% "
-                    f"({taken} taken, {missed} missed, {late} late out of {total})."
-                ),
-                data=med_data,
-            ))
+            sections.append(
+                WellnessReportSection(
+                    title="Medication Adherence",
+                    content=(
+                        f"Overall adherence: {adherence_pct}% "
+                        f"({taken} taken, {missed} missed, {late} late out of {total})."
+                    ),
+                    data=med_data,
+                )
+            )
 
         # -- Breathing / coping --
         breath_rows = self._fetch_table("breathing_sessions", start, end)
@@ -633,49 +645,52 @@ class ExportManager:
             parts = [f"Total breathing sessions: {len(breath_rows)}."]
             if breath_data.get("mean_anxiety_reduction") is not None:
                 parts.append(
-                    f"Average anxiety reduction: "
-                    f"{breath_data['mean_anxiety_reduction']} points."
+                    f"Average anxiety reduction: {breath_data['mean_anxiety_reduction']} points."
                 )
-            sections.append(WellnessReportSection(
-                title="Coping Activities (Breathing)",
-                content=" ".join(parts),
-                data=breath_data,
-            ))
+            sections.append(
+                WellnessReportSection(
+                    title="Coping Activities (Breathing)",
+                    content=" ".join(parts),
+                    data=breath_data,
+                )
+            )
 
         # -- Energy --
         energy_rows = self._fetch_table("energy_readings", start, end)
         if energy_rows:
-            levels = [
-                r["energy_level"] for r in energy_rows
-                if r.get("energy_level") is not None
-            ]
+            levels = [r["energy_level"] for r in energy_rows if r.get("energy_level") is not None]
             energy_data: dict[str, Any] = {"total_entries": len(energy_rows)}
             if levels:
                 energy_data["mean_energy"] = round(statistics.mean(levels), 2)
                 energy_data["energy_range"] = [min(levels), max(levels)]
-            sections.append(WellnessReportSection(
-                title="Energy Trends",
-                content=(
-                    f"Total energy readings: {len(energy_rows)}. "
-                    f"Average energy: {energy_data.get('mean_energy', 'N/A')}/10."
-                ),
-                data=energy_data,
-            ))
+            sections.append(
+                WellnessReportSection(
+                    title="Energy Trends",
+                    content=(
+                        f"Total energy readings: {len(energy_rows)}. "
+                        f"Average energy: {energy_data.get('mean_energy', 'N/A')}/10."
+                    ),
+                    data=energy_data,
+                )
+            )
 
         # -- Disclaimer --
-        sections.append(WellnessReportSection(
-            title="Disclaimer",
-            content=(
-                "This report is auto-generated from self-reported data and is "
-                "intended for personal reflection only. It "
-                "does not constitute a diagnosis or medical advice."
-            ),
-        ))
+        sections.append(
+            WellnessReportSection(
+                title="Disclaimer",
+                content=(
+                    "This report is auto-generated from self-reported data and is "
+                    "intended for personal reflection only. It "
+                    "does not constitute a diagnosis or medical advice."
+                ),
+            )
+        )
 
         return sections
 
     def wellness_report_to_text(
-        self, sections: list[WellnessReportSection],
+        self,
+        sections: list[WellnessReportSection],
     ) -> str:
         """Render wellness report sections to a plain-text string."""
         lines: list[str] = []

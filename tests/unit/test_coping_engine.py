@@ -17,8 +17,8 @@ from wellness.coping_engine import (
 # Recommendation logic
 # ---------------------------------------------------------------------------
 
-class TestGetRecommendations:
 
+class TestGetRecommendations:
     def test_returns_ranked_strategies(self, tmp_data_dir):
         engine = CopingEngine(tmp_data_dir)
         recs = engine.get_recommendations()
@@ -52,8 +52,7 @@ class TestGetRecommendations:
             for r in engine.get_recommendations(conditions={"adhd"}, time_available=60)
         }
         without = {
-            r["strategy"]["id"]: r["score"]
-            for r in engine.get_recommendations(time_available=60)
+            r["strategy"]["id"]: r["score"] for r in engine.get_recommendations(time_available=60)
         }
 
         common = set(with_adhd) & set(without)
@@ -75,8 +74,8 @@ class TestGetRecommendations:
 # Emergency mode
 # ---------------------------------------------------------------------------
 
-class TestEmergencyStrategies:
 
+class TestEmergencyStrategies:
     def test_emergency_strategies_are_all_crisis_appropriate(self, tmp_data_dir):
         engine = CopingEngine(tmp_data_dir)
         recs = engine.get_emergency_strategies()
@@ -108,8 +107,8 @@ class TestEmergencyStrategies:
 # Feedback learning and persistence
 # ---------------------------------------------------------------------------
 
-class TestFeedbackLearning:
 
+class TestFeedbackLearning:
     def test_positive_feedback_raises_a_strategy_score(self, tmp_data_dir):
         engine = CopingEngine(tmp_data_dir)
 
@@ -157,8 +156,8 @@ class TestFeedbackLearning:
 # Library access
 # ---------------------------------------------------------------------------
 
-class TestStrategyLibrary:
 
+class TestStrategyLibrary:
     def test_library_is_populated(self, tmp_data_dir):
         engine = CopingEngine(tmp_data_dir)
         all_strategies = engine.get_all_strategies()

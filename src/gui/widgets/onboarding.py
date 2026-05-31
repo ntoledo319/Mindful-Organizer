@@ -36,6 +36,7 @@ logger = logging.getLogger(__name__)
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _body_label(text: str, size: int = 12) -> QLabel:
     label = QLabel(text)
     label.setFont(QFont("Segoe UI", size))
@@ -122,6 +123,7 @@ _THERAPY_INFO: dict[str, str] = {
 # Wizard
 # ---------------------------------------------------------------------------
 
+
 class OnboardingWizard(QDialog):
     """Multi-page onboarding wizard (6 pages)."""
 
@@ -176,12 +178,12 @@ class OnboardingWizard(QDialog):
 
         # Stacked pages
         self._stack = QStackedWidget()
-        self._stack.addWidget(self._page_welcome())       # 0
-        self._stack.addWidget(self._page_name())           # 1
-        self._stack.addWidget(self._page_conditions())     # 2
-        self._stack.addWidget(self._page_therapy())        # 3
-        self._stack.addWidget(self._page_theme())          # 4
-        self._stack.addWidget(self._page_summary())        # 5
+        self._stack.addWidget(self._page_welcome())  # 0
+        self._stack.addWidget(self._page_name())  # 1
+        self._stack.addWidget(self._page_conditions())  # 2
+        self._stack.addWidget(self._page_therapy())  # 3
+        self._stack.addWidget(self._page_theme())  # 4
+        self._stack.addWidget(self._page_summary())  # 5
         root.addWidget(self._stack, stretch=1)
 
         # Navigation buttons
@@ -391,9 +393,11 @@ class OnboardingWizard(QDialog):
         layout.setSpacing(12)
 
         layout.addWidget(_title_label("Conditions"))
-        layout.addWidget(_body_label(
-            "Select any conditions that apply. This helps us tailor the experience.",
-        ))
+        layout.addWidget(
+            _body_label(
+                "Select any conditions that apply. This helps us tailor the experience.",
+            )
+        )
 
         self._condition_checks: dict[str, QCheckBox] = {}
         for name, description in _CONDITION_INFO.items():
@@ -418,9 +422,11 @@ class OnboardingWizard(QDialog):
         layout.setSpacing(12)
 
         layout.addWidget(_title_label("Therapy Types"))
-        layout.addWidget(_body_label(
-            "Select therapy approaches you use or are interested in.",
-        ))
+        layout.addWidget(
+            _body_label(
+                "Select therapy approaches you use or are interested in.",
+            )
+        )
 
         self._therapy_checks: dict[str, QCheckBox] = {}
         for name, description in _THERAPY_INFO.items():
@@ -455,6 +461,7 @@ class OnboardingWizard(QDialog):
         # Populate from ThemeManager if available
         try:
             from gui.themes import THEMES
+
             for name, theme in THEMES.items():
                 self._theme_combo.addItem(f"{theme.display_name} - {theme.description}", name)
         except (ImportError, AttributeError):
@@ -481,6 +488,7 @@ class OnboardingWizard(QDialog):
         theme_name = self._theme_combo.itemData(index) if isinstance(index, int) else index
         try:
             from gui.themes import THEMES
+
             theme = THEMES.get(theme_name)
             if theme:
                 self._theme_preview.setStyleSheet(
@@ -506,17 +514,23 @@ class OnboardingWizard(QDialog):
         self._summary_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self._summary_label)
 
-        layout.addWidget(_body_label(
-            "You can change these settings later.",
-            12,
-        ))
+        layout.addWidget(
+            _body_label(
+                "You can change these settings later.",
+                12,
+            )
+        )
         layout.addStretch()
         return page
 
     def _refresh_summary(self) -> None:
         self._collect_page_data()
         d = self._data
-        theme_display = self._theme_combo.currentText() if hasattr(self, "_theme_combo") else d.get("theme", "Ember")
+        theme_display = (
+            self._theme_combo.currentText()
+            if hasattr(self, "_theme_combo")
+            else d.get("theme", "Ember")
+        )
         lines = [
             f"Name: {d.get('name') or 'Not set'}",
             f"Conditions: {', '.join(d.get('conditions', [])) or 'None selected'}",

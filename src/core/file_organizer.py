@@ -3,6 +3,7 @@ Enhanced file organization and management system with dry-run,
 undo, duplicate detection, watch folders, custom rules, batch rename,
 recency scoring, and archive support.
 """
+
 import hashlib
 import json
 import logging
@@ -23,31 +24,78 @@ class FileOrganizer:
     # Expanded file categories (30+ extensions)
     DEFAULT_CATEGORIES = {
         "documents": [
-            ".pdf", ".doc", ".docx", ".txt", ".rtf", ".odt", ".pages",
-            ".tex", ".md", ".epub",
+            ".pdf",
+            ".doc",
+            ".docx",
+            ".txt",
+            ".rtf",
+            ".odt",
+            ".pages",
+            ".tex",
+            ".md",
+            ".epub",
         ],
         "spreadsheets": [".xls", ".xlsx", ".csv", ".ods", ".numbers"],
         "presentations": [".ppt", ".pptx", ".key", ".odp"],
         "images": [
-            ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".svg", ".webp",
-            ".tiff", ".ico", ".heic", ".raw",
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".gif",
+            ".bmp",
+            ".svg",
+            ".webp",
+            ".tiff",
+            ".ico",
+            ".heic",
+            ".raw",
         ],
         "audio": [
-            ".mp3", ".wav", ".flac", ".aac", ".ogg", ".wma", ".m4a",
+            ".mp3",
+            ".wav",
+            ".flac",
+            ".aac",
+            ".ogg",
+            ".wma",
+            ".m4a",
             ".aiff",
         ],
         "video": [
-            ".mp4", ".avi", ".mov", ".mkv", ".wmv", ".flv", ".webm",
+            ".mp4",
+            ".avi",
+            ".mov",
+            ".mkv",
+            ".wmv",
+            ".flv",
+            ".webm",
             ".m4v",
         ],
         "code": [
-            ".py", ".js", ".ts", ".html", ".css", ".java", ".cpp", ".c",
-            ".h", ".go", ".rs", ".rb", ".php", ".swift",
+            ".py",
+            ".js",
+            ".ts",
+            ".html",
+            ".css",
+            ".java",
+            ".cpp",
+            ".c",
+            ".h",
+            ".go",
+            ".rs",
+            ".rb",
+            ".php",
+            ".swift",
         ],
         "archives": [".zip", ".rar", ".7z", ".tar", ".gz", ".bz2"],
         "design": [".psd", ".ai", ".sketch", ".fig", ".xd", ".indd"],
         "data": [
-            ".json", ".xml", ".yaml", ".yml", ".toml", ".sql", ".db",
+            ".json",
+            ".xml",
+            ".yaml",
+            ".yml",
+            ".toml",
+            ".sql",
+            ".db",
             ".sqlite",
         ],
         "fonts": [".ttf", ".otf", ".woff", ".woff2"],
@@ -161,9 +209,7 @@ class FileOrganizer:
                 try:
                     category = self._get_file_category(file_path)
                     if category:
-                        new_path = self._get_organized_path(
-                            file_path, target_dir, category
-                        )
+                        new_path = self._get_organized_path(file_path, target_dir, category)
                         action = {
                             "source": str(file_path),
                             "destination": str(new_path),
@@ -187,9 +233,7 @@ class FileOrganizer:
 
         return summary
 
-    def dry_run(
-        self, source_dir: Path, target_dir: Path | None = None
-    ) -> dict:
+    def dry_run(self, source_dir: Path, target_dir: Path | None = None) -> dict:
         """Preview organization without moving files.
 
         Returns the same summary structure as organize_files but with
@@ -280,9 +324,7 @@ class FileOrganizer:
                 return False
         return False
 
-    def _get_organized_path(
-        self, file_path: Path, target_dir: Path, category: str
-    ) -> Path:
+    def _get_organized_path(self, file_path: Path, target_dir: Path, category: str) -> Path:
         """Generate the organized destination path for a file."""
         date_str = datetime.now().strftime("%Y-%m-%d")
         return target_dir / category / f"{date_str}_{file_path.name}"
@@ -484,13 +526,9 @@ class FileOrganizer:
                             category = self._get_file_category(fp)
                             if category:
                                 dest_dir = target_dir or (directory / "organized")
-                                new_path = self._get_organized_path(
-                                    fp, dest_dir, category
-                                )
+                                new_path = self._get_organized_path(fp, dest_dir, category)
                                 try:
-                                    new_path.parent.mkdir(
-                                        parents=True, exist_ok=True
-                                    )
+                                    new_path.parent.mkdir(parents=True, exist_ok=True)
                                     shutil.move(str(fp), str(new_path))
                                     self._record_action(fp, new_path, "watch_move")
                                     if callback:
@@ -506,9 +544,7 @@ class FileOrganizer:
                                     logger.exception("Watch folder move failed")
                 self._watch_stop_event.wait(poll_interval)
 
-        self._watch_thread = threading.Thread(
-            target=_watch_loop, daemon=True, name="file-watcher"
-        )
+        self._watch_thread = threading.Thread(target=_watch_loop, daemon=True, name="file-watcher")
         self._watch_thread.start()
 
     def stop_watching(self) -> None:
@@ -520,10 +556,7 @@ class FileOrganizer:
 
     @property
     def is_watching(self) -> bool:
-        return (
-            self._watch_thread is not None
-            and self._watch_thread.is_alive()
-        )
+        return self._watch_thread is not None and self._watch_thread.is_alive()
 
     # ── Recency Scoring ───────────────────────────────────────────
 
@@ -546,16 +579,12 @@ class FileOrganizer:
                 most_recent = max(last_access, last_modify)
                 age_days = (now - most_recent) / _SECONDS_PER_DAY
                 # Exponential decay: score 100 for today, ~37 after 30 days
-                score = max(0.0, 100.0 * (0.97 ** age_days))
+                score = max(0.0, 100.0 * (0.97**age_days))
                 scored.append(
                     {
                         "path": str(fp),
-                        "last_accessed": datetime.fromtimestamp(
-                            last_access
-                        ).isoformat(),
-                        "last_modified": datetime.fromtimestamp(
-                            last_modify
-                        ).isoformat(),
+                        "last_accessed": datetime.fromtimestamp(last_access).isoformat(),
+                        "last_modified": datetime.fromtimestamp(last_modify).isoformat(),
                         "age_days": round(age_days, 1),
                         "recency_score": round(score, 1),
                     }
@@ -593,9 +622,7 @@ class FileOrganizer:
                 try:
                     if fp.stat().st_mtime < cutoff:
                         dest = archive_dir / fp.name
-                        result["files"].append(
-                            {"source": str(fp), "destination": str(dest)}
-                        )
+                        result["files"].append({"source": str(fp), "destination": str(dest)})
                         if not dry_run:
                             archive_dir.mkdir(exist_ok=True)
                             shutil.move(str(fp), str(dest))
@@ -656,12 +683,8 @@ class FileOrganizer:
 
             stats["total_files"] += 1
             stats["total_size_bytes"] += size
-            stats["by_category"][category] = (
-                stats["by_category"].get(category, 0) + 1
-            )
-            stats["by_extension"][ext] = (
-                stats["by_extension"].get(ext, 0) + 1
-            )
+            stats["by_category"][category] = stats["by_category"].get(category, 0) + 1
+            stats["by_extension"][ext] = stats["by_extension"].get(ext, 0) + 1
 
             # Size distribution
             if size < 1024:
@@ -688,9 +711,7 @@ class FileOrganizer:
             else:
                 stats["age_distribution"]["older"] += 1
 
-            files_info.append(
-                {"path": str(fp), "size": size, "modified": mtime}
-            )
+            files_info.append({"path": str(fp), "size": size, "modified": mtime})
 
         # Top 5 largest
         files_info.sort(key=lambda x: x["size"], reverse=True)
@@ -762,9 +783,7 @@ class FileOrganizer:
     def setup_folder_structure(self) -> None:
         """Create the default category folder structure."""
         for category in self.config.get("categories", self.DEFAULT_CATEGORIES):
-            (self.data_dir / "files" / category).mkdir(
-                parents=True, exist_ok=True
-            )
+            (self.data_dir / "files" / category).mkdir(parents=True, exist_ok=True)
 
     def create_backup(self) -> None:
         """Create a backup of the file organizer configuration."""
@@ -776,7 +795,5 @@ class FileOrganizer:
             "rules": self.custom_rules,
             "timestamp": timestamp,
         }
-        with open(
-            backup_dir / f"file_org_backup_{timestamp}.json", "w"
-        ) as f:
+        with open(backup_dir / f"file_org_backup_{timestamp}.json", "w") as f:
             json.dump(backup, f, indent=2)

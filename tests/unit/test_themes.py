@@ -23,14 +23,26 @@ def tm():
 # All themes valid
 # ---------------------------------------------------------------------------
 
-class TestAllThemesValid:
 
+class TestAllThemesValid:
     def test_all_themes_have_required_fields(self):
         required = {
-            "background", "text", "accent", "secondary", "success",
-            "warning", "danger", "card_bg", "border", "hover",
-            "disabled", "input_bg", "tab_active", "tab_inactive",
-            "scrollbar", "shadow",
+            "background",
+            "text",
+            "accent",
+            "secondary",
+            "success",
+            "warning",
+            "danger",
+            "card_bg",
+            "border",
+            "hover",
+            "disabled",
+            "input_bg",
+            "tab_active",
+            "tab_inactive",
+            "scrollbar",
+            "shadow",
         }
         for name, theme in THEMES.items():
             colors = theme.to_dict()
@@ -56,17 +68,17 @@ class TestAllThemesValid:
         for name, theme in THEMES.items():
             colors = theme.to_dict()
             for key, value in colors.items():
-                assert (
-                    value.startswith("#") or value.startswith("rgba")
-                ), f"Theme '{name}' key '{key}' has unusual color: {value}"
+                assert value.startswith("#") or value.startswith("rgba"), (
+                    f"Theme '{name}' key '{key}' has unusual color: {value}"
+                )
 
 
 # ---------------------------------------------------------------------------
 # Theme switching
 # ---------------------------------------------------------------------------
 
-class TestThemeSwitching:
 
+class TestThemeSwitching:
     def test_default_theme_is_onyx(self, tm):
         assert tm.current_theme_name == "onyx"
         assert tm.current_theme.name == "onyx"
@@ -102,8 +114,8 @@ class TestThemeSwitching:
 # Color-blind overrides
 # ---------------------------------------------------------------------------
 
-class TestColorBlindOverrides:
 
+class TestColorBlindOverrides:
     def test_protanopia_overrides(self, tm):
         tm.color_blind_mode = "protanopia"
         colors = tm.get_colors()
@@ -145,8 +157,8 @@ class TestColorBlindOverrides:
 # Stylesheet generation
 # ---------------------------------------------------------------------------
 
-class TestStylesheetGeneration:
 
+class TestStylesheetGeneration:
     def test_generate_stylesheet(self, tm):
         stylesheet = tm.generate_stylesheet()
 
@@ -200,13 +212,14 @@ class TestStylesheetGeneration:
 # Font scaling
 # ---------------------------------------------------------------------------
 
-class TestFontScaling:
 
+class TestFontScaling:
     def test_default_font_scale(self, tm):
         assert tm.font_scale == 1.0
 
     def test_font_scale_in_stylesheet(self, tm):
         import re
+
         tm.font_scale = 1.5
         stylesheet = tm.generate_stylesheet()
         # Default 12px * 1.5 = 18px
@@ -214,6 +227,7 @@ class TestFontScaling:
 
     def test_large_font_scale(self, tm):
         import re
+
         tm.font_scale = 2.0
         stylesheet = tm.generate_stylesheet()
         # 12 * 2.0 = 24px base
@@ -221,6 +235,7 @@ class TestFontScaling:
 
     def test_small_font_scale(self, tm):
         import re
+
         tm.font_scale = 0.8
         stylesheet = tm.generate_stylesheet()
         # 12 * 0.8 = 9.6 -> int = 9
@@ -231,8 +246,8 @@ class TestFontScaling:
 # Condition recommendations
 # ---------------------------------------------------------------------------
 
-class TestConditionRecommendations:
 
+class TestConditionRecommendations:
     def test_anxiety_recommends_quiet_or_onyx(self, tm):
         recs = tm.get_recommended_themes({"anxiety"})
         names = [r[0] for r in recs]

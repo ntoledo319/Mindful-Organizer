@@ -2,6 +2,7 @@
 Enhanced adaptive profile builder with support for all conditions,
 sensory profiles, values, emergency contacts, and profile switching.
 """
+
 import json
 import uuid
 from dataclasses import dataclass, field
@@ -17,6 +18,7 @@ class MentalHealthFlags(Flag):
 
     New code should prefer the canonical :class:`core.constants.Condition`.
     """
+
     NONE = 0
     ADHD = auto()
     ANXIETY = auto()
@@ -29,10 +31,11 @@ class MentalHealthFlags(Flag):
 @dataclass
 class SensoryProfile:
     """Sensory preferences for UI adaptation."""
-    noise_sensitivity: int = 5      # 1-10
-    light_sensitivity: int = 5      # 1-10
-    motion_sensitivity: int = 5     # 1-10
-    texture_sensitivity: int = 5    # 1-10
+
+    noise_sensitivity: int = 5  # 1-10
+    light_sensitivity: int = 5  # 1-10
+    motion_sensitivity: int = 5  # 1-10
+    texture_sensitivity: int = 5  # 1-10
     color_preference: str = "neutral"  # warm, cool, neutral
 
     def to_dict(self) -> dict:
@@ -52,6 +55,7 @@ class SensoryProfile:
 @dataclass
 class EmergencyContact:
     """Emergency contact information."""
+
     name: str
     phone: str
     relationship: str
@@ -61,7 +65,9 @@ class EmergencyContact:
 
     @classmethod
     def from_dict(cls, data: dict) -> "EmergencyContact":
-        return cls(name=data["name"], phone=data["phone"], relationship=data.get("relationship", ""))
+        return cls(
+            name=data["name"], phone=data["phone"], relationship=data.get("relationship", "")
+        )
 
 
 @dataclass
@@ -120,6 +126,7 @@ class OrganizationPreference:
 @dataclass
 class Profile:
     """User mental health profile with all preferences and settings."""
+
     id: str = ""
     name: str = ""
     conditions: set[Condition] = field(default_factory=set)
@@ -147,9 +154,15 @@ class Profile:
             "conditions": [c.value for c in self.conditions],
             "therapy_types": [t.value for t in self.therapy_types],
             "therapy_skills": [s.value for s in self.therapy_skills],
-            "ui_preferences": self.ui_preferences.to_dict() if isinstance(self.ui_preferences, UIPreference) else self.ui_preferences,
-            "organization_preferences": self.organization_preferences.to_dict() if isinstance(self.organization_preferences, OrganizationPreference) else self.organization_preferences,
-            "sensory_profile": self.sensory_profile.to_dict() if isinstance(self.sensory_profile, SensoryProfile) else self.sensory_profile,
+            "ui_preferences": self.ui_preferences.to_dict()
+            if isinstance(self.ui_preferences, UIPreference)
+            else self.ui_preferences,
+            "organization_preferences": self.organization_preferences.to_dict()
+            if isinstance(self.organization_preferences, OrganizationPreference)
+            else self.organization_preferences,
+            "sensory_profile": self.sensory_profile.to_dict()
+            if isinstance(self.sensory_profile, SensoryProfile)
+            else self.sensory_profile,
             "personal_values": self.personal_values,
             "emergency_contacts": [c.to_dict() for c in self.emergency_contacts],
             "therapist_name": self.therapist_name,
@@ -198,7 +211,11 @@ class Profile:
         ui = UIPreference.from_dict(ui_pref) if isinstance(ui_pref, dict) else UIPreference()
 
         org_pref = data.get("organization_preferences", {})
-        org = OrganizationPreference.from_dict(org_pref) if isinstance(org_pref, dict) else OrganizationPreference()
+        org = (
+            OrganizationPreference.from_dict(org_pref)
+            if isinstance(org_pref, dict)
+            else OrganizationPreference()
+        )
 
         sensory = data.get("sensory_profile", {})
         sp = SensoryProfile.from_dict(sensory) if isinstance(sensory, dict) else SensoryProfile()
@@ -231,11 +248,28 @@ class Profile:
 
 # === Common Personal Values (ACT Therapy) ===
 COMMON_VALUES = [
-    "Family", "Friendship", "Health", "Career", "Education",
-    "Creativity", "Adventure", "Spirituality", "Community",
-    "Honesty", "Compassion", "Independence", "Growth",
-    "Fun", "Nature", "Justice", "Loyalty", "Courage",
-    "Gratitude", "Mindfulness", "Self-care", "Connection",
+    "Family",
+    "Friendship",
+    "Health",
+    "Career",
+    "Education",
+    "Creativity",
+    "Adventure",
+    "Spirituality",
+    "Community",
+    "Honesty",
+    "Compassion",
+    "Independence",
+    "Growth",
+    "Fun",
+    "Nature",
+    "Justice",
+    "Loyalty",
+    "Courage",
+    "Gratitude",
+    "Mindfulness",
+    "Self-care",
+    "Connection",
 ]
 
 
@@ -255,39 +289,136 @@ class ProfileManager:
     def _load_research_based_settings(self):
         self.condition_settings = {
             MentalHealthFlags.ADHD: {
-                "ui": {"color_scheme": "high_contrast", "animation_speed": "reduced", "notification_style": "immediate", "layout_density": "spacious", "use_icons": True, "use_sound": True},
-                "organization": {"folder_depth": 2, "naming_convention": "action_based", "automation_level": "high", "reminder_frequency": "frequent"},
+                "ui": {
+                    "color_scheme": "high_contrast",
+                    "animation_speed": "reduced",
+                    "notification_style": "immediate",
+                    "layout_density": "spacious",
+                    "use_icons": True,
+                    "use_sound": True,
+                },
+                "organization": {
+                    "folder_depth": 2,
+                    "naming_convention": "action_based",
+                    "automation_level": "high",
+                    "reminder_frequency": "frequent",
+                },
                 "features": ["gamification", "quick_wins", "visual_progress", "dopamine_boosters"],
                 "daily_spoons": 10,
             },
             MentalHealthFlags.ANXIETY: {
-                "ui": {"color_scheme": "calm", "animation_speed": "gentle", "notification_style": "scheduled", "layout_density": "comfortable", "use_icons": True, "use_sound": False},
-                "organization": {"folder_depth": 4, "naming_convention": "detailed", "automation_level": "medium", "backup_frequency": "frequent"},
-                "features": ["predictable_structure", "backup_assurance", "progress_tracking", "calming_interface"],
+                "ui": {
+                    "color_scheme": "calm",
+                    "animation_speed": "gentle",
+                    "notification_style": "scheduled",
+                    "layout_density": "comfortable",
+                    "use_icons": True,
+                    "use_sound": False,
+                },
+                "organization": {
+                    "folder_depth": 4,
+                    "naming_convention": "detailed",
+                    "automation_level": "medium",
+                    "backup_frequency": "frequent",
+                },
+                "features": [
+                    "predictable_structure",
+                    "backup_assurance",
+                    "progress_tracking",
+                    "calming_interface",
+                ],
                 "daily_spoons": 10,
             },
             MentalHealthFlags.DEPRESSION: {
-                "ui": {"color_scheme": "uplifting", "animation_speed": "normal", "notification_style": "encouraging", "layout_density": "balanced", "use_icons": True, "use_sound": True},
-                "organization": {"folder_depth": 3, "naming_convention": "simple", "automation_level": "high", "reminder_frequency": "moderate"},
-                "features": ["achievement_celebration", "positive_reinforcement", "manageable_chunks", "progress_visualization"],
+                "ui": {
+                    "color_scheme": "uplifting",
+                    "animation_speed": "normal",
+                    "notification_style": "encouraging",
+                    "layout_density": "balanced",
+                    "use_icons": True,
+                    "use_sound": True,
+                },
+                "organization": {
+                    "folder_depth": 3,
+                    "naming_convention": "simple",
+                    "automation_level": "high",
+                    "reminder_frequency": "moderate",
+                },
+                "features": [
+                    "achievement_celebration",
+                    "positive_reinforcement",
+                    "manageable_chunks",
+                    "progress_visualization",
+                ],
                 "daily_spoons": 8,
             },
             MentalHealthFlags.OCD: {
-                "ui": {"color_scheme": "minimal", "animation_speed": "configurable", "notification_style": "structured", "layout_density": "compact", "use_icons": False, "use_sound": False},
-                "organization": {"folder_depth": 5, "naming_convention": "systematic", "automation_level": "configurable", "backup_frequency": "scheduled"},
-                "features": ["customizable_structure", "verification_steps", "consistent_patterns", "clear_boundaries"],
+                "ui": {
+                    "color_scheme": "minimal",
+                    "animation_speed": "configurable",
+                    "notification_style": "structured",
+                    "layout_density": "compact",
+                    "use_icons": False,
+                    "use_sound": False,
+                },
+                "organization": {
+                    "folder_depth": 5,
+                    "naming_convention": "systematic",
+                    "automation_level": "configurable",
+                    "backup_frequency": "scheduled",
+                },
+                "features": [
+                    "customizable_structure",
+                    "verification_steps",
+                    "consistent_patterns",
+                    "clear_boundaries",
+                ],
                 "daily_spoons": 10,
             },
             MentalHealthFlags.PTSD: {
-                "ui": {"color_scheme": "soothing", "animation_speed": "gentle", "notification_style": "non_intrusive", "layout_density": "spacious", "use_icons": True, "use_sound": False},
-                "organization": {"folder_depth": 3, "naming_convention": "clear", "automation_level": "medium", "reminder_frequency": "gentle"},
-                "features": ["predictable_environment", "gentle_notifications", "safe_space_creation", "control_options"],
+                "ui": {
+                    "color_scheme": "soothing",
+                    "animation_speed": "gentle",
+                    "notification_style": "non_intrusive",
+                    "layout_density": "spacious",
+                    "use_icons": True,
+                    "use_sound": False,
+                },
+                "organization": {
+                    "folder_depth": 3,
+                    "naming_convention": "clear",
+                    "automation_level": "medium",
+                    "reminder_frequency": "gentle",
+                },
+                "features": [
+                    "predictable_environment",
+                    "gentle_notifications",
+                    "safe_space_creation",
+                    "control_options",
+                ],
                 "daily_spoons": 8,
             },
             MentalHealthFlags.BIPOLAR: {
-                "ui": {"color_scheme": "balanced", "animation_speed": "moderate", "notification_style": "adaptive", "layout_density": "balanced", "use_icons": True, "use_sound": True},
-                "organization": {"folder_depth": 3, "naming_convention": "standard", "automation_level": "medium", "reminder_frequency": "regular"},
-                "features": ["mood_tracking", "energy_monitoring", "hypomania_detection", "stability_tools"],
+                "ui": {
+                    "color_scheme": "balanced",
+                    "animation_speed": "moderate",
+                    "notification_style": "adaptive",
+                    "layout_density": "balanced",
+                    "use_icons": True,
+                    "use_sound": True,
+                },
+                "organization": {
+                    "folder_depth": 3,
+                    "naming_convention": "standard",
+                    "automation_level": "medium",
+                    "reminder_frequency": "regular",
+                },
+                "features": [
+                    "mood_tracking",
+                    "energy_monitoring",
+                    "hypomania_detection",
+                    "stability_tools",
+                ],
                 "daily_spoons": 10,
             },
         }
@@ -315,7 +446,13 @@ class ProfileManager:
         self._current_profile = profile
         self._save_current_profile()
 
-    def create_profile(self, name: str, conditions: set[Condition], therapy_types: set[TherapyType] | None = None, **kwargs) -> Profile:
+    def create_profile(
+        self,
+        name: str,
+        conditions: set[Condition],
+        therapy_types: set[TherapyType] | None = None,
+        **kwargs,
+    ) -> Profile:
         """Create a new profile with sensible defaults based on conditions."""
         now = datetime.now().isoformat()
         profile_id = str(uuid.uuid4())
@@ -379,12 +516,14 @@ class ProfileManager:
             try:
                 with open(profile_file) as f:
                     data = json.load(f)
-                profiles.append({
-                    "id": data.get("id", ""),
-                    "name": data.get("name", "Unknown"),
-                    "conditions": data.get("conditions", []),
-                    "created_at": data.get("created_at", ""),
-                })
+                profiles.append(
+                    {
+                        "id": data.get("id", ""),
+                        "name": data.get("name", "Unknown"),
+                        "conditions": data.get("conditions", []),
+                        "created_at": data.get("created_at", ""),
+                    }
+                )
             except (json.JSONDecodeError, OSError, TypeError, ValueError):
                 continue
         return profiles
@@ -442,7 +581,9 @@ class ProfileManager:
             "personal_values": len(p.personal_values) >= 3,
             "emergency_contacts": len(p.emergency_contacts) >= 1,
             "therapist_info": bool(p.therapist_name),
-            "sensory_profile_customized": (p.sensory_profile.noise_sensitivity != 5 or p.sensory_profile.light_sensitivity != 5),
+            "sensory_profile_customized": (
+                p.sensory_profile.noise_sensitivity != 5 or p.sensory_profile.light_sensitivity != 5
+            ),
         }
 
         completed = sum(1 for v in checks.values() if v)
@@ -467,15 +608,21 @@ class ProfileManager:
         if Condition.ADHD in conditions:
             features.update(["Gamification", "Task Decomposition", "Spoon Theory", "Focus Timer"])
         if Condition.ANXIETY in conditions:
-            features.update(["Breathing Exercises", "Grounding", "Worry Time Scheduler", "CBT Tools"])
+            features.update(
+                ["Breathing Exercises", "Grounding", "Worry Time Scheduler", "CBT Tools"]
+            )
         if Condition.DEPRESSION in conditions:
-            features.update(["Behavioral Activation", "Journaling", "Mood Tracking", "Sleep Tracker"])
+            features.update(
+                ["Behavioral Activation", "Journaling", "Mood Tracking", "Sleep Tracker"]
+            )
         if Condition.OCD in conditions:
             features.update(["ERP Tracker", "Exposure Hierarchy", "Response Prevention Log"])
         if Condition.PTSD in conditions:
             features.update(["Crisis Plan", "Grounding", "Safe Place Visualization", "Meditation"])
         if Condition.BIPOLAR in conditions:
-            features.update(["Mood Tracking", "Sleep Tracker", "Hypomania Detection", "Medication Tracker"])
+            features.update(
+                ["Mood Tracking", "Sleep Tracker", "Hypomania Detection", "Medication Tracker"]
+            )
 
         features.update(["Dashboard", "Task Manager", "Settings"])
         return sorted(features)
@@ -509,19 +656,44 @@ class ProfileManager:
         return resolved
 
     def _resolve_conflicts(self, settings: dict) -> dict:
-        if (MentalHealthFlags.ADHD in self.mental_health_flags and
-                MentalHealthFlags.ANXIETY in self.mental_health_flags):
-            settings.update({"animation_speed": "moderate", "notification_style": "structured_immediate"})
-        if (MentalHealthFlags.DEPRESSION in self.mental_health_flags and
-                MentalHealthFlags.ANXIETY in self.mental_health_flags):
-            settings.update({"color_scheme": "calming_positive", "notification_style": "gentle_encouraging"})
+        if (
+            MentalHealthFlags.ADHD in self.mental_health_flags
+            and MentalHealthFlags.ANXIETY in self.mental_health_flags
+        ):
+            settings.update(
+                {"animation_speed": "moderate", "notification_style": "structured_immediate"}
+            )
+        if (
+            MentalHealthFlags.DEPRESSION in self.mental_health_flags
+            and MentalHealthFlags.ANXIETY in self.mental_health_flags
+        ):
+            settings.update(
+                {"color_scheme": "calming_positive", "notification_style": "gentle_encouraging"}
+            )
         return settings
 
     def _get_default_profile(self) -> dict:
         return {
-            "ui": {"color_scheme": "neutral", "animation_speed": "normal", "notification_style": "standard", "layout_density": "medium", "use_icons": True, "use_sound": True},
-            "organization": {"folder_depth": 3, "naming_convention": "standard", "automation_level": "medium", "reminder_frequency": "normal"},
-            "features": ["basic_organization", "standard_notifications", "simple_backup", "help_system"],
+            "ui": {
+                "color_scheme": "neutral",
+                "animation_speed": "normal",
+                "notification_style": "standard",
+                "layout_density": "medium",
+                "use_icons": True,
+                "use_sound": True,
+            },
+            "organization": {
+                "folder_depth": 3,
+                "naming_convention": "standard",
+                "automation_level": "medium",
+                "reminder_frequency": "normal",
+            },
+            "features": [
+                "basic_organization",
+                "standard_notifications",
+                "simple_backup",
+                "help_system",
+            ],
         }
 
     def get_feature_explanations(self) -> dict[str, str]:

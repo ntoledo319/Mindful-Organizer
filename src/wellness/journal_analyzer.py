@@ -15,33 +15,106 @@ from dataclasses import dataclass, field
 # ---------------------------------------------------------------------------
 
 _POSITIVE_WORDS = {
-    "good", "great", "happy", "joy", "grateful", "peaceful", "calm",
-    "hopeful", "proud", "accomplished", "loved", "supported", "strong",
-    "excited", "content", "relaxed", "energized", "optimistic", "thankful",
-    "wonderful", "beautiful", "amazing", "fantastic", "blessed", "safe",
-    "comfortable", "confident", "worthy", "enough", "capable",
+    "good",
+    "great",
+    "happy",
+    "joy",
+    "grateful",
+    "peaceful",
+    "calm",
+    "hopeful",
+    "proud",
+    "accomplished",
+    "loved",
+    "supported",
+    "strong",
+    "excited",
+    "content",
+    "relaxed",
+    "energized",
+    "optimistic",
+    "thankful",
+    "wonderful",
+    "beautiful",
+    "amazing",
+    "fantastic",
+    "blessed",
+    "safe",
+    "comfortable",
+    "confident",
+    "worthy",
+    "enough",
+    "capable",
 }
 
 _NEGATIVE_WORDS = {
-    "bad", "terrible", "awful", "sad", "depressed", "anxious", "worried",
-    "hopeless", "worthless", "alone", "empty", "numb", "angry", "frustrated",
-    "overwhelmed", "exhausted", "drained", "broken", "lost", "scared",
-    "afraid", "panic", "dread", "miserable", "disappointed", "hurt",
-    "rejected", "abandoned", "failure", "stupid", "pathetic", "weak",
+    "bad",
+    "terrible",
+    "awful",
+    "sad",
+    "depressed",
+    "anxious",
+    "worried",
+    "hopeless",
+    "worthless",
+    "alone",
+    "empty",
+    "numb",
+    "angry",
+    "frustrated",
+    "overwhelmed",
+    "exhausted",
+    "drained",
+    "broken",
+    "lost",
+    "scared",
+    "afraid",
+    "panic",
+    "dread",
+    "miserable",
+    "disappointed",
+    "hurt",
+    "rejected",
+    "abandoned",
+    "failure",
+    "stupid",
+    "pathetic",
+    "weak",
 }
 
 # Explicit risk phrases. Deliberately conservative and multi-word to minimise
 # false positives — this is a supportive nudge toward real help, never a
 # diagnosis. A match surfaces the crisis plan and 988 above every other insight.
 _RISK_PHRASES = {
-    "kill myself", "killing myself", "end my life", "ending my life",
-    "want to die", "wanna die", "wish i was dead", "wish i were dead",
-    "better off dead", "better off without me", "no reason to live",
-    "nothing to live for", "don't want to be here", "do not want to be here",
-    "can't go on", "cannot go on", "can't do this anymore",
-    "hurt myself", "hurting myself", "harm myself", "harming myself",
-    "self harm", "self-harm", "cut myself", "cutting myself",
-    "suicidal", "suicide", "take my own life", "end it all",
+    "kill myself",
+    "killing myself",
+    "end my life",
+    "ending my life",
+    "want to die",
+    "wanna die",
+    "wish i was dead",
+    "wish i were dead",
+    "better off dead",
+    "better off without me",
+    "no reason to live",
+    "nothing to live for",
+    "don't want to be here",
+    "do not want to be here",
+    "can't go on",
+    "cannot go on",
+    "can't do this anymore",
+    "hurt myself",
+    "hurting myself",
+    "harm myself",
+    "harming myself",
+    "self harm",
+    "self-harm",
+    "cut myself",
+    "cutting myself",
+    "suicidal",
+    "suicide",
+    "take my own life",
+    "end it all",
 }
 
 _RISK_RESOURCE_INSIGHT = (
@@ -53,32 +126,66 @@ _RISK_RESOURCE_INSIGHT = (
 
 _COGNITIVE_DISTORTIONS: dict[str, tuple[set[str], str]] = {
     "all_or_nothing": (
-        {"always", "never", "everyone", "no one", "nobody", "everybody",
-         "everything", "nothing", "completely", "totally", "absolutely"},
-        "All-or-nothing thinking detected — life is usually more nuanced."
+        {
+            "always",
+            "never",
+            "everyone",
+            "no one",
+            "nobody",
+            "everybody",
+            "everything",
+            "nothing",
+            "completely",
+            "totally",
+            "absolutely",
+        },
+        "All-or-nothing thinking detected — life is usually more nuanced.",
     ),
     "catastrophizing": (
-        {"disaster", "catastrophe", "terrible", "horrible", "unbearable",
-         "can't handle", "can't stand", "worst", "nightmare", "ruined"},
-        "Catastrophizing detected — is this truly as bad as it feels right now?"
+        {
+            "disaster",
+            "catastrophe",
+            "terrible",
+            "horrible",
+            "unbearable",
+            "can't handle",
+            "can't stand",
+            "worst",
+            "nightmare",
+            "ruined",
+        },
+        "Catastrophizing detected — is this truly as bad as it feels right now?",
     ),
     "mind_reading": (
-        {"they think", "everyone knows", "people see", "must think",
-         "obviously thinks", "can tell", "judging me"},
-        "Mind-reading detected — you can't know what others are thinking."
+        {
+            "they think",
+            "everyone knows",
+            "people see",
+            "must think",
+            "obviously thinks",
+            "can tell",
+            "judging me",
+        },
+        "Mind-reading detected — you can't know what others are thinking.",
     ),
     "should_statements": (
         {"should", "must", "have to", "need to", "ought to", "supposed to"},
-        "'Should' statement detected — where did this rule come from?"
+        "'Should' statement detected — where did this rule come from?",
     ),
     "emotional_reasoning": (
         {"feel like", "feels like", "because i feel", "if i feel"},
-        "Emotional reasoning detected — feelings are real but not always facts."
+        "Emotional reasoning detected — feelings are real but not always facts.",
     ),
     "overgeneralization": (
-        {"every time", "always happens", "never works", "constantly",
-         "keeps happening", "same thing"},
-        "Overgeneralization detected — one event doesn't define all events."
+        {
+            "every time",
+            "always happens",
+            "never works",
+            "constantly",
+            "keeps happening",
+            "same thing",
+        },
+        "Overgeneralization detected — one event doesn't define all events.",
     ),
 }
 
@@ -87,9 +194,11 @@ _COGNITIVE_DISTORTIONS: dict[str, tuple[set[str], str]] = {
 # Data classes
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class SentimentResult:
     """Sentiment analysis of a journal entry."""
+
     positive_count: int = 0
     negative_count: int = 0
     neutral_count: int = 0
@@ -100,6 +209,7 @@ class SentimentResult:
 @dataclass
 class DistortionResult:
     """A detected cognitive distortion."""
+
     distortion_type: str
     matched_phrases: list[str]
     suggestion: str
@@ -109,6 +219,7 @@ class DistortionResult:
 @dataclass
 class JournalAnalysis:
     """Complete analysis of a journal entry."""
+
     word_count: int = 0
     sentiment: SentimentResult = field(default_factory=SentimentResult)
     distortions: list[DistortionResult] = field(default_factory=list)
@@ -121,6 +232,7 @@ class JournalAnalysis:
 # ---------------------------------------------------------------------------
 # Analysis engine
 # ---------------------------------------------------------------------------
+
 
 class JournalAnalyzer:
     """Analyze journal entries for sentiment and cognitive patterns."""
@@ -191,12 +303,14 @@ class JournalAnalyzer:
                     severity = "moderate"
                 else:
                     severity = "mild"
-                results.append(DistortionResult(
-                    distortion_type=dtype,
-                    matched_phrases=matched,
-                    suggestion=suggestion,
-                    severity=severity,
-                ))
+                results.append(
+                    DistortionResult(
+                        distortion_type=dtype,
+                        matched_phrases=matched,
+                        suggestion=suggestion,
+                        severity=severity,
+                    )
+                )
         return results
 
     def _dominant_emotion(self, words: list[str]) -> str:
@@ -224,9 +338,7 @@ class JournalAnalyzer:
                 "Consider a grounding exercise or reaching out to someone you trust."
             )
         elif analysis.sentiment.polarity > 0.5:
-            insights.append(
-                "This entry has a positive tone. What contributed to this feeling?"
-            )
+            insights.append("This entry has a positive tone. What contributed to this feeling?")
 
         # Distortion insight
         if analysis.distortions:
@@ -244,9 +356,7 @@ class JournalAnalyzer:
 
         # Word count insight
         if analysis.word_count < 20:
-            insights.append(
-                "Short entry — even a few sentences can be meaningful."
-            )
+            insights.append("Short entry — even a few sentences can be meaningful.")
 
         return insights
 
@@ -260,13 +370,9 @@ class JournalAnalyzer:
 
         polarity_delta = current.sentiment.polarity - previous.sentiment.polarity
         if polarity_delta <= -0.3:
-            insights.append(
-                "Your tone shifted notably more negative since your last entry."
-            )
+            insights.append("Your tone shifted notably more negative since your last entry.")
         elif polarity_delta >= 0.3:
-            insights.append(
-                "Your tone shifted notably more positive since your last entry."
-            )
+            insights.append("Your tone shifted notably more positive since your last entry.")
 
         current_distortions = {d.distortion_type for d in current.distortions}
         prev_distortions = {d.distortion_type for d in previous.distortions}

@@ -21,6 +21,7 @@ from core.task_manager import (
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_task(**overrides):
     """Create a Task with sensible defaults, accepting overrides."""
     defaults = {
@@ -36,6 +37,7 @@ def _make_task(**overrides):
 # ---------------------------------------------------------------------------
 # Basic CRUD
 # ---------------------------------------------------------------------------
+
 
 class TestAddTask:
     """Adding tasks to the manager."""
@@ -102,7 +104,6 @@ class TestCompleteTask:
 
 
 class TestDeleteTask:
-
     def test_delete_task(self, tmp_data_dir):
         tm = TaskManager(tmp_data_dir)
         task = tm.add_task(_make_task())
@@ -118,7 +119,6 @@ class TestDeleteTask:
 
 
 class TestUpdateTask:
-
     def test_update_task_fields(self, tmp_data_dir):
         tm = TaskManager(tmp_data_dir)
         task = tm.add_task(_make_task(title="Old title"))
@@ -137,8 +137,8 @@ class TestUpdateTask:
 # Query methods
 # ---------------------------------------------------------------------------
 
-class TestGetTasksByPriority:
 
+class TestGetTasksByPriority:
     def test_get_tasks_by_priority(self, tmp_data_dir, sample_tasks):
         tm = TaskManager(tmp_data_dir)
         for t in sample_tasks:
@@ -154,7 +154,6 @@ class TestGetTasksByPriority:
 
 
 class TestGetTasksByCategory:
-
     def test_get_tasks_by_category(self, tmp_data_dir, sample_tasks):
         tm = TaskManager(tmp_data_dir)
         for t in sample_tasks:
@@ -166,7 +165,6 @@ class TestGetTasksByCategory:
 
 
 class TestGetTasksByEnergy:
-
     def test_get_tasks_by_energy(self, tmp_data_dir, sample_tasks):
         tm = TaskManager(tmp_data_dir)
         for t in sample_tasks:
@@ -183,7 +181,6 @@ class TestGetTasksByEnergy:
 
 
 class TestGetTasksByTag:
-
     def test_get_tasks_by_tag(self, tmp_data_dir, sample_tasks):
         tm = TaskManager(tmp_data_dir)
         for t in sample_tasks:
@@ -198,8 +195,8 @@ class TestGetTasksByTag:
 # Persistence
 # ---------------------------------------------------------------------------
 
-class TestTaskPersistence:
 
+class TestTaskPersistence:
     def test_task_persistence(self, tmp_data_dir):
         """Tasks survive manager reload."""
         tm1 = TaskManager(tmp_data_dir)
@@ -247,7 +244,6 @@ class TestTaskPersistence:
 
 
 class TestEmptyTaskList:
-
     def test_empty_task_list(self, tmp_data_dir):
         tm = TaskManager(tmp_data_dir)
         assert tm.tasks == []
@@ -265,8 +261,8 @@ class TestEmptyTaskList:
 # Undo / Redo
 # ---------------------------------------------------------------------------
 
-class TestUndoRedo:
 
+class TestUndoRedo:
     def test_undo_add(self, tmp_data_dir):
         tm = TaskManager(tmp_data_dir)
         tm.add_task(_make_task(title="Undo me"))
@@ -315,8 +311,8 @@ class TestUndoRedo:
 # Subtasks
 # ---------------------------------------------------------------------------
 
-class TestSubtasks:
 
+class TestSubtasks:
     def test_complete_subtask(self, tmp_data_dir):
         tm = TaskManager(tmp_data_dir)
         task = _make_task(subtasks=[SubTask(title="Step 1"), SubTask(title="Step 2")])
@@ -337,8 +333,8 @@ class TestSubtasks:
 # Templates
 # ---------------------------------------------------------------------------
 
-class TestTemplates:
 
+class TestTemplates:
     def test_save_and_create_from_template(self, tmp_data_dir):
         tm = TaskManager(tmp_data_dir)
         task = tm.add_task(_make_task(title="Template source", energy_required=7))
@@ -368,8 +364,8 @@ class TestTemplates:
 # Custom categories
 # ---------------------------------------------------------------------------
 
-class TestCustomCategories:
 
+class TestCustomCategories:
     def test_add_custom_category(self, tmp_data_dir):
         tm = TaskManager(tmp_data_dir)
         tm.add_custom_category("Gardening")
@@ -390,8 +386,8 @@ class TestCustomCategories:
 # Sorting and search
 # ---------------------------------------------------------------------------
 
-class TestSortingAndSearch:
 
+class TestSortingAndSearch:
     def test_sort_by_priority(self, tmp_data_dir, sample_tasks):
         tm = TaskManager(tmp_data_dir)
         for t in sample_tasks:
@@ -428,8 +424,8 @@ class TestSortingAndSearch:
 # Batch operations
 # ---------------------------------------------------------------------------
 
-class TestBatchOperations:
 
+class TestBatchOperations:
     def test_batch_complete(self, tmp_data_dir):
         tm = TaskManager(tmp_data_dir)
         ids = []
@@ -454,8 +450,8 @@ class TestBatchOperations:
 # Statistics
 # ---------------------------------------------------------------------------
 
-class TestStatistics:
 
+class TestStatistics:
     def test_statistics(self, tmp_data_dir, sample_tasks):
         tm = TaskManager(tmp_data_dir)
         for t in sample_tasks:
@@ -474,8 +470,8 @@ class TestStatistics:
 # Task serialization edge cases
 # ---------------------------------------------------------------------------
 
-class TestTaskSerialization:
 
+class TestTaskSerialization:
     def test_from_dict_legacy_priority_string(self):
         data = {"title": "Legacy", "priority": "High", "category": "Work", "energy_required": 5}
         task = Task.from_dict(data)
@@ -515,8 +511,8 @@ class TestTaskSerialization:
 # RecurrenceConfig
 # ---------------------------------------------------------------------------
 
-class TestRecurrence:
 
+class TestRecurrence:
     def test_daily_next_due(self):
         config = RecurrenceConfig(pattern=RecurrencePattern.DAILY)
         today = date(2026, 1, 15)

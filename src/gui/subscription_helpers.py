@@ -45,8 +45,13 @@ def gated(
     display_name = FEATURE_DISPLAY_NAMES.get(feature, feature.replace("_", " ").title())
     required_tier = "Pro"
     if feature in {
-        "pdf_reports", "medication_heatmap", "values_radar",
-        "clinician_sharing", "onboarding_analytics", "priority_support", "wearable_sync",
+        "pdf_reports",
+        "medication_heatmap",
+        "values_radar",
+        "clinician_sharing",
+        "onboarding_analytics",
+        "priority_support",
+        "wearable_sync",
     }:
         required_tier = "Premium"
 

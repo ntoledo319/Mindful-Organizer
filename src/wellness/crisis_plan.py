@@ -21,6 +21,7 @@ from pathlib import Path
 
 class ContactType(Enum):
     """Types of support contacts."""
+
     PERSONAL = "personal"
     THERAPIST = "therapist"
     PSYCHIATRIST = "psychiatrist"
@@ -30,6 +31,7 @@ class ContactType(Enum):
 
 class PlanSituation(Enum):
     """Situations a crisis plan may be designed for."""
+
     GENERAL = "general"
     SUICIDAL_IDEATION = "suicidal_ideation"
     SELF_HARM_URGE = "self_harm_urge"
@@ -60,6 +62,7 @@ class SupportContact:
         available_hours: When this contact is available (e.g., '24/7', '9am-5pm').
         notes: Additional notes about this contact.
     """
+
     name: str
     phone: str
     relationship: str
@@ -104,6 +107,7 @@ class ProfessionalContact:
         available_hours: When available.
         instructions: Special instructions (e.g., 'Text HOME to 741741').
     """
+
     name: str
     phone: str
     role: str
@@ -193,6 +197,7 @@ class CrisisPlan:
         updated_at: When the plan was last updated.
         notes: Additional notes.
     """
+
     plan_id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
     name: str = "My Crisis Plan"
     situation: PlanSituation = PlanSituation.GENERAL
@@ -220,7 +225,9 @@ class CrisisPlan:
         if not self.warning_signs:
             warnings.append("No warning signs listed. Add signs that a crisis may be building.")
         if not self.coping_strategies:
-            warnings.append("No coping strategies listed. Add things you can try before reaching out.")
+            warnings.append(
+                "No coping strategies listed. Add things you can try before reaching out."
+            )
         if not self.support_contacts:
             warnings.append("No personal support contacts. Add at least one trusted person.")
         if not self.professional_contacts:
@@ -228,7 +235,9 @@ class CrisisPlan:
         if not self.safe_places:
             warnings.append("No safe places listed. Add at least one location where you feel safe.")
         if not self.reasons_for_living:
-            warnings.append("No reasons for living listed. This section can be very powerful in a crisis.")
+            warnings.append(
+                "No reasons for living listed. This section can be very powerful in a crisis."
+            )
 
         # Check that contacts have phone numbers
         for contact in self.support_contacts:
@@ -236,7 +245,9 @@ class CrisisPlan:
                 warnings.append(f"Support contact '{contact.name}' is missing a phone number.")
         for pro_contact in self.professional_contacts:
             if not pro_contact.phone.strip():
-                warnings.append(f"Professional contact '{pro_contact.name}' is missing a phone number.")
+                warnings.append(
+                    f"Professional contact '{pro_contact.name}' is missing a phone number."
+                )
 
         return warnings
 
@@ -389,12 +400,10 @@ class CrisisPlan:
             warning_signs=data.get("warning_signs", []),
             coping_strategies=data.get("coping_strategies", []),
             support_contacts=[
-                SupportContact.from_dict(c)
-                for c in data.get("support_contacts", [])
+                SupportContact.from_dict(c) for c in data.get("support_contacts", [])
             ],
             professional_contacts=[
-                ProfessionalContact.from_dict(c)
-                for c in data.get("professional_contacts", [])
+                ProfessionalContact.from_dict(c) for c in data.get("professional_contacts", [])
             ],
             safe_places=data.get("safe_places", []),
             reasons_for_living=data.get("reasons_for_living", []),

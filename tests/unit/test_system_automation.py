@@ -1,4 +1,5 @@
 """Tests for the System Automation Engine."""
+
 from __future__ import annotations
 
 from core.automation_config import ExecutionMode
@@ -22,6 +23,7 @@ class MockSubscriptionManager(SubscriptionManager):
 
     def has_feature(self, feature: str) -> bool:
         from core.subscription_manager import FEATURES_BY_TIER
+
         return feature in FEATURES_BY_TIER.get(self._tier, set())
 
 
@@ -30,14 +32,16 @@ class TestAutomationEngineLifecycle:
 
     def test_engine_starts_enabled(self, tmp_path):
         engine = SystemAutomationEngine(
-            data_dir=tmp_path, backend=StubBackend(),
+            data_dir=tmp_path,
+            backend=StubBackend(),
             subscription_manager=MockSubscriptionManager(),
         )
         assert engine.is_enabled is True
 
     def test_disable_prevents_triggers(self, tmp_path):
         engine = SystemAutomationEngine(
-            data_dir=tmp_path, backend=StubBackend(),
+            data_dir=tmp_path,
+            backend=StubBackend(),
             subscription_manager=MockSubscriptionManager(),
         )
         engine.disable()
@@ -46,7 +50,8 @@ class TestAutomationEngineLifecycle:
 
     def test_enable_allows_triggers(self, tmp_path):
         engine = SystemAutomationEngine(
-            data_dir=tmp_path, backend=StubBackend(),
+            data_dir=tmp_path,
+            backend=StubBackend(),
             subscription_manager=MockSubscriptionManager(),
         )
         engine.config.set_execution_mode("default", ExecutionMode.AUTONOMOUS)
@@ -61,7 +66,8 @@ class TestRuleManagement:
 
     def test_list_rules_returns_all(self, tmp_path):
         engine = SystemAutomationEngine(
-            data_dir=tmp_path, backend=StubBackend(),
+            data_dir=tmp_path,
+            backend=StubBackend(),
             subscription_manager=MockSubscriptionManager(),
         )
         rules = engine.list_rules()
@@ -70,16 +76,20 @@ class TestRuleManagement:
 
     def test_disable_rule(self, tmp_path):
         engine = SystemAutomationEngine(
-            data_dir=tmp_path, backend=StubBackend(),
+            data_dir=tmp_path,
+            backend=StubBackend(),
             subscription_manager=MockSubscriptionManager(),
         )
         assert engine.disable_rule("manual_focus_deep_work") is True
         results = engine.trigger(TriggerType.MANUAL_FOCUS)
-        assert not any(r["rule"] == "manual_focus_deep_work" and r["status"] == "executed" for r in results)
+        assert not any(
+            r["rule"] == "manual_focus_deep_work" and r["status"] == "executed" for r in results
+        )
 
     def test_enable_rule(self, tmp_path):
         engine = SystemAutomationEngine(
-            data_dir=tmp_path, backend=StubBackend(),
+            data_dir=tmp_path,
+            backend=StubBackend(),
             subscription_manager=MockSubscriptionManager(),
         )
         engine.disable_rule("manual_focus_deep_work")
@@ -89,7 +99,8 @@ class TestRuleManagement:
 
     def test_disable_unknown_rule_returns_false(self, tmp_path):
         engine = SystemAutomationEngine(
-            data_dir=tmp_path, backend=StubBackend(),
+            data_dir=tmp_path,
+            backend=StubBackend(),
             subscription_manager=MockSubscriptionManager(),
         )
         assert engine.disable_rule("nonexistent") is False
@@ -100,8 +111,10 @@ class TestCooldownBehavior:
 
     def test_cooldown_blocks_second_trigger(self, tmp_path):
         from core.automation_rules import ActionType, AutomationAction, AutomationRule
+
         engine = SystemAutomationEngine(
-            data_dir=tmp_path, backend=StubBackend(),
+            data_dir=tmp_path,
+            backend=StubBackend(),
             subscription_manager=MockSubscriptionManager(),
         )
         engine.config.set_execution_mode("default", ExecutionMode.AUTONOMOUS)
@@ -116,11 +129,15 @@ class TestCooldownBehavior:
         )
         # First trigger should execute
         results1 = engine.trigger(TriggerType.ENERGY_LOW)
-        assert any(r["status"] == "executed" and r["rule"] == "test_cooldown_rule" for r in results1)
+        assert any(
+            r["status"] == "executed" and r["rule"] == "test_cooldown_rule" for r in results1
+        )
 
         # Second trigger immediately should be on cooldown
         results2 = engine.trigger(TriggerType.ENERGY_LOW)
-        assert any(r["status"] == "cooldown" and r["rule"] == "test_cooldown_rule" for r in results2)
+        assert any(
+            r["status"] == "cooldown" and r["rule"] == "test_cooldown_rule" for r in results2
+        )
 
 
 class TestManualTriggers:
@@ -128,7 +145,8 @@ class TestManualTriggers:
 
     def test_manual_focus_activates_focus_mode(self, tmp_path):
         engine = SystemAutomationEngine(
-            data_dir=tmp_path, backend=StubBackend(),
+            data_dir=tmp_path,
+            backend=StubBackend(),
             subscription_manager=MockSubscriptionManager(),
         )
         result = engine.manual_focus(duration_minutes=25)
@@ -139,7 +157,8 @@ class TestManualTriggers:
 
     def test_manual_crisis_returns_results(self, tmp_path):
         engine = SystemAutomationEngine(
-            data_dir=tmp_path, backend=StubBackend(),
+            data_dir=tmp_path,
+            backend=StubBackend(),
             subscription_manager=MockSubscriptionManager(),
         )
         engine.config.set_execution_mode("default", ExecutionMode.AUTONOMOUS)
@@ -149,7 +168,8 @@ class TestManualTriggers:
 
     def test_manual_grounding_returns_results(self, tmp_path):
         engine = SystemAutomationEngine(
-            data_dir=tmp_path, backend=StubBackend(),
+            data_dir=tmp_path,
+            backend=StubBackend(),
             subscription_manager=MockSubscriptionManager(),
         )
         engine.config.set_execution_mode("default", ExecutionMode.AUTONOMOUS)
@@ -162,7 +182,8 @@ class TestConditionAwareTriggers:
 
     def test_adhd_rule_requires_adhd_condition(self, tmp_path):
         engine = SystemAutomationEngine(
-            data_dir=tmp_path, backend=StubBackend(),
+            data_dir=tmp_path,
+            backend=StubBackend(),
             subscription_manager=MockSubscriptionManager(),
         )
         engine.config.set_execution_mode("default", ExecutionMode.AUTONOMOUS)
@@ -172,7 +193,8 @@ class TestConditionAwareTriggers:
 
     def test_adhd_rule_skipped_without_condition(self, tmp_path):
         engine = SystemAutomationEngine(
-            data_dir=tmp_path, backend=StubBackend(),
+            data_dir=tmp_path,
+            backend=StubBackend(),
             subscription_manager=MockSubscriptionManager(),
         )
         engine.set_user_conditions(set())
@@ -181,7 +203,8 @@ class TestConditionAwareTriggers:
 
     def test_bipolar_rule_requires_bipolar(self, tmp_path):
         engine = SystemAutomationEngine(
-            data_dir=tmp_path, backend=StubBackend(),
+            data_dir=tmp_path,
+            backend=StubBackend(),
             subscription_manager=MockSubscriptionManager(),
         )
         engine.config.set_execution_mode("default", ExecutionMode.AUTONOMOUS)
@@ -195,15 +218,18 @@ class TestStateEvaluation:
 
     def test_low_energy_triggers_low_energy_rule(self, tmp_path, monkeypatch):
         engine = SystemAutomationEngine(
-            data_dir=tmp_path, backend=StubBackend(),
+            data_dir=tmp_path,
+            backend=StubBackend(),
             subscription_manager=MockSubscriptionManager(),
         )
         engine.config.set_execution_mode("default", ExecutionMode.AUTONOMOUS)
+
         # Mock wellness snapshot to return low energy
         class MockSnapshot:
             energy_score = 2
             mood_score = 5
             sleep_hours = 7
+
         monkeypatch.setattr(engine.wellness, "snapshot", lambda dt=None: MockSnapshot())
         monkeypatch.setattr(engine.ai, "detect_burnout_risk", lambda **kw: {"risk_level": "low"})
         monkeypatch.setattr(engine.ai, "detect_hypomania_signs", lambda **kw: {"detected": False})
@@ -213,14 +239,17 @@ class TestStateEvaluation:
 
     def test_high_energy_triggers_peak_rule(self, tmp_path, monkeypatch):
         engine = SystemAutomationEngine(
-            data_dir=tmp_path, backend=StubBackend(),
+            data_dir=tmp_path,
+            backend=StubBackend(),
             subscription_manager=MockSubscriptionManager(),
         )
         engine.config.set_execution_mode("default", ExecutionMode.AUTONOMOUS)
+
         class MockSnapshot:
             energy_score = 9
             mood_score = 7
             sleep_hours = 7
+
         monkeypatch.setattr(engine.wellness, "snapshot", lambda dt=None: MockSnapshot())
         monkeypatch.setattr(engine.ai, "detect_burnout_risk", lambda **kw: {"risk_level": "low"})
         monkeypatch.setattr(engine.ai, "detect_hypomania_signs", lambda **kw: {"detected": False})

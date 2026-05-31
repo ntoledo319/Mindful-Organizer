@@ -1,6 +1,5 @@
 """Reusable typography components."""
 
-
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import QLabel
 

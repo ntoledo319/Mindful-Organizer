@@ -36,8 +36,10 @@ _PRIMARY_MOD = "Cmd" if _IS_MACOS else "Ctrl"
 # Enums
 # ---------------------------------------------------------------------------
 
+
 class ShortcutContext(Enum):
     """Contexts in which shortcuts are active."""
+
     GLOBAL = "global"
     TASKS = "tasks"
     MOOD = "mood"
@@ -52,14 +54,16 @@ class ShortcutContext(Enum):
 # Data classes
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class ShortcutAction:
     """Definition of a single keyboard shortcut."""
+
     action_id: str
     label: str
     description: str
-    default_key: str                                # e.g. "Ctrl+N"
-    current_key: str | None = None               # user-customised key
+    default_key: str  # e.g. "Ctrl+N"
+    current_key: str | None = None  # user-customised key
     context: ShortcutContext = ShortcutContext.GLOBAL
     enabled: bool = True
     callback: Callable[[], None] | None = None
@@ -85,6 +89,7 @@ class ShortcutAction:
 @dataclass
 class ShortcutConflict:
     """Describes a conflict between two shortcut actions."""
+
     key: str
     action_a: str
     action_b: str
@@ -222,6 +227,7 @@ _DEFAULT_SHORTCUTS: list[ShortcutAction] = [
 # ShortcutManager
 # ---------------------------------------------------------------------------
 
+
 class ShortcutManager:
     """Manages keyboard shortcuts with customisation, conflict detection,
     and context awareness.
@@ -268,14 +274,16 @@ class ShortcutManager:
         return list(self._actions.values())
 
     def get_actions_for_context(
-        self, context: ShortcutContext,
+        self,
+        context: ShortcutContext,
     ) -> list[ShortcutAction]:
         """Return shortcuts active in the given context.
 
         Always includes ``GLOBAL`` shortcuts.
         """
         return [
-            a for a in self._actions.values()
+            a
+            for a in self._actions.values()
             if a.context in (ShortcutContext.GLOBAL, context) and a.enabled
         ]
 
@@ -293,7 +301,9 @@ class ShortcutManager:
     # ------------------------------------------------------------------
 
     def set_callback(
-        self, action_id: str, callback: Callable[[], None],
+        self,
+        action_id: str,
+        callback: Callable[[], None],
     ) -> None:
         """Bind a callback function to an action."""
         if action_id in self._actions:
@@ -360,18 +370,23 @@ class ShortcutManager:
                 if pair in seen and seen[pair] != action.action_id:
                     # GLOBAL overlaps if contexts differ
                     if ctx == ShortcutContext.GLOBAL or action.context == ShortcutContext.GLOBAL:
-                        conflicts.append(ShortcutConflict(
-                            key=action.effective_key,
-                            action_a=seen[pair],
-                            action_b=action.action_id,
-                            context=ctx,
-                        ))
+                        conflicts.append(
+                            ShortcutConflict(
+                                key=action.effective_key,
+                                action_a=seen[pair],
+                                action_b=action.action_id,
+                                context=ctx,
+                            )
+                        )
                 else:
                     seen[pair] = action.action_id
         return conflicts
 
     def _find_conflicts_for(
-        self, key: str, context: ShortcutContext, exclude: str = "",
+        self,
+        key: str,
+        context: ShortcutContext,
+        exclude: str = "",
     ) -> list[ShortcutConflict]:
         conflicts: list[ShortcutConflict] = []
         key_lower = key.lower()
@@ -381,13 +396,19 @@ class ShortcutManager:
             if action.effective_key.lower() != key_lower:
                 continue
             # Same context or one is global
-            if action.context == context or action.context == ShortcutContext.GLOBAL or context == ShortcutContext.GLOBAL:
-                conflicts.append(ShortcutConflict(
-                    key=key,
-                    action_a=action.action_id,
-                    action_b=exclude,
-                    context=context,
-                ))
+            if (
+                action.context == context
+                or action.context == ShortcutContext.GLOBAL
+                or context == ShortcutContext.GLOBAL
+            ):
+                conflicts.append(
+                    ShortcutConflict(
+                        key=key,
+                        action_a=action.action_id,
+                        action_b=exclude,
+                        context=context,
+                    )
+                )
         return conflicts
 
     # ------------------------------------------------------------------
@@ -481,10 +502,7 @@ class ShortcutManager:
         contexts_to_show = [ShortcutContext.GLOBAL, context] if context else list(ShortcutContext)
 
         for ctx in contexts_to_show:
-            actions = [
-                a for a in self._actions.values()
-                if a.context == ctx and a.enabled
-            ]
+            actions = [a for a in self._actions.values() if a.context == ctx and a.enabled]
             if not actions:
                 continue
             lines.append("")
@@ -498,7 +516,8 @@ class ShortcutManager:
         return "\n".join(lines)
 
     def overlay_data(
-        self, context: ShortcutContext | None = None,
+        self,
+        context: ShortcutContext | None = None,
     ) -> list[dict[str, str]]:
         """Return structured data for building a shortcuts overlay UI."""
         contexts_to_show: list[ShortcutContext]
@@ -508,13 +527,15 @@ class ShortcutManager:
         for ctx in contexts_to_show:
             for action in self._actions.values():
                 if action.context == ctx and action.enabled:
-                    data.append({
-                        "action_id": action.action_id,
-                        "label": action.label,
-                        "key": action.display_key,
-                        "description": action.description,
-                        "context": ctx.value,
-                    })
+                    data.append(
+                        {
+                            "action_id": action.action_id,
+                            "label": action.label,
+                            "key": action.display_key,
+                            "description": action.description,
+                            "context": ctx.value,
+                        }
+                    )
         return data
 
     # ------------------------------------------------------------------

@@ -1,4 +1,5 @@
 """Tests for the automation rule system."""
+
 from __future__ import annotations
 
 from core.automation_rules import (
@@ -71,14 +72,18 @@ class TestDefaultRules:
         rules = get_default_rules()
         focus_rule = next((r for r in rules if r.trigger == TriggerType.MANUAL_FOCUS), None)
         assert focus_rule is not None
-        close_actions = [a for a in focus_rule.actions if a.action_type == ActionType.CLOSE_APPLICATION]
+        close_actions = [
+            a for a in focus_rule.actions if a.action_type == ActionType.CLOSE_APPLICATION
+        ]
         assert len(close_actions) >= 3
 
     def test_crisis_rule_minimizes_windows(self):
         rules = get_default_rules()
         crisis_rule = next((r for r in rules if r.trigger == TriggerType.MANUAL_CRISIS), None)
         assert crisis_rule is not None
-        minimize_actions = [a for a in crisis_rule.actions if a.action_type == ActionType.MINIMIZE_ALL_WINDOWS]
+        minimize_actions = [
+            a for a in crisis_rule.actions if a.action_type == ActionType.MINIMIZE_ALL_WINDOWS
+        ]
         assert len(minimize_actions) == 1
 
     def test_cooldown_prevents_spam(self):

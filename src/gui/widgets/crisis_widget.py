@@ -69,6 +69,7 @@ def _activate_contact(number: str) -> None:
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _crisis_card() -> QFrame:
     frame = QFrame()
     frame.setObjectName("crisisCard")
@@ -116,8 +117,16 @@ def _calm_button(text: str) -> QPushButton:
 
 _DEFAULT_CRISIS_PLAN: dict[str, Any] = {
     "emergency_contacts": [
-        {"name": "988 Suicide & Crisis Lifeline", "phone": "988", "relationship": "National Hotline"},
-        {"name": "Crisis Text Line", "phone": "Text HOME to 741741", "relationship": "Text Service"},
+        {
+            "name": "988 Suicide & Crisis Lifeline",
+            "phone": "988",
+            "relationship": "National Hotline",
+        },
+        {
+            "name": "Crisis Text Line",
+            "phone": "Text HOME to 741741",
+            "relationship": "Text Service",
+        },
         {"name": "SAMHSA Helpline", "phone": "1-800-662-4357", "relationship": "Substance Abuse"},
     ],
     "personal_contacts": [],
@@ -154,11 +163,13 @@ _DEFAULT_CRISIS_PLAN: dict[str, Any] = {
 # Edit dialog
 # ---------------------------------------------------------------------------
 
+
 class _CrisisPlanEditDialog(QDialog):
     """Dialog for editing the crisis plan."""
 
     def __init__(
-        self, plan: dict[str, Any],
+        self,
+        plan: dict[str, Any],
         parent: QWidget | None = None,
     ) -> None:
         super().__init__(parent)
@@ -170,7 +181,9 @@ class _CrisisPlanEditDialog(QDialog):
         layout.setSpacing(12)
 
         # Personal contacts
-        layout.addWidget(_header_label("Personal Contacts (name | phone | relationship, one per line)"))
+        layout.addWidget(
+            _header_label("Personal Contacts (name | phone | relationship, one per line)")
+        )
         self._personal_edit = QTextEdit()
         self._personal_edit.setPlainText(
             "\n".join(
@@ -234,11 +247,13 @@ class _CrisisPlanEditDialog(QDialog):
         for line in text.strip().split("\n"):
             parts = [p.strip() for p in line.split("|")]
             if len(parts) >= 2 and parts[0]:
-                contacts.append({
-                    "name": parts[0],
-                    "phone": parts[1] if len(parts) > 1 else "",
-                    "relationship": parts[2] if len(parts) > 2 else "",
-                })
+                contacts.append(
+                    {
+                        "name": parts[0],
+                        "phone": parts[1] if len(parts) > 1 else "",
+                        "relationship": parts[2] if len(parts) > 2 else "",
+                    }
+                )
         return contacts
 
     def get_plan(self) -> dict[str, Any]:
@@ -264,6 +279,7 @@ class _CrisisPlanEditDialog(QDialog):
 # ---------------------------------------------------------------------------
 # Widget
 # ---------------------------------------------------------------------------
+
 
 class CrisisWidget(QWidget):
     """Crisis plan quick-access tab -- minimal, calm, large fonts."""
@@ -304,7 +320,9 @@ class CrisisWidget(QWidget):
     def _load_plan(self) -> None:
         if self._crisis_manager and hasattr(self._crisis_manager, "get_quick_access"):
             try:
-                self._plan.update(self._quick_access_to_plan(self._crisis_manager.get_quick_access()))
+                self._plan.update(
+                    self._quick_access_to_plan(self._crisis_manager.get_quick_access())
+                )
                 return
             except Exception as exc:
                 logger.debug(f"Crisis manager load error: {exc}")
@@ -321,31 +339,38 @@ class CrisisWidget(QWidget):
         """Adapt CrisisPlanManager quick-access data to this widget's plan shape."""
         emergency_contacts = []
         for contact in quick.get("crisis_lines", []):
-            emergency_contacts.append({
-                "name": contact.get("name", ""),
-                "phone": contact.get("phone", "") or contact.get("instructions", ""),
-                "relationship": "Crisis line",
-            })
+            emergency_contacts.append(
+                {
+                    "name": contact.get("name", ""),
+                    "phone": contact.get("phone", "") or contact.get("instructions", ""),
+                    "relationship": "Crisis line",
+                }
+            )
         professional_contacts = []
         for contact in quick.get("professionals", []):
-            professional_contacts.append({
-                "name": contact.get("name", ""),
-                "phone": contact.get("phone", ""),
-                "relationship": contact.get("role", "Professional"),
-            })
+            professional_contacts.append(
+                {
+                    "name": contact.get("name", ""),
+                    "phone": contact.get("phone", ""),
+                    "relationship": contact.get("role", "Professional"),
+                }
+            )
         personal_contacts = []
         for contact in quick.get("call_someone", []):
-            personal_contacts.append({
-                "name": contact.get("name", ""),
-                "phone": contact.get("phone", ""),
-                "relationship": contact.get("relationship", ""),
-            })
+            personal_contacts.append(
+                {
+                    "name": contact.get("name", ""),
+                    "phone": contact.get("phone", ""),
+                    "relationship": contact.get("relationship", ""),
+                }
+            )
         return {
             "emergency_contacts": emergency_contacts or _DEFAULT_CRISIS_PLAN["emergency_contacts"],
             "personal_contacts": personal_contacts,
             "professional_contacts": professional_contacts,
             "warning_signs": list(_DEFAULT_CRISIS_PLAN["warning_signs"]),
-            "coping_strategies": quick.get("try_first", []) or _DEFAULT_CRISIS_PLAN["coping_strategies"],
+            "coping_strategies": quick.get("try_first", [])
+            or _DEFAULT_CRISIS_PLAN["coping_strategies"],
             "reasons_for_living": quick.get("reasons_for_living", []),
             "safe_places": quick.get("safe_places", []),
         }
@@ -354,12 +379,15 @@ class CrisisWidget(QWidget):
         if self._crisis_manager and hasattr(self._crisis_manager, "update_plan"):
             try:
                 from wellness.crisis_plan import CrisisPlan
-                self._crisis_manager.update_plan(CrisisPlan(
-                    warning_signs=self._plan.get("warning_signs", []),
-                    coping_strategies=self._plan.get("coping_strategies", []),
-                    safe_places=self._plan.get("safe_places", []),
-                    reasons_for_living=self._plan.get("reasons_for_living", []),
-                ))
+
+                self._crisis_manager.update_plan(
+                    CrisisPlan(
+                        warning_signs=self._plan.get("warning_signs", []),
+                        coping_strategies=self._plan.get("coping_strategies", []),
+                        safe_places=self._plan.get("safe_places", []),
+                        reasons_for_living=self._plan.get("reasons_for_living", []),
+                    )
+                )
                 return
             except Exception as exc:
                 logger.debug(f"Crisis manager save error: {exc}")
@@ -490,9 +518,7 @@ class CrisisWidget(QWidget):
         layout.addWidget(_header_label("Emergency Resources"))
 
         for contact in self._plan.get("emergency_contacts", []):
-            btn = _contact_button(
-                contact.get("name", ""), contact.get("phone", "")
-            )
+            btn = _contact_button(contact.get("name", ""), contact.get("phone", ""))
             layout.addWidget(btn)
         self._root.addWidget(card)
 
@@ -503,9 +529,7 @@ class CrisisWidget(QWidget):
         layout.addWidget(_header_label("Personal Contacts"))
 
         if not contacts:
-            layout.addWidget(
-                _large_label("No personal contacts added yet. Use Edit to add.", 14)
-            )
+            layout.addWidget(_large_label("No personal contacts added yet. Use Edit to add.", 14))
         else:
             for c in contacts:
                 btn = _contact_button(

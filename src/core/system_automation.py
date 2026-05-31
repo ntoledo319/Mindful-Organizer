@@ -12,6 +12,7 @@ Tier gating:
 It is NOT a medical device. It is a productivity-optimisation layer that
 uses psychological data to adapt the computing environment.
 """
+
 from __future__ import annotations
 
 import logging
@@ -151,7 +152,9 @@ class SystemAutomationEngine:
 
     # -- public triggers ------------------------------------------------------
 
-    def trigger(self, trigger_type: TriggerType, context: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+    def trigger(
+        self, trigger_type: TriggerType, context: dict[str, Any] | None = None
+    ) -> list[dict[str, Any]]:
         """Fire all rules matching a trigger and execute (or suggest) their actions."""
         if not self._enabled:
             return [{"status": "disabled", "trigger": trigger_type.name}]
@@ -173,32 +176,38 @@ class SystemAutomationEngine:
             # Cooldown check
             last = self._last_fired.get(rule.name, datetime.min)
             if datetime.now() - last < timedelta(minutes=rule.cooldown_minutes):
-                results.append({
-                    "rule": rule.name,
-                    "status": "cooldown",
-                    "cooldown_minutes": rule.cooldown_minutes,
-                })
+                results.append(
+                    {
+                        "rule": rule.name,
+                        "status": "cooldown",
+                        "cooldown_minutes": rule.cooldown_minutes,
+                    }
+                )
                 if self._can_use_analytics:
                     self.analytics.record_rule_cooldown(rule.name)
                 continue
 
             # Suggestions-only mode: log + notify, but don't act
             if mode == ExecutionMode.SUGGESTIONS_ONLY:
-                results.append({
-                    "rule": rule.name,
-                    "status": "suggested",
-                    "actions": [a.action_type.name for a in rule.actions],
-                    "reason": rule.actions[0].reason if rule.actions else "",
-                })
+                results.append(
+                    {
+                        "rule": rule.name,
+                        "status": "suggested",
+                        "actions": [a.action_type.name for a in rule.actions],
+                        "reason": rule.actions[0].reason if rule.actions else "",
+                    }
+                )
                 continue
 
             # ASK_FIRST mode: return pending for UI confirmation
             if mode == ExecutionMode.ASK_FIRST:
-                results.append({
-                    "rule": rule.name,
-                    "status": "pending_confirmation",
-                    "actions": [a.action_type.name for a in rule.actions],
-                })
+                results.append(
+                    {
+                        "rule": rule.name,
+                        "status": "pending_confirmation",
+                        "actions": [a.action_type.name for a in rule.actions],
+                    }
+                )
                 continue
 
             # AUTONOMOUS mode: execute immediately
@@ -214,18 +223,22 @@ class SystemAutomationEngine:
                     failed += 1
 
             self._last_fired[rule.name] = datetime.now()
-            results.append({
-                "rule": rule.name,
-                "status": "executed",
-                "actions": action_results,
-            })
+            results.append(
+                {
+                    "rule": rule.name,
+                    "status": "executed",
+                    "actions": action_results,
+                }
+            )
 
             if self._can_use_analytics:
                 self.analytics.record_rule_fired(rule.name, succeeded, failed)
 
         return results
 
-    def confirm_pending_rule(self, rule_name: str, actions: list[AutomationAction]) -> dict[str, Any]:
+    def confirm_pending_rule(
+        self, rule_name: str, actions: list[AutomationAction]
+    ) -> dict[str, Any]:
         """Execute a previously pending rule (ASK_FIRST mode)."""
         action_results = []
         succeeded = 0
@@ -340,7 +353,12 @@ class SystemAutomationEngine:
                 duration_minutes=duration_minutes,
             )
         else:
-            focus_result = {"status": "already_active", "session_id": self.focus.current_session.session_id if self.focus.current_session else None}
+            focus_result = {
+                "status": "already_active",
+                "session_id": self.focus.current_session.session_id
+                if self.focus.current_session
+                else None,
+            }
         return {
             "trigger": "manual_focus",
             "automation_results": results,

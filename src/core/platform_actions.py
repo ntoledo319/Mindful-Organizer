@@ -8,6 +8,7 @@ Each backend implements the same interface but uses OS-specific APIs:
 
 Only macOS is fully implemented; others raise NotImplementedError gracefully.
 """
+
 from __future__ import annotations
 
 import logging
@@ -192,7 +193,8 @@ class MacOSBackend(PlatformBackend):
         if not shutil.which("brightness"):
             logger.info(
                 "Hardware brightness control unavailable (the 'brightness' CLI "
-                "is not installed); skipping backlight change to %d%%.", pct
+                "is not installed); skipping backlight change to %d%%.",
+                pct,
             )
             return False
         ok, _ = self._shell(["brightness", str(pct / 100.0)])
@@ -208,30 +210,70 @@ class MacOSBackend(PlatformBackend):
         """
         if not enabled:
             ok, _ = self._shell(
-                ["defaults", "write", "com.apple.CoreBrightness",
-                 "CBUserPreferences", "-dict-add", "CBBlueLightReductionEnabled", "-bool", "false"]
+                [
+                    "defaults",
+                    "write",
+                    "com.apple.CoreBrightness",
+                    "CBUserPreferences",
+                    "-dict-add",
+                    "CBBlueLightReductionEnabled",
+                    "-bool",
+                    "false",
+                ]
             )
             return ok
 
         # Enable night shift
         ok1, _ = self._shell(
-            ["defaults", "write", "com.apple.CoreBrightness",
-             "CBUserPreferences", "-dict-add", "CBBlueLightReductionEnabled", "-bool", "true"]
+            [
+                "defaults",
+                "write",
+                "com.apple.CoreBrightness",
+                "CBUserPreferences",
+                "-dict-add",
+                "CBBlueLightReductionEnabled",
+                "-bool",
+                "true",
+            ]
         )
         # Map intensity 0-100 to a time-based schedule (sunset-sunrise)
         # Night Shift doesn't expose fine-grained intensity control via CLI,
         # so we use the warmest setting for high intensity.
         if intensity >= 70:
             ok2, _ = self._shell(
-                ["defaults", "write", "com.apple.CoreBrightness",
-                 "CBUserPreferences", "-dict-add", "CBBlueLightReductionSchedule",
-                 "-dict", "transitionStart", "-string", "18:00", "transitionEnd", "-string", "08:00"]
+                [
+                    "defaults",
+                    "write",
+                    "com.apple.CoreBrightness",
+                    "CBUserPreferences",
+                    "-dict-add",
+                    "CBBlueLightReductionSchedule",
+                    "-dict",
+                    "transitionStart",
+                    "-string",
+                    "18:00",
+                    "transitionEnd",
+                    "-string",
+                    "08:00",
+                ]
             )
         else:
             ok2, _ = self._shell(
-                ["defaults", "write", "com.apple.CoreBrightness",
-                 "CBUserPreferences", "-dict-add", "CBBlueLightReductionSchedule",
-                 "-dict", "transitionStart", "-string", "20:00", "transitionEnd", "-string", "06:00"]
+                [
+                    "defaults",
+                    "write",
+                    "com.apple.CoreBrightness",
+                    "CBUserPreferences",
+                    "-dict-add",
+                    "CBBlueLightReductionSchedule",
+                    "-dict",
+                    "transitionStart",
+                    "-string",
+                    "20:00",
+                    "transitionEnd",
+                    "-string",
+                    "06:00",
+                ]
             )
         # Restart ControlCenter to apply
         self._shell(["killall", "ControlCenter"])
@@ -241,12 +283,12 @@ class MacOSBackend(PlatformBackend):
         dark = theme.lower() == "dark"
         script = (
             'tell application "System Events" to tell appearance preferences to '
-            f'{"set" if dark else "set"} dark mode to {"true" if dark else "false"}'
+            f"{'set' if dark else 'set'} dark mode to {'true' if dark else 'false'}"
         )
         # Actually the correct AppleScript:
         script = (
             'tell application "System Events" to tell appearance preferences to '
-            f'set dark mode to {str(dark).lower()}'
+            f"set dark mode to {str(dark).lower()}"
         )
         ok, _ = self._run(script)
         return ok
@@ -275,13 +317,17 @@ class MacOSBackend(PlatformBackend):
         # a literal "~" and a literal "$(date ...)" to subprocess with no shell,
         # so neither expanded and the write silently failed while still claiming
         # success. Use the real, expanded path here.
-        byhost = (
-            Path.home()
-            / "Library/Preferences/ByHost/com.apple.notificationcenterui"
-        )
+        byhost = Path.home() / "Library/Preferences/ByHost/com.apple.notificationcenterui"
         ok, _ = self._shell(
-            ["defaults", "-currentHost", "write", str(byhost),
-             "doNotDisturb", "-boolean", str(enabled).lower()]
+            [
+                "defaults",
+                "-currentHost",
+                "write",
+                str(byhost),
+                "doNotDisturb",
+                "-boolean",
+                str(enabled).lower(),
+            ]
         )
         if ok:
             self._shell(["killall", "NotificationCenter"])
@@ -290,20 +336,23 @@ class MacOSBackend(PlatformBackend):
 
         logger.info(
             "Could not change Do-Not-Disturb on this macOS version. To enable it, "
-            "create a Shortcut named '%s' in Shortcuts.app.", shortcut
+            "create a Shortcut named '%s' in Shortcuts.app.",
+            shortcut,
         )
         return False
 
     # -- windows --------------------------------------------------------------
 
     def minimize_all_windows(self) -> bool:
-        script = 'tell application "System Events" to keystroke "m" using {command down, option down}'
+        script = (
+            'tell application "System Events" to keystroke "m" using {command down, option down}'
+        )
         ok, _ = self._run(script)
         if not ok:
             # Fallback: hide all visible apps; report the fallback's real result.
             ok, _ = self._run(
                 'tell application "Finder" to set visible of every process '
-                'whose visible is true to false'
+                "whose visible is true to false"
             )
         return ok
 
@@ -311,7 +360,7 @@ class MacOSBackend(PlatformBackend):
         # macOS has no single "restore all"; report the real result of the attempt.
         ok, _ = self._run(
             'tell application "Finder" to set visible of every process '
-            'whose visible is false to true'
+            "whose visible is false to true"
         )
         return ok
 
@@ -392,6 +441,7 @@ def get_backend() -> PlatformBackend:
         return MacOSBackend()
     logger.warning(
         "Live system automation is macOS-only for now; on %s these actions are "
-        "inert. Tracking and therapeutic features work normally.", system
+        "inert. Tracking and therapeutic features work normally.",
+        system,
     )
     return StubBackend()

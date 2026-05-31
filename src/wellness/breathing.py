@@ -18,6 +18,7 @@ from core.constants import Condition
 
 class BreathingExerciseType(Enum):
     """Available breathing exercise types."""
+
     BOX_BREATHING = "box_breathing"
     FOUR_SEVEN_EIGHT = "four_seven_eight"
     DEEP_BELLY = "deep_belly"
@@ -28,6 +29,7 @@ class BreathingExerciseType(Enum):
 
 class BreathPhase(Enum):
     """Phases within a breathing cycle."""
+
     INHALE = "inhale"
     HOLD_IN = "hold_in"
     EXHALE = "exhale"
@@ -43,6 +45,7 @@ class BreathPhaseData:
         duration_seconds: How long this phase lasts.
         instruction: Display text for the user during this phase.
     """
+
     phase: BreathPhase
     duration_seconds: float
     instruction: str
@@ -61,6 +64,7 @@ class BreathingExercise:
         condition_suitability: Conditions this exercise helps with.
         difficulty: Difficulty rating from 1 (easiest) to 5.
     """
+
     exercise_type: BreathingExerciseType
     name: str
     description: str
@@ -93,14 +97,16 @@ class BreathingExercise:
         elapsed = 0.0
         for cycle_num in range(1, num_cycles + 1):
             for phase_data in self.phases:
-                timer_data.append({
-                    "cycle": cycle_num,
-                    "phase": phase_data.phase.value,
-                    "duration_seconds": phase_data.duration_seconds,
-                    "instruction": phase_data.instruction,
-                    "start_at": elapsed,
-                    "end_at": elapsed + phase_data.duration_seconds,
-                })
+                timer_data.append(
+                    {
+                        "cycle": cycle_num,
+                        "phase": phase_data.phase.value,
+                        "duration_seconds": phase_data.duration_seconds,
+                        "instruction": phase_data.instruction,
+                        "start_at": elapsed,
+                        "end_at": elapsed + phase_data.duration_seconds,
+                    }
+                )
                 elapsed += phase_data.duration_seconds
         return timer_data
 
@@ -121,6 +127,7 @@ class BreathingSession:
         completed: Whether the session was finished fully.
         notes: Optional user notes about the session.
     """
+
     session_id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
     exercise_type: BreathingExerciseType = BreathingExerciseType.BOX_BREATHING
     cycles_target: int = 4
@@ -218,8 +225,11 @@ def _build_exercise_library() -> dict[BreathingExerciseType, BreathingExercise]:
         ],
         default_cycles=4,
         condition_suitability={
-            Condition.ANXIETY, Condition.PTSD, Condition.GENERAL,
-            Condition.PANIC, Condition.OCD,
+            Condition.ANXIETY,
+            Condition.PTSD,
+            Condition.GENERAL,
+            Condition.PANIC,
+            Condition.OCD,
         },
         difficulty=2,
     )
@@ -239,7 +249,9 @@ def _build_exercise_library() -> dict[BreathingExerciseType, BreathingExercise]:
         ],
         default_cycles=4,
         condition_suitability={
-            Condition.ANXIETY, Condition.INSOMNIA, Condition.GENERAL,
+            Condition.ANXIETY,
+            Condition.INSOMNIA,
+            Condition.GENERAL,
             Condition.PANIC,
         },
         difficulty=3,
@@ -254,15 +266,18 @@ def _build_exercise_library() -> dict[BreathingExerciseType, BreathingExercise]:
             "hand should rise. Reduces cortisol and promotes relaxation."
         ),
         phases=[
-            BreathPhaseData(BreathPhase.INHALE, 5.0,
-                            "Breathe deeply into your belly, feel it expand"),
-            BreathPhaseData(BreathPhase.EXHALE, 5.0,
-                            "Let your belly fall as you exhale slowly"),
+            BreathPhaseData(
+                BreathPhase.INHALE, 5.0, "Breathe deeply into your belly, feel it expand"
+            ),
+            BreathPhaseData(BreathPhase.EXHALE, 5.0, "Let your belly fall as you exhale slowly"),
         ],
         default_cycles=6,
         condition_suitability={
-            Condition.ANXIETY, Condition.DEPRESSION, Condition.GENERAL,
-            Condition.PTSD, Condition.PANIC,
+            Condition.ANXIETY,
+            Condition.DEPRESSION,
+            Condition.GENERAL,
+            Condition.PTSD,
+            Condition.PANIC,
         },
         difficulty=1,
     )
@@ -276,17 +291,17 @@ def _build_exercise_library() -> dict[BreathingExerciseType, BreathingExercise]:
             "into rest-and-digest mode."
         ),
         phases=[
-            BreathPhaseData(BreathPhase.INHALE, 4.0,
-                            "Breathe in slowly and steadily"),
-            BreathPhaseData(BreathPhase.HOLD_IN, 2.0,
-                            "Pause briefly at the top"),
-            BreathPhaseData(BreathPhase.EXHALE, 6.0,
-                            "Exhale slowly, twice as long as you inhaled"),
+            BreathPhaseData(BreathPhase.INHALE, 4.0, "Breathe in slowly and steadily"),
+            BreathPhaseData(BreathPhase.HOLD_IN, 2.0, "Pause briefly at the top"),
+            BreathPhaseData(BreathPhase.EXHALE, 6.0, "Exhale slowly, twice as long as you inhaled"),
         ],
         default_cycles=5,
         condition_suitability={
-            Condition.ANXIETY, Condition.PANIC, Condition.PTSD,
-            Condition.GENERAL, Condition.OCD,
+            Condition.ANXIETY,
+            Condition.PANIC,
+            Condition.PTSD,
+            Condition.GENERAL,
+            Condition.OCD,
         },
         difficulty=2,
     )
@@ -300,14 +315,14 @@ def _build_exercise_library() -> dict[BreathingExerciseType, BreathingExercise]:
             "Similar to Kapalabhati. Use cautiously with anxiety conditions."
         ),
         phases=[
-            BreathPhaseData(BreathPhase.INHALE, 1.0,
-                            "Quick inhale through the nose"),
-            BreathPhaseData(BreathPhase.EXHALE, 1.0,
-                            "Forceful exhale through the nose"),
+            BreathPhaseData(BreathPhase.INHALE, 1.0, "Quick inhale through the nose"),
+            BreathPhaseData(BreathPhase.EXHALE, 1.0, "Forceful exhale through the nose"),
         ],
         default_cycles=10,
         condition_suitability={
-            Condition.DEPRESSION, Condition.ADHD, Condition.GENERAL,
+            Condition.DEPRESSION,
+            Condition.ADHD,
+            Condition.GENERAL,
         },
         difficulty=2,
     )
@@ -321,19 +336,24 @@ def _build_exercise_library() -> dict[BreathingExerciseType, BreathingExercise]:
             "Helpful during dissociation or flashbacks."
         ),
         phases=[
-            BreathPhaseData(BreathPhase.INHALE, 4.0,
-                            "Breathe in; feel your feet pressing the ground"),
-            BreathPhaseData(BreathPhase.HOLD_IN, 2.0,
-                            "Notice the weight of your body in your seat"),
-            BreathPhaseData(BreathPhase.EXHALE, 6.0,
-                            "Exhale and let tension drain down through your feet"),
-            BreathPhaseData(BreathPhase.HOLD_OUT, 2.0,
-                            "Rest; feel gravity supporting you"),
+            BreathPhaseData(
+                BreathPhase.INHALE, 4.0, "Breathe in; feel your feet pressing the ground"
+            ),
+            BreathPhaseData(
+                BreathPhase.HOLD_IN, 2.0, "Notice the weight of your body in your seat"
+            ),
+            BreathPhaseData(
+                BreathPhase.EXHALE, 6.0, "Exhale and let tension drain down through your feet"
+            ),
+            BreathPhaseData(BreathPhase.HOLD_OUT, 2.0, "Rest; feel gravity supporting you"),
         ],
         default_cycles=5,
         condition_suitability={
-            Condition.PTSD, Condition.ANXIETY, Condition.PANIC,
-            Condition.OCD, Condition.GENERAL,
+            Condition.PTSD,
+            Condition.ANXIETY,
+            Condition.PANIC,
+            Condition.OCD,
+            Condition.GENERAL,
         },
         difficulty=2,
     )
@@ -348,9 +368,7 @@ class BreathingManager:
         data_dir: Directory to persist session history.
     """
 
-    EXERCISE_LIBRARY: dict[BreathingExerciseType, BreathingExercise] = (
-        _build_exercise_library()
-    )
+    EXERCISE_LIBRARY: dict[BreathingExerciseType, BreathingExercise] = _build_exercise_library()
 
     def __init__(self, data_dir: Path) -> None:
         self.data_dir = data_dir
@@ -378,9 +396,7 @@ class BreathingManager:
 
     # ── exercise access ──────────────────────────────────────────
 
-    def get_exercise(
-        self, exercise_type: BreathingExerciseType
-    ) -> BreathingExercise:
+    def get_exercise(self, exercise_type: BreathingExerciseType) -> BreathingExercise:
         """Retrieve a breathing exercise definition by type.
 
         Args:
@@ -506,13 +522,14 @@ class BreathingManager:
 
             # Historical effectiveness for this exercise
             past = [
-                s for s in self._sessions
-                if s.exercise_type == exercise.exercise_type
-                and s.mood_improvement is not None
+                s
+                for s in self._sessions
+                if s.exercise_type == exercise.exercise_type and s.mood_improvement is not None
             ]
             if past:
                 avg_improvement = sum(
-                    s.mood_improvement for s in past  # type: ignore[misc]
+                    s.mood_improvement
+                    for s in past  # type: ignore[misc]
                 ) / len(past)
                 score += avg_improvement * 5
 
@@ -551,12 +568,9 @@ class BreathingManager:
 
         # Average mood improvement
         improvements = [
-            s.mood_improvement for s in self._sessions
-            if s.mood_improvement is not None
+            s.mood_improvement for s in self._sessions if s.mood_improvement is not None
         ]
-        avg_improvement = (
-            sum(improvements) / len(improvements) if improvements else None
-        )
+        avg_improvement = sum(improvements) / len(improvements) if improvements else None
 
         # Total practice time (approximate from cycles and exercise durations)
         total_seconds = 0.0

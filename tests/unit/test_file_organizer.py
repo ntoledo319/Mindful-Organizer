@@ -42,8 +42,8 @@ def source_with_files(tmp_path):
 # File categorization
 # ---------------------------------------------------------------------------
 
-class TestFileCategorization:
 
+class TestFileCategorization:
     def test_categorize_pdf(self, fo, tmp_path):
         f = tmp_path / "doc.pdf"
         f.touch()
@@ -94,8 +94,8 @@ class TestFileCategorization:
 # Organize files (real move)
 # ---------------------------------------------------------------------------
 
-class TestOrganizeFiles:
 
+class TestOrganizeFiles:
     def test_organize_creates_target_dirs(self, fo, source_with_files, tmp_path):
         target = tmp_path / "organized"
         summary = fo.organize_files(source_with_files, target)
@@ -150,8 +150,8 @@ class TestOrganizeFiles:
 # Dry-run
 # ---------------------------------------------------------------------------
 
-class TestDryRun:
 
+class TestDryRun:
     def test_dry_run_does_not_move(self, fo, source_with_files, tmp_path):
         target = tmp_path / "dry_target"
         summary = fo.dry_run(source_with_files, target)
@@ -179,8 +179,8 @@ class TestDryRun:
 # Undo
 # ---------------------------------------------------------------------------
 
-class TestUndo:
 
+class TestUndo:
     def test_undo_restores_files(self, fo, source_with_files, tmp_path):
         target = tmp_path / "undo_target"
         fo.organize_files(source_with_files, target)
@@ -221,8 +221,8 @@ class TestUndo:
 # Custom rules
 # ---------------------------------------------------------------------------
 
-class TestCustomRules:
 
+class TestCustomRules:
     def test_add_rule(self, fo):
         fo.add_rule("extension", ".log", "logs")
         assert len(fo.custom_rules) == 1
@@ -280,8 +280,8 @@ class TestCustomRules:
 # Duplicate detection
 # ---------------------------------------------------------------------------
 
-class TestDuplicateDetection:
 
+class TestDuplicateDetection:
     def test_find_duplicates(self, fo, tmp_path):
         d = tmp_path / "dupes"
         d.mkdir()
@@ -328,8 +328,8 @@ class TestDuplicateDetection:
 # File statistics
 # ---------------------------------------------------------------------------
 
-class TestFileStatistics:
 
+class TestFileStatistics:
     def test_get_statistics(self, fo, source_with_files):
         stats = fo.get_file_statistics(source_with_files)
 
@@ -363,8 +363,8 @@ class TestFileStatistics:
 # Archive old files
 # ---------------------------------------------------------------------------
 
-class TestArchiveOldFiles:
 
+class TestArchiveOldFiles:
     def test_archive_old_files(self, fo, tmp_path):
         d = tmp_path / "archive_src"
         d.mkdir()
@@ -408,8 +408,8 @@ class TestArchiveOldFiles:
 # Folder structure setup
 # ---------------------------------------------------------------------------
 
-class TestFolderStructure:
 
+class TestFolderStructure:
     def test_setup_folder_structure(self, fo):
         fo.setup_folder_structure()
         files_dir = fo.data_dir / "files"
@@ -423,8 +423,8 @@ class TestFolderStructure:
 # Search
 # ---------------------------------------------------------------------------
 
-class TestSearch:
 
+class TestSearch:
     def test_search_files(self, fo):
         # Set up organized directory with files
         files_dir = fo.data_dir / "files" / "documents"
@@ -454,8 +454,8 @@ class TestSearch:
 # Configuration backup
 # ---------------------------------------------------------------------------
 
-class TestBackup:
 
+class TestBackup:
     def test_create_backup(self, fo):
         fo.add_rule("extension", ".log", "logs")
         fo.create_backup()
@@ -475,8 +475,8 @@ class TestBackup:
 # Organization stats
 # ---------------------------------------------------------------------------
 
-class TestOrganizationStats:
 
+class TestOrganizationStats:
     def test_stats_from_history(self, fo, source_with_files, tmp_path):
         fo.organize_files(source_with_files, tmp_path / "org_out")
         stats = fo.get_organization_stats()
@@ -500,8 +500,8 @@ class TestOrganizationStats:
 # Persistence (config & history)
 # ---------------------------------------------------------------------------
 
-class TestPersistence:
 
+class TestPersistence:
     def test_config_saved_and_loaded(self, tmp_data_dir):
         fo1 = FileOrganizer(tmp_data_dir)
         fo1.config["archive_days"] = 30
@@ -523,7 +523,9 @@ class TestPersistence:
     def test_history_capped_at_1000(self, tmp_data_dir):
         fo = FileOrganizer(tmp_data_dir)
         for i in range(1050):
-            fo.history.append({"action": "move", "source": f"/s{i}", "target": f"/t{i}", "timestamp": ""})
+            fo.history.append(
+                {"action": "move", "source": f"/s{i}", "target": f"/t{i}", "timestamp": ""}
+            )
         fo.save_history()
         del fo
 

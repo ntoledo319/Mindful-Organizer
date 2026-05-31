@@ -31,6 +31,7 @@ class WearableSyncManager:
     def __init__(self, db_manager: DatabaseManager | None = None) -> None:
         if db_manager is None:
             from core.database import DATA_DIR
+
             self.db = DatabaseManager(DATA_DIR / "mindful_organizer.db")
             self.db.initialize()
         else:

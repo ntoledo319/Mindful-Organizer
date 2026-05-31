@@ -106,6 +106,7 @@ def _daily_prompt(conditions: list[str]) -> str:
 # Widget
 # ---------------------------------------------------------------------------
 
+
 class JournalingWidget(QWidget):
     """Journaling tab with prompts, editor, history, and streak tracking."""
 
@@ -282,9 +283,7 @@ class JournalingWidget(QWidget):
         self._mood_after_slider.setRange(1, 10)
         self._mood_after_slider.setValue(5)
         self._mood_after_val = BodyLabel("5", self._theme)
-        self._mood_after_slider.valueChanged.connect(
-            lambda v: self._mood_after_val.setText(str(v))
-        )
+        self._mood_after_slider.valueChanged.connect(lambda v: self._mood_after_val.setText(str(v)))
         mood_after_row.addWidget(self._mood_after_slider)
         mood_after_row.addWidget(self._mood_after_val)
         layout.addLayout(mood_after_row)
@@ -380,6 +379,7 @@ class JournalingWidget(QWidget):
         category = self._prompt_category.currentText()
         pool = _PROMPTS.get(category, _PROMPTS["General"])
         import random
+
         self._prompt_label.setText(random.choice(pool))
 
     def _get_conditions(self) -> list[str]:
@@ -444,6 +444,7 @@ class JournalingWidget(QWidget):
         """Return True if the entry contains explicit self-harm/ideation language."""
         try:
             from wellness.journal_analyzer import JournalAnalyzer
+
             return JournalAnalyzer().analyze(text).risk_flagged
         except Exception as exc:  # analysis must never block saving
             logger.debug("Journal risk analysis failed: %s", exc)
@@ -504,9 +505,9 @@ class JournalingWidget(QWidget):
         if not self._entries:
             self._streak_label.setText("Current streak: 0 days")
             return
-        dates = sorted({
-            e.get("date", e.get("timestamp", "")[:10]) for e in self._entries
-        }, reverse=True)
+        dates = sorted(
+            {e.get("date", e.get("timestamp", "")[:10]) for e in self._entries}, reverse=True
+        )
         streak = 0
         today = date.today()
         for i, d in enumerate(dates):

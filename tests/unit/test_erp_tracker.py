@@ -7,7 +7,6 @@ Covers hierarchy items, exposure sessions, SUDS tracking, habituation
 analysis, and response prevention logging.
 """
 
-
 import pytest
 
 from core.database import DatabaseManager
@@ -51,8 +50,8 @@ def db(tmp_data_dir):
 # Hierarchy items
 # ---------------------------------------------------------------------------
 
-class TestAddHierarchyItem:
 
+class TestAddHierarchyItem:
     def test_add_item(self, db):
         result = db.execute(
             "INSERT INTO erp_hierarchy (trigger_description, suds_initial, category) "
@@ -66,8 +65,9 @@ class TestAddHierarchyItem:
             "INSERT INTO erp_hierarchy (trigger_description, suds_initial) VALUES (?, ?)",
             ("Leaving door unlocked", 80),
         )
-        result = db.execute("SELECT * FROM erp_hierarchy WHERE trigger_description = ?",
-                            ("Leaving door unlocked",))
+        result = db.execute(
+            "SELECT * FROM erp_hierarchy WHERE trigger_description = ?", ("Leaving door unlocked",)
+        )
         assert result.row_count == 1
         assert result.rows[0]["suds_initial"] == 80
 
@@ -83,9 +83,7 @@ class TestAddHierarchyItem:
                 (desc, suds),
             )
 
-        result = db.execute(
-            "SELECT * FROM erp_hierarchy ORDER BY suds_initial ASC"
-        )
+        result = db.execute("SELECT * FROM erp_hierarchy ORDER BY suds_initial ASC")
         assert result.row_count == 3
         suds_values = [r["suds_initial"] for r in result.rows]
         assert suds_values == sorted(suds_values)
@@ -95,8 +93,8 @@ class TestAddHierarchyItem:
 # Exposure sessions
 # ---------------------------------------------------------------------------
 
-class TestRecordExposureSession:
 
+class TestRecordExposureSession:
     def test_record_session(self, db):
         # First create a hierarchy item
         h_result = db.execute(
@@ -126,9 +124,7 @@ class TestRecordExposureSession:
             (h_id, 50, 60, 30, 20),
         )
 
-        result = db.execute(
-            "SELECT * FROM erp_sessions WHERE hierarchy_id = ?", (h_id,)
-        )
+        result = db.execute("SELECT * FROM erp_sessions WHERE hierarchy_id = ?", (h_id,))
         assert result.row_count == 1
 
 
@@ -136,8 +132,8 @@ class TestRecordExposureSession:
 # SUDS tracking
 # ---------------------------------------------------------------------------
 
-class TestSUDSTracking:
 
+class TestSUDSTracking:
     def test_suds_decreases_over_sessions(self, db):
         """Multiple sessions should show SUDS habituation."""
         h_result = db.execute(
@@ -167,6 +163,7 @@ class TestSUDSTracking:
     def test_suds_range_validation(self, db):
         """SUDS must be between 0 and 100."""
         import sqlite3
+
         with pytest.raises(sqlite3.IntegrityError):
             db.execute(
                 "INSERT INTO erp_hierarchy (trigger_description, suds_initial) VALUES (?, ?)",
@@ -178,8 +175,8 @@ class TestSUDSTracking:
 # Habituation analysis
 # ---------------------------------------------------------------------------
 
-class TestHabituationAnalysis:
 
+class TestHabituationAnalysis:
     def test_habituation_detected(self, db):
         """Compute average SUDS reduction across sessions."""
         h_result = db.execute(
@@ -228,8 +225,8 @@ class TestHabituationAnalysis:
 # Response prevention log
 # ---------------------------------------------------------------------------
 
-class TestResponsePreventionLog:
 
+class TestResponsePreventionLog:
     def test_response_prevented_logged(self, db):
         h_result = db.execute(
             "INSERT INTO erp_hierarchy (trigger_description, suds_initial) VALUES (?, ?)",
@@ -244,9 +241,7 @@ class TestResponsePreventionLog:
             (h_id, 75, 40, 1, "Did not wash hands for 30 minutes", 30),
         )
 
-        result = db.execute(
-            "SELECT * FROM erp_sessions WHERE hierarchy_id = ?", (h_id,)
-        )
+        result = db.execute("SELECT * FROM erp_sessions WHERE hierarchy_id = ?", (h_id,))
         session = result.rows[0]
         assert session["response_prevented"] == 1
         assert "Did not wash" in session["response_description"]
@@ -287,8 +282,7 @@ class TestResponsePreventionLog:
             )
 
         result = db.execute(
-            "SELECT AVG(response_prevented) * 100 AS rate "
-            "FROM erp_sessions WHERE hierarchy_id = ?",
+            "SELECT AVG(response_prevented) * 100 AS rate FROM erp_sessions WHERE hierarchy_id = ?",
             (h_id,),
         )
         rate = result.rows[0]["rate"]

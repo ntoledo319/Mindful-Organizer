@@ -26,8 +26,10 @@ DATA_DIR = get_data_dir(create=False)
 # Enums
 # ---------------------------------------------------------------------------
 
+
 class NotificationType(Enum):
     """Categories of notifications the app can send."""
+
     MOOD_CHECKIN = "mood_checkin"
     TASK_DEADLINE = "task_deadline"
     MEDICATION_REMINDER = "medication_reminder"
@@ -40,6 +42,7 @@ class NotificationType(Enum):
 
 class Priority(Enum):
     """Notification urgency levels."""
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -52,6 +55,7 @@ class Priority(Enum):
 
 class DeliveryStyle(Enum):
     """How a notification should be presented to the user."""
+
     IMMEDIATE = "immediate"
     SCHEDULED = "scheduled"
     NON_INTRUSIVE = "non_intrusive"
@@ -60,6 +64,7 @@ class DeliveryStyle(Enum):
 
 class NotificationStatus(Enum):
     """Lifecycle status of a notification."""
+
     PENDING = "pending"
     DELIVERED = "delivered"
     READ = "read"
@@ -72,6 +77,7 @@ class NotificationStatus(Enum):
 # Data classes
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class RecurringPattern:
     """Cron-like recurring schedule.
@@ -79,20 +85,23 @@ class RecurringPattern:
     Fields mirror simplified cron: minute, hour, day_of_week (0=Mon..6=Sun),
     day_of_month, interval_minutes.  ``None`` means "any / not set".
     """
+
     minute: int | None = None
     hour: int | None = None
-    day_of_week: int | None = None          # 0=Monday .. 6=Sunday
+    day_of_week: int | None = None  # 0=Monday .. 6=Sunday
     day_of_month: int | None = None
-    interval_minutes: int | None = None     # simple repeat every N minutes
+    interval_minutes: int | None = None  # simple repeat every N minutes
 
     def to_json(self) -> str:
-        return json.dumps({
-            "minute": self.minute,
-            "hour": self.hour,
-            "day_of_week": self.day_of_week,
-            "day_of_month": self.day_of_month,
-            "interval_minutes": self.interval_minutes,
-        })
+        return json.dumps(
+            {
+                "minute": self.minute,
+                "hour": self.hour,
+                "day_of_week": self.day_of_week,
+                "day_of_month": self.day_of_month,
+                "interval_minutes": self.interval_minutes,
+            }
+        )
 
     @classmethod
     def from_json(cls, raw: str) -> "RecurringPattern":
@@ -121,15 +130,11 @@ class RecurringPattern:
                 continue
             if self.day_of_week is not None and candidate.weekday() != self.day_of_week:
                 candidate += timedelta(days=1)
-                candidate = candidate.replace(
-                    hour=self.hour or 0, minute=self.minute or 0
-                )
+                candidate = candidate.replace(hour=self.hour or 0, minute=self.minute or 0)
                 continue
             if self.day_of_month is not None and candidate.day != self.day_of_month:
                 candidate += timedelta(days=1)
-                candidate = candidate.replace(
-                    hour=self.hour or 0, minute=self.minute or 0
-                )
+                candidate = candidate.replace(hour=self.hour or 0, minute=self.minute or 0)
                 continue
             return candidate
         return after + timedelta(days=1)
@@ -138,6 +143,7 @@ class RecurringPattern:
 @dataclass
 class Notification:
     """In-memory representation of a notification."""
+
     id: int | None = None
     type: NotificationType = NotificationType.CUSTOM
     title: str = ""
@@ -235,7 +241,9 @@ _CONDITION_DELIVERY: dict[str, dict[NotificationType, DeliveryStyle]] = {
     },
 }
 
-_DEFAULT_DELIVERY: dict[NotificationType, DeliveryStyle] = dict.fromkeys(NotificationType, DeliveryStyle.SCHEDULED)
+_DEFAULT_DELIVERY: dict[NotificationType, DeliveryStyle] = dict.fromkeys(
+    NotificationType, DeliveryStyle.SCHEDULED
+)
 
 
 def delivery_style_for(
@@ -253,6 +261,7 @@ def delivery_style_for(
 # ---------------------------------------------------------------------------
 # NotificationManager
 # ---------------------------------------------------------------------------
+
 
 class NotificationManager:
     """Manages the full lifecycle of user notifications.
@@ -361,6 +370,7 @@ class NotificationManager:
         """Return the TableName enum value for notifications."""
         # Avoid a hard import; works with any object that has a .value == 'notifications'
         from core.database import TableName
+
         return TableName.NOTIFICATIONS
 
     # ------------------------------------------------------------------
@@ -491,7 +501,8 @@ class NotificationManager:
         """Snooze a notification for *duration*."""
         snooze_until = (datetime.now() + duration).isoformat()
         self._db.update(
-            self._table(), notification_id,
+            self._table(),
+            notification_id,
             snoozed_until=snooze_until,
             delivered_at=None,  # reset so it appears due again
         )
@@ -625,7 +636,6 @@ class NotificationManager:
             scheduled_at=remind_at,
             metadata={"task_title": task_title, "deadline": deadline.isoformat()},
         )
-
 
     # ------------------------------------------------------------------
     # Stats

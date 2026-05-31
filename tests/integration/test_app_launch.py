@@ -8,7 +8,7 @@ def test_app_launch():
     process = subprocess.Popen(
         [sys.executable, str(Path(__file__).resolve().parents[2] / "src" / "main.py"), "--help"],
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        stderr=subprocess.PIPE,
     )
     stdout, stderr = process.communicate(timeout=5)
     assert process.returncode == 0

@@ -5,6 +5,7 @@ This file re-exports the framework-agnostic bus so existing imports
 keep working during the Tauri/Next.js migration. New code should import
 from ``core.state_bus`` directly.
 """
+
 from core.state_bus import (
     Signal,
     StateBus,

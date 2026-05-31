@@ -1,6 +1,7 @@
 """
 System optimization module for managing system resources.
 """
+
 import contextlib
 import json
 from pathlib import Path
@@ -20,30 +21,30 @@ class SystemOptimizer:
                 self.config = json.load(f)
         else:
             self.config = {
-                'cpu_threshold': 80,
-                'memory_threshold': 80,
-                'disk_threshold': 90,
-                'optimization_mode': 'balanced'
+                "cpu_threshold": 80,
+                "memory_threshold": 80,
+                "disk_threshold": 90,
+                "optimization_mode": "balanced",
             }
             self.save_config()
 
     def save_config(self):
-        with open(self.config_file, 'w') as f:
+        with open(self.config_file, "w") as f:
             json.dump(self.config, f)
 
     def get_system_stats(self) -> dict:
         return {
-            'cpu_percent': psutil.cpu_percent(),
-            'memory_percent': psutil.virtual_memory().percent,
-            'disk_percent': psutil.disk_usage('/').percent
+            "cpu_percent": psutil.cpu_percent(),
+            "memory_percent": psutil.virtual_memory().percent,
+            "disk_percent": psutil.disk_usage("/").percent,
         }
 
     def get_process_list(self) -> list[dict]:
         processes = []
-        for proc in psutil.process_iter(['pid', 'name', 'cpu_percent', 'memory_percent']):
+        for proc in psutil.process_iter(["pid", "name", "cpu_percent", "memory_percent"]):
             with contextlib.suppress(psutil.NoSuchProcess, psutil.AccessDenied):
                 processes.append(proc.info)
-        return sorted(processes, key=lambda x: x['cpu_percent'], reverse=True)
+        return sorted(processes, key=lambda x: x["cpu_percent"], reverse=True)
 
     def optimize_system(self):
         stats = self.get_system_stats()
@@ -52,13 +53,15 @@ class SystemOptimizer:
         # Implement optimization logic based on system stats and process list
         recommendations = []
 
-        if stats['cpu_percent'] > self.config['cpu_threshold']:
-            recommendations.append("High CPU usage detected. Consider closing resource-intensive applications.")
+        if stats["cpu_percent"] > self.config["cpu_threshold"]:
+            recommendations.append(
+                "High CPU usage detected. Consider closing resource-intensive applications."
+            )
 
-        if stats['memory_percent'] > self.config['memory_threshold']:
+        if stats["memory_percent"] > self.config["memory_threshold"]:
             recommendations.append("High memory usage detected. Consider freeing up memory.")
 
-        if stats['disk_percent'] > self.config['disk_threshold']:
+        if stats["disk_percent"] > self.config["disk_threshold"]:
             recommendations.append("Low disk space. Consider cleaning up unnecessary files.")
 
         return recommendations

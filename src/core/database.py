@@ -339,14 +339,14 @@ _MIGRATIONS: dict[int, list[str]] = {
     # permits multiple NULLs in SQLite, so v3 never caught this. randomblob(16)
     # gives each orphan a distinct id that the UNIQUE index then enforces.
     4: [
-        "UPDATE tasks SET guid = lower(hex(randomblob(16))) "
-        "WHERE guid IS NULL OR guid = '';",
+        "UPDATE tasks SET guid = lower(hex(randomblob(16))) WHERE guid IS NULL OR guid = '';",
     ],
 }
 
 
 class TableName(Enum):
     """Valid table names for type-safe references."""
+
     MOOD_ENTRIES = "mood_entries"
     TASKS = "tasks"
     SLEEP_LOGS = "sleep_logs"
@@ -370,6 +370,7 @@ class TableName(Enum):
 @dataclass
 class QueryResult:
     """Container for query results."""
+
     rows: list[dict[str, Any]] = field(default_factory=list)
     row_count: int = 0
     last_row_id: int | None = None
@@ -439,6 +440,7 @@ class DatabaseManager:
         if sys.platform == "win32":
             return
         import contextlib
+
         for suffix in ("", "-wal", "-shm"):
             sidecar = Path(str(self._db_path) + suffix)
             if sidecar.exists():
@@ -474,9 +476,7 @@ class DatabaseManager:
         logger.info("Database initialized at %s", self._db_path)
 
     def _current_version(self, conn: sqlite3.Connection) -> int:
-        row = conn.execute(
-            "SELECT COALESCE(MAX(version), 0) AS v FROM schema_version"
-        ).fetchone()
+        row = conn.execute("SELECT COALESCE(MAX(version), 0) AS v FROM schema_version").fetchone()
         return int(row["v"]) if row else 0
 
     def _apply_migrations(self, conn: sqlite3.Connection) -> None:
@@ -499,9 +499,7 @@ class DatabaseManager:
                 if self._is_existing_column_migration(conn, sql):
                     continue
                 conn.execute(sql)
-            conn.execute(
-                "INSERT INTO schema_version (version) VALUES (?)", (version,)
-            )
+            conn.execute("INSERT INTO schema_version (version) VALUES (?)", (version,))
             conn.commit()
 
         # Ensure we always mark the current version
@@ -661,9 +659,7 @@ class DatabaseManager:
     def get_setting(self, key: str, default: str | None = None) -> str | None:
         """Retrieve a setting value by key."""
         conn = self._get_connection()
-        row = conn.execute(
-            "SELECT value FROM settings WHERE key = ?", (key,)
-        ).fetchone()
+        row = conn.execute("SELECT value FROM settings WHERE key = ?", (key,)).fetchone()
         return row["value"] if row else default
 
     def set_setting(self, key: str, value: str, category: str = "general") -> None:
@@ -770,9 +766,7 @@ class DatabaseManager:
             for tbl in TableName:
                 csv_data = self.export_table_to_csv(tbl)
                 if csv_data:
-                    (output_path / f"{tbl.value}.csv").write_text(
-                        csv_data, encoding="utf-8"
-                    )
+                    (output_path / f"{tbl.value}.csv").write_text(csv_data, encoding="utf-8")
         else:
             raise ValueError(f"Unsupported export format: {fmt}")
 

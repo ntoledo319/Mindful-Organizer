@@ -26,6 +26,7 @@ DISCLAIMER = (
 
 # ── dataclasses ──────────────────────────────────────────────────────
 
+
 @dataclass
 class HierarchyItem:
     """An item in the exposure hierarchy.
@@ -37,6 +38,7 @@ class HierarchyItem:
         notes: Additional notes about this item.
         created_at: When the item was added.
     """
+
     item_id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
     situation: str = ""
     suds_rating: int = 50
@@ -81,6 +83,7 @@ class ExposureSession:
         notes: Session notes.
         date: ISO date string for when the session occurred.
     """
+
     session_id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
     hierarchy_item_id: str = ""
     predicted_anxiety: int = 50
@@ -131,9 +134,7 @@ class ExposureSession:
 
     @classmethod
     def from_dict(cls, data: dict) -> "ExposureSession":
-        readings = [
-            (int(r[0]), int(r[1])) for r in data.get("actual_anxiety_readings", [])
-        ]
+        readings = [(int(r[0]), int(r[1])) for r in data.get("actual_anxiety_readings", [])]
         return cls(
             session_id=data["session_id"],
             hierarchy_item_id=data["hierarchy_item_id"],
@@ -158,6 +159,7 @@ class ResponsePreventionLog:
         duration_resisted_minutes: How long the urge was resisted.
         strategy_used: What strategy helped resist the urge.
     """
+
     log_id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
     session_id: str = ""
     urge_intensity: int = 50
@@ -202,6 +204,7 @@ class SafetyBehavior:
         times_used: How many times it has been used since tracking began.
         working_on_reducing: Whether the user is actively reducing this.
     """
+
     behavior_id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
     description: str = ""
     identified_date: str = field(default_factory=lambda: date.today().isoformat())
@@ -230,6 +233,7 @@ class SafetyBehavior:
 
 # ── tracker ──────────────────────────────────────────────────────────
 
+
 class ERPTracker:
     """Manages ERP hierarchy items, sessions, response prevention logs,
     and safety behaviors with JSON persistence.
@@ -256,12 +260,8 @@ class ERPTracker:
             try:
                 with open(self._data_file) as fh:
                     data = json.load(fh)
-                self._hierarchy = [
-                    HierarchyItem.from_dict(h) for h in data.get("hierarchy", [])
-                ]
-                self._sessions = [
-                    ExposureSession.from_dict(s) for s in data.get("sessions", [])
-                ]
+                self._hierarchy = [HierarchyItem.from_dict(h) for h in data.get("hierarchy", [])]
+                self._sessions = [ExposureSession.from_dict(s) for s in data.get("sessions", [])]
                 self._rp_logs = [
                     ResponsePreventionLog.from_dict(r) for r in data.get("rp_logs", [])
                 ]
@@ -593,8 +593,7 @@ class ERPTracker:
             }
             # Include full anxiety curve for detailed charting
             entry["anxiety_curve"] = [
-                {"minutes": m, "suds": s}
-                for m, s in session.actual_anxiety_readings
+                {"minutes": m, "suds": s} for m, s in session.actual_anxiety_readings
             ]
             data.append(entry)
         return data
@@ -628,27 +627,19 @@ class ERPTracker:
 
         # Average SUDS reduction across sessions
         reductions = [
-            s.anxiety_reduction for s in self._sessions
-            if s.anxiety_reduction is not None
+            s.anxiety_reduction for s in self._sessions if s.anxiety_reduction is not None
         ]
-        avg_reduction = (
-            round(sum(reductions) / len(reductions), 1)
-            if reductions else None
-        )
+        avg_reduction = round(sum(reductions) / len(reductions), 1) if reductions else None
 
         # Compulsion-free sessions
         compulsion_free = sum(1 for s in self._sessions if not s.compulsion_performed)
         compulsion_free_rate = (
-            round(compulsion_free / len(self._sessions) * 100, 1)
-            if self._sessions else None
+            round(compulsion_free / len(self._sessions) * 100, 1) if self._sessions else None
         )
 
         # Response prevention success rate
         resisted = sum(1 for r in self._rp_logs if r.urge_resisted)
-        rp_rate = (
-            round(resisted / len(self._rp_logs) * 100, 1)
-            if self._rp_logs else None
-        )
+        rp_rate = round(resisted / len(self._rp_logs) * 100, 1) if self._rp_logs else None
 
         # Safety behaviors
         reducing = sum(1 for b in self._safety_behaviors if b.working_on_reducing)
@@ -678,12 +669,14 @@ class ERPTracker:
         hierarchy_data = []
         for item in self.get_hierarchy():
             sessions = self.get_sessions_for_item(item.item_id)
-            hierarchy_data.append({
-                "situation": item.situation,
-                "initial_suds": item.suds_rating,
-                "sessions_completed": len(sessions),
-                "habituation_data": self.get_habituation_data(item.item_id),
-            })
+            hierarchy_data.append(
+                {
+                    "situation": item.situation,
+                    "initial_suds": item.suds_rating,
+                    "sessions_completed": len(sessions),
+                    "habituation_data": self.get_habituation_data(item.item_id),
+                }
+            )
 
         rp_summary: dict = {
             "total_logs": len(self._rp_logs),
@@ -693,11 +686,10 @@ class ERPTracker:
                     sum(r.urge_intensity for r in self._rp_logs) / len(self._rp_logs),
                     1,
                 )
-                if self._rp_logs else None
+                if self._rp_logs
+                else None
             ),
-            "strategies_used": list({
-                r.strategy_used for r in self._rp_logs if r.strategy_used
-            }),
+            "strategies_used": list({r.strategy_used for r in self._rp_logs if r.strategy_used}),
         }
 
         return {

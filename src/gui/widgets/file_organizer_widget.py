@@ -174,7 +174,9 @@ class FileOrganizerWidget(QWidget):
         # Condition badge
         if self._condition != "Generic":
             badge = BodyLabel(f"Mode: {self._condition}-aware organization", self._theme)
-            badge.setStyleSheet(f"color: {self._theme.get('accent', '#4a90d9')}; font-style: italic;")
+            badge.setStyleSheet(
+                f"color: {self._theme.get('accent', '#4a90d9')}; font-style: italic;"
+            )
             root.addWidget(badge)
 
         # Action cards
@@ -205,11 +207,15 @@ class FileOrganizerWidget(QWidget):
         row = QHBoxLayout()
         row.setSpacing(12)
 
-        select_btn = AccentButton("📁 Select Folder" if self._condition == "ADHD" else "Select Folder", self._theme)
+        select_btn = AccentButton(
+            "📁 Select Folder" if self._condition == "ADHD" else "Select Folder", self._theme
+        )
         select_btn.clicked.connect(self._select_and_organize)
         row.addWidget(select_btn)
 
-        dry_btn = QPushButton("Preview First" if self._condition in ("Anxiety", "OCD") else "Dry Run")
+        dry_btn = QPushButton(
+            "Preview First" if self._condition in ("Anxiety", "OCD") else "Dry Run"
+        )
         dry_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         dry_btn.clicked.connect(self._select_and_dry_run)
         row.addWidget(dry_btn)
@@ -242,7 +248,9 @@ class FileOrganizerWidget(QWidget):
         self._structure_edit = QTextEdit()
         self._structure_edit.setReadOnly(True)
         self._structure_edit.setMaximumHeight(120)
-        self._structure_edit.setPlainText("\n".join(f"  📂 {name}" for name in self._config["folder_names"]))
+        self._structure_edit.setPlainText(
+            "\n".join(f"  📂 {name}" for name in self._config["folder_names"])
+        )
         self._structure_edit.setStyleSheet(
             f"QTextEdit {{ background-color: {self._theme.get('background', '#fff')}; "
             f"color: {self._theme.get('text', '#333')}; border: 1px solid "
@@ -373,8 +381,11 @@ class FileOrganizerWidget(QWidget):
         if not self._organizer:
             return
         from PyQt6.QtWidgets import QInputDialog
+
         template, ok = QInputDialog.getText(
-            self, "Batch Rename", "Template (use {name}, {ext}, {date}, {n}, {category}):",
+            self,
+            "Batch Rename",
+            "Template (use {name}, {ext}, {date}, {n}, {category}):",
             text="{date}_{category}_{n:03d}{ext}",
         )
         if not ok or not template:
@@ -384,7 +395,9 @@ class FileOrganizerWidget(QWidget):
             self._results_list.clear()
             self._results_list.addItem(f"Renamed {len(results)} files:")
             for r in results[:30]:
-                self._results_list.addItem(f"  {Path(r['original']).name} → {Path(r['new_name']).name}")
+                self._results_list.addItem(
+                    f"  {Path(r['original']).name} → {Path(r['new_name']).name}"
+                )
         except Exception as exc:
             QMessageBox.warning(self, "Error", f"Rename failed: {exc}")
 

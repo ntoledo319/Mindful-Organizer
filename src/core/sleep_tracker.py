@@ -28,14 +28,16 @@ _MAX_ACCEPTABLE_HOURS = 10.0
 # Data classes
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class SleepEntry:
     """Represents a single night of sleep."""
+
     id: int | None = None
-    date: str = ""                      # ISO date string (YYYY-MM-DD)
-    bedtime: str = ""                   # ISO datetime or HH:MM
-    wake_time: str = ""                 # ISO datetime or HH:MM
-    quality: int = 5                    # 1-10
+    date: str = ""  # ISO date string (YYYY-MM-DD)
+    bedtime: str = ""  # ISO datetime or HH:MM
+    wake_time: str = ""  # ISO datetime or HH:MM
+    quality: int = 5  # 1-10
     duration_hours: float | None = None
     interruptions: int = 0
     interruption_details: str | None = None
@@ -82,6 +84,7 @@ class SleepEntry:
 @dataclass
 class SleepStats:
     """Aggregated sleep statistics over a period."""
+
     total_entries: int = 0
     mean_duration: float = 0.0
     median_duration: float = 0.0
@@ -98,6 +101,7 @@ class SleepStats:
 @dataclass
 class SleepCorrelation:
     """Result of correlating sleep with another metric."""
+
     metric_name: str = ""
     data_points: int = 0
     correlation: float = 0.0  # Pearson-like, -1 to 1
@@ -107,6 +111,7 @@ class SleepCorrelation:
 # ---------------------------------------------------------------------------
 # SleepTracker
 # ---------------------------------------------------------------------------
+
 
 class SleepTracker:
     """Sleep logging and analysis engine.
@@ -136,6 +141,7 @@ class SleepTracker:
 
     def _table(self) -> Any:
         from core.database import TableName
+
         return TableName.SLEEP_LOGS
 
     # ------------------------------------------------------------------
@@ -179,7 +185,12 @@ class SleepTracker:
             dreams=entry.dreams,
             notes=entry.notes,
         )
-        logger.info("Logged sleep for %s (%.1fh, quality %d)", date, entry.duration_hours or 0, entry.quality)
+        logger.info(
+            "Logged sleep for %s (%.1fh, quality %d)",
+            date,
+            entry.duration_hours or 0,
+            entry.quality,
+        )
         return int(row_id)
 
     def get_entry(self, entry_id: int) -> SleepEntry | None:
@@ -252,7 +263,8 @@ class SleepTracker:
             return SleepStats()
 
         durations = [
-            e.duration_hours for e in entries
+            e.duration_hours
+            for e in entries
             if e.duration_hours is not None and e.duration_hours > 0
         ]
         qualities = [e.quality for e in entries]
@@ -285,7 +297,9 @@ class SleepTracker:
         # Sleep debt over the period
         if durations:
             stats.sleep_debt_hours = round(
-                sum(_RECOMMENDED_SLEEP_HOURS - d for d in durations if d < _RECOMMENDED_SLEEP_HOURS),
+                sum(
+                    _RECOMMENDED_SLEEP_HOURS - d for d in durations if d < _RECOMMENDED_SLEEP_HOURS
+                ),
                 2,
             )
 
@@ -300,10 +314,7 @@ class SleepTracker:
         entries = self.get_entries(days=days)
         if not entries:
             return 0.0
-        total_slept = sum(
-            e.duration_hours for e in entries
-            if e.duration_hours is not None
-        )
+        total_slept = sum(e.duration_hours for e in entries if e.duration_hours is not None)
         expected = _RECOMMENDED_SLEEP_HOURS * len(entries)
         debt = expected - total_slept
         return round(max(0.0, debt), 2)
@@ -312,10 +323,7 @@ class SleepTracker:
         """Return (date, duration_hours) pairs for trend charting."""
         entries = self.get_entries(days=days)
         entries.reverse()  # chronological order
-        return [
-            (e.date, e.duration_hours or 0.0)
-            for e in entries
-        ]
+        return [(e.date, e.duration_hours or 0.0) for e in entries]
 
     def quality_trend(self, days: int = 30) -> list[tuple[str, int]]:
         """Return (date, quality) pairs for trend charting."""
@@ -328,7 +336,9 @@ class SleepTracker:
     # ------------------------------------------------------------------
 
     def correlate_with_mood(
-        self, mood_data: list[dict[str, Any]], days: int = 30,
+        self,
+        mood_data: list[dict[str, Any]],
+        days: int = 30,
     ) -> SleepCorrelation:
         """Correlate sleep quality/duration with mood scores.
 
@@ -367,7 +377,9 @@ class SleepTracker:
         )
 
     def correlate_with_energy(
-        self, energy_data: list[dict[str, Any]], days: int = 30,
+        self,
+        energy_data: list[dict[str, Any]],
+        days: int = 30,
     ) -> SleepCorrelation:
         """Correlate sleep quality/duration with energy levels.
 
@@ -452,9 +464,7 @@ class SleepTracker:
             )
 
         if not tips:
-            tips.append(
-                "Your sleep looks healthy! Keep up the good routine."
-            )
+            tips.append("Your sleep looks healthy! Keep up the good routine.")
 
         return tips
 
@@ -464,58 +474,68 @@ class SleepTracker:
         insights: list[str] = []
 
         if condition_upper == "ADHD":
-            insights.extend([
-                "ADHD often causes delayed sleep onset. A wind-down routine "
-                "starting 1 hour before bed can help signal your brain to relax.",
-                "Stimulant medications can affect sleep if taken too late. "
-                "Track your medication timing alongside sleep quality.",
-                "White noise or gentle background sounds can help an active "
-                "ADHD mind settle at bedtime.",
-                "Consider a consistent 'launch pad' routine at night: lay out "
-                "tomorrow's essentials to reduce bedtime anxiety.",
-            ])
+            insights.extend(
+                [
+                    "ADHD often causes delayed sleep onset. A wind-down routine "
+                    "starting 1 hour before bed can help signal your brain to relax.",
+                    "Stimulant medications can affect sleep if taken too late. "
+                    "Track your medication timing alongside sleep quality.",
+                    "White noise or gentle background sounds can help an active "
+                    "ADHD mind settle at bedtime.",
+                    "Consider a consistent 'launch pad' routine at night: lay out "
+                    "tomorrow's essentials to reduce bedtime anxiety.",
+                ]
+            )
         elif condition_upper == "ANXIETY":
-            insights.extend([
-                "Anxiety-driven insomnia is common. A breathing exercise or "
-                "body scan before bed can help calm racing thoughts.",
-                "Keep a 'worry journal' by your bed - writing down concerns "
-                "before sleeping can stop thought loops.",
-                "Avoid checking the clock when you wake at night; it can "
-                "increase anxiety about sleep loss.",
-                "Progressive muscle relaxation (tensing and releasing each "
-                "muscle group) is evidence-based for sleep-onset anxiety.",
-            ])
+            insights.extend(
+                [
+                    "Anxiety-driven insomnia is common. A breathing exercise or "
+                    "body scan before bed can help calm racing thoughts.",
+                    "Keep a 'worry journal' by your bed - writing down concerns "
+                    "before sleeping can stop thought loops.",
+                    "Avoid checking the clock when you wake at night; it can "
+                    "increase anxiety about sleep loss.",
+                    "Progressive muscle relaxation (tensing and releasing each "
+                    "muscle group) is evidence-based for sleep-onset anxiety.",
+                ]
+            )
         elif condition_upper == "DEPRESSION":
-            insights.extend([
-                "Depression can cause both insomnia and hypersomnia. "
-                "Tracking your hours helps identify which pattern is present.",
-                "If you find yourself sleeping excessively, setting a gentle "
-                "morning alarm and opening curtains can help regulate mood.",
-                "Morning light exposure for 15-30 minutes supports circadian "
-                "rhythm, which is often disrupted in depression.",
-                "Avoid napping longer than 20 minutes during the day, as it "
-                "can worsen nighttime sleep for depression.",
-            ])
+            insights.extend(
+                [
+                    "Depression can cause both insomnia and hypersomnia. "
+                    "Tracking your hours helps identify which pattern is present.",
+                    "If you find yourself sleeping excessively, setting a gentle "
+                    "morning alarm and opening curtains can help regulate mood.",
+                    "Morning light exposure for 15-30 minutes supports circadian "
+                    "rhythm, which is often disrupted in depression.",
+                    "Avoid napping longer than 20 minutes during the day, as it "
+                    "can worsen nighttime sleep for depression.",
+                ]
+            )
         elif condition_upper == "PTSD":
-            insights.extend([
-                "Nightmares are common with PTSD. If recurrent, consider "
-                "discussing Image Rehearsal Therapy with your therapist.",
-                "A sense of safety at bedtime is important. Ensure your "
-                "sleeping environment feels secure and comfortable.",
-                "Grounding techniques (5-4-3-2-1 senses) before bed can "
-                "reduce hypervigilance that disrupts sleep.",
-                "Avoid sleeping in complete darkness if it triggers distress; "
-                "a dim night-light is perfectly acceptable.",
-            ])
+            insights.extend(
+                [
+                    "Nightmares are common with PTSD. If recurrent, consider "
+                    "discussing Image Rehearsal Therapy with your therapist.",
+                    "A sense of safety at bedtime is important. Ensure your "
+                    "sleeping environment feels secure and comfortable.",
+                    "Grounding techniques (5-4-3-2-1 senses) before bed can "
+                    "reduce hypervigilance that disrupts sleep.",
+                    "Avoid sleeping in complete darkness if it triggers distress; "
+                    "a dim night-light is perfectly acceptable.",
+                ]
+            )
         elif condition_upper == "OCD":
-            insights.extend([
-                "Bedtime rituals can become compulsive. Set a time limit for "
-                "your pre-sleep routine and practise flexibility.",
-                "If intrusive thoughts increase at bedtime, a brief "
-                "mindfulness exercise can create distance from the thoughts.",
-                "Avoid 'checking' behaviours related to sleep (e.g. "
-                "repeatedly checking the alarm) by using a single, trusted system.",
-            ])
+            insights.extend(
+                [
+                    "Bedtime rituals can become compulsive. Set a time limit for "
+                    "your pre-sleep routine and practise flexibility.",
+                    "If intrusive thoughts increase at bedtime, a brief "
+                    "mindfulness exercise can create distance from the thoughts.",
+                    "Avoid 'checking' behaviours related to sleep (e.g. "
+                    "repeatedly checking the alarm) by using a single, trusted system.",
+                ]
+            )
         else:
             insights.append(
                 "Good sleep hygiene benefits everyone: keep a consistent "

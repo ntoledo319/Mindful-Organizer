@@ -18,6 +18,7 @@ from core.constants import Condition
 
 class GroundingType(Enum):
     """Available grounding technique types."""
+
     SENSORY_5_4_3_2_1 = "sensory_5_4_3_2_1"
     BODY_SCAN = "body_scan"
     OBJECT_FOCUS = "object_focus"
@@ -28,6 +29,7 @@ class GroundingType(Enum):
 
 class WhenToUse(Enum):
     """Situations when a grounding technique is most helpful."""
+
     PANIC_ATTACK = "panic_attack"
     FLASHBACK = "flashback"
     DISSOCIATION = "dissociation"
@@ -51,6 +53,7 @@ class GroundingTechnique:
         condition_suitability: Conditions this technique helps with.
         when_to_use: Situations where this technique is most effective.
     """
+
     grounding_type: GroundingType
     name: str
     description: str
@@ -87,6 +90,7 @@ class GroundingSession:
         distress_after: Self-reported distress level after (0-100).
         notes: Optional user notes about the session.
     """
+
     session_id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
     grounding_type: GroundingType = GroundingType.SENSORY_5_4_3_2_1
     started_at: str | None = None
@@ -193,12 +197,17 @@ def _build_technique_library() -> dict[GroundingType, GroundingTechnique]:
         ],
         duration_minutes=5.0,
         condition_suitability={
-            Condition.ANXIETY, Condition.PTSD, Condition.PANIC,
-            Condition.DISSOCIATION, Condition.GENERAL,
+            Condition.ANXIETY,
+            Condition.PTSD,
+            Condition.PANIC,
+            Condition.DISSOCIATION,
+            Condition.GENERAL,
         },
         when_to_use={
-            WhenToUse.PANIC_ATTACK, WhenToUse.FLASHBACK,
-            WhenToUse.DISSOCIATION, WhenToUse.ANXIETY_SPIKE,
+            WhenToUse.PANIC_ATTACK,
+            WhenToUse.FLASHBACK,
+            WhenToUse.DISSOCIATION,
+            WhenToUse.ANXIETY_SPIKE,
         },
     )
 
@@ -227,12 +236,17 @@ def _build_technique_library() -> dict[GroundingType, GroundingTechnique]:
         ],
         duration_minutes=10.0,
         condition_suitability={
-            Condition.ANXIETY, Condition.PTSD, Condition.DISSOCIATION,
-            Condition.GENERAL, Condition.INSOMNIA,
+            Condition.ANXIETY,
+            Condition.PTSD,
+            Condition.DISSOCIATION,
+            Condition.GENERAL,
+            Condition.INSOMNIA,
         },
         when_to_use={
-            WhenToUse.DISSOCIATION, WhenToUse.ANXIETY_SPIKE,
-            WhenToUse.DIFFICULTY_SLEEPING, WhenToUse.GENERAL_STRESS,
+            WhenToUse.DISSOCIATION,
+            WhenToUse.ANXIETY_SPIKE,
+            WhenToUse.DIFFICULTY_SLEEPING,
+            WhenToUse.GENERAL_STRESS,
         },
     )
 
@@ -257,12 +271,18 @@ def _build_technique_library() -> dict[GroundingType, GroundingTechnique]:
         ],
         duration_minutes=3.0,
         condition_suitability={
-            Condition.ANXIETY, Condition.PTSD, Condition.PANIC,
-            Condition.DISSOCIATION, Condition.OCD, Condition.GENERAL,
+            Condition.ANXIETY,
+            Condition.PTSD,
+            Condition.PANIC,
+            Condition.DISSOCIATION,
+            Condition.OCD,
+            Condition.GENERAL,
         },
         when_to_use={
-            WhenToUse.PANIC_ATTACK, WhenToUse.DISSOCIATION,
-            WhenToUse.RUMINATION, WhenToUse.ANXIETY_SPIKE,
+            WhenToUse.PANIC_ATTACK,
+            WhenToUse.DISSOCIATION,
+            WhenToUse.RUMINATION,
+            WhenToUse.ANXIETY_SPIKE,
         },
     )
 
@@ -286,11 +306,15 @@ def _build_technique_library() -> dict[GroundingType, GroundingTechnique]:
         ],
         duration_minutes=3.0,
         condition_suitability={
-            Condition.PANIC, Condition.DISSOCIATION, Condition.BPD,
-            Condition.PTSD, Condition.GENERAL,
+            Condition.PANIC,
+            Condition.DISSOCIATION,
+            Condition.BPD,
+            Condition.PTSD,
+            Condition.GENERAL,
         },
         when_to_use={
-            WhenToUse.PANIC_ATTACK, WhenToUse.DISSOCIATION,
+            WhenToUse.PANIC_ATTACK,
+            WhenToUse.DISSOCIATION,
             WhenToUse.EMOTIONAL_OVERWHELM,
         },
     )
@@ -315,12 +339,18 @@ def _build_technique_library() -> dict[GroundingType, GroundingTechnique]:
         ],
         duration_minutes=5.0,
         condition_suitability={
-            Condition.ANXIETY, Condition.PTSD, Condition.DEPRESSION,
-            Condition.DISSOCIATION, Condition.ADHD, Condition.GENERAL,
+            Condition.ANXIETY,
+            Condition.PTSD,
+            Condition.DEPRESSION,
+            Condition.DISSOCIATION,
+            Condition.ADHD,
+            Condition.GENERAL,
         },
         when_to_use={
-            WhenToUse.DISSOCIATION, WhenToUse.ANXIETY_SPIKE,
-            WhenToUse.EMOTIONAL_OVERWHELM, WhenToUse.GENERAL_STRESS,
+            WhenToUse.DISSOCIATION,
+            WhenToUse.ANXIETY_SPIKE,
+            WhenToUse.EMOTIONAL_OVERWHELM,
+            WhenToUse.GENERAL_STRESS,
         },
     )
 
@@ -348,12 +378,17 @@ def _build_technique_library() -> dict[GroundingType, GroundingTechnique]:
         ],
         duration_minutes=8.0,
         condition_suitability={
-            Condition.PTSD, Condition.ANXIETY, Condition.INSOMNIA,
-            Condition.BPD, Condition.GENERAL,
+            Condition.PTSD,
+            Condition.ANXIETY,
+            Condition.INSOMNIA,
+            Condition.BPD,
+            Condition.GENERAL,
         },
         when_to_use={
-            WhenToUse.FLASHBACK, WhenToUse.ANXIETY_SPIKE,
-            WhenToUse.DIFFICULTY_SLEEPING, WhenToUse.EMOTIONAL_OVERWHELM,
+            WhenToUse.FLASHBACK,
+            WhenToUse.ANXIETY_SPIKE,
+            WhenToUse.DIFFICULTY_SLEEPING,
+            WhenToUse.EMOTIONAL_OVERWHELM,
             WhenToUse.GENERAL_STRESS,
         },
     )
@@ -368,9 +403,7 @@ class GroundingManager:
         data_dir: Directory to persist session history.
     """
 
-    TECHNIQUE_LIBRARY: dict[GroundingType, GroundingTechnique] = (
-        _build_technique_library()
-    )
+    TECHNIQUE_LIBRARY: dict[GroundingType, GroundingTechnique] = _build_technique_library()
 
     def __init__(self, data_dir: Path) -> None:
         self.data_dir = data_dir
@@ -510,25 +543,28 @@ class GroundingManager:
 
             # Historical effectiveness
             past = [
-                s for s in self._sessions
+                s
+                for s in self._sessions
                 if s.grounding_type == technique.grounding_type
                 and s.effectiveness_rating is not None
             ]
             if past:
                 avg_effectiveness = sum(
-                    s.effectiveness_rating for s in past  # type: ignore[misc]
+                    s.effectiveness_rating
+                    for s in past  # type: ignore[misc]
                 ) / len(past)
                 score += avg_effectiveness * 3
 
             # Historical distress reduction
             past_reduction = [
-                s for s in self._sessions
-                if s.grounding_type == technique.grounding_type
-                and s.distress_reduction is not None
+                s
+                for s in self._sessions
+                if s.grounding_type == technique.grounding_type and s.distress_reduction is not None
             ]
             if past_reduction:
                 avg_reduction = sum(
-                    s.distress_reduction for s in past_reduction  # type: ignore[misc]
+                    s.distress_reduction
+                    for s in past_reduction  # type: ignore[misc]
                 ) / len(past_reduction)
                 score += avg_reduction * 0.2
 
@@ -567,21 +603,15 @@ class GroundingManager:
 
         # Average effectiveness
         ratings = [
-            s.effectiveness_rating for s in self._sessions
-            if s.effectiveness_rating is not None
+            s.effectiveness_rating for s in self._sessions if s.effectiveness_rating is not None
         ]
-        avg_effectiveness = (
-            round(sum(ratings) / len(ratings), 2) if ratings else None
-        )
+        avg_effectiveness = round(sum(ratings) / len(ratings), 2) if ratings else None
 
         # Average distress reduction
         reductions = [
-            s.distress_reduction for s in self._sessions
-            if s.distress_reduction is not None
+            s.distress_reduction for s in self._sessions if s.distress_reduction is not None
         ]
-        avg_reduction = (
-            round(sum(reductions) / len(reductions), 2) if reductions else None
-        )
+        avg_reduction = round(sum(reductions) / len(reductions), 2) if reductions else None
 
         return {
             "total_sessions": len(self._sessions),

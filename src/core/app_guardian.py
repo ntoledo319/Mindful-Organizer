@@ -6,6 +6,7 @@ App Guardian — monitors and manages applications based on psychological state.
 - Tracks which apps are most disruptive per condition
 - Provides gentle warnings before closing (configurable)
 """
+
 from __future__ import annotations
 
 import json
@@ -77,10 +78,14 @@ class AppGuardian:
 
     def _save_config(self) -> None:
         with open(self.config_file, "w") as f:
-            json.dump({
-                "blacklisted_apps": sorted(self._blacklisted_apps),
-                "enforce_mode": self._enforce_mode,
-            }, f, indent=2)
+            json.dump(
+                {
+                    "blacklisted_apps": sorted(self._blacklisted_apps),
+                    "enforce_mode": self._enforce_mode,
+                },
+                f,
+                indent=2,
+            )
 
     def _load_history(self) -> None:
         if self.history_file.exists():
@@ -111,7 +116,9 @@ class AppGuardian:
 
     # -- actions --------------------------------------------------------------
 
-    def close_app(self, app_name: str, reason: str, trigger: str, conditions: list[str] | None = None) -> bool:
+    def close_app(
+        self, app_name: str, reason: str, trigger: str, conditions: list[str] | None = None
+    ) -> bool:
         """Close an application and log the event."""
         ok = self.backend.close_application(app_name)
         if ok:

@@ -43,6 +43,7 @@ LICENSE_FILE = DATA_DIR / "license.json"
 # Enums & dataclasses
 # ---------------------------------------------------------------------------
 
+
 class SubscriptionTier(Enum):
     FREE = "free"
     PRO = "pro"
@@ -242,6 +243,7 @@ FEATURE_DISPLAY_NAMES: dict[str, str] = {
 # SubscriptionManager
 # ---------------------------------------------------------------------------
 
+
 class SubscriptionManager:
     """Manages subscription state, license validation, and feature access."""
 
@@ -265,9 +267,7 @@ class SubscriptionManager:
         self._state: dict[str, Any] = {}
 
         pub_b64 = public_key_b64 or _PUBLIC_KEY_B64
-        self._public_key = Ed25519PublicKey.from_public_bytes(
-            base64.b64decode(pub_b64)
-        )
+        self._public_key = Ed25519PublicKey.from_public_bytes(base64.b64decode(pub_b64))
         self._private_key_b64 = private_key_b64  # set in tests / issuer tools
 
         self._load_state()
@@ -418,18 +418,14 @@ class SubscriptionManager:
         issuer-side use (sales tool, build pipeline). Client builds will not
         have the private key and will raise RuntimeError if this is called.
         """
-        priv_b64 = self._private_key_b64 or os.environ.get(
-            "MINDFUL_LICENSE_PRIVATE_KEY"
-        )
+        priv_b64 = self._private_key_b64 or os.environ.get("MINDFUL_LICENSE_PRIVATE_KEY")
         if not priv_b64:
             raise RuntimeError(
                 "No license signing key available. Set MINDFUL_LICENSE_PRIVATE_KEY "
                 "or pass private_key_b64 to SubscriptionManager. License generation "
                 "is restricted to the issuer."
             )
-        private_key = Ed25519PrivateKey.from_private_bytes(
-            base64.b64decode(priv_b64)
-        )
+        private_key = Ed25519PrivateKey.from_private_bytes(base64.b64decode(priv_b64))
         expires = datetime.now() + timedelta(days=days)
         ts = int(expires.timestamp())
         rand = secrets.token_hex(4)
@@ -518,6 +514,7 @@ class SubscriptionManager:
 # ---------------------------------------------------------------------------
 # Exceptions
 # ---------------------------------------------------------------------------
+
 
 class LicenseValidationError(Exception):
     """Raised when a license key is invalid or expired."""

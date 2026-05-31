@@ -29,8 +29,8 @@ def db(tmp_data_dir):
 # Schema creation
 # ---------------------------------------------------------------------------
 
-class TestSchemaCreation:
 
+class TestSchemaCreation:
     def test_initialize_creates_db_file(self, tmp_data_dir):
         db_path = tmp_data_dir / "init_test.db"
         db = DatabaseManager(db_path=db_path)
@@ -43,9 +43,7 @@ class TestSchemaCreation:
         assert result.rows[0]["v"] == CURRENT_SCHEMA_VERSION
 
     def test_all_tables_exist(self, db):
-        result = db.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
-        )
+        result = db.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")
         table_names = {r["name"] for r in result.rows}
 
         for tbl in TableName:
@@ -80,8 +78,8 @@ class TestSchemaCreation:
 # Insert
 # ---------------------------------------------------------------------------
 
-class TestInsert:
 
+class TestInsert:
     def test_insert_returns_id(self, db):
         row_id = db.insert(TableName.MOOD_ENTRIES, mood_score=7, notes="Good")
         assert isinstance(row_id, int)
@@ -98,6 +96,7 @@ class TestInsert:
 
     def test_insert_constraint_violation(self, db):
         import sqlite3
+
         with pytest.raises(sqlite3.IntegrityError):
             db.insert(TableName.MOOD_ENTRIES, mood_score=99)  # CHECK constraint 1-10
 
@@ -119,8 +118,8 @@ class TestInsert:
 # Get by ID
 # ---------------------------------------------------------------------------
 
-class TestGetById:
 
+class TestGetById:
     def test_get_existing(self, db):
         row_id = db.insert(TableName.MOOD_ENTRIES, mood_score=8, notes="Great")
         row = db.get_by_id(TableName.MOOD_ENTRIES, row_id)
@@ -137,8 +136,8 @@ class TestGetById:
 # Update
 # ---------------------------------------------------------------------------
 
-class TestUpdate:
 
+class TestUpdate:
     def test_update_row(self, db):
         row_id = db.insert(TableName.TASKS, title="Original", priority="low", category="Work")
         affected = db.update(TableName.TASKS, row_id, title="Updated", priority="high")
@@ -162,8 +161,8 @@ class TestUpdate:
 # Delete
 # ---------------------------------------------------------------------------
 
-class TestDelete:
 
+class TestDelete:
     def test_delete_row(self, db):
         row_id = db.insert(TableName.MOOD_ENTRIES, mood_score=3)
         affected = db.delete(TableName.MOOD_ENTRIES, row_id)
@@ -179,8 +178,8 @@ class TestDelete:
 # Query
 # ---------------------------------------------------------------------------
 
-class TestQuery:
 
+class TestQuery:
     def test_query_all(self, db):
         db.insert(TableName.MOOD_ENTRIES, mood_score=5)
         db.insert(TableName.MOOD_ENTRIES, mood_score=8)
@@ -252,8 +251,8 @@ class TestQuery:
 # Count
 # ---------------------------------------------------------------------------
 
-class TestCount:
 
+class TestCount:
     def test_count_all(self, db):
         db.insert(TableName.MOOD_ENTRIES, mood_score=5)
         db.insert(TableName.MOOD_ENTRIES, mood_score=8)
@@ -273,17 +272,15 @@ class TestCount:
 # Execute (raw SQL)
 # ---------------------------------------------------------------------------
 
-class TestExecute:
 
+class TestExecute:
     def test_execute_select(self, db):
         db.insert(TableName.MOOD_ENTRIES, mood_score=7)
         result = db.execute("SELECT * FROM mood_entries WHERE mood_score = ?", (7,))
         assert result.row_count == 1
 
     def test_execute_insert(self, db):
-        result = db.execute(
-            "INSERT INTO mood_entries (mood_score) VALUES (?)", (6,)
-        )
+        result = db.execute("INSERT INTO mood_entries (mood_score) VALUES (?)", (6,))
         assert result.last_row_id is not None
 
 
@@ -291,8 +288,8 @@ class TestExecute:
 # Settings
 # ---------------------------------------------------------------------------
 
-class TestSettings:
 
+class TestSettings:
     def test_set_and_get_setting(self, db):
         db.set_setting("theme", "dark")
         assert db.get_setting("theme") == "dark"
@@ -320,22 +317,18 @@ class TestSettings:
 # Transactions
 # ---------------------------------------------------------------------------
 
-class TestTransactions:
 
+class TestTransactions:
     def test_transaction_commits(self, db):
         with db.transaction() as conn:
-            conn.execute(
-                "INSERT INTO mood_entries (mood_score) VALUES (?)", (7,)
-            )
+            conn.execute("INSERT INTO mood_entries (mood_score) VALUES (?)", (7,))
 
         assert db.count(TableName.MOOD_ENTRIES) == 1
 
     def test_transaction_rollback_on_error(self, db):
         try:
             with db.transaction() as conn:
-                conn.execute(
-                    "INSERT INTO mood_entries (mood_score) VALUES (?)", (5,)
-                )
+                conn.execute("INSERT INTO mood_entries (mood_score) VALUES (?)", (5,))
                 raise RuntimeError("Force rollback")
         except RuntimeError:
             pass
@@ -347,8 +340,8 @@ class TestTransactions:
 # Backup & restore
 # ---------------------------------------------------------------------------
 
-class TestBackupRestore:
 
+class TestBackupRestore:
     def test_backup_creates_file(self, db, tmp_data_dir):
         db.insert(TableName.MOOD_ENTRIES, mood_score=7)
         backup_path = db.backup()
@@ -393,8 +386,8 @@ class TestBackupRestore:
 # Export
 # ---------------------------------------------------------------------------
 
-class TestExport:
 
+class TestExport:
     def test_export_table_to_json(self, db):
         db.insert(TableName.MOOD_ENTRIES, mood_score=7, notes="test")
         json_str = db.export_table_to_json(TableName.MOOD_ENTRIES)
@@ -459,8 +452,8 @@ class TestExport:
 # Lifecycle & repr
 # ---------------------------------------------------------------------------
 
-class TestLifecycle:
 
+class TestLifecycle:
     def test_close_and_reopen(self, tmp_data_dir):
         db_path = tmp_data_dir / "lifecycle.db"
         db = DatabaseManager(db_path=db_path)
@@ -486,8 +479,8 @@ class TestLifecycle:
 # Multiple table CRUD
 # ---------------------------------------------------------------------------
 
-class TestMultiTableCrud:
 
+class TestMultiTableCrud:
     def test_journal_entry(self, db):
         row_id = db.insert(
             TableName.JOURNAL_ENTRIES,

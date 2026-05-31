@@ -16,9 +16,11 @@ from core.database import DatabaseManager, TableName
 # Data structures
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class ValueScore:
     """Score for a single personal value."""
+
     value_name: str
     tasks_aligned: int = 0
     time_estimate_minutes: int = 0
@@ -30,6 +32,7 @@ class ValueScore:
 @dataclass
 class WeeklyValuesReport:
     """Complete weekly values review."""
+
     week_start: date
     week_end: date
     value_scores: list[ValueScore] = field(default_factory=list)
@@ -43,14 +46,26 @@ class WeeklyValuesReport:
 # Tracker
 # ---------------------------------------------------------------------------
 
+
 class ValuesTracker:
     """Track and report on values-aligned task completion."""
 
     # Common ACT values
     DEFAULT_VALUES = [
-        "Family", "Friendship", "Health", "Career", "Creativity",
-        "Learning", "Community", "Nature", "Spirituality", "Fun",
-        "Independence", "Security", "Authenticity", "Kindness",
+        "Family",
+        "Friendship",
+        "Health",
+        "Career",
+        "Creativity",
+        "Learning",
+        "Community",
+        "Nature",
+        "Spirituality",
+        "Fun",
+        "Independence",
+        "Security",
+        "Authenticity",
+        "Kindness",
     ]
 
     def __init__(self, db: DatabaseManager | None = None) -> None:
@@ -88,12 +103,12 @@ class ValuesTracker:
         scores: list[ValueScore] = []
         for val in values:
             current_count = sum(
-                1 for t in current_tasks.rows
+                1
+                for t in current_tasks.rows
                 if t.get("values_alignment", "").lower() == val.lower()
             )
             prev_count = sum(
-                1 for t in prev_tasks.rows
-                if t.get("values_alignment", "").lower() == val.lower()
+                1 for t in prev_tasks.rows if t.get("values_alignment", "").lower() == val.lower()
             )
 
             energy = sum(
@@ -110,13 +125,15 @@ class ValuesTracker:
             elif current_count > 0 and prev_count == 0:
                 trend = "new"
 
-            scores.append(ValueScore(
-                value_name=val,
-                tasks_aligned=current_count,
-                energy_invested=energy,
-                last_week_tasks=prev_count,
-                trend=trend,
-            ))
+            scores.append(
+                ValueScore(
+                    value_name=val,
+                    tasks_aligned=current_count,
+                    energy_invested=energy,
+                    last_week_tasks=prev_count,
+                    trend=trend,
+                )
+            )
 
         # Determine top and neglected
         scored_values = [s for s in scores if s.tasks_aligned > 0]
@@ -129,9 +146,7 @@ class ValuesTracker:
         neglected_candidates = [s for s in scores if s.tasks_aligned == 0]
         if neglected_candidates:
             # Pick a value that was active in previous weeks
-            previously_active = [
-                s for s in neglected_candidates if s.last_week_tasks > 0
-            ]
+            previously_active = [s for s in neglected_candidates if s.last_week_tasks > 0]
             if previously_active:
                 neglected_value = previously_active[0].value_name
             else:
@@ -143,8 +158,7 @@ class ValuesTracker:
         insights: list[str] = []
         if top_value:
             insights.append(
-                f"'{top_value}' received the most attention this week "
-                f"({top.tasks_aligned} tasks)."
+                f"'{top_value}' received the most attention this week ({top.tasks_aligned} tasks)."
             )
         if neglected_value:
             insights.append(

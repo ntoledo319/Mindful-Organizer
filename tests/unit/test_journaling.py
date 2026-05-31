@@ -27,8 +27,8 @@ def db(tmp_data_dir):
 # Save and load entries
 # ---------------------------------------------------------------------------
 
-class TestSaveLoadEntry:
 
+class TestSaveLoadEntry:
     def test_save_journal_entry(self, db):
         row_id = db.insert(
             TableName.JOURNAL_ENTRIES,
@@ -76,10 +76,12 @@ class TestSaveLoadEntry:
 # Search entries
 # ---------------------------------------------------------------------------
 
-class TestSearchEntries:
 
+class TestSearchEntries:
     def test_search_by_content(self, db):
-        db.insert(TableName.JOURNAL_ENTRIES, content="Had a wonderful walk in the park.", mood_score=8)
+        db.insert(
+            TableName.JOURNAL_ENTRIES, content="Had a wonderful walk in the park.", mood_score=8
+        )
         db.insert(TableName.JOURNAL_ENTRIES, content="Stayed home and read a book.", mood_score=6)
 
         result = db.query(
@@ -118,8 +120,8 @@ class TestSearchEntries:
 # Streak tracking (via timestamp gaps)
 # ---------------------------------------------------------------------------
 
-class TestStreakTracking:
 
+class TestStreakTracking:
     def test_consecutive_days_counted(self, db):
         """Insert entries on consecutive days and verify count."""
         base = datetime.now()
@@ -157,8 +159,8 @@ class TestStreakTracking:
 # Prompts by category (simulated)
 # ---------------------------------------------------------------------------
 
-class TestPromptRecommendation:
 
+class TestPromptRecommendation:
     def test_prompts_can_be_stored_in_entries(self, db):
         """Journal entries can store the prompt that was used."""
         row_id = db.insert(

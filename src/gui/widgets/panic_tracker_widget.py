@@ -42,15 +42,30 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 _SYMPTOM_OPTIONS = [
-    "Racing heart", "Sweating", "Trembling", "Shortness of breath",
-    "Chest tightness", "Nausea", "Dizziness", "Derealization",
-    "Fear of losing control", "Fear of dying", "Numbness", "Chills",
+    "Racing heart",
+    "Sweating",
+    "Trembling",
+    "Shortness of breath",
+    "Chest tightness",
+    "Nausea",
+    "Dizziness",
+    "Derealization",
+    "Fear of losing control",
+    "Fear of dying",
+    "Numbness",
+    "Chills",
 ]
 
 _TECHNIQUE_OPTIONS = [
-    "4-7-8 Breathing", "Box Breathing", "5-4-3-2-1 Grounding",
-    "Cold water on face", "Called someone", "Walked", "Medication",
-    "Waited it out", "Other",
+    "4-7-8 Breathing",
+    "Box Breathing",
+    "5-4-3-2-1 Grounding",
+    "Cold water on face",
+    "Called someone",
+    "Walked",
+    "Medication",
+    "Waited it out",
+    "Other",
 ]
 
 
@@ -134,6 +149,7 @@ class _PanicLogDialog(QDialog):
 # Widget
 # ---------------------------------------------------------------------------
 
+
 class PanicTrackerWidget(QWidget):
     """Panic attack logging and analysis tab."""
 
@@ -194,8 +210,7 @@ class PanicTrackerWidget(QWidget):
         root.addWidget(title)
 
         subtitle = QLabel(
-            "Log panic attacks to identify patterns, triggers, and "
-            "which techniques help you most."
+            "Log panic attacks to identify patterns, triggers, and which techniques help you most."
         )
         subtitle.setWordWrap(True)
         root.addWidget(subtitle)
@@ -268,7 +283,9 @@ class PanicTrackerWidget(QWidget):
         for e in self._entries:
             for t in e.get("techniques", []):
                 tech_counts[t] = tech_counts.get(t, 0) + 1
-        most_common_tech = max(tech_counts, key=lambda k: tech_counts.get(k, 0)) if tech_counts else "None"
+        most_common_tech = (
+            max(tech_counts, key=lambda k: tech_counts.get(k, 0)) if tech_counts else "None"
+        )
 
         self._stats_label.setText(
             f"Total logged: {total}\n"
@@ -295,12 +312,17 @@ class PanicTrackerWidget(QWidget):
         # Distress trend
         recent_distress = [e.get("peak_distress", 0) for e in recent]
         older_distress = [e.get("peak_distress", 0) for e in older]
-        if recent_distress and older_distress and (
-            sum(recent_distress) / len(recent_distress) < sum(older_distress) / len(older_distress)
+        if (
+            recent_distress
+            and older_distress
+            and (
+                sum(recent_distress) / len(recent_distress)
+                < sum(older_distress) / len(older_distress)
+            )
         ):
-                insights.append(
-                    "Your average peak distress has decreased — whatever you're doing is helping."
-                )
+            insights.append(
+                "Your average peak distress has decreased — whatever you're doing is helping."
+            )
 
         # Technique effectiveness
         tech_to_distress: dict[str, list[int]] = {}
@@ -309,9 +331,7 @@ class PanicTrackerWidget(QWidget):
                 tech_to_distress.setdefault(t, []).append(e.get("peak_distress", 0))
         if tech_to_distress:
             avg_by_tech = {
-                t: sum(vals) / len(vals)
-                for t, vals in tech_to_distress.items()
-                if len(vals) >= 2
+                t: sum(vals) / len(vals) for t, vals in tech_to_distress.items() if len(vals) >= 2
             }
             if avg_by_tech:
                 best = min(avg_by_tech, key=lambda k: avg_by_tech[k])
@@ -320,4 +340,6 @@ class PanicTrackerWidget(QWidget):
                     f"Consider using it earlier in an episode."
                 )
 
-        self._insights_label.setText("\n\n".join(insights) if insights else "Keep logging to see insights.")
+        self._insights_label.setText(
+            "\n\n".join(insights) if insights else "Keep logging to see insights."
+        )

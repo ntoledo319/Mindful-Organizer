@@ -6,6 +6,7 @@ Tier-aware display:
 - PRO: Toggle execution mode, enable/disable rules, focus mode, display adaptation
 - PREMIUM: Custom rules, multiple profiles, scheduled blocks, analytics
 """
+
 from __future__ import annotations
 
 import logging
@@ -63,11 +64,13 @@ class AutomationWidget(QWidget):
     @property
     def _is_pro(self) -> bool:
         from core.subscription_manager import SubscriptionTier
+
         return self.subscription.current_tier in (SubscriptionTier.PRO, SubscriptionTier.PREMIUM)
 
     @property
     def _is_premium(self) -> bool:
         from core.subscription_manager import SubscriptionTier
+
         return self.subscription.current_tier == SubscriptionTier.PREMIUM
 
     @property
@@ -133,15 +136,15 @@ class AutomationWidget(QWidget):
         mode_group = QGroupBox("Execution Mode")
         mode_layout = QVBoxLayout(mode_group)
 
-        mode_desc = QLabel(
-            "Choose how aggressively the automation engine acts on your system."
-        )
+        mode_desc = QLabel("Choose how aggressively the automation engine acts on your system.")
         mode_desc.setWordWrap(True)
         mode_desc.setStyleSheet("color: #666;")
         mode_layout.addWidget(mode_desc)
 
         self.mode_combo = QComboBox()
-        self.mode_combo.addItem("Suggestions Only — Notify but don't change anything", "suggestions_only")
+        self.mode_combo.addItem(
+            "Suggestions Only — Notify but don't change anything", "suggestions_only"
+        )
         self.mode_combo.addItem("Ask First — Prompt before each action", "ask_first")
         self.mode_combo.addItem("Autonomous — Execute immediately", "autonomous")
         self.mode_combo.currentIndexChanged.connect(self._on_mode_changed)
@@ -217,7 +220,9 @@ class AutomationWidget(QWidget):
 
         self.rules_table = QTableWidget()
         self.rules_table.setColumnCount(5)
-        self.rules_table.setHorizontalHeaderLabels(["Rule", "Trigger", "Enabled", "Actions", "Cooldown"])
+        self.rules_table.setHorizontalHeaderLabels(
+            ["Rule", "Trigger", "Enabled", "Actions", "Cooldown"]
+        )
         self.rules_table.horizontalHeader().setStretchLastSection(True)
         self.rules_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.rules_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
@@ -428,18 +433,20 @@ class AutomationWidget(QWidget):
             self.focus_btn.setText("🎯 Activate Focus Mode")
 
     def _refresh_profiles(self) -> None:
-        if not self._is_premium or not hasattr(self, 'profile_combo'):
+        if not self._is_premium or not hasattr(self, "profile_combo"):
             return
         self.profile_combo.clear()
         for p in self.config.profiles.values():
-            label = f"{p.name}{' (active)' if p.profile_id == self.config.active_profile_id else ''}"
+            label = (
+                f"{p.name}{' (active)' if p.profile_id == self.config.active_profile_id else ''}"
+            )
             self.profile_combo.addItem(label, p.profile_id)
         idx = self.profile_combo.findData(self.config.active_profile_id)
         if idx >= 0:
             self.profile_combo.setCurrentIndex(idx)
 
     def _refresh_analytics(self) -> None:
-        if not self._can_use_analytics or not hasattr(self, 'analytics_text'):
+        if not self._can_use_analytics or not hasattr(self, "analytics_text"):
             return
         data = self.engine.get_analytics()
         if not data:
@@ -470,7 +477,7 @@ class AutomationWidget(QWidget):
         self.analytics_text.setPlainText("\n".join(lines))
 
     def _refresh_blocks(self) -> None:
-        if not self._is_premium or not hasattr(self, 'blocks_table'):
+        if not self._is_premium or not hasattr(self, "blocks_table"):
             return
         blocks = self.config.scheduled_blocks
         self.blocks_table.setRowCount(len(blocks))
@@ -486,7 +493,11 @@ class AutomationWidget(QWidget):
     def _on_mode_changed(self, index: int) -> None:
         if not self._can_change_execution_mode:
             return
-        mode_values = [ExecutionMode.SUGGESTIONS_ONLY, ExecutionMode.ASK_FIRST, ExecutionMode.AUTONOMOUS]
+        mode_values = [
+            ExecutionMode.SUGGESTIONS_ONLY,
+            ExecutionMode.ASK_FIRST,
+            ExecutionMode.AUTONOMOUS,
+        ]
         mode = mode_values[index]
         self.config.set_execution_mode(self.config.active_profile_id, mode)
         self._refresh_status()
@@ -561,7 +572,9 @@ class AutomationWidget(QWidget):
         rule = AutomationRule(
             name=name,
             trigger=trigger,
-            actions=[AutomationAction(action_type=action_type, target=target, reason=f"Custom: {name}")],
+            actions=[
+                AutomationAction(action_type=action_type, target=target, reason=f"Custom: {name}")
+            ],
         )
         self.config.add_custom_rule(self.config.active_profile_id, rule)
         self.custom_name.clear()

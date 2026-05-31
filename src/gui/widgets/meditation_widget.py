@@ -67,6 +67,7 @@ _MOOD_RECOMMENDATIONS = {
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _section_title(text: str) -> QLabel:
     label = QLabel(text)
     label.setFont(QFont("Segoe UI", 14, QFont.Weight.Bold))
@@ -88,6 +89,7 @@ def _accent_button(text: str) -> QPushButton:
 # ---------------------------------------------------------------------------
 # Widget
 # ---------------------------------------------------------------------------
+
 
 class MeditationWidget(QWidget):
     """Meditation timer and tracking tab."""
@@ -232,12 +234,8 @@ class MeditationWidget(QWidget):
         self._pre_mood_slider.setRange(1, 10)
         self._pre_mood_slider.setValue(5)
         self._pre_mood_value = QLabel("5")
-        self._pre_mood_slider.valueChanged.connect(
-            lambda v: self._pre_mood_value.setText(str(v))
-        )
-        self._pre_mood_slider.valueChanged.connect(
-            lambda _: self._update_recommendation()
-        )
+        self._pre_mood_slider.valueChanged.connect(lambda v: self._pre_mood_value.setText(str(v)))
+        self._pre_mood_slider.valueChanged.connect(lambda _: self._update_recommendation())
         pre_col.addWidget(self._pre_mood_slider)
         pre_col.addWidget(self._pre_mood_value)
         mood_layout.addLayout(pre_col)
@@ -248,9 +246,7 @@ class MeditationWidget(QWidget):
         self._post_mood_slider.setRange(1, 10)
         self._post_mood_slider.setValue(5)
         self._post_mood_value = QLabel("5")
-        self._post_mood_slider.valueChanged.connect(
-            lambda v: self._post_mood_value.setText(str(v))
-        )
+        self._post_mood_slider.valueChanged.connect(lambda v: self._post_mood_value.setText(str(v)))
         post_col.addWidget(self._post_mood_slider)
         post_col.addWidget(self._post_mood_value)
         mood_layout.addLayout(post_col)
@@ -290,9 +286,7 @@ class MeditationWidget(QWidget):
         mood = self._pre_mood_slider.value()
         for (lo, hi), (med_type, reason) in _MOOD_RECOMMENDATIONS.items():
             if lo <= mood <= hi:
-                self._recommendation_label.setText(
-                    f"Recommended: {med_type}\n{reason}"
-                )
+                self._recommendation_label.setText(f"Recommended: {med_type}\n{reason}")
                 return
         self._recommendation_label.setText("Try any meditation that resonates with you.")
 
@@ -374,9 +368,9 @@ class MeditationWidget(QWidget):
         if self._remaining_sec <= 0:
             self._stop_session()
             QMessageBox.information(
-                self, "Session Complete",
-                "Your meditation session is complete. "
-                "Please rate your post-session mood."
+                self,
+                "Session Complete",
+                "Your meditation session is complete. Please rate your post-session mood.",
             )
 
     def _update_timer_display(self) -> None:

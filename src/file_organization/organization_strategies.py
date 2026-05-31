@@ -1,6 +1,7 @@
 """
 File organization strategies adapted for different mental health needs.
 """
+
 import json
 import shutil
 from datetime import datetime
@@ -10,6 +11,7 @@ from pathlib import Path
 
 class MentalHealthProfile:
     """Represents different mental health considerations for file organization."""
+
     def __init__(self) -> None:
         self.has_adhd: bool = False
         self.has_anxiety: bool = False
@@ -18,12 +20,15 @@ class MentalHealthProfile:
         self.prefers_visual: bool = False
         self.needs_reminders: bool = False
 
+
 class OrganizationStrategy(Enum):
     """Available organization strategies."""
+
     MINIMAL = auto()  # Simple, uncluttered organization
-    VISUAL = auto()   # Heavy use of icons and colors
-    DETAILED = auto() # Detailed categorization and metadata
-    FLEXIBLE = auto() # Adaptable hybrid approach
+    VISUAL = auto()  # Heavy use of icons and colors
+    DETAILED = auto()  # Detailed categorization and metadata
+    FLEXIBLE = auto()  # Adaptable hybrid approach
+
 
 class FileOrganizer:
     """Manages file organization based on mental health needs."""
@@ -36,7 +41,11 @@ class FileOrganizer:
     def _determine_strategy(self) -> OrganizationStrategy:
         """Determine the best organization strategy based on profile."""
         if self.profile.has_adhd and self.profile.has_anxiety:
-            return OrganizationStrategy.VISUAL if self.profile.prefers_visual else OrganizationStrategy.FLEXIBLE
+            return (
+                OrganizationStrategy.VISUAL
+                if self.profile.prefers_visual
+                else OrganizationStrategy.FLEXIBLE
+            )
         elif self.profile.has_adhd:
             return OrganizationStrategy.MINIMAL
         elif self.profile.has_anxiety:
@@ -56,7 +65,7 @@ class FileOrganizer:
                 "NOW - Current Projects",
                 "NEXT - Upcoming",
                 "DONE - Completed",
-                "REFERENCE - Important Info"
+                "REFERENCE - Important Info",
             ]
 
         elif self.strategy == OrganizationStrategy.VISUAL:
@@ -66,7 +75,7 @@ class FileOrganizer:
                 "📅 Scheduled Tasks",
                 "📚 Resources",
                 "✨ Inspiration",
-                "✅ Completed"
+                "✅ Completed",
             ]
 
         elif self.strategy == OrganizationStrategy.DETAILED:
@@ -77,17 +86,12 @@ class FileOrganizer:
                 "03_Archives",
                 "04_Templates",
                 "05_Documentation",
-                "06_Backups"
+                "06_Backups",
             ]
 
         else:  # FLEXIBLE
             # Adaptable structure with both simple and detailed options
-            categories = [
-                "Quick Access",
-                "Projects",
-                "Resources",
-                "Archives"
-            ]
+            categories = ["Quick Access", "Projects", "Resources", "Archives"]
 
         # Create directories
         for category in categories:
@@ -107,7 +111,7 @@ class FileOrganizer:
             "created_date": datetime.now().isoformat(),
             "purpose": self._get_category_purpose(category),
             "guidelines": self._get_organization_guidelines(),
-            "quick_tips": self._get_quick_tips()
+            "quick_tips": self._get_quick_tips(),
         }
 
         with open(directory / ".folder_info.json", "w") as f:
@@ -133,36 +137,44 @@ class FileOrganizer:
         guidelines = []
 
         if self.profile.has_adhd:
-            guidelines.extend([
-                "Keep file names short and action-oriented",
-                "Use NOW, NEXT, DONE prefixes for clear prioritization",
-                "Limit folder depth to reduce overwhelm",
-                "Set up automatic file sorting when possible"
-            ])
+            guidelines.extend(
+                [
+                    "Keep file names short and action-oriented",
+                    "Use NOW, NEXT, DONE prefixes for clear prioritization",
+                    "Limit folder depth to reduce overwhelm",
+                    "Set up automatic file sorting when possible",
+                ]
+            )
 
         if self.profile.has_anxiety:
-            guidelines.extend([
-                "Use detailed, consistent naming conventions",
-                "Include dates in file names (YYYY-MM-DD)",
-                "Maintain regular backups",
-                "Create detailed README files for each project"
-            ])
+            guidelines.extend(
+                [
+                    "Use detailed, consistent naming conventions",
+                    "Include dates in file names (YYYY-MM-DD)",
+                    "Maintain regular backups",
+                    "Create detailed README files for each project",
+                ]
+            )
 
         if self.profile.has_depression:
-            guidelines.extend([
-                "Use positive and encouraging folder names",
-                "Include visual elements when possible",
-                "Keep important files easily accessible",
-                "Set up automatic cleanup routines"
-            ])
+            guidelines.extend(
+                [
+                    "Use positive and encouraging folder names",
+                    "Include visual elements when possible",
+                    "Keep important files easily accessible",
+                    "Set up automatic cleanup routines",
+                ]
+            )
 
         if not any([self.profile.has_adhd, self.profile.has_anxiety, self.profile.has_depression]):
-            guidelines.extend([
-                "Use clear, descriptive names",
-                "Organize by project or category",
-                "Archive completed projects",
-                "Regular maintenance and cleanup"
-            ])
+            guidelines.extend(
+                [
+                    "Use clear, descriptive names",
+                    "Organize by project or category",
+                    "Archive completed projects",
+                    "Regular maintenance and cleanup",
+                ]
+            )
 
         return guidelines
 
@@ -171,28 +183,34 @@ class FileOrganizer:
         tips = []
 
         if self.profile.has_adhd:
-            tips.extend([
-                "💡 Use color coding for different project types",
-                "⏰ Set reminders for file cleanup",
-                "📱 Use quick access shortcuts",
-                "🎯 Focus on one folder at a time"
-            ])
+            tips.extend(
+                [
+                    "💡 Use color coding for different project types",
+                    "⏰ Set reminders for file cleanup",
+                    "📱 Use quick access shortcuts",
+                    "🎯 Focus on one folder at a time",
+                ]
+            )
 
         if self.profile.has_anxiety:
-            tips.extend([
-                "✅ Regular backups are automated",
-                "📋 Use checklists for organization",
-                "🔍 Search function helps find anything",
-                "📝 Keep notes with context"
-            ])
+            tips.extend(
+                [
+                    "✅ Regular backups are automated",
+                    "📋 Use checklists for organization",
+                    "🔍 Search function helps find anything",
+                    "📝 Keep notes with context",
+                ]
+            )
 
         if self.profile.has_depression:
-            tips.extend([
-                "🌟 Celebrate completed projects",
-                "🎨 Use inspiring visuals",
-                "👥 Share and collaborate",
-                "🌱 Start small, grow gradually"
-            ])
+            tips.extend(
+                [
+                    "🌟 Celebrate completed projects",
+                    "🎨 Use inspiring visuals",
+                    "👥 Share and collaborate",
+                    "🌱 Start small, grow gradually",
+                ]
+            )
 
         return tips
 

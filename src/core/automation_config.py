@@ -13,6 +13,7 @@ Pro/Premium users get:
 - Scheduled focus blocks
 - Advanced system integrations
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -39,9 +40,9 @@ logger = logging.getLogger(__name__)
 class ExecutionMode(Enum):
     """How aggressively the automation engine acts."""
 
-    SUGGESTIONS_ONLY = "suggestions_only"   # Free: notifications, no system changes
-    ASK_FIRST = "ask_first"                  # Pro: prompt before executing
-    AUTONOMOUS = "autonomous"                # Pro: execute immediately
+    SUGGESTIONS_ONLY = "suggestions_only"  # Free: notifications, no system changes
+    ASK_FIRST = "ask_first"  # Pro: prompt before executing
+    AUTONOMOUS = "autonomous"  # Pro: execute immediately
 
 
 @dataclass
@@ -103,18 +104,21 @@ class AutomationProfile:
                 for a in r.get("actions", [])
             ]
             from core.constants import Condition
+
             req_conditions = set()
             for c in r.get("required_conditions", []):
                 with contextlib.suppress(KeyError):
                     req_conditions.add(Condition[c])
-            custom_rules.append(AutomationRule(
-                name=r["name"],
-                trigger=TriggerType[r["trigger"]],
-                required_conditions=req_conditions,
-                actions=actions,
-                cooldown_minutes=r.get("cooldown_minutes", 30),
-                enabled_by_default=r.get("enabled_by_default", True),
-            ))
+            custom_rules.append(
+                AutomationRule(
+                    name=r["name"],
+                    trigger=TriggerType[r["trigger"]],
+                    required_conditions=req_conditions,
+                    actions=actions,
+                    cooldown_minutes=r.get("cooldown_minutes", 30),
+                    enabled_by_default=r.get("enabled_by_default", True),
+                )
+            )
 
         return cls(
             profile_id=data["profile_id"],
@@ -189,12 +193,10 @@ class AutomationConfigManager:
                 with open(self.config_file) as f:
                     data = json.load(f)
                 self.profiles = {
-                    k: AutomationProfile.from_dict(v)
-                    for k, v in data.get("profiles", {}).items()
+                    k: AutomationProfile.from_dict(v) for k, v in data.get("profiles", {}).items()
                 }
                 self.scheduled_blocks = [
-                    ScheduledFocusBlock.from_dict(b)
-                    for b in data.get("scheduled_blocks", [])
+                    ScheduledFocusBlock.from_dict(b) for b in data.get("scheduled_blocks", [])
                 ]
                 self.active_profile_id = data.get("active_profile_id", "")
             except (json.JSONDecodeError, OSError, KeyError) as exc:

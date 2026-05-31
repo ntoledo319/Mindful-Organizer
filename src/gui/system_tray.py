@@ -8,6 +8,7 @@ Provides always-on presence with quick actions:
 - Open main window
 - Daily briefing
 """
+
 from __future__ import annotations
 
 from PyQt6.QtCore import pyqtSignal
@@ -22,14 +23,14 @@ class SystemTrayController(QSystemTrayIcon):
     respond without tight coupling.
     """
 
-    quick_mood_log = pyqtSignal(int)          # mood score 1-10
-    quick_energy_log = pyqtSignal(int)        # energy score 1-10
-    focus_mode_toggle = pyqtSignal()          # toggle focus mode
-    crisis_mode_trigger = pyqtSignal()        # activate crisis mode
-    grounding_trigger = pyqtSignal()          # activate grounding mode
-    show_main_window = pyqtSignal()           # bring main window to front
-    daily_briefing_request = pyqtSignal()     # show daily briefing
-    quit_app = pyqtSignal()                   # graceful quit
+    quick_mood_log = pyqtSignal(int)  # mood score 1-10
+    quick_energy_log = pyqtSignal(int)  # energy score 1-10
+    focus_mode_toggle = pyqtSignal()  # toggle focus mode
+    crisis_mode_trigger = pyqtSignal()  # activate crisis mode
+    grounding_trigger = pyqtSignal()  # activate grounding mode
+    show_main_window = pyqtSignal()  # bring main window to front
+    daily_briefing_request = pyqtSignal()  # show daily briefing
+    quit_app = pyqtSignal()  # graceful quit
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
@@ -45,9 +46,7 @@ class SystemTrayController(QSystemTrayIcon):
         # Use a standard fallback icon if no custom icon is available
         style = QApplication.style()
         if style:
-            pixmap = style.standardPixmap(
-                QApplication.style().StandardPixmap.SP_ComputerIcon
-            )
+            pixmap = style.standardPixmap(QApplication.style().StandardPixmap.SP_ComputerIcon)
             self.setIcon(QIcon(pixmap))
         self.setVisible(True)
 
@@ -98,9 +97,7 @@ class SystemTrayController(QSystemTrayIcon):
 
     def _toggle_focus(self) -> None:
         self._focus_active = not self._focus_active
-        self._focus_action.setText(
-            "Exit Focus Mode" if self._focus_active else "Enter Focus Mode"
-        )
+        self._focus_action.setText("Exit Focus Mode" if self._focus_active else "Enter Focus Mode")
         self.focus_mode_toggle.emit()
 
     # -- public API -----------------------------------------------------------
@@ -111,9 +108,7 @@ class SystemTrayController(QSystemTrayIcon):
 
     def set_focus_indicator(self, active: bool) -> None:
         self._focus_active = active
-        self._focus_action.setText(
-            "Exit Focus Mode" if self._focus_active else "Enter Focus Mode"
-        )
+        self._focus_action.setText("Exit Focus Mode" if self._focus_active else "Enter Focus Mode")
 
     def show_notification(self, title: str, message: str, duration_ms: int = 5000) -> None:
         self.showMessage(title, message, QSystemTrayIcon.MessageIcon.Information, duration_ms)

@@ -51,6 +51,7 @@ _CATEGORY_TAB_NAMES = {
 # Widget
 # ---------------------------------------------------------------------------
 
+
 class SearchWidget(QDialog):
     """Global search dialog with debounced real-time search."""
 
@@ -93,7 +94,11 @@ class SearchWidget(QDialog):
         filter_row = QHBoxLayout()
         filter_row.addWidget(QLabel("Search in:"))
         self._filter_checks: dict[str, QCheckBox] = {}
-        for cat_label, cat_key in [("Tasks", "tasks"), ("Journal", "journal"), ("Mood Entries", "mood")]:
+        for cat_label, cat_key in [
+            ("Tasks", "tasks"),
+            ("Journal", "journal"),
+            ("Mood Entries", "mood"),
+        ]:
             cb = QCheckBox(cat_label)
             cb.setChecked(True)
             cb.stateChanged.connect(lambda _: self._debounce_search())
@@ -172,13 +177,15 @@ class SearchWidget(QDialog):
                 title = getattr(task, "title", "").lower()
                 notes = (getattr(task, "notes", "") or "").lower()
                 if query in title or query in notes:
-                    results.append({
-                        "category": "tasks",
-                        "title": getattr(task, "title", ""),
-                        "detail": f"Priority: {getattr(task, 'priority', '?')} | "
-                                  f"Due: {getattr(task, 'due_date', 'N/A')}",
-                        "ref": task,
-                    })
+                    results.append(
+                        {
+                            "category": "tasks",
+                            "title": getattr(task, "title", ""),
+                            "detail": f"Priority: {getattr(task, 'priority', '?')} | "
+                            f"Due: {getattr(task, 'due_date', 'N/A')}",
+                            "ref": task,
+                        }
+                    )
         except (AttributeError, TypeError) as exc:
             logger.debug(f"Task search error: {exc}")
         return results
@@ -207,12 +214,14 @@ class SearchWidget(QDialog):
                     continue
                 if query in text:
                     preview = text[:80].replace("\n", " ")
-                    results.append({
-                        "category": "journal",
-                        "title": f"Journal: {dt}",
-                        "detail": preview,
-                        "ref": entry,
-                    })
+                    results.append(
+                        {
+                            "category": "journal",
+                            "title": f"Journal: {dt}",
+                            "detail": preview,
+                            "ref": entry,
+                        }
+                    )
         except (AttributeError, TypeError) as exc:
             logger.debug(f"Journal search error: {exc}")
         return results
@@ -244,12 +253,14 @@ class SearchWidget(QDialog):
                         score = str(entry.mood_score)
                     elif isinstance(entry, dict):
                         score = str(entry.get("mood_score", ""))
-                    results.append({
-                        "category": "mood",
-                        "title": f"Mood: {ts}",
-                        "detail": f"Score: {score} | {notes[:60]}",
-                        "ref": entry,
-                    })
+                    results.append(
+                        {
+                            "category": "mood",
+                            "title": f"Mood: {ts}",
+                            "detail": f"Score: {score} | {notes[:60]}",
+                            "ref": entry,
+                        }
+                    )
         except (AttributeError, TypeError) as exc:
             logger.debug(f"Mood search error: {exc}")
         return results

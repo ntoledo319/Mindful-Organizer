@@ -8,20 +8,20 @@ mood improvement statistics, and condition-based recommendations.
 import pytest
 
 from wellness.breathing import (
-BreathingExercise,
-BreathingExerciseType,
-BreathingManager,
-BreathingSession,
-BreathPhase,
-Condition,
+    BreathingExercise,
+    BreathingExerciseType,
+    BreathingManager,
+    BreathingSession,
+    BreathPhase,
+    Condition,
 )
 
 # ---------------------------------------------------------------------------
 # Exercise access
 # ---------------------------------------------------------------------------
 
-class TestGetExercises:
 
+class TestGetExercises:
     def test_list_exercises(self, tmp_data_dir):
         bm = BreathingManager(tmp_data_dir)
         exercises = bm.list_exercises()
@@ -54,8 +54,8 @@ class TestGetExercises:
 # Exercise phases
 # ---------------------------------------------------------------------------
 
-class TestExercisePhases:
 
+class TestExercisePhases:
     def test_box_breathing_phases(self, tmp_data_dir):
         bm = BreathingManager(tmp_data_dir)
         box = bm.get_exercise(BreathingExerciseType.BOX_BREATHING)
@@ -94,8 +94,8 @@ class TestExercisePhases:
 # Session tracking
 # ---------------------------------------------------------------------------
 
-class TestSessionTracking:
 
+class TestSessionTracking:
     def test_create_session(self, tmp_data_dir):
         bm = BreathingManager(tmp_data_dir)
         session = bm.create_session(BreathingExerciseType.BOX_BREATHING, mood_before=5)
@@ -147,8 +147,8 @@ class TestSessionTracking:
 # Mood improvement stats
 # ---------------------------------------------------------------------------
 
-class TestMoodImprovementStats:
 
+class TestMoodImprovementStats:
     def test_mood_improvement_calculated(self, tmp_data_dir):
         bm = BreathingManager(tmp_data_dir)
         session = bm.create_session(BreathingExerciseType.BOX_BREATHING, mood_before=3)
@@ -164,7 +164,9 @@ class TestMoodImprovementStats:
         bm = BreathingManager(tmp_data_dir)
 
         for mood_before, mood_after, cycles in [(3, 6, 4), (4, 7, 4), (5, 6, 3)]:
-            session = bm.create_session(BreathingExerciseType.BOX_BREATHING, mood_before=mood_before)
+            session = bm.create_session(
+                BreathingExerciseType.BOX_BREATHING, mood_before=mood_before
+            )
             bm.complete_session(session, cycles_completed=cycles, mood_after=mood_after)
 
         stats = bm.get_statistics()
@@ -187,8 +189,8 @@ class TestMoodImprovementStats:
 # Condition-based recommendations
 # ---------------------------------------------------------------------------
 
-class TestConditionRecommendations:
 
+class TestConditionRecommendations:
     def test_recommend_for_anxiety(self, tmp_data_dir):
         bm = BreathingManager(tmp_data_dir)
         recs = bm.recommend(conditions={Condition.ANXIETY})
@@ -196,7 +198,10 @@ class TestConditionRecommendations:
         assert len(recs) > 0
         # Calming exercises should score higher for anxiety
         top = recs[0]
-        assert Condition.ANXIETY in top.condition_suitability or Condition.GENERAL in top.condition_suitability
+        assert (
+            Condition.ANXIETY in top.condition_suitability
+            or Condition.GENERAL in top.condition_suitability
+        )
 
     def test_recommend_for_depression(self, tmp_data_dir):
         bm = BreathingManager(tmp_data_dir)
@@ -243,8 +248,8 @@ class TestConditionRecommendations:
 # Session serialization
 # ---------------------------------------------------------------------------
 
-class TestSessionSerialization:
 
+class TestSessionSerialization:
     def test_session_round_trip(self):
         session = BreathingSession(
             exercise_type=BreathingExerciseType.BOX_BREATHING,

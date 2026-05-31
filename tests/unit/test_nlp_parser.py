@@ -10,11 +10,11 @@ from datetime import date, timedelta
 import pytest
 
 from core.nlp_parser import (
-Category,
-EnergyRequired,
-NLPTaskParser,
-ParsedTask,
-Priority,
+    Category,
+    EnergyRequired,
+    NLPTaskParser,
+    ParsedTask,
+    Priority,
 )
 
 # Use a fixed reference date so tests are deterministic.
@@ -30,8 +30,8 @@ def parser():
 # Simple tasks
 # ---------------------------------------------------------------------------
 
-class TestParseSimpleTask:
 
+class TestParseSimpleTask:
     def test_parse_simple_task(self, parser):
         """A plain task title is captured correctly."""
         result = parser.parse("call dentist")
@@ -53,8 +53,8 @@ class TestParseSimpleTask:
 # Date parsing
 # ---------------------------------------------------------------------------
 
-class TestParseWithDate:
 
+class TestParseWithDate:
     def test_parse_tomorrow(self, parser):
         result = parser.parse("finish report by tomorrow")
         assert result.due_date == _REF_DATE + timedelta(days=1)
@@ -92,8 +92,8 @@ class TestParseWithDate:
 # Priority parsing
 # ---------------------------------------------------------------------------
 
-class TestParseWithPriority:
 
+class TestParseWithPriority:
     def test_parse_urgent_prefix(self, parser):
         result = parser.parse("urgent: fix production bug")
         assert result.priority == Priority.URGENT
@@ -119,8 +119,8 @@ class TestParseWithPriority:
 # Category parsing
 # ---------------------------------------------------------------------------
 
-class TestParseWithCategory:
 
+class TestParseWithCategory:
     def test_parse_health_prefix(self, parser):
         result = parser.parse("health: schedule appointment")
         assert result.category == Category.HEALTH
@@ -147,8 +147,8 @@ class TestParseWithCategory:
 # Energy parsing
 # ---------------------------------------------------------------------------
 
-class TestParseWithEnergy:
 
+class TestParseWithEnergy:
     def test_parse_easy_task(self, parser):
         result = parser.parse("easy task: water plants")
         assert result.energy_required in (EnergyRequired.LOW, EnergyRequired.VERY_LOW)
@@ -161,7 +161,9 @@ class TestParseWithEnergy:
         result = parser.parse("call dentist")
         # dentist might match some keywords, but energy default is moderate
         assert result.energy_required in (
-            EnergyRequired.MODERATE, EnergyRequired.LOW, EnergyRequired.HIGH,
+            EnergyRequired.MODERATE,
+            EnergyRequired.LOW,
+            EnergyRequired.HIGH,
         )
 
 
@@ -169,8 +171,8 @@ class TestParseWithEnergy:
 # Complex / multi-feature parsing
 # ---------------------------------------------------------------------------
 
-class TestParseComplex:
 
+class TestParseComplex:
     def test_parse_complex_input(self, parser):
         """A task with priority, category, and date all at once."""
         result = parser.parse("urgent work: deploy release by next monday")
@@ -208,8 +210,8 @@ class TestParseComplex:
 # Fallback / edge cases
 # ---------------------------------------------------------------------------
 
-class TestParseFallback:
 
+class TestParseFallback:
     def test_parse_unparseable_keeps_title(self, parser):
         """Even without matches, the full text becomes the title."""
         result = parser.parse("xyzzy foo bar baz")

@@ -11,6 +11,7 @@ Hotkeys:
 - Ctrl+Shift+M  → Quick Mood Log
 - Ctrl+Shift+E  → Quick Energy Log
 """
+
 from __future__ import annotations
 
 import logging
@@ -57,19 +58,23 @@ class GlobalHotkeyManager(QObject):
             from pynput import keyboard
 
             self._has_pynput = True
-            self._pynput_listener = keyboard.GlobalHotKeys({
-                "<ctrl>+<shift>+f": self._on_focus,
-                "<ctrl>+<shift>+c": self._on_crisis,
-                "<ctrl>+<shift>+g": self._on_grounding,
-                "<cmd>+<shift>+f": self._on_focus,    # macOS-friendly
-                "<cmd>+<shift>+c": self._on_crisis,   # macOS-friendly
-                "<cmd>+<shift>+g": self._on_grounding,# macOS-friendly
-            })
+            self._pynput_listener = keyboard.GlobalHotKeys(
+                {
+                    "<ctrl>+<shift>+f": self._on_focus,
+                    "<ctrl>+<shift>+c": self._on_crisis,
+                    "<ctrl>+<shift>+g": self._on_grounding,
+                    "<cmd>+<shift>+f": self._on_focus,  # macOS-friendly
+                    "<cmd>+<shift>+c": self._on_crisis,  # macOS-friendly
+                    "<cmd>+<shift>+g": self._on_grounding,  # macOS-friendly
+                }
+            )
             self._pynput_listener.start()
             logger.info("Global hotkeys active via pynput")
         except Exception as exc:
             self._has_pynput = False
-            logger.info("pynput unavailable or lacks permissions (%s). Using in-app shortcuts only.", exc)
+            logger.info(
+                "pynput unavailable or lacks permissions (%s). Using in-app shortcuts only.", exc
+            )
 
     # -- PyQt fallback shortcuts ----------------------------------------------
 

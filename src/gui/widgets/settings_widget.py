@@ -41,6 +41,7 @@ logger = logging.getLogger(__name__)
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _section_title(text: str) -> QLabel:
     label = QLabel(text)
     label.setFont(QFont("Segoe UI", 18, QFont.Weight.DemiBold))
@@ -62,6 +63,7 @@ def _accent_button(text: str) -> QPushButton:
 # ---------------------------------------------------------------------------
 # Widget
 # ---------------------------------------------------------------------------
+
 
 class SettingsWidget(QWidget):
     """Application settings tab."""
@@ -201,6 +203,7 @@ class SettingsWidget(QWidget):
 
     def _enter_license_key(self) -> None:
         from PyQt6.QtWidgets import QInputDialog
+
         key, ok = QInputDialog.getText(self, "Enter License Key", "License key:")
         if ok and key:
             sm = getattr(self.main_window, "subscription_manager", None)
@@ -217,7 +220,8 @@ class SettingsWidget(QWidget):
         sm = getattr(self.main_window, "subscription_manager", None)
         if sm:
             reply = QMessageBox.question(
-                self, "Deactivate",
+                self,
+                "Deactivate",
                 "Deactivate your license and revert to Free?",
                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             )
@@ -356,9 +360,11 @@ class SettingsWidget(QWidget):
         layout.addWidget(_body_label(f"Hearth v{APP_VERSION}"))
         layout.addWidget(_body_label("All data stored locally on your device."))
         layout.addWidget(_body_label("Licensed under the MIT License."))
-        layout.addWidget(_body_label(
-            "This app is a supplement to professional mental health care, not a replacement."
-        ))
+        layout.addWidget(
+            _body_label(
+                "This app is a supplement to professional mental health care, not a replacement."
+            )
+        )
 
         self._root.addWidget(group)
 
@@ -450,12 +456,14 @@ class SettingsWidget(QWidget):
             return
         if theme_name == "__upsell__":
             from gui.subscription_helpers import gated
+
             gated("all_themes", getattr(self.main_window, "subscription_manager", None), self)
             # Reset to first theme
             self._theme_combo.setCurrentIndex(0)
             return
         try:
             from gui.themes import THEMES
+
             theme = THEMES.get(theme_name)
             if theme:
                 self._preview_frame.setStyleSheet(
@@ -471,6 +479,7 @@ class SettingsWidget(QWidget):
 
     def _export_all_data(self) -> None:
         from gui.subscription_helpers import gated
+
         if not gated("data_export", getattr(self.main_window, "subscription_manager", None), self):
             return
         path, _ = QFileDialog.getSaveFileName(
@@ -482,6 +491,7 @@ class SettingsWidget(QWidget):
             # Export the real SQLite-backed health data (moods, journal,
             # medications, sleep, tasks, ...) via the export manager.
             from core.export_manager import ExportFormat, ExportOptions
+
             em = self.main_window.export_manager
             options = ExportOptions(
                 format=ExportFormat.JSON,
@@ -494,13 +504,12 @@ class SettingsWidget(QWidget):
             QMessageBox.warning(self, "Error", f"Export failed: {e}")
 
     def _import_data(self) -> None:
-        path, _ = QFileDialog.getOpenFileName(
-            self, "Import Data", "", "JSON (*.json)"
-        )
+        path, _ = QFileDialog.getOpenFileName(self, "Import Data", "", "JSON (*.json)")
         if not path:
             return
         reply = QMessageBox.question(
-            self, "Import",
+            self,
+            "Import",
             "Importing data may overwrite existing entries. Continue?",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
         )
@@ -511,15 +520,17 @@ class SettingsWidget(QWidget):
             counts = em.import_from_json(Path(path), merge=True, validate_first=True)
             total = sum(counts.values()) if isinstance(counts, dict) else 0
             QMessageBox.information(
-                self, "Import",
-                f"Imported {total} record(s). You may need to restart to see all changes."
+                self,
+                "Import",
+                f"Imported {total} record(s). You may need to restart to see all changes.",
             )
         except Exception as e:  # noqa: BLE001
             QMessageBox.warning(self, "Import failed", f"Could not import data: {e}")
 
     def _reset_data(self) -> None:
         reply = QMessageBox.warning(
-            self, "Reset All Data",
+            self,
+            "Reset All Data",
             "This will permanently delete ALL your data including profile, "
             "mood entries, journal entries, tasks, and settings.\n\n"
             "This action cannot be undone. Are you sure?",
@@ -530,7 +541,8 @@ class SettingsWidget(QWidget):
             return
 
         confirm = QMessageBox.critical(
-            self, "Confirm Reset",
+            self,
+            "Confirm Reset",
             "Last chance. Click Yes to permanently delete all data.",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             QMessageBox.StandardButton.No,
@@ -553,21 +565,22 @@ class SettingsWidget(QWidget):
                 elif item.is_dir():
                     shutil.rmtree(item)
             QMessageBox.information(
-                self, "Reset",
-                "All data has been reset. Please restart the application."
+                self, "Reset", "All data has been reset. Please restart the application."
             )
         except Exception as e:
             QMessageBox.warning(self, "Error", f"Reset failed: {e}")
 
     def _sync_wearables(self) -> None:
         from gui.subscription_helpers import gated
-        if not gated("wearable_sync", getattr(self.main_window, "subscription_manager", None), self):
+
+        if not gated(
+            "wearable_sync", getattr(self.main_window, "subscription_manager", None), self
+        ):
             return
 
         from core.wearable_sync import WearableSyncManager
-        path = QFileDialog.getExistingDirectory(
-            self, "Select Export Directory", str(Path.home())
-        )
+
+        path = QFileDialog.getExistingDirectory(self, "Select Export Directory", str(Path.home()))
         if not path:
             return
 
@@ -585,9 +598,10 @@ class SettingsWidget(QWidget):
                 QMessageBox.information(self, "Wearable Sync", msg)
             else:
                 QMessageBox.information(
-                    self, "Wearable Sync",
+                    self,
+                    "Wearable Sync",
                     "No valid sleep data found in the selected directory.\n"
-                    "Please select an unzipped Apple Health or Google Fit export."
+                    "Please select an unzipped Apple Health or Google Fit export.",
                 )
         except Exception as e:
             logger.error("Failed to sync wearables: %s", e)
@@ -600,6 +614,7 @@ class SettingsWidget(QWidget):
     def _reopen_onboarding(self) -> None:
         try:
             from gui.widgets.onboarding import OnboardingWizard
+
             wizard = OnboardingWizard(
                 self.main_window.profile_manager,
                 self.main_window.data_dir,
@@ -608,10 +623,7 @@ class SettingsWidget(QWidget):
             wizard.exec()
             self._load_current_settings()
         except ImportError:
-            QMessageBox.information(
-                self, "Onboarding",
-                "Onboarding wizard is not available."
-            )
+            QMessageBox.information(self, "Onboarding", "Onboarding wizard is not available.")
         except Exception as e:
             QMessageBox.warning(self, "Error", f"Could not open onboarding: {e}")
 

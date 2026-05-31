@@ -55,6 +55,7 @@ except ImportError:
 # WellnessPDFExporter
 # ---------------------------------------------------------------------------
 
+
 class WellnessPDFExporter:
     """Export wellness summaries to PDF or print-ready HTML."""
 
@@ -129,14 +130,16 @@ class WellnessPDFExporter:
 
         # Footer
         story.append(Spacer(1, 0.3 * inch))
-        story.append(Paragraph(
-            (
-                "This report is generated from locally-stored data for personal reflection only. "
-                "It is not a substitute for professional medical advice, diagnosis, or treatment. "
-                "If you are in crisis, contact emergency services or a crisis helpline immediately."
-            ),
-            styles["Italic"],
-        ))
+        story.append(
+            Paragraph(
+                (
+                    "This report is generated from locally-stored data for personal reflection only. "
+                    "It is not a substitute for professional medical advice, diagnosis, or treatment. "
+                    "If you are in crisis, contact emergency services or a crisis helpline immediately."
+                ),
+                styles["Italic"],
+            )
+        )
 
         doc.build(story)
         return output_path
@@ -163,8 +166,7 @@ class WellnessPDFExporter:
             Paragraph("Personal Wellness Report", subtitle_style),
             Paragraph(f"<b>Name:</b> {user_name}", styles["Normal"]),
             Paragraph(
-                f"<b>Report Period:</b> Last {period_days} days | "
-                f"<b>Generated:</b> {generated}",
+                f"<b>Report Period:</b> Last {period_days} days | <b>Generated:</b> {generated}",
                 styles["Normal"],
             ),
             Spacer(1, 0.2 * inch),
@@ -312,15 +314,19 @@ class WellnessPDFExporter:
                 story.append(Image(chart, width=4 * inch, height=3 * inch))
 
         if values.get("top_value"):
-            story.append(Paragraph(
-                f"<b>Top value this week:</b> {values['top_value']}",
-                styles["Normal"],
-            ))
+            story.append(
+                Paragraph(
+                    f"<b>Top value this week:</b> {values['top_value']}",
+                    styles["Normal"],
+                )
+            )
         if values.get("neglected_value"):
-            story.append(Paragraph(
-                f"<b>Needs attention:</b> {values['neglected_value']}",
-                styles["Normal"],
-            ))
+            story.append(
+                Paragraph(
+                    f"<b>Needs attention:</b> {values['neglected_value']}",
+                    styles["Normal"],
+                )
+            )
         return story
 
     def _build_crisis_section(self, styles: Any, summary: dict[str, Any]) -> list[Any]:
@@ -338,15 +344,19 @@ class WellnessPDFExporter:
         for sig in signals:
             severity = sig.get("severity", "info")
             color = self.WARN_COLOR if severity in ("moderate", "urgent") else self.ACCENT_COLOR
-            story.append(Paragraph(
-                f"<font color='{color}'><b>{severity.title()}:</b></font> "
-                f"{sig.get('description', '')}",
-                styles["Normal"],
-            ))
-            story.append(Paragraph(
-                f"<i>Suggestion:</i> {sig.get('recommendation', '')}",
-                styles["Normal"],
-            ))
+            story.append(
+                Paragraph(
+                    f"<font color='{color}'><b>{severity.title()}:</b></font> "
+                    f"{sig.get('description', '')}",
+                    styles["Normal"],
+                )
+            )
+            story.append(
+                Paragraph(
+                    f"<i>Suggestion:</i> {sig.get('recommendation', '')}",
+                    styles["Normal"],
+                )
+            )
             story.append(Spacer(1, 0.08 * inch))
         return story
 
@@ -363,8 +373,17 @@ class WellnessPDFExporter:
             fig, ax = plt.subplots(figsize=(6, 2.5))
             ax.plot(dates, scores, color=self.ACCENT_COLOR, linewidth=1.5, marker="o", markersize=3)
             ax.axhline(5, color="gray", linestyle="--", linewidth=0.8, alpha=0.5)
-            ax.fill_between(dates, scores, 5, where=[s >= 5 for s in scores], alpha=0.2, color=self.SUCCESS_COLOR)
-            ax.fill_between(dates, scores, 5, where=[s < 5 for s in scores], alpha=0.2, color=self.WARN_COLOR)
+            ax.fill_between(
+                dates,
+                scores,
+                5,
+                where=[s >= 5 for s in scores],
+                alpha=0.2,
+                color=self.SUCCESS_COLOR,
+            )
+            ax.fill_between(
+                dates, scores, 5, where=[s < 5 for s in scores], alpha=0.2, color=self.WARN_COLOR
+            )
             ax.set_ylim(0, 10)
             ax.set_ylabel("Mood (0-10)")
             ax.set_title("Mood Over Time", fontsize=10, color=self.BRAND_COLOR)
@@ -439,11 +458,25 @@ class WellnessPDFExporter:
             days = [d["day"] for d in adherence_by_day]
             rates = [d["rate"] for d in adherence_by_day]
             fig, ax = plt.subplots(figsize=(6, 2))
-            colors_map = [self.SUCCESS_COLOR if r >= 1.0 else (self.WARN_COLOR if r < 0.5 else "#F39C12") for r in rates]
-            ax.barh(["Adherence"] * len(days), [1] * len(days), left=range(len(days)), color=colors_map, height=0.6)
+            colors_map = [
+                self.SUCCESS_COLOR if r >= 1.0 else (self.WARN_COLOR if r < 0.5 else "#F39C12")
+                for r in rates
+            ]
+            ax.barh(
+                ["Adherence"] * len(days),
+                [1] * len(days),
+                left=range(len(days)),
+                color=colors_map,
+                height=0.6,
+            )
             ax.set_xlim(0, len(days))
             ax.set_xticks(range(0, len(days), max(1, len(days) // 7)))
-            ax.set_xticklabels([days[i] for i in range(0, len(days), max(1, len(days) // 7))], rotation=45, ha="right", fontsize=7)
+            ax.set_xticklabels(
+                [days[i] for i in range(0, len(days), max(1, len(days) // 7))],
+                rotation=45,
+                ha="right",
+                fontsize=7,
+            )
             ax.set_yticks([])
             ax.set_title("Daily Medication Adherence", fontsize=10, color=self.BRAND_COLOR)
             fig.tight_layout()
@@ -487,16 +520,20 @@ class WellnessPDFExporter:
 
     def _make_table(self, data: list[list[str]]) -> Table:
         table = Table(data, colWidths=[2.5 * inch, 2.5 * inch])
-        table.setStyle(TableStyle([
-            ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor(self.ACCENT_COLOR)),
-            ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
-            ("ALIGN", (0, 0), (-1, -1), "LEFT"),
-            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-            ("FONTSIZE", (0, 0), (-1, 0), 11),
-            ("BOTTOMPADDING", (0, 0), (-1, 0), 8),
-            ("BACKGROUND", (0, 1), (-1, -1), colors.HexColor(self.BG_COLOR)),
-            ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
-        ]))
+        table.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor(self.ACCENT_COLOR)),
+                    ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                    ("ALIGN", (0, 0), (-1, -1), "LEFT"),
+                    ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                    ("FONTSIZE", (0, 0), (-1, 0), 11),
+                    ("BOTTOMPADDING", (0, 0), (-1, 0), 8),
+                    ("BACKGROUND", (0, 1), (-1, -1), colors.HexColor(self.BG_COLOR)),
+                    ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+                ]
+            )
+        )
         return table
 
     # -- HTML fallback -----------------------------------------------------
@@ -536,8 +573,8 @@ class WellnessPDFExporter:
             css = "severe" if severity in ("moderate", "urgent") else ""
             signals_html += f"""
 <div class="signal {css}">
-  <strong>{severity.title()}:</strong> {sig.get('description', '')}<br>
-  <em>Suggestion:</em> {sig.get('recommendation', '')}
+  <strong>{severity.title()}:</strong> {sig.get("description", "")}<br>
+  <em>Suggestion:</em> {sig.get("recommendation", "")}
 </div>
 """
 
@@ -570,40 +607,40 @@ class WellnessPDFExporter:
 <h2>Mood Trends</h2>
 <table>
   <tr><th>Metric</th><th>Value</th></tr>
-  <tr><td>Entries logged</td><td>{mood.get('count', 0)}</td></tr>
-  <tr><td>Average mood</td><td>{mood.get('average', 'N/A')}</td></tr>
-  <tr><td>Trend</td><td>{mood.get('trend', 'N/A')}</td></tr>
+  <tr><td>Entries logged</td><td>{mood.get("count", 0)}</td></tr>
+  <tr><td>Average mood</td><td>{mood.get("average", "N/A")}</td></tr>
+  <tr><td>Trend</td><td>{mood.get("trend", "N/A")}</td></tr>
 </table>
 
 <h2>Sleep</h2>
 <table>
   <tr><th>Metric</th><th>Value</th></tr>
-  <tr><td>Entries logged</td><td>{sleep.get('count', 0)}</td></tr>
-  <tr><td>Average hours</td><td>{sleep.get('average_hours', 'N/A')}</td></tr>
-  <tr><td>Average quality</td><td>{sleep.get('average_quality', 'N/A')}</td></tr>
+  <tr><td>Entries logged</td><td>{sleep.get("count", 0)}</td></tr>
+  <tr><td>Average hours</td><td>{sleep.get("average_hours", "N/A")}</td></tr>
+  <tr><td>Average quality</td><td>{sleep.get("average_quality", "N/A")}</td></tr>
 </table>
 
 <h2>Medication Adherence</h2>
 <table>
   <tr><th>Metric</th><th>Value</th></tr>
-  <tr><td>Total scheduled</td><td>{med.get('total_scheduled', 0)}</td></tr>
-  <tr><td>Taken on time</td><td>{med.get('taken_on_time', 0)}</td></tr>
-  <tr><td>Adherence rate</td><td>{med.get('adherence_rate', 0) * 100:.0f}%</td></tr>
+  <tr><td>Total scheduled</td><td>{med.get("total_scheduled", 0)}</td></tr>
+  <tr><td>Taken on time</td><td>{med.get("taken_on_time", 0)}</td></tr>
+  <tr><td>Adherence rate</td><td>{med.get("adherence_rate", 0) * 100:.0f}%</td></tr>
 </table>
 
 <h2>Task Completion</h2>
 <table>
   <tr><th>Metric</th><th>Value</th></tr>
-  <tr><td>Total tasks</td><td>{tasks.get('total', 0)}</td></tr>
-  <tr><td>Completed</td><td>{tasks.get('completed', 0)}</td></tr>
-  <tr><td>Completion rate</td><td>{tasks.get('completion_rate', 0) * 100:.0f}%</td></tr>
+  <tr><td>Total tasks</td><td>{tasks.get("total", 0)}</td></tr>
+  <tr><td>Completed</td><td>{tasks.get("completed", 0)}</td></tr>
+  <tr><td>Completion rate</td><td>{tasks.get("completion_rate", 0) * 100:.0f}%</td></tr>
 </table>
 
 <h2>Values Alignment</h2>
-<p><strong>Top value:</strong> {values.get('top_value', 'N/A')}</p>
-<p><strong>Needs attention:</strong> {values.get('neglected_value', 'N/A')}</p>
+<p><strong>Top value:</strong> {values.get("top_value", "N/A")}</p>
+<p><strong>Needs attention:</strong> {values.get("neglected_value", "N/A")}</p>
 
-{signals_html and f'<h2>Wellness Check-Ins</h2>{signals_html}' or ''}
+{signals_html and f"<h2>Wellness Check-Ins</h2>{signals_html}" or ""}
 
 <div class="footer">
   This report is generated from locally-stored data for personal reflection only.

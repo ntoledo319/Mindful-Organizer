@@ -76,8 +76,19 @@ class DiaryCard:
 # ---------------------------------------------------------------------------
 
 DEFAULT_EMOTIONS = [
-    "Joy", "Sadness", "Anger", "Fear", "Shame", "Guilt", "Disgust",
-    "Love", "Envy", "Anxiety", "Hope", "Loneliness", "Gratitude",
+    "Joy",
+    "Sadness",
+    "Anger",
+    "Fear",
+    "Shame",
+    "Guilt",
+    "Disgust",
+    "Love",
+    "Envy",
+    "Anxiety",
+    "Hope",
+    "Loneliness",
+    "Gratitude",
 ]
 
 CONDITION_EMOTIONS: dict[str, list[str]] = {
@@ -105,9 +116,16 @@ CONDITION_URGES: dict[str, dict[str, int]] = {
 }
 
 DEFAULT_SKILLS = [
-    "Mindfulness", "Opposite Action", "Check the Facts", "TIPP",
-    "Radical Acceptance", "Self-Soothe", "IMPROVE", "DEAR MAN",
-    "Chain Analysis", "Pros & Cons",
+    "Mindfulness",
+    "Opposite Action",
+    "Check the Facts",
+    "TIPP",
+    "Radical Acceptance",
+    "Self-Soothe",
+    "IMPROVE",
+    "DEAR MAN",
+    "Chain Analysis",
+    "Pros & Cons",
 ]
 
 CONDITION_SKILLS: dict[str, list[str]] = {
@@ -155,9 +173,7 @@ class DiaryCardManager:
 
     def get(self, day: date) -> DiaryCard | None:
         """Fetch the card for a specific day."""
-        rows = self._db.query(
-            TableName.DIARY_CARDS, where="date = ?", params=(day.isoformat(),)
-        )
+        rows = self._db.query(TableName.DIARY_CARDS, where="date = ?", params=(day.isoformat(),))
         if rows:
             return DiaryCard.from_row(rows[0])
         return None
@@ -226,6 +242,7 @@ class DiaryCardManager:
     def skill_effectiveness(self, days: int = 30) -> dict[str, list[int]]:
         """Map skill name -> list of effectiveness scores for days that skill was used."""
         from datetime import timedelta
+
         end = date.today()
         start = end - timedelta(days=days)
         cards = self.list_range(start, end)
@@ -238,6 +255,7 @@ class DiaryCardManager:
     def urge_trend(self, days: int = 14) -> dict[str, list[tuple[str, int]]]:
         """Map urge name -> [(date_str, intensity), ...]."""
         from datetime import timedelta
+
         end = date.today()
         start = end - timedelta(days=days)
         cards = self.list_range(start, end)
@@ -250,6 +268,7 @@ class DiaryCardManager:
     def target_frequency(self, days: int = 30) -> dict[str, int]:
         """Count how many days each target behavior occurred (>0)."""
         from datetime import timedelta
+
         end = date.today()
         start = end - timedelta(days=days)
         cards = self.list_range(start, end)
@@ -263,6 +282,7 @@ class DiaryCardManager:
     def mood_trend(self, days: int = 14) -> list[tuple[str, int]]:
         """List of (date_str, mood_score) for the range."""
         from datetime import timedelta
+
         end = date.today()
         start = end - timedelta(days=days)
         cards = self.list_range(start, end)
@@ -270,7 +290,9 @@ class DiaryCardManager:
 
     def streak_medication(self) -> int:
         """Consecutive days with medications_taken=True, up to today."""
-        cards = self.list_range(date.today() - __import__("datetime").timedelta(days=365), date.today())
+        cards = self.list_range(
+            date.today() - __import__("datetime").timedelta(days=365), date.today()
+        )
         streak = 0
         for card in reversed(cards):
             if card.medications_taken:

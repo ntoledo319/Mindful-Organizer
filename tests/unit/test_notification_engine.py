@@ -25,28 +25,36 @@ class TestGenerateNotifications:
         engine.orchestrator = None  # bypass real orchestrator
         snapshot = _FakeSnapshot(energy_score=8, tasks_pending=2)
         # Patch snapshot method
-        engine.orchestrator = type("FakeOrchestrator", (), {"snapshot": lambda self, now: snapshot})()
+        engine.orchestrator = type(
+            "FakeOrchestrator", (), {"snapshot": lambda self, now: snapshot}
+        )()
         notes = engine.generate_notifications(conditions=[])
         assert any(n.id == "energy_peak_task" for n in notes)
 
     def test_low_energy_gentle_mode(self) -> None:
         engine = SmartNotificationEngine(db=None, orchestrator=None)  # type: ignore[arg-type]
         snapshot = _FakeSnapshot(energy_score=2, tasks_pending=5)
-        engine.orchestrator = type("FakeOrchestrator", (), {"snapshot": lambda self, now: snapshot})()
+        engine.orchestrator = type(
+            "FakeOrchestrator", (), {"snapshot": lambda self, now: snapshot}
+        )()
         notes = engine.generate_notifications(conditions=[])
         assert any(n.id == "energy_low_trim" for n in notes)
 
     def test_sleep_debt_alert(self) -> None:
         engine = SmartNotificationEngine(db=None, orchestrator=None)  # type: ignore[arg-type]
         snapshot = _FakeSnapshot(sleep_hours=4.0)
-        engine.orchestrator = type("FakeOrchestrator", (), {"snapshot": lambda self, now: snapshot})()
+        engine.orchestrator = type(
+            "FakeOrchestrator", (), {"snapshot": lambda self, now: snapshot}
+        )()
         notes = engine.generate_notifications(conditions=[])
         assert any(n.id == "sleep_debt" for n in notes)
 
     def test_no_notifications_when_data_missing(self) -> None:
         engine = SmartNotificationEngine(db=None, orchestrator=None)  # type: ignore[arg-type]
         snapshot = _FakeSnapshot(energy_score=None, sleep_hours=None)
-        engine.orchestrator = type("FakeOrchestrator", (), {"snapshot": lambda self, now: snapshot})()
+        engine.orchestrator = type(
+            "FakeOrchestrator", (), {"snapshot": lambda self, now: snapshot}
+        )()
         notes = engine.generate_notifications(conditions=[])
         # With no energy or sleep data, only general notifications might appear
         sleep_or_energy = [n for n in notes if n.category in ("energy", "sleep")]
@@ -55,7 +63,9 @@ class TestGenerateNotifications:
     def test_notification_structure(self) -> None:
         engine = SmartNotificationEngine(db=None, orchestrator=None)  # type: ignore[arg-type]
         snapshot = _FakeSnapshot(energy_score=9, tasks_pending=1)
-        engine.orchestrator = type("FakeOrchestrator", (), {"snapshot": lambda self, now: snapshot})()
+        engine.orchestrator = type(
+            "FakeOrchestrator", (), {"snapshot": lambda self, now: snapshot}
+        )()
         notes = engine.generate_notifications(conditions=[])
         assert len(notes) > 0
         for n in notes:

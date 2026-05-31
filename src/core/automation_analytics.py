@@ -8,6 +8,7 @@ Tracks:
 - Display adaptation events
 - Correlation between automation and productivity/energy
 """
+
 from __future__ import annotations
 
 import json
@@ -136,7 +137,9 @@ class AutomationAnalytics:
 
     # -- event recording ------------------------------------------------------
 
-    def record_rule_fired(self, rule_name: str, actions_succeeded: int, actions_failed: int) -> None:
+    def record_rule_fired(
+        self, rule_name: str, actions_succeeded: int, actions_failed: int
+    ) -> None:
         stats = self.rule_stats[rule_name]
         stats.rule_name = rule_name
         stats.times_fired += 1
@@ -186,21 +189,26 @@ class AutomationAnalytics:
         """Return effectiveness stats for all rules, sorted by most fired."""
         cutoff = datetime.now() - timedelta(days=days)
         results: list[dict[str, Any]] = []
-        for _name, stats in sorted(self.rule_stats.items(), key=lambda x: x[1].times_fired, reverse=True):
+        for _name, stats in sorted(
+            self.rule_stats.items(), key=lambda x: x[1].times_fired, reverse=True
+        ):
             if stats.last_fired and datetime.fromisoformat(stats.last_fired) >= cutoff:
                 total = stats.actions_succeeded + stats.actions_failed
                 success_rate = stats.actions_succeeded / total if total > 0 else 0.0
-                results.append({
-                    **stats.to_dict(),
-                    "success_rate": round(success_rate, 2),
-                })
+                results.append(
+                    {
+                        **stats.to_dict(),
+                        "success_rate": round(success_rate, 2),
+                    }
+                )
         return results
 
     def get_focus_trends(self, days: int = 30) -> dict[str, Any]:
         """Return focus mode trends over time."""
         cutoff = datetime.now() - timedelta(days=days)
         recent = [
-            s for s in self.daily_summaries.values()
+            s
+            for s in self.daily_summaries.values()
             if datetime.strptime(s.date, "%Y-%m-%d") >= cutoff
         ]
         if not recent:
@@ -221,19 +229,32 @@ class AutomationAnalytics:
             "total_sessions": total_sessions,
             "total_minutes": total_minutes,
             "avg_duration": round(total_minutes / total_sessions, 1) if total_sessions else 0,
-            "interruption_rate": round(interruptions / total_sessions, 2) if total_sessions else 0.0,
+            "interruption_rate": round(interruptions / total_sessions, 2)
+            if total_sessions
+            else 0.0,
             "most_productive_day": best_day.date,
             "most_productive_minutes": best_day.total_focus_minutes,
         }
 
     def get_weekly_summary(self) -> dict[str, Any]:
         """Return a 7-day summary for display in the UI."""
-        dates = [(datetime.now() - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(6, -1, -1)]
+        dates = [
+            (datetime.now() - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(6, -1, -1)
+        ]
         return {
             "dates": dates,
-            "focus_minutes": [self.daily_summaries.get(d, DailyAutomationSummary(date=d)).total_focus_minutes for d in dates],
-            "rules_fired": [self.daily_summaries.get(d, DailyAutomationSummary(date=d)).rules_fired for d in dates],
-            "apps_closed": [self.daily_summaries.get(d, DailyAutomationSummary(date=d)).apps_closed for d in dates],
+            "focus_minutes": [
+                self.daily_summaries.get(d, DailyAutomationSummary(date=d)).total_focus_minutes
+                for d in dates
+            ],
+            "rules_fired": [
+                self.daily_summaries.get(d, DailyAutomationSummary(date=d)).rules_fired
+                for d in dates
+            ],
+            "apps_closed": [
+                self.daily_summaries.get(d, DailyAutomationSummary(date=d)).apps_closed
+                for d in dates
+            ],
         }
 
     def get_overall_stats(self) -> dict[str, Any]:

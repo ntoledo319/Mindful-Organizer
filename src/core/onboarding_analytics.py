@@ -102,11 +102,13 @@ class OnboardingAnalytics:
         if self._current is None:
             self.start_session()
         assert self._current is not None
-        self._current.steps.append(StepEvent(
-            step=step.value,
-            event=event,
-            duration_seconds=duration_seconds,
-        ))
+        self._current.steps.append(
+            StepEvent(
+                step=step.value,
+                event=event,
+                duration_seconds=duration_seconds,
+            )
+        )
         if step == OnboardingStep.COMPLETE and event == "completed":
             self._current.completed_at = datetime.now().isoformat()
             self._sessions.append(self._current)

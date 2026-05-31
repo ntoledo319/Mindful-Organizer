@@ -16,6 +16,7 @@ from pathlib import Path
 
 class MeditationType(Enum):
     """Available meditation practice types."""
+
     MINDFULNESS = "mindfulness"
     BODY_SCAN = "body_scan"
     LOVING_KINDNESS = "loving_kindness"
@@ -95,6 +96,7 @@ class TimerConfig:
         interval_bell_minutes: Optional interval bell (e.g., every 5 min).
         preparation_seconds: Countdown before meditation starts.
     """
+
     duration_minutes: int = 10
     interval_bell_minutes: int | None = None
     preparation_seconds: int = 10
@@ -154,6 +156,7 @@ class MeditationSession:
         date: ISO datetime string.
         completed: Whether the session was finished.
     """
+
     session_id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
     meditation_type: MeditationType = MeditationType.MINDFULNESS
     duration_minutes: int = 10
@@ -221,6 +224,7 @@ class GuidedMeditation:
         source: File path, URL, or other reference.
         condition_suitability: Conditions this is suited for.
     """
+
     guided_id: str = ""
     title: str = ""
     meditation_type: MeditationType = MeditationType.MINDFULNESS
@@ -255,6 +259,7 @@ class GuidedMeditation:
 
 # ── manager ──────────────────────────────────────────────────────────
 
+
 class MeditationManager:
     """Manages meditation sessions, favorites, streaks, and recommendations.
 
@@ -280,9 +285,7 @@ class MeditationManager:
             try:
                 with open(self._data_file) as fh:
                     data = json.load(fh)
-                self._sessions = [
-                    MeditationSession.from_dict(s) for s in data.get("sessions", [])
-                ]
+                self._sessions = [MeditationSession.from_dict(s) for s in data.get("sessions", [])]
                 self._favorites = data.get("favorites", [])
             except (json.JSONDecodeError, KeyError):
                 pass
@@ -306,12 +309,14 @@ class MeditationManager:
         """
         result: list[dict[str, str]] = []
         for med_type, info in _MEDITATION_DESCRIPTIONS.items():
-            result.append({
-                "type": med_type.value,
-                "name": info["name"],
-                "description": info["description"],
-                "best_for": info["best_for"],
-            })
+            result.append(
+                {
+                    "type": med_type.value,
+                    "name": info["name"],
+                    "description": info["description"],
+                    "best_for": info["best_for"],
+                }
+            )
         return result
 
     # ── session management ───────────────────────────────────────
@@ -463,13 +468,9 @@ class MeditationManager:
 
         # Mood improvements
         improvements = [
-            s.mood_improvement for s in self._sessions
-            if s.mood_improvement is not None
+            s.mood_improvement for s in self._sessions if s.mood_improvement is not None
         ]
-        avg_improvement = (
-            round(sum(improvements) / len(improvements), 2)
-            if improvements else None
-        )
+        avg_improvement = round(sum(improvements) / len(improvements), 2) if improvements else None
 
         # Most practiced type
         type_counts: dict[str, int] = {}
@@ -601,13 +602,14 @@ class MeditationManager:
 
             # Historical effectiveness
             past = [
-                s for s in self._sessions
-                if s.meditation_type == med_type
-                and s.mood_improvement is not None
+                s
+                for s in self._sessions
+                if s.meditation_type == med_type and s.mood_improvement is not None
             ]
             if past:
                 avg_imp = sum(
-                    s.mood_improvement for s in past  # type: ignore[misc]
+                    s.mood_improvement
+                    for s in past  # type: ignore[misc]
                 ) / len(past)
                 score += avg_imp * 3
 
@@ -666,9 +668,7 @@ class MeditationManager:
 
     # ── guided library ───────────────────────────────────────────
 
-    def load_guided_library(
-        self, resources_path: Path | None = None
-    ) -> list[GuidedMeditation]:
+    def load_guided_library(self, resources_path: Path | None = None) -> list[GuidedMeditation]:
         """Load guided meditations from a JSON resource file.
 
         Looks for resources/guideds.json relative to the package, or at
@@ -694,9 +694,7 @@ class MeditationManager:
                 try:
                     with open(path) as fh:
                         data = json.load(fh)
-                    self._guided_library = [
-                        GuidedMeditation.from_dict(g) for g in data
-                    ]
+                    self._guided_library = [GuidedMeditation.from_dict(g) for g in data]
                     return list(self._guided_library)
                 except (json.JSONDecodeError, KeyError):
                     continue
@@ -715,10 +713,7 @@ class MeditationManager:
             List of guided meditations.
         """
         if meditation_type is not None:
-            return [
-                g for g in self._guided_library
-                if g.meditation_type == meditation_type
-            ]
+            return [g for g in self._guided_library if g.meditation_type == meditation_type]
         return list(self._guided_library)
 
     @property

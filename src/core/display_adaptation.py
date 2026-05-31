@@ -10,6 +10,7 @@ system theme) based on:
 
 This is "f.lux that knows your mind" — not just the sun.
 """
+
 from __future__ import annotations
 
 import logging
@@ -25,10 +26,10 @@ logger = logging.getLogger(__name__)
 class DisplayProfile:
     """A complete display configuration."""
 
-    brightness: int          # 0-100
+    brightness: int  # 0-100
     night_shift_intensity: int  # 0-100
     night_shift_enabled: bool
-    system_theme: str        # "dark" | "light"
+    system_theme: str  # "dark" | "light"
     reason: str = ""
 
 

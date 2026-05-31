@@ -5,22 +5,21 @@ Covers simple decomposition, condition-specific styles (ADHD, depression,
 anxiety, OCD), the just-start mode, template matching, and edge cases.
 """
 
-
 from core.smart_task_decomposer import (
-Condition,
-DecompositionResult,
-EnergyLevel,
-SmartTaskDecomposer,
-SubTask,
-TaskComplexity,
+    Condition,
+    DecompositionResult,
+    EnergyLevel,
+    SmartTaskDecomposer,
+    SubTask,
+    TaskComplexity,
 )
 
 # ---------------------------------------------------------------------------
 # Simple decomposition
 # ---------------------------------------------------------------------------
 
-class TestDecomposeSimpleTask:
 
+class TestDecomposeSimpleTask:
     def test_decompose_returns_result(self):
         decomposer = SmartTaskDecomposer()
         result = decomposer.decompose("Clean the kitchen")
@@ -78,8 +77,8 @@ class TestDecomposeSimpleTask:
 # ADHD decomposition
 # ---------------------------------------------------------------------------
 
-class TestADHDDecomposition:
 
+class TestADHDDecomposition:
     def test_adhd_splits_long_steps(self):
         """ADHD style splits steps longer than 10 minutes."""
         decomposer = SmartTaskDecomposer(conditions=["adhd"])
@@ -116,8 +115,8 @@ class TestADHDDecomposition:
 # Depression decomposition
 # ---------------------------------------------------------------------------
 
-class TestDepressionDecomposition:
 
+class TestDepressionDecomposition:
     def test_depression_easiest_first(self):
         """Depression style sorts steps by energy (low first)."""
         decomposer = SmartTaskDecomposer(conditions=["depression"])
@@ -125,8 +124,7 @@ class TestDepressionDecomposition:
 
         energies = [s.energy_required for s in result.subtasks]
         energy_values = [
-            {EnergyLevel.LOW: 0, EnergyLevel.MODERATE: 1, EnergyLevel.HIGH: 2}[e]
-            for e in energies
+            {EnergyLevel.LOW: 0, EnergyLevel.MODERATE: 1, EnergyLevel.HIGH: 2}[e] for e in energies
         ]
         # Should be non-decreasing (sorted)
         assert energy_values == sorted(energy_values)
@@ -142,15 +140,17 @@ class TestDepressionDecomposition:
     def test_depression_encouragement_message(self):
         decomposer = SmartTaskDecomposer(conditions=["depression"])
         result = decomposer.decompose("Cook dinner")
-        assert "easiest" in result.encouragement.lower() or "starting" in result.encouragement.lower()
+        assert (
+            "easiest" in result.encouragement.lower() or "starting" in result.encouragement.lower()
+        )
 
 
 # ---------------------------------------------------------------------------
 # Anxiety decomposition
 # ---------------------------------------------------------------------------
 
-class TestAnxietyDecomposition:
 
+class TestAnxietyDecomposition:
     def test_anxiety_includes_prep_step(self):
         """Anxiety style prepends a breathing/grounding preparation step."""
         decomposer = SmartTaskDecomposer(conditions=["anxiety"])
@@ -177,15 +177,18 @@ class TestAnxietyDecomposition:
     def test_anxiety_encouragement(self):
         decomposer = SmartTaskDecomposer(conditions=["anxiety"])
         result = decomposer.decompose("Do taxes")
-        assert "expectation" in result.encouragement.lower() or "surprise" in result.encouragement.lower()
+        assert (
+            "expectation" in result.encouragement.lower()
+            or "surprise" in result.encouragement.lower()
+        )
 
 
 # ---------------------------------------------------------------------------
 # OCD decomposition
 # ---------------------------------------------------------------------------
 
-class TestOCDDecomposition:
 
+class TestOCDDecomposition:
     def test_ocd_defined_completion_criteria(self):
         decomposer = SmartTaskDecomposer(conditions=["ocd"])
         result = decomposer.decompose("Clean the kitchen")
@@ -206,8 +209,8 @@ class TestOCDDecomposition:
 # Just Start mode
 # ---------------------------------------------------------------------------
 
-class TestJustStartMode:
 
+class TestJustStartMode:
     def test_just_start_returns_single_step(self):
         decomposer = SmartTaskDecomposer()
         step = decomposer.just_start("Write a 10-page report")
@@ -232,8 +235,8 @@ class TestJustStartMode:
 # Template system
 # ---------------------------------------------------------------------------
 
-class TestTemplates:
 
+class TestTemplates:
     def test_available_templates(self):
         templates = SmartTaskDecomposer.available_templates()
         assert "cleaning" in templates
@@ -263,8 +266,8 @@ class TestTemplates:
 # Condition override
 # ---------------------------------------------------------------------------
 
-class TestConditionOverride:
 
+class TestConditionOverride:
     def test_override_condition(self):
         decomposer = SmartTaskDecomposer(conditions=["general"])
         result = decomposer.decompose("Clean room", condition_override="adhd")
@@ -290,8 +293,8 @@ class TestConditionOverride:
 # Serialization
 # ---------------------------------------------------------------------------
 
-class TestSerialization:
 
+class TestSerialization:
     def test_decomposition_to_dict(self):
         decomposer = SmartTaskDecomposer()
         result = decomposer.decompose("Study for exam")

@@ -54,6 +54,7 @@ _PRIORITY_COLOURS = {
 # Widget
 # ---------------------------------------------------------------------------
 
+
 class TaskManagerWidget(QWidget):
     """Full task management tab with NLP entry, filtering, and detail panel."""
 
@@ -123,9 +124,7 @@ class TaskManagerWidget(QWidget):
         layout = QHBoxLayout(card)
 
         self._nlp_input = QLineEdit()
-        self._nlp_input.setPlaceholderText(
-            "Add a task in plain language..."
-        )
+        self._nlp_input.setPlaceholderText("Add a task in plain language...")
         self._nlp_input.setStyleSheet(
             f"QLineEdit {{ background-color: {self._theme.get('input_bg', '#fff')}; "
             f"color: {self._theme.get('text', '#333')}; border: 1px solid "
@@ -158,9 +157,18 @@ class TaskManagerWidget(QWidget):
         # Category filter
         layout.addWidget(BodyLabel("Category", self._theme))
         self._category_filter = QComboBox()
-        self._category_filter.addItems([
-            "All", "Work", "Personal", "Health", "Learning", "Social", "Errands", "Other",
-        ])
+        self._category_filter.addItems(
+            [
+                "All",
+                "Work",
+                "Personal",
+                "Health",
+                "Learning",
+                "Social",
+                "Errands",
+                "Other",
+            ]
+        )
         self._category_filter.currentTextChanged.connect(lambda _: self._refresh_task_list())
         layout.addWidget(self._category_filter)
 
@@ -237,8 +245,12 @@ class TaskManagerWidget(QWidget):
         self._detail_energy = BodyLabel("Energy: --", self._theme)
         self._detail_due = BodyLabel("Due: --", self._theme)
 
-        for w in (self._detail_priority, self._detail_category,
-                  self._detail_energy, self._detail_due):
+        for w in (
+            self._detail_priority,
+            self._detail_category,
+            self._detail_energy,
+            self._detail_due,
+        ):
             self._detail_layout.addWidget(w)
 
         self._detail_layout.addWidget(BodyLabel("Notes", self._theme))
@@ -407,7 +419,11 @@ class TaskManagerWidget(QWidget):
         for task in tasks:
             title = getattr(task, "title", "Untitled")
             priority = getattr(task, "priority", None)
-            priority_name = priority.name if priority is not None and hasattr(priority, "name") else str(priority)
+            priority_name = (
+                priority.name
+                if priority is not None and hasattr(priority, "name")
+                else str(priority)
+            )
             energy = getattr(task, "energy_required", 0)
             completed = getattr(task, "completed", False)
             due = getattr(task, "due_date", None)
@@ -431,8 +447,10 @@ class TaskManagerWidget(QWidget):
         completed = [t for t in tasks if getattr(t, "completed", False)]
         today = date.today()
         completed_today = [
-            t for t in completed
-            if hasattr(t, "completed_at") and t.completed_at
+            t
+            for t in completed
+            if hasattr(t, "completed_at")
+            and t.completed_at
             and str(t.completed_at)[:10] == str(today)
         ]
         rate = int(len(completed) / total * 100) if total else 0
@@ -450,17 +468,17 @@ class TaskManagerWidget(QWidget):
 
         self._detail_title.setText(getattr(task, "title", "Untitled"))
         priority = getattr(task, "priority", None)
-        priority_name = priority.name if priority is not None and hasattr(priority, "name") else str(priority)
+        priority_name = (
+            priority.name if priority is not None and hasattr(priority, "name") else str(priority)
+        )
         self._detail_priority.setText(f"Priority: {priority_name}")
         category = getattr(task, "category", None)
-        category_name = category.value if category is not None and hasattr(category, "value") else str(category)
+        category_name = (
+            category.value if category is not None and hasattr(category, "value") else str(category)
+        )
         self._detail_category.setText(f"Category: {category_name}")
-        self._detail_energy.setText(
-            f"Energy required: {getattr(task, 'energy_required', '--')}"
-        )
-        self._detail_due.setText(
-            f"Due: {getattr(task, 'due_date', '--') or 'Not set'}"
-        )
+        self._detail_energy.setText(f"Energy required: {getattr(task, 'energy_required', '--')}")
+        self._detail_due.setText(f"Due: {getattr(task, 'due_date', '--') or 'Not set'}")
         self._detail_notes.setPlainText(getattr(task, "notes", "") or "")
 
         # Subtasks
@@ -471,13 +489,9 @@ class TaskManagerWidget(QWidget):
             self._subtask_list.addItem(st_title)
 
         tags = getattr(task, "tags", []) or []
-        self._detail_tags.setText(
-            f"Tags: {', '.join(tags)}" if tags else "Tags: --"
-        )
+        self._detail_tags.setText(f"Tags: {', '.join(tags)}" if tags else "Tags: --")
         values = getattr(task, "values", []) or []
-        self._detail_values.setText(
-            f"Values: {', '.join(values)}" if values else "Values: --"
-        )
+        self._detail_values.setText(f"Values: {', '.join(values)}" if values else "Values: --")
 
     # -- task actions ---------------------------------------------------
 
@@ -491,6 +505,7 @@ class TaskManagerWidget(QWidget):
                 parsed = self._nlp_parser.parse(text)
                 if self._task_manager and hasattr(self._task_manager, "add_task"):
                     from core.task_manager import Task, TaskCategory, TaskPriority
+
                     priority_map = {
                         "urgent": TaskPriority.Urgent,
                         "high": TaskPriority.High,
@@ -499,7 +514,13 @@ class TaskManagerWidget(QWidget):
                     }
                     category_map = {c.value: c for c in TaskCategory}
                     p = getattr(parsed, "priority", None)
-                    p_val = p.value if p is not None and hasattr(p, "value") else str(p).lower() if p else "medium"
+                    p_val = (
+                        p.value
+                        if p is not None and hasattr(p, "value")
+                        else str(p).lower()
+                        if p
+                        else "medium"
+                    )
                     task = Task(
                         title=getattr(parsed, "title", text),
                         priority=priority_map.get(p_val, TaskPriority.Medium),
@@ -525,6 +546,7 @@ class TaskManagerWidget(QWidget):
             return
         try:
             from core.task_manager import Task, TaskCategory, TaskPriority
+
             task = Task(
                 title=text,
                 priority=TaskPriority.Medium,
@@ -546,7 +568,8 @@ class TaskManagerWidget(QWidget):
             QMessageBox.information(self, "Edit", "Select a task first.")
             return
         QMessageBox.information(
-            self, "Edit Task",
+            self,
+            "Edit Task",
             "Edit the task title in the NLP bar and re-add, or modify via the detail panel.",
         )
 
@@ -556,7 +579,8 @@ class TaskManagerWidget(QWidget):
             QMessageBox.information(self, "Delete", "Select a task first.")
             return
         reply = QMessageBox.question(
-            self, "Delete Task",
+            self,
+            "Delete Task",
             f"Delete '{getattr(task, 'title', '')}'?",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
         )
@@ -586,6 +610,7 @@ class TaskManagerWidget(QWidget):
         if self._task_manager:
             try:
                 from core.task_manager import Task, TaskCategory, TaskPriority
+
                 for st_name in subtask_names:
                     sub = Task(
                         title=st_name,

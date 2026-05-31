@@ -33,6 +33,7 @@ logger = logging.getLogger(__name__)
 # Breathing circle animation
 # ---------------------------------------------------------------------------
 
+
 class BreathingCircle(QWidget):
     """A circle that expands on inhale and contracts on exhale."""
 
@@ -81,6 +82,7 @@ class BreathingCircle(QWidget):
 # ---------------------------------------------------------------------------
 # Widget
 # ---------------------------------------------------------------------------
+
 
 class BreathingWidget(QWidget):
     """Guided breathing exercise tab."""
@@ -163,9 +165,7 @@ class BreathingWidget(QWidget):
     def _build_selector(self, parent_layout: QHBoxLayout) -> None:
         card = CardFrame(self._theme)
         card.setStyleSheet(
-            card.styleSheet().replace(
-                self._theme.get("card_bg", "#ffffff"), self._CALM_CARD
-            )
+            card.styleSheet().replace(self._theme.get("card_bg", "#ffffff"), self._CALM_CARD)
         )
         layout = QVBoxLayout(card)
         layout.addWidget(SectionTitle("Select Exercise", self._theme))
@@ -183,9 +183,7 @@ class BreathingWidget(QWidget):
     def _build_recommendation(self, parent_layout: QHBoxLayout) -> None:
         card = CardFrame(self._theme)
         card.setStyleSheet(
-            card.styleSheet().replace(
-                self._theme.get("card_bg", "#ffffff"), self._CALM_CARD
-            )
+            card.styleSheet().replace(self._theme.get("card_bg", "#ffffff"), self._CALM_CARD)
         )
         layout = QVBoxLayout(card)
         layout.addWidget(SectionTitle("Recommended", self._theme))
@@ -200,9 +198,7 @@ class BreathingWidget(QWidget):
     def _build_exercise_info(self) -> None:
         card = CardFrame(self._theme)
         card.setStyleSheet(
-            card.styleSheet().replace(
-                self._theme.get("card_bg", "#ffffff"), self._CALM_CARD
-            )
+            card.styleSheet().replace(self._theme.get("card_bg", "#ffffff"), self._CALM_CARD)
         )
         layout = QVBoxLayout(card)
         self._desc_label = BodyLabel("Select an exercise to see its description.", self._theme)
@@ -215,9 +211,7 @@ class BreathingWidget(QWidget):
     def _build_visual_guide(self) -> None:
         card = CardFrame(self._theme)
         card.setStyleSheet(
-            card.styleSheet().replace(
-                self._theme.get("card_bg", "#ffffff"), self._CALM_CARD
-            )
+            card.styleSheet().replace(self._theme.get("card_bg", "#ffffff"), self._CALM_CARD)
         )
         layout = QVBoxLayout(card)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -248,9 +242,7 @@ class BreathingWidget(QWidget):
     def _build_mood_checks(self) -> None:
         card = CardFrame(self._theme)
         card.setStyleSheet(
-            card.styleSheet().replace(
-                self._theme.get("card_bg", "#ffffff"), self._CALM_CARD
-            )
+            card.styleSheet().replace(self._theme.get("card_bg", "#ffffff"), self._CALM_CARD)
         )
         layout = QHBoxLayout(card)
         layout.setSpacing(24)
@@ -262,9 +254,7 @@ class BreathingWidget(QWidget):
         self._pre_mood_slider.setRange(1, 10)
         self._pre_mood_slider.setValue(5)
         self._pre_mood_value = BodyLabel("5", self._theme)
-        self._pre_mood_slider.valueChanged.connect(
-            lambda v: self._pre_mood_value.setText(str(v))
-        )
+        self._pre_mood_slider.valueChanged.connect(lambda v: self._pre_mood_value.setText(str(v)))
         pre_col.addWidget(self._pre_mood_slider)
         pre_col.addWidget(self._pre_mood_value)
         layout.addLayout(pre_col)
@@ -276,9 +266,7 @@ class BreathingWidget(QWidget):
         self._post_mood_slider.setRange(1, 10)
         self._post_mood_slider.setValue(5)
         self._post_mood_value = BodyLabel("5", self._theme)
-        self._post_mood_slider.valueChanged.connect(
-            lambda v: self._post_mood_value.setText(str(v))
-        )
+        self._post_mood_slider.valueChanged.connect(lambda v: self._post_mood_value.setText(str(v)))
         post_col.addWidget(self._post_mood_slider)
         post_col.addWidget(self._post_mood_value)
         layout.addLayout(post_col)
@@ -290,9 +278,7 @@ class BreathingWidget(QWidget):
     def _build_controls(self) -> None:
         card = CardFrame(self._theme)
         card.setStyleSheet(
-            card.styleSheet().replace(
-                self._theme.get("card_bg", "#ffffff"), self._CALM_CARD
-            )
+            card.styleSheet().replace(self._theme.get("card_bg", "#ffffff"), self._CALM_CARD)
         )
         layout = QHBoxLayout(card)
 
@@ -317,9 +303,7 @@ class BreathingWidget(QWidget):
     def _build_history(self) -> None:
         card = CardFrame(self._theme)
         card.setStyleSheet(
-            card.styleSheet().replace(
-                self._theme.get("card_bg", "#ffffff"), self._CALM_CARD
-            )
+            card.styleSheet().replace(self._theme.get("card_bg", "#ffffff"), self._CALM_CARD)
         )
         layout = QVBoxLayout(card)
         layout.addWidget(SectionTitle("Session History", self._theme))
@@ -375,7 +359,11 @@ class BreathingWidget(QWidget):
             sessions = self._breathing_manager.sessions
             for s in reversed(sessions[-30:]):
                 started = s.started_at or "?"
-                etype = s.exercise_type.value if hasattr(s.exercise_type, "value") else str(s.exercise_type)
+                etype = (
+                    s.exercise_type.value
+                    if hasattr(s.exercise_type, "value")
+                    else str(s.exercise_type)
+                )
                 improvement = s.mood_improvement
                 imp_str = f"  Mood change: {improvement:+d}" if improvement is not None else ""
                 text = f"{started[:16]}  |  {etype}{imp_str}"
@@ -534,14 +522,16 @@ class BreathingWidget(QWidget):
         ]
         for cycle in range(1, 5):
             for phase, dur, instr in phases:
-                data.append({
-                    "cycle": cycle,
-                    "phase": phase,
-                    "duration_seconds": dur,
-                    "instruction": instr,
-                    "start_at": elapsed,
-                    "end_at": elapsed + dur,
-                })
+                data.append(
+                    {
+                        "cycle": cycle,
+                        "phase": phase,
+                        "duration_seconds": dur,
+                        "instruction": instr,
+                        "start_at": elapsed,
+                        "end_at": elapsed + dur,
+                    }
+                )
                 elapsed += dur
         return data
 

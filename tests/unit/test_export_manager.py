@@ -47,8 +47,8 @@ def populated_db(db):
 # JSON export
 # ---------------------------------------------------------------------------
 
-class TestExportJson:
 
+class TestExportJson:
     def test_export_json(self, em, populated_db, tmp_data_dir):
         output = tmp_data_dir / "export.json"
         opts = ExportOptions(format=ExportFormat.JSON, output_path=output)
@@ -87,8 +87,8 @@ class TestExportJson:
 # CSV export
 # ---------------------------------------------------------------------------
 
-class TestExportCsv:
 
+class TestExportCsv:
     def test_export_csv(self, em, populated_db, tmp_data_dir):
         output = tmp_data_dir / "csv_export"
         opts = ExportOptions(format=ExportFormat.CSV, output_path=output)
@@ -103,8 +103,8 @@ class TestExportCsv:
 # JSON import
 # ---------------------------------------------------------------------------
 
-class TestImportJson:
 
+class TestImportJson:
     def test_import_json(self, em, populated_db, tmp_data_dir):
         # First export
         export_path = tmp_data_dir / "for_import.json"
@@ -165,8 +165,8 @@ class TestImportJson:
 # Settings export / import
 # ---------------------------------------------------------------------------
 
-class TestSettingsExportImport:
 
+class TestSettingsExportImport:
     def test_export_settings(self, em, populated_db, tmp_data_dir):
         output = tmp_data_dir / "settings_export.json"
         result_path = em.export_settings(output_path=output)
@@ -201,8 +201,8 @@ class TestSettingsExportImport:
 # Selective export
 # ---------------------------------------------------------------------------
 
-class TestSelectiveExport:
 
+class TestSelectiveExport:
     def test_selective_categories(self, em, populated_db, tmp_data_dir):
         output = tmp_data_dir / "selective.json"
         opts = ExportOptions(
@@ -235,8 +235,8 @@ class TestSelectiveExport:
 # Wellness report
 # ---------------------------------------------------------------------------
 
-class TestWellnessReport:
 
+class TestWellnessReport:
     def test_generate_wellness_report(self, em, populated_db):
         sections = em.generate_wellness_report(days=30)
         assert len(sections) >= 2  # at least overview + disclaimer

@@ -9,6 +9,7 @@ helping you stay organized while prioritizing your well-being.
 
 All data is stored locally on your device. No cloud sync. No telemetry.
 """
+
 import logging
 import os
 import sys
@@ -30,7 +31,7 @@ def setup_logging(data_dir: Path) -> None:
     file_handler = RotatingFileHandler(
         log_dir / "mindful_organizer.log",
         maxBytes=5 * 1024 * 1024,  # 5 MB per file
-        backupCount=5,              # keep 5 archived files → 30 MB cap
+        backupCount=5,  # keep 5 archived files → 30 MB cap
         encoding="utf-8",
     )
 
@@ -70,6 +71,7 @@ def show_error_dialog(title: str, message: str, detail: str = "") -> None:
     """Show a platform-native error dialog."""
     try:
         from PyQt6.QtWidgets import QApplication, QMessageBox
+
         app = QApplication.instance()
         if not app:
             app = QApplication(sys.argv)
@@ -103,6 +105,7 @@ def check_single_instance(data_dir: Path) -> bool:
     else:
         try:
             import fcntl
+
             lock_fd = open(lock_file, "w")  # noqa: SIM115
             fcntl.flock(lock_fd.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
             lock_fd.write(str(os.getpid()))
@@ -138,16 +141,25 @@ def run_first_launch_migration(data_dir: Path) -> None:
 
     logger = logging.getLogger("mindful_organizer.migration")
     legacy_files = list(data_dir.glob("*.json"))
-    if not any(f.name in {
-        "tasks.json", "mood_data.json", "energy_data.json",
-        "sleep_data.json", "medication_data.json",
-        "journal_entries.json", "breathing_sessions.json",
-    } for f in legacy_files):
+    if not any(
+        f.name
+        in {
+            "tasks.json",
+            "mood_data.json",
+            "energy_data.json",
+            "sleep_data.json",
+            "medication_data.json",
+            "journal_entries.json",
+            "breathing_sessions.json",
+        }
+        for f in legacy_files
+    ):
         marker.touch()
         return
 
     try:
         from core.migration_manager import MigrationManager
+
         report = MigrationManager(data_dir=data_dir).migrate_all()
         if report.all_success:
             logger.info(
@@ -182,9 +194,7 @@ def main() -> int:
     # Single instance check
     if not check_single_instance(data_dir):
         show_error_dialog(
-            "Already Running",
-            "Hearth is already running.\n\n"
-            "Check your taskbar or system tray."
+            "Already Running", "Hearth is already running.\n\nCheck your taskbar or system tray."
         )
         return 1
 
@@ -213,10 +223,12 @@ def main() -> int:
         icon_path = src_dir.parent / "windows_store" / "assets" / "app_icon.png"
         if icon_path.exists():
             from PyQt6.QtGui import QIcon
+
             app.setWindowIcon(QIcon(str(icon_path)))
 
         # Create and show the main window
         from gui.main_window import AdaptiveMainWindow
+
         window = AdaptiveMainWindow()
         window.show()
 

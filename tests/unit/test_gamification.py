@@ -21,8 +21,8 @@ from file_organization.adhd_gamification import (
 # XP and leveling
 # ---------------------------------------------------------------------------
 
-class TestXPAndLeveling:
 
+class TestXPAndLeveling:
     def test_add_xp_increases_total_and_points(self, tmp_data_dir):
         gm = ADHDGameManager(tmp_data_dir)
         result = gm.add_xp(50, "test")
@@ -62,8 +62,8 @@ class TestXPAndLeveling:
 # Combos
 # ---------------------------------------------------------------------------
 
-class TestCombos:
 
+class TestCombos:
     def test_rapid_actions_build_combo_multiplier(self, tmp_data_dir):
         gm = ADHDGameManager(tmp_data_dir)
         assert gm._get_combo_multiplier() == 1.0
@@ -95,8 +95,8 @@ class TestCombos:
 # Task and wellness rewards
 # ---------------------------------------------------------------------------
 
-class TestRewards:
 
+class TestRewards:
     def test_task_completion_awards_xp_by_priority(self, tmp_data_dir):
         gm = ADHDGameManager(tmp_data_dir)
         before = gm.total_xp
@@ -134,8 +134,8 @@ class TestRewards:
 # Achievements
 # ---------------------------------------------------------------------------
 
-class TestAchievements:
 
+class TestAchievements:
     def test_first_task_achievement_unlocks(self, tmp_data_dir):
         gm = ADHDGameManager(tmp_data_dir)
         gm.reward_task_completion()
@@ -166,8 +166,8 @@ class TestAchievements:
 # Challenges
 # ---------------------------------------------------------------------------
 
-class TestChallenges:
 
+class TestChallenges:
     def test_daily_challenges_are_well_formed(self, tmp_data_dir):
         gm = ADHDGameManager(tmp_data_dir)
         challenges = gm.generate_daily_challenges()
@@ -193,8 +193,8 @@ class TestChallenges:
 # Statistics and dopamine boosts
 # ---------------------------------------------------------------------------
 
-class TestStatistics:
 
+class TestStatistics:
     def test_statistics_reflect_activity(self, tmp_data_dir):
         gm = ADHDGameManager(tmp_data_dir)
         gm.reward_task_completion({"priority": 2})
@@ -217,8 +217,8 @@ class TestStatistics:
 # Persistence
 # ---------------------------------------------------------------------------
 
-class TestPersistence:
 
+class TestPersistence:
     def test_xp_and_achievements_survive_reload(self, tmp_data_dir):
         gm1 = ADHDGameManager(tmp_data_dir)
         gm1.add_xp(200, "test")
@@ -234,8 +234,8 @@ class TestPersistence:
 # RewardSystem
 # ---------------------------------------------------------------------------
 
-class TestRewardSystem:
 
+class TestRewardSystem:
     def test_available_rewards_are_point_gated(self):
         rs = RewardSystem()
         available = rs.get_available_rewards(1500)

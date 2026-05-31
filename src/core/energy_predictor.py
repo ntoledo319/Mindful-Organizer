@@ -21,6 +21,7 @@ try:
     import joblib
     from sklearn.ensemble import RandomForestRegressor
     from sklearn.preprocessing import StandardScaler
+
     _HAS_SKLEARN = True
 except ImportError:
     _HAS_SKLEARN = False
@@ -30,17 +31,20 @@ except ImportError:
 # Enums & data-classes
 # ---------------------------------------------------------------------------
 
+
 class EnergyLevel(Enum):
     """Coarse energy buckets used by the scheduler."""
-    VERY_LOW = "very_low"      # 0-20
-    LOW = "low"                # 21-40
-    MODERATE = "moderate"      # 41-60
-    HIGH = "high"              # 61-80
-    VERY_HIGH = "very_high"    # 81-100
+
+    VERY_LOW = "very_low"  # 0-20
+    LOW = "low"  # 21-40
+    MODERATE = "moderate"  # 41-60
+    HIGH = "high"  # 61-80
+    VERY_HIGH = "very_high"  # 81-100
 
 
 class TaskEnergyRequirement(Enum):
     """How much energy a task demands."""
+
     LOW = "low"
     MODERATE = "moderate"
     HIGH = "high"
@@ -49,13 +53,14 @@ class TaskEnergyRequirement(Enum):
 @dataclass
 class EnergyDataPoint:
     """A single historical observation used for training."""
+
     timestamp: datetime
-    energy_score: float           # 1-100
-    time_of_day: float            # 0-23.99
-    day_of_week: int              # 0=Mon .. 6=Sun
+    energy_score: float  # 1-100
+    time_of_day: float  # 0-23.99
+    day_of_week: int  # 0=Mon .. 6=Sun
     sleep_hours: float
-    sleep_quality: float          # 1-10
-    mood_score: float             # 1-10
+    sleep_quality: float  # 1-10
+    mood_score: float  # 1-10
     tasks_completed_yesterday: int
     medication_taken: bool
     weather: str | None = None  # "sunny", "cloudy", "rainy", "snowy"
@@ -65,16 +70,18 @@ class EnergyDataPoint:
 @dataclass
 class EnergyPrediction:
     """A single energy prediction with metadata."""
+
     timestamp: datetime
     predicted_energy: float
-    confidence: float             # 0-1
+    confidence: float  # 0-1
     energy_level: EnergyLevel
-    source: str                   # "ml" or "rule_based"
+    source: str  # "ml" or "rule_based"
 
 
 @dataclass
 class DailyEnergyCurve:
     """Predicted energy levels for every hour of a day."""
+
     date: datetime
     hourly_predictions: list[EnergyPrediction]
     peak_hour: int
@@ -85,6 +92,7 @@ class DailyEnergyCurve:
 @dataclass
 class TaskTimingSuggestion:
     """Recommendation for when to schedule a task."""
+
     task_energy_requirement: TaskEnergyRequirement
     suggested_hours: list[int]
     reason: str
@@ -93,6 +101,7 @@ class TaskTimingSuggestion:
 @dataclass
 class FeatureImportanceResult:
     """Which features matter most for this user's energy."""
+
     feature_importances: dict[str, float]
     top_feature: str
     description: str
@@ -124,19 +133,22 @@ def _encode_features(dp: EnergyDataPoint) -> np.ndarray:
     hour_angle = 2 * np.pi * dp.time_of_day / 24.0
     dow_angle = 2 * np.pi * dp.day_of_week / 7.0
 
-    return np.array([
-        np.sin(hour_angle),
-        np.cos(hour_angle),
-        np.sin(dow_angle),
-        np.cos(dow_angle),
-        dp.sleep_hours,
-        dp.sleep_quality,
-        dp.mood_score,
-        float(dp.tasks_completed_yesterday),
-        1.0 if dp.medication_taken else 0.0,
-        _WEATHER_MAP.get(dp.weather or "sunny", 0.0),
-        1.0 if dp.exercise else 0.0,
-    ], dtype=np.float64)
+    return np.array(
+        [
+            np.sin(hour_angle),
+            np.cos(hour_angle),
+            np.sin(dow_angle),
+            np.cos(dow_angle),
+            dp.sleep_hours,
+            dp.sleep_quality,
+            dp.mood_score,
+            float(dp.tasks_completed_yesterday),
+            1.0 if dp.medication_taken else 0.0,
+            _WEATHER_MAP.get(dp.weather or "sunny", 0.0),
+            1.0 if dp.exercise else 0.0,
+        ],
+        dtype=np.float64,
+    )
 
 
 def _energy_to_level(energy: float) -> EnergyLevel:
@@ -162,19 +174,21 @@ def _parse_data_points(raw: Sequence[dict[str, Any]]) -> list[EnergyDataPoint]:
         elif not isinstance(ts, datetime):
             continue
 
-        points.append(EnergyDataPoint(
-            timestamp=ts,
-            energy_score=float(max(1, min(100, d.get("energy_score", 50)))),
-            time_of_day=ts.hour + ts.minute / 60.0,
-            day_of_week=ts.weekday(),
-            sleep_hours=float(d.get("sleep_hours", 7.0)),
-            sleep_quality=float(max(1, min(10, d.get("sleep_quality", 5)))),
-            mood_score=float(max(1, min(10, d.get("mood_score", 5)))),
-            tasks_completed_yesterday=int(d.get("tasks_completed_yesterday", 0)),
-            medication_taken=bool(d.get("medication_taken", False)),
-            weather=d.get("weather"),
-            exercise=bool(d.get("exercise", False)),
-        ))
+        points.append(
+            EnergyDataPoint(
+                timestamp=ts,
+                energy_score=float(max(1, min(100, d.get("energy_score", 50)))),
+                time_of_day=ts.hour + ts.minute / 60.0,
+                day_of_week=ts.weekday(),
+                sleep_hours=float(d.get("sleep_hours", 7.0)),
+                sleep_quality=float(max(1, min(10, d.get("sleep_quality", 5)))),
+                mood_score=float(max(1, min(10, d.get("mood_score", 5)))),
+                tasks_completed_yesterday=int(d.get("tasks_completed_yesterday", 0)),
+                medication_taken=bool(d.get("medication_taken", False)),
+                weather=d.get("weather"),
+                exercise=bool(d.get("exercise", False)),
+            )
+        )
     points.sort(key=lambda p: p.timestamp)
     return points
 
@@ -183,15 +197,36 @@ def _parse_data_points(raw: Sequence[dict[str, Any]]) -> list[EnergyDataPoint]:
 # Rule-based fallback predictor
 # ---------------------------------------------------------------------------
 
+
 class _RuleBasedPredictor:
     """Simple heuristic predictor used when ML model is unavailable."""
 
     # Typical circadian energy curve (hour -> multiplier 0-1)
     _CIRCADIAN = {
-        0: 0.15, 1: 0.10, 2: 0.08, 3: 0.08, 4: 0.10, 5: 0.20,
-        6: 0.40, 7: 0.55, 8: 0.70, 9: 0.80, 10: 0.90, 11: 0.85,
-        12: 0.75, 13: 0.65, 14: 0.60, 15: 0.65, 16: 0.70, 17: 0.72,
-        18: 0.65, 19: 0.55, 20: 0.45, 21: 0.35, 22: 0.25, 23: 0.18,
+        0: 0.15,
+        1: 0.10,
+        2: 0.08,
+        3: 0.08,
+        4: 0.10,
+        5: 0.20,
+        6: 0.40,
+        7: 0.55,
+        8: 0.70,
+        9: 0.80,
+        10: 0.90,
+        11: 0.85,
+        12: 0.75,
+        13: 0.65,
+        14: 0.60,
+        15: 0.65,
+        16: 0.70,
+        17: 0.72,
+        18: 0.65,
+        19: 0.55,
+        20: 0.45,
+        21: 0.35,
+        22: 0.25,
+        23: 0.18,
     }
 
     def predict(self, dp: EnergyDataPoint) -> float:
@@ -227,6 +262,7 @@ class _RuleBasedPredictor:
 # ---------------------------------------------------------------------------
 # Main predictor
 # ---------------------------------------------------------------------------
+
 
 class EnergyPredictor:
     """Predict energy levels using ML with rule-based fallback.
@@ -433,15 +469,18 @@ class EnergyPredictor:
         if not rest_of_day:
             return [
                 TaskTimingSuggestion(
-                    TaskEnergyRequirement.HIGH, [10, 11],
+                    TaskEnergyRequirement.HIGH,
+                    [10, 11],
                     "Default suggestion: mornings tend to be best for demanding tasks.",
                 ),
                 TaskTimingSuggestion(
-                    TaskEnergyRequirement.MODERATE, [14, 15, 16],
+                    TaskEnergyRequirement.MODERATE,
+                    [14, 15, 16],
                     "Default suggestion: afternoons for moderate tasks.",
                 ),
                 TaskTimingSuggestion(
-                    TaskEnergyRequirement.LOW, [20, 21],
+                    TaskEnergyRequirement.LOW,
+                    [20, 21],
                     "Default suggestion: evenings for light tasks.",
                 ),
             ]
@@ -455,26 +494,30 @@ class EnergyPredictor:
 
         suggestions = []
         if high_hours:
-            suggestions.append(TaskTimingSuggestion(
-                TaskEnergyRequirement.HIGH,
-                sorted(high_hours),
-                f"Your energy is predicted to be highest around {high_hours[0]}:00. "
-                "Schedule demanding tasks then.",
-            ))
+            suggestions.append(
+                TaskTimingSuggestion(
+                    TaskEnergyRequirement.HIGH,
+                    sorted(high_hours),
+                    f"Your energy is predicted to be highest around {high_hours[0]}:00. "
+                    "Schedule demanding tasks then.",
+                )
+            )
         if mod_hours:
-            suggestions.append(TaskTimingSuggestion(
-                TaskEnergyRequirement.MODERATE,
-                sorted(mod_hours),
-                "These hours are predicted to have moderate energy — "
-                "good for routine tasks.",
-            ))
+            suggestions.append(
+                TaskTimingSuggestion(
+                    TaskEnergyRequirement.MODERATE,
+                    sorted(mod_hours),
+                    "These hours are predicted to have moderate energy — good for routine tasks.",
+                )
+            )
         if low_hours:
-            suggestions.append(TaskTimingSuggestion(
-                TaskEnergyRequirement.LOW,
-                sorted(low_hours),
-                "Energy is predicted to dip during these hours — "
-                "save easy, low-focus tasks.",
-            ))
+            suggestions.append(
+                TaskTimingSuggestion(
+                    TaskEnergyRequirement.LOW,
+                    sorted(low_hours),
+                    "Energy is predicted to dip during these hours — save easy, low-focus tasks.",
+                )
+            )
 
         return suggestions
 
@@ -530,10 +573,7 @@ class EnergyPredictor:
             base += 0.1
 
         # Check how many training points are in the same time-of-day window
-        same_tod = sum(
-            1 for p in self._training_data
-            if abs(p.time_of_day - dp.time_of_day) < 2.0
-        )
+        same_tod = sum(1 for p in self._training_data if abs(p.time_of_day - dp.time_of_day) < 2.0)
         if same_tod >= 4:
             base += 0.05
 

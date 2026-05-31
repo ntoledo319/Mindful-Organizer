@@ -1,4 +1,5 @@
 """Tests for the Focus Mode manager."""
+
 from __future__ import annotations
 
 from core.focus_mode import FocusModeManager, FocusModeState

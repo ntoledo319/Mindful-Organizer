@@ -39,8 +39,8 @@ def nm(db):
 # Create notification
 # ---------------------------------------------------------------------------
 
-class TestCreateNotification:
 
+class TestCreateNotification:
     def test_schedule_notification(self, nm):
         n = nm.schedule(
             type=NotificationType.CUSTOM,
@@ -97,12 +97,13 @@ class TestCreateNotification:
         n = nm.schedule_task_deadline("Finish report", datetime.now() + timedelta(hours=2))
         assert n.type == NotificationType.TASK_DEADLINE
 
+
 # ---------------------------------------------------------------------------
 # Recurring notifications
 # ---------------------------------------------------------------------------
 
-class TestScheduleRecurring:
 
+class TestScheduleRecurring:
     def test_schedule_recurring_interval(self, nm):
         pattern = RecurringPattern(interval_minutes=60)
         n = nm.schedule(
@@ -162,8 +163,8 @@ class TestScheduleRecurring:
 # Condition-aware delivery
 # ---------------------------------------------------------------------------
 
-class TestConditionAwareDelivery:
 
+class TestConditionAwareDelivery:
     def test_adhd_delivery_immediate(self):
         style = delivery_style_for("ADHD", NotificationType.TASK_DEADLINE)
         assert style == DeliveryStyle.IMMEDIATE
@@ -194,8 +195,8 @@ class TestConditionAwareDelivery:
 # Snooze
 # ---------------------------------------------------------------------------
 
-class TestSnooze:
 
+class TestSnooze:
     def test_snooze_notification(self, nm):
         n = nm.schedule(
             title="Snooze me",
@@ -214,8 +215,8 @@ class TestSnooze:
 # Dismiss
 # ---------------------------------------------------------------------------
 
-class TestDismiss:
 
+class TestDismiss:
     def test_dismiss_notification(self, nm):
         n = nm.schedule(title="Dismiss me", message="Test", scheduled_at=datetime.now())
         nm.dismiss(n.id)
@@ -243,8 +244,8 @@ class TestDismiss:
 # Stats and listeners
 # ---------------------------------------------------------------------------
 
-class TestStatsAndListeners:
 
+class TestStatsAndListeners:
     def test_stats(self, nm):
         nm.schedule(title="A", message="X", scheduled_at=datetime.now())
         nm.schedule(title="B", message="Y", scheduled_at=datetime.now())
@@ -265,8 +266,10 @@ class TestStatsAndListeners:
 
     def test_remove_listener(self, nm):
         delivered = []
+
         def cb(n):
             delivered.append(n)
+
         nm.add_listener(cb)
         nm.remove_listener(cb)
 
@@ -279,8 +282,8 @@ class TestStatsAndListeners:
 # Notification status logic
 # ---------------------------------------------------------------------------
 
-class TestNotificationStatus:
 
+class TestNotificationStatus:
     def test_pending_status(self):
         n = Notification(scheduled_at=datetime.now() + timedelta(hours=1))
         assert n.status == NotificationStatus.PENDING

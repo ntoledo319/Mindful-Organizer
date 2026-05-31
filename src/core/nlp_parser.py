@@ -17,6 +17,7 @@ from typing import Any, cast
 try:
     from dateutil import parser as dateutil_parser  # type: ignore[import-untyped]
     from dateutil.relativedelta import relativedelta  # type: ignore[import-untyped]
+
     _HAS_DATEUTIL = True
 except ImportError:
     _HAS_DATEUTIL = False
@@ -25,6 +26,7 @@ except ImportError:
 # ---------------------------------------------------------------------------
 # Enums
 # ---------------------------------------------------------------------------
+
 
 class Priority(Enum):
     URGENT = "urgent"
@@ -57,9 +59,11 @@ class EnergyRequired(Enum):
 # Result data-class
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class ParsedTask:
     """Structured data extracted from a natural language task description."""
+
     title: str
     original_text: str
     due_date: date | None = None
@@ -91,85 +95,206 @@ class ParsedTask:
 
 _PRIORITY_KEYWORDS: dict[Priority, list[str]] = {
     Priority.URGENT: [
-        "urgent", "asap", "immediately", "critical", "emergency",
-        "right away", "right now", "top priority",
+        "urgent",
+        "asap",
+        "immediately",
+        "critical",
+        "emergency",
+        "right away",
+        "right now",
+        "top priority",
     ],
     Priority.HIGH: [
-        "high priority", "high prio", "important", "must do",
-        "must-do", "crucial", "essential", "pressing",
+        "high priority",
+        "high prio",
+        "important",
+        "must do",
+        "must-do",
+        "crucial",
+        "essential",
+        "pressing",
     ],
     Priority.LOW: [
-        "low priority", "low prio", "whenever", "no rush",
-        "eventually", "someday", "if time", "optional",
+        "low priority",
+        "low prio",
+        "whenever",
+        "no rush",
+        "eventually",
+        "someday",
+        "if time",
+        "optional",
     ],
     # Medium is the default — keywords explicitly pulling towards medium:
     Priority.MEDIUM: [
-        "medium priority", "med priority", "normal priority",
-        "normal", "regular",
+        "medium priority",
+        "med priority",
+        "normal priority",
+        "normal",
+        "regular",
     ],
 }
 
 _CATEGORY_KEYWORDS: dict[Category, list[str]] = {
     Category.WORK: [
-        "work", "office", "meeting", "report", "project",
-        "client", "email", "presentation", "deadline",
-        "boss", "colleague", "standup", "sprint",
+        "work",
+        "office",
+        "meeting",
+        "report",
+        "project",
+        "client",
+        "email",
+        "presentation",
+        "deadline",
+        "boss",
+        "colleague",
+        "standup",
+        "sprint",
     ],
     Category.PERSONAL: [
-        "personal", "family", "friend", "birthday", "gift",
-        "hobby", "vacation", "trip", "date night",
+        "personal",
+        "family",
+        "friend",
+        "birthday",
+        "gift",
+        "hobby",
+        "vacation",
+        "trip",
+        "date night",
     ],
     Category.HEALTH: [
-        "health", "doctor", "dentist", "appointment", "therapy",
-        "therapist", "medication", "med", "prescription",
-        "exercise", "workout", "gym", "run", "walk",
-        "physio", "checkup", "check-up",
+        "health",
+        "doctor",
+        "dentist",
+        "appointment",
+        "therapy",
+        "therapist",
+        "medication",
+        "med",
+        "prescription",
+        "exercise",
+        "workout",
+        "gym",
+        "run",
+        "walk",
+        "physio",
+        "checkup",
+        "check-up",
     ],
     Category.LEARNING: [
-        "learn", "study", "course", "class", "lecture",
-        "book", "read", "research", "tutorial", "practice",
-        "homework", "assignment", "exam",
+        "learn",
+        "study",
+        "course",
+        "class",
+        "lecture",
+        "book",
+        "read",
+        "research",
+        "tutorial",
+        "practice",
+        "homework",
+        "assignment",
+        "exam",
     ],
     Category.SOCIAL: [
-        "social", "party", "hangout", "hang out", "call",
-        "phone", "catch up", "dinner with", "lunch with",
-        "coffee with", "visit",
+        "social",
+        "party",
+        "hangout",
+        "hang out",
+        "call",
+        "phone",
+        "catch up",
+        "dinner with",
+        "lunch with",
+        "coffee with",
+        "visit",
     ],
     Category.ERRANDS: [
-        "errand", "errands", "grocery", "groceries", "shopping",
-        "pick up", "drop off", "return", "post office",
-        "bank", "pharmacy", "dry cleaner", "dry cleaning",
+        "errand",
+        "errands",
+        "grocery",
+        "groceries",
+        "shopping",
+        "pick up",
+        "drop off",
+        "return",
+        "post office",
+        "bank",
+        "pharmacy",
+        "dry cleaner",
+        "dry cleaning",
     ],
     Category.FINANCE: [
-        "finance", "budget", "bill", "invoice", "tax",
-        "payment", "pay", "insurance", "invest",
+        "finance",
+        "budget",
+        "bill",
+        "invoice",
+        "tax",
+        "payment",
+        "pay",
+        "insurance",
+        "invest",
     ],
     Category.HOME: [
-        "home", "house", "clean", "cleaning", "laundry",
-        "dishes", "cook", "cooking", "meal prep", "organize",
-        "declutter", "repair", "fix", "mow", "garden",
+        "home",
+        "house",
+        "clean",
+        "cleaning",
+        "laundry",
+        "dishes",
+        "cook",
+        "cooking",
+        "meal prep",
+        "organize",
+        "declutter",
+        "repair",
+        "fix",
+        "mow",
+        "garden",
     ],
 }
 
 _ENERGY_KEYWORDS: dict[EnergyRequired, list[str]] = {
     EnergyRequired.VERY_LOW: [
-        "very easy", "super easy", "no effort", "mindless",
-        "minimal energy", "zero energy",
+        "very easy",
+        "super easy",
+        "no effort",
+        "mindless",
+        "minimal energy",
+        "zero energy",
     ],
     EnergyRequired.LOW: [
-        "easy", "simple", "low energy", "light", "quick",
-        "effortless", "chill", "relaxing",
+        "easy",
+        "simple",
+        "low energy",
+        "light",
+        "quick",
+        "effortless",
+        "chill",
+        "relaxing",
     ],
     EnergyRequired.MODERATE: [
-        "moderate", "normal", "regular", "medium energy",
+        "moderate",
+        "normal",
+        "regular",
+        "medium energy",
     ],
     EnergyRequired.HIGH: [
-        "hard", "difficult", "demanding", "high energy",
-        "intense", "challenging", "tough", "draining",
+        "hard",
+        "difficult",
+        "demanding",
+        "high energy",
+        "intense",
+        "challenging",
+        "tough",
+        "draining",
     ],
     EnergyRequired.VERY_HIGH: [
-        "exhausting", "very hard", "extremely difficult",
-        "maximum energy", "grueling", "overwhelming",
+        "exhausting",
+        "very hard",
+        "extremely difficult",
+        "maximum energy",
+        "grueling",
+        "overwhelming",
     ],
 }
 
@@ -199,22 +324,53 @@ _RELATIVE_DATE_PATTERNS: list[tuple[str, Any]] = [
     # "in N weeks"
     (r"\bin\s+(\d+)\s+weeks?\b", lambda m, ref: ref + timedelta(weeks=int(m.group(1)))),
     # "in N months"
-    (r"\bin\s+(\d+)\s+months?\b",
-     lambda m, ref: _add_months(ref, int(m.group(1)))),
+    (r"\bin\s+(\d+)\s+months?\b", lambda m, ref: _add_months(ref, int(m.group(1)))),
 ]
 
 _DAY_NAME_MAP = {
-    "monday": 0, "tuesday": 1, "wednesday": 2, "thursday": 3,
-    "friday": 4, "saturday": 5, "sunday": 6,
-    "mon": 0, "tue": 1, "tues": 1, "wed": 2, "thu": 3, "thur": 3,
-    "thurs": 3, "fri": 4, "sat": 5, "sun": 6,
+    "monday": 0,
+    "tuesday": 1,
+    "wednesday": 2,
+    "thursday": 3,
+    "friday": 4,
+    "saturday": 5,
+    "sunday": 6,
+    "mon": 0,
+    "tue": 1,
+    "tues": 1,
+    "wed": 2,
+    "thu": 3,
+    "thur": 3,
+    "thurs": 3,
+    "fri": 4,
+    "sat": 5,
+    "sun": 6,
 }
 
 _MONTH_NAMES = {
-    "jan": 1, "january": 1, "feb": 2, "february": 2, "mar": 3, "march": 3,
-    "apr": 4, "april": 4, "may": 5, "jun": 6, "june": 6, "jul": 7,
-    "july": 7, "aug": 8, "august": 8, "sep": 9, "sept": 9, "september": 9,
-    "oct": 10, "october": 10, "nov": 11, "november": 11, "dec": 12,
+    "jan": 1,
+    "january": 1,
+    "feb": 2,
+    "february": 2,
+    "mar": 3,
+    "march": 3,
+    "apr": 4,
+    "april": 4,
+    "may": 5,
+    "jun": 6,
+    "june": 6,
+    "jul": 7,
+    "july": 7,
+    "aug": 8,
+    "august": 8,
+    "sep": 9,
+    "sept": 9,
+    "september": 9,
+    "oct": 10,
+    "october": 10,
+    "nov": 11,
+    "november": 11,
+    "dec": 12,
     "december": 12,
 }
 
@@ -268,8 +424,12 @@ def _parse_date(text: str, reference: date | None = None) -> tuple[date | None, 
         day_name = m.group(1)
         weekday = _DAY_NAME_MAP.get(day_name)
         if weekday is not None:
-            prefix = lower[:m.start()].strip().split()
-            is_next = prefix and prefix[-1] == "next" if not m.group(0).startswith("next") else "next" in m.group(0)
+            prefix = lower[: m.start()].strip().split()
+            is_next = (
+                prefix and prefix[-1] == "next"
+                if not m.group(0).startswith("next")
+                else "next" in m.group(0)
+            )
             target = _next_weekday(ref, weekday)
             if is_next and target - ref < timedelta(days=7):
                 target += timedelta(days=7)
@@ -342,7 +502,9 @@ def _parse_date(text: str, reference: date | None = None) -> tuple[date | None, 
     # 6) Fallback: try dateutil
     if _HAS_DATEUTIL:
         try:
-            parsed = dateutil_parser.parse(text, fuzzy=True, default=datetime.combine(ref, datetime.min.time()))
+            parsed = dateutil_parser.parse(
+                text, fuzzy=True, default=datetime.combine(ref, datetime.min.time())
+            )
             return parsed.date(), 0.60, ""
         except (ValueError, OverflowError):
             pass
@@ -364,8 +526,11 @@ _RECURRENCE_PATTERNS: list[tuple[str, str]] = [
     (r"\bevery\s+year\b", "yearly"),
     (r"\byearly\b", "yearly"),
     (r"\bannually\b", "yearly"),
-    (r"\bevery\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday"
-     r"|mon|tue|tues|wed|thu|thur|thurs|fri|sat|sun)\b", "weekly"),
+    (
+        r"\bevery\s+(monday|tuesday|wednesday|thursday|friday|saturday|sunday"
+        r"|mon|tue|tues|wed|thu|thur|thurs|fri|sat|sun)\b",
+        "weekly",
+    ),
     (r"\bevery\s+(\d+)\s+days?\b", "every_{n}_days"),
     (r"\bevery\s+(\d+)\s+weeks?\b", "every_{n}_weeks"),
     (r"\bevery\s+other\s+day\b", "every_2_days"),
@@ -387,7 +552,7 @@ def _parse_recurrence(text: str) -> tuple[str | None, str]:
             if "{n}" in label:
                 label = label.replace("{n}", m.group(1))
             # Remove the matched portion from text
-            cleaned = text[:m.start()] + text[m.end():]
+            cleaned = text[: m.start()] + text[m.end() :]
             return label, cleaned.strip()
     return None, text
 
@@ -395,6 +560,7 @@ def _parse_recurrence(text: str) -> tuple[str | None, str]:
 # ---------------------------------------------------------------------------
 # Keyword matching helpers
 # ---------------------------------------------------------------------------
+
 
 def _match_keywords(
     text: str,
@@ -437,7 +603,9 @@ def _strip_metadata(text: str, matched_spans: list[str]) -> str:
         r"low\s+energy\s+task|high\s+energy\s+task|"
         r"exhausting|very\s+hard|easy|simple|difficult|"
         r"health|work|personal|home|finance|social|errands|learning)\s*:\s*",
-        "", result, flags=re.IGNORECASE,
+        "",
+        result,
+        flags=re.IGNORECASE,
     )
     # Remove orphaned "every" left after recurrence stripping
     result = re.sub(r"\bevery\b\s*$", "", result)
@@ -453,6 +621,7 @@ def _strip_metadata(text: str, matched_spans: list[str]) -> str:
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
+
 
 class NLPTaskParser:
     """Parse natural language task descriptions into structured data.
@@ -515,7 +684,8 @@ class NLPTaskParser:
         # Check for "category:" prefix
         prefix_match = re.match(
             r"^(work|personal|health|home|finance|social|errands|learning)\s*:\s*",
-            working, re.IGNORECASE,
+            working,
+            re.IGNORECASE,
         )
         if prefix_match:
             cat_name = prefix_match.group(1).lower()
@@ -525,16 +695,19 @@ class NLPTaskParser:
                 category = Category.OTHER
             confidences["category"] = 0.95
             matched_spans.append(prefix_match.group(0))
-            working = working[prefix_match.end():]
+            working = working[prefix_match.end() :]
         else:
             # Keyword match — classify but do NOT strip keywords from title
-            category, cat_conf, _cat_kw = _match_keywords(working, _CATEGORY_KEYWORDS, Category.OTHER)
+            category, cat_conf, _cat_kw = _match_keywords(
+                working, _CATEGORY_KEYWORDS, Category.OTHER
+            )
             confidences["category"] = cat_conf
 
         # -- Priority (from prefix or keywords) --------------------------------
         priority_prefix = re.match(
             r"^(urgent|high\s+priority|low\s+priority)\s*:\s*",
-            working, re.IGNORECASE,
+            working,
+            re.IGNORECASE,
         )
         if priority_prefix:
             pfx = priority_prefix.group(1).lower().strip()
@@ -548,41 +721,64 @@ class NLPTaskParser:
                 priority = Priority.MEDIUM
             confidences["priority"] = 0.95
             matched_spans.append(priority_prefix.group(0))
-            working = working[priority_prefix.end():]
+            working = working[priority_prefix.end() :]
         else:
-            priority, pri_conf, pri_kw = _match_keywords(working, _PRIORITY_KEYWORDS, Priority.MEDIUM)
+            priority, pri_conf, pri_kw = _match_keywords(
+                working, _PRIORITY_KEYWORDS, Priority.MEDIUM
+            )
             confidences["priority"] = pri_conf
             # Only strip standalone priority phrases like "high priority"
             # that are clearly metadata, not content words
             if pri_kw and pri_kw in (
-                "urgent", "asap", "immediately", "critical", "emergency",
-                "high priority", "high prio", "low priority", "low prio",
-                "medium priority", "normal priority", "top priority",
-                "right away", "right now", "no rush",
+                "urgent",
+                "asap",
+                "immediately",
+                "critical",
+                "emergency",
+                "high priority",
+                "high prio",
+                "low priority",
+                "low prio",
+                "medium priority",
+                "normal priority",
+                "top priority",
+                "right away",
+                "right now",
+                "no rush",
             ):
                 matched_spans.append(pri_kw)
 
         # -- Energy required ---------------------------------------------------
         energy_prefix = re.match(
             r"^(low\s+energy\s+task|high\s+energy\s+task)\s*:\s*",
-            working, re.IGNORECASE,
+            working,
+            re.IGNORECASE,
         )
         if energy_prefix:
             efx = energy_prefix.group(1).lower()
             energy_req = EnergyRequired.LOW if "low" in efx else EnergyRequired.HIGH
             confidences["energy_required"] = 0.95
             matched_spans.append(energy_prefix.group(0))
-            working = working[energy_prefix.end():]
+            working = working[energy_prefix.end() :]
         else:
             energy_req, eng_conf, eng_kw = _match_keywords(
-                working, _ENERGY_KEYWORDS, EnergyRequired.MODERATE,
+                working,
+                _ENERGY_KEYWORDS,
+                EnergyRequired.MODERATE,
             )
             confidences["energy_required"] = eng_conf
             # Only strip standalone energy phrases
             if eng_kw and eng_kw in (
-                "very easy", "super easy", "no effort", "mindless",
-                "minimal energy", "zero energy", "low energy", "high energy",
-                "maximum energy", "medium energy",
+                "very easy",
+                "super easy",
+                "no effort",
+                "mindless",
+                "minimal energy",
+                "zero energy",
+                "low energy",
+                "high energy",
+                "maximum energy",
+                "medium energy",
             ):
                 matched_spans.append(eng_kw)
 

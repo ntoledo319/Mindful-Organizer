@@ -18,8 +18,8 @@ from profiles.spoon_theory import (
 # Daily allocation
 # ---------------------------------------------------------------------------
 
-class TestDailyAllocation:
 
+class TestDailyAllocation:
     def test_default_daily_spoons(self):
         budget = SpoonBudget()
         assert budget.daily_spoons == 12.0
@@ -51,8 +51,8 @@ class TestDailyAllocation:
 # Spend spoons
 # ---------------------------------------------------------------------------
 
-class TestSpendSpoons:
 
+class TestSpendSpoons:
     def test_spend_reduces_remaining(self):
         budget = SpoonBudget(daily_spoons=12.0)
         budget.spend(ActivityType.SIMPLE_TASK, activity_name="Reply to email")
@@ -97,8 +97,8 @@ class TestSpendSpoons:
 # Recovery
 # ---------------------------------------------------------------------------
 
-class TestRecovery:
 
+class TestRecovery:
     def test_recovery_increases_remaining(self):
         budget = SpoonBudget(daily_spoons=12.0)
         budget.spend(ActivityType.COMPLEX_TASK)  # -3
@@ -134,8 +134,8 @@ class TestRecovery:
 # Spoon debt
 # ---------------------------------------------------------------------------
 
-class TestSpoonDebt:
 
+class TestSpoonDebt:
     def test_overdraft_warning(self):
         budget = SpoonBudget(daily_spoons=5.0)
         budget.spend(ActivityType.COMPLEX_TASK, cost_override=6.0)
@@ -181,8 +181,8 @@ class TestSpoonDebt:
 # Condition defaults
 # ---------------------------------------------------------------------------
 
-class TestConditionDefaults:
 
+class TestConditionDefaults:
     def test_depression_lower_spoons(self):
         budget = SpoonBudget(conditions=["depression"])
         assert budget.daily_spoons == 8.0
@@ -216,8 +216,8 @@ class TestConditionDefaults:
 # Display and history
 # ---------------------------------------------------------------------------
 
-class TestDisplayAndHistory:
 
+class TestDisplayAndHistory:
     def test_display_data(self):
         budget = SpoonBudget(daily_spoons=10.0)
         budget.spend(ActivityType.MODERATE_TASK)
@@ -233,10 +233,13 @@ class TestDisplayAndHistory:
 
         for i in range(7):
             day = today - timedelta(days=6 - i)
-            budget.add_historical_day(day, [
-                {"activity_type": "simple_task", "spoon_cost": 2.0},
-                {"activity_type": "moderate_task", "spoon_cost": 3.0},
-            ])
+            budget.add_historical_day(
+                day,
+                [
+                    {"activity_type": "simple_task", "spoon_cost": 2.0},
+                    {"activity_type": "moderate_task", "spoon_cost": 3.0},
+                ],
+            )
 
         summary = budget.weekly_summary()
         assert summary.total_spent > 0
@@ -248,9 +251,12 @@ class TestDisplayAndHistory:
 
         for i in range(3):
             day = today - timedelta(days=i)
-            budget.add_historical_day(day, [
-                {"activity_type": "simple_task", "spoon_cost": 4.0},
-            ])
+            budget.add_historical_day(
+                day,
+                [
+                    {"activity_type": "simple_task", "spoon_cost": 4.0},
+                ],
+            )
 
         avg = budget.historical_average_daily_usage()
         assert avg == 4.0
@@ -258,11 +264,14 @@ class TestDisplayAndHistory:
     def test_most_expensive_activities(self):
         budget = SpoonBudget()
         today = date.today()
-        budget.add_historical_day(today, [
-            {"activity_type": "complex_task", "spoon_cost": 3.0, "activity": "Big project"},
-            {"activity_type": "simple_task", "spoon_cost": 1.0, "activity": "Email"},
-            {"activity_type": "complex_task", "spoon_cost": 3.0, "activity": "Big project"},
-        ])
+        budget.add_historical_day(
+            today,
+            [
+                {"activity_type": "complex_task", "spoon_cost": 3.0, "activity": "Big project"},
+                {"activity_type": "simple_task", "spoon_cost": 1.0, "activity": "Email"},
+                {"activity_type": "complex_task", "spoon_cost": 3.0, "activity": "Big project"},
+            ],
+        )
 
         top = budget.most_expensive_activities(top_n=2)
         assert len(top) <= 2
@@ -271,9 +280,12 @@ class TestDisplayAndHistory:
     def test_today_state_specific_date(self):
         budget = SpoonBudget(daily_spoons=10.0)
         past = date.today() - timedelta(days=5)
-        budget.add_historical_day(past, [
-            {"activity_type": "exercise", "spoon_cost": 2.0},
-        ])
+        budget.add_historical_day(
+            past,
+            [
+                {"activity_type": "exercise", "spoon_cost": 2.0},
+            ],
+        )
 
         state = budget.today_state(for_date=past)
         assert state.spent == 2.0

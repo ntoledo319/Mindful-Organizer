@@ -1,6 +1,7 @@
 """
 Secure content management system with privacy features and customizable filtering.
 """
+
 import contextlib
 import hashlib
 import hmac
@@ -21,6 +22,7 @@ _KEYRING_USERNAME = "fernet-key"
 
 class ContentCategory(Enum):
     """Content categories for filtering and organization."""
+
     GENERAL = auto()
     MATURE = auto()  # 18+ non-explicit content
     EXPLICIT = auto()  # Adult content
@@ -31,9 +33,10 @@ class ContentCategory(Enum):
 
 class SecurityLevel(Enum):
     """Security levels for content protection."""
+
     STANDARD = auto()  # Normal encryption
-    HIGH = auto()      # Enhanced encryption with additional verification
-    MAXIMUM = auto()   # Maximum security with multi-factor authentication
+    HIGH = auto()  # Enhanced encryption with additional verification
+    MAXIMUM = auto()  # Maximum security with multi-factor authentication
 
 
 class ContentManager:
@@ -71,27 +74,22 @@ class ContentManager:
 
         try:
             import keyring
+
             stored = keyring.get_password(_KEYRING_SERVICE, _KEYRING_USERNAME)
             if stored:
                 return stored.encode()
 
             if legacy_key_file.exists():
                 key = legacy_key_file.read_bytes()
-                keyring.set_password(
-                    _KEYRING_SERVICE, _KEYRING_USERNAME, key.decode()
-                )
+                keyring.set_password(_KEYRING_SERVICE, _KEYRING_USERNAME, key.decode())
                 # Confirm migration before deleting the legacy copy.
                 if keyring.get_password(_KEYRING_SERVICE, _KEYRING_USERNAME):
                     legacy_key_file.unlink()
-                    logger.info(
-                        "Migrated content-vault key from disk to OS keyring."
-                    )
+                    logger.info("Migrated content-vault key from disk to OS keyring.")
                 return key
 
             key = Fernet.generate_key()
-            keyring.set_password(
-                _KEYRING_SERVICE, _KEYRING_USERNAME, key.decode()
-            )
+            keyring.set_password(_KEYRING_SERVICE, _KEYRING_USERNAME, key.decode())
             return key
         except Exception as exc:  # keyring missing, no backend, locked, etc.
             logger.warning(
@@ -102,6 +100,7 @@ class ContentManager:
             if legacy_key_file.exists():
                 return legacy_key_file.read_bytes()
             import contextlib
+
             key = Fernet.generate_key()
             legacy_key_file.write_bytes(key)
             with contextlib.suppress(OSError):
@@ -119,12 +118,14 @@ class ContentManager:
             dklen=32,
         ).hex()
 
-    def create_secure_folder(self,
-                           name: str,
-                           category: ContentCategory,
-                           security_level: SecurityLevel,
-                           passcode: str,
-                           hide_folder: bool = False) -> Path:
+    def create_secure_folder(
+        self,
+        name: str,
+        category: ContentCategory,
+        security_level: SecurityLevel,
+        passcode: str,
+        hide_folder: bool = False,
+    ) -> Path:
         """Create a secure folder with specified protection level."""
 
         # Create a unique folder ID
@@ -186,10 +187,7 @@ class ContentManager:
         except (json.JSONDecodeError, KeyError, ValueError):
             return False
 
-    def move_to_secure_folder(self,
-                            file_path: Path,
-                            folder_id: str,
-                            passcode: str) -> bool:
+    def move_to_secure_folder(self, file_path: Path, folder_id: str, passcode: str) -> bool:
         """Move a file to a secure folder."""
         if not self.verify_access(folder_id, passcode):
             return False
@@ -284,7 +282,7 @@ class ContentManager:
             "EXPLICIT": ["Adult content", "Strong privacy protection"],
             "SENSITIVE": ["Personal/private content", "Enhanced security"],
             "MEDICAL": ["Health-related personal information", "Enhanced protection"],
-            "FINANCIAL": ["Financial documents", "Enhanced encryption"]
+            "FINANCIAL": ["Financial documents", "Enhanced encryption"],
         }
 
     def get_security_recommendations(self, category: ContentCategory) -> dict:
@@ -293,33 +291,33 @@ class ContentManager:
             ContentCategory.GENERAL: {
                 "security_level": SecurityLevel.STANDARD,
                 "hide_folder": False,
-                "backup": "standard"
+                "backup": "standard",
             },
             ContentCategory.MATURE: {
                 "security_level": SecurityLevel.HIGH,
                 "hide_folder": True,
-                "backup": "encrypted"
+                "backup": "encrypted",
             },
             ContentCategory.EXPLICIT: {
                 "security_level": SecurityLevel.MAXIMUM,
                 "hide_folder": True,
-                "backup": "secure_encrypted"
+                "backup": "secure_encrypted",
             },
             ContentCategory.SENSITIVE: {
                 "security_level": SecurityLevel.HIGH,
                 "hide_folder": True,
-                "backup": "encrypted"
+                "backup": "encrypted",
             },
             # MEDICAL category renamed for clarity — protects health-related personal info
             ContentCategory.MEDICAL: {
                 "security_level": SecurityLevel.MAXIMUM,
                 "hide_folder": True,
-                "backup": "encrypted"
+                "backup": "encrypted",
             },
             ContentCategory.FINANCIAL: {
                 "security_level": SecurityLevel.HIGH,
                 "hide_folder": True,
-                "backup": "encrypted"
-            }
+                "backup": "encrypted",
+            },
         }
         return recommendations[category]

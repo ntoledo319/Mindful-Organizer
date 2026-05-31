@@ -10,12 +10,12 @@ class OutputGenerator:
 
     def generate_cluster_report(self) -> dict:
         """Generate a detailed report of file clusters"""
-        clusters = self.clustering_results.get('clusters', [])
+        clusters = self.clustering_results.get("clusters", [])
         report: dict[str, Any] = {
-            'timestamp': datetime.now().isoformat(),
-            'total_files': len(self.clustering_results.get('file_paths', [])),
-            'total_clusters': max(0, len(set(clusters)) - (1 if -1 in clusters else 0)),
-            'cluster_details': []
+            "timestamp": datetime.now().isoformat(),
+            "total_files": len(self.clustering_results.get("file_paths", [])),
+            "total_clusters": max(0, len(set(clusters)) - (1 if -1 in clusters else 0)),
+            "cluster_details": [],
         }
 
         # Calculate stats for each cluster
@@ -25,36 +25,38 @@ class OutputGenerator:
             cluster_counts[cluster_id] = count
 
         # Add details for each cluster
-        cluster_labels = self.clustering_results.get('cluster_labels', {})
+        cluster_labels = self.clustering_results.get("cluster_labels", {})
         for cluster_id, count in cluster_counts.items():
-            report['cluster_details'].append({
-                'cluster_id': cluster_id,
-                'label': cluster_labels.get(cluster_id, 'Unlabeled'),
-                'file_count': count,
-                'example_files': self._get_example_files(cluster_id, 3)
-            })
+            report["cluster_details"].append(
+                {
+                    "cluster_id": cluster_id,
+                    "label": cluster_labels.get(cluster_id, "Unlabeled"),
+                    "file_count": count,
+                    "example_files": self._get_example_files(cluster_id, 3),
+                }
+            )
 
         return report
 
     def _get_example_files(self, cluster_id: int, count: int = 3) -> list[str]:
         """Get example files from a cluster"""
         examples = []
-        for i, cid in enumerate(self.clustering_results['clusters']):
+        for i, cid in enumerate(self.clustering_results["clusters"]):
             if cid == cluster_id:
-                examples.append(Path(self.clustering_results['file_paths'][i]).name)
+                examples.append(Path(self.clustering_results["file_paths"][i]).name)
                 if len(examples) >= count:
                     break
         return examples
 
-    def save_report(self, file_path: str, format: str = 'json'):
+    def save_report(self, file_path: str, format: str = "json"):
         """Save cluster report to file"""
         report = self.generate_cluster_report()
 
-        if format == 'json':
-            with open(file_path, 'w') as f:
+        if format == "json":
+            with open(file_path, "w") as f:
                 json.dump(report, f, indent=2)
-        elif format == 'txt':
-            with open(file_path, 'w') as f:
+        elif format == "txt":
+            with open(file_path, "w") as f:
                 f.write(self._format_text_report(report))
         else:
             raise ValueError(f"Unsupported format: {format}")
@@ -65,11 +67,11 @@ class OutputGenerator:
         text += f"Total Files: {report['total_files']}\n"
         text += f"Total Clusters: {report['total_clusters']}\n\n"
 
-        for cluster in report['cluster_details']:
+        for cluster in report["cluster_details"]:
             text += f"Cluster {cluster['cluster_id']}: {cluster['label']}\n"
             text += f"  Files: {cluster['file_count']}\n"
             text += "  Examples:\n"
-            for example in cluster['example_files']:
+            for example in cluster["example_files"]:
                 text += f"    - {example}\n"
             text += "\n"
 
@@ -83,12 +85,12 @@ class OutputGenerator:
             from sklearn.manifold import TSNE
         except ImportError:
             return
-        if 'reduced_embeddings' not in self.clustering_results:
+        if "reduced_embeddings" not in self.clustering_results:
             raise ValueError("Clustering results do not contain reduced embeddings")
 
         # Convert to numpy arrays
-        embeddings = np.array(self.clustering_results['reduced_embeddings'])
-        clusters = np.array(self.clustering_results['clusters'])
+        embeddings = np.array(self.clustering_results["reduced_embeddings"])
+        clusters = np.array(self.clustering_results["clusters"])
 
         # Reduce to 2D for visualization
         tsne = TSNE(n_components=2, random_state=42)
@@ -96,11 +98,7 @@ class OutputGenerator:
 
         plt.figure(figsize=(12, 8))
         scatter = plt.scatter(
-            embeddings_2d[:, 0],
-            embeddings_2d[:, 1],
-            c=clusters,
-            cmap='Spectral',
-            alpha=0.7
+            embeddings_2d[:, 0], embeddings_2d[:, 1], c=clusters, cmap="Spectral", alpha=0.7
         )
 
         plt.colorbar(scatter)

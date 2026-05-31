@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class MoodTrend:
     """Simple trend result for widget compatibility."""
+
     direction: Any  # TrendDirection enum from mood_analytics
     moving_avg_7: float | None = None
 
@@ -95,6 +96,7 @@ class MoodManager:
     def mood_trend(self) -> MoodTrend:
         """Return a simple trend object for widget compatibility."""
         from core.mood_analytics import TrendDirection
+
         if not self._entries:
             return MoodTrend(direction=TrendDirection.STABLE)
         ma = MoodAnalytics(self._entries)

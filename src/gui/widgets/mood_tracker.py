@@ -38,14 +38,23 @@ logger = logging.getLogger(__name__)
 
 
 _MOOD_LABELS = {
-    1: "Terrible", 2: "Very Bad", 3: "Bad", 4: "Poor", 5: "Okay",
-    6: "Fair", 7: "Good", 8: "Very Good", 9: "Great", 10: "Excellent",
+    1: "Terrible",
+    2: "Very Bad",
+    3: "Bad",
+    4: "Poor",
+    5: "Okay",
+    6: "Fair",
+    7: "Good",
+    8: "Very Good",
+    9: "Great",
+    10: "Excellent",
 }
 
 
 # ---------------------------------------------------------------------------
 # Widget
 # ---------------------------------------------------------------------------
+
 
 class MoodTrackerWidget(QWidget):
     """Mood tracking tab with entry form, history, and analytics."""
@@ -207,10 +216,22 @@ class MoodTrackerWidget(QWidget):
 
     def _populate_symptoms(self, layout: QGridLayout) -> None:
         default_symptoms = [
-            "Anxiety", "Low Mood", "Irritability", "Racing Thoughts",
-            "Fatigue", "Insomnia", "Brain Fog", "Restlessness",
-            "Panic", "Intrusive Thoughts", "Flashback", "Dissociation",
-            "Compulsions", "Avoidance", "Hopelessness", "Numbness",
+            "Anxiety",
+            "Low Mood",
+            "Irritability",
+            "Racing Thoughts",
+            "Fatigue",
+            "Insomnia",
+            "Brain Fog",
+            "Restlessness",
+            "Panic",
+            "Intrusive Thoughts",
+            "Flashback",
+            "Dissociation",
+            "Compulsions",
+            "Avoidance",
+            "Hopelessness",
+            "Numbness",
         ]
         conditions_symptoms: dict[str, list[str]] = {
             "ADHD": ["Hyperfocus", "Difficulty Starting", "Time Blindness", "Impulsivity"],
@@ -240,22 +261,39 @@ class MoodTrackerWidget(QWidget):
 
     def _populate_skills(self, layout: QGridLayout) -> None:
         default_skills = [
-            "Deep Breathing", "Grounding", "Mindfulness", "Journaling",
-            "Cognitive Restructuring", "Progressive Relaxation",
+            "Deep Breathing",
+            "Grounding",
+            "Mindfulness",
+            "Journaling",
+            "Cognitive Restructuring",
+            "Progressive Relaxation",
         ]
         therapy_skills: dict[str, list[str]] = {
             "Cognitive Behavioral Therapy": [
-                "Thought Record", "Behavioral Activation", "Exposure", "Cognitive Defusion",
+                "Thought Record",
+                "Behavioral Activation",
+                "Exposure",
+                "Cognitive Defusion",
             ],
             "Dialectical Behavior Therapy": [
-                "Distress Tolerance", "Emotion Regulation", "Interpersonal Effectiveness",
-                "TIPP Skill", "Opposite Action", "Radical Acceptance",
+                "Distress Tolerance",
+                "Emotion Regulation",
+                "Interpersonal Effectiveness",
+                "TIPP Skill",
+                "Opposite Action",
+                "Radical Acceptance",
             ],
             "Acceptance and Commitment Therapy": [
-                "Values Clarification", "Committed Action", "Defusion", "Self-as-Context",
+                "Values Clarification",
+                "Committed Action",
+                "Defusion",
+                "Self-as-Context",
             ],
             "Mindfulness-Based Therapy": [
-                "Body Scan", "Sitting Meditation", "Mindful Movement", "Loving Kindness",
+                "Body Scan",
+                "Sitting Meditation",
+                "Mindful Movement",
+                "Loving Kindness",
             ],
         }
 
@@ -313,16 +351,19 @@ class MoodTrackerWidget(QWidget):
         self._volatility_label = BodyLabel("Mood volatility: --", self._theme)
         self._triggers_label = BodyLabel("Top triggers: --", self._theme)
 
-        for w in (self._avg_7_label, self._trend_30_label,
-                  self._volatility_label, self._triggers_label):
+        for w in (
+            self._avg_7_label,
+            self._trend_30_label,
+            self._volatility_label,
+            self._triggers_label,
+        ):
             layout.addWidget(w)
 
         # Chart placeholder
         self._chart_placeholder = QFrame()
         self._chart_placeholder.setFixedHeight(180)
         self._chart_placeholder.setStyleSheet(
-            f"background-color: {self._theme.get('background', '#eee')}; "
-            "border-radius: 8px;"
+            f"background-color: {self._theme.get('background', '#eee')}; border-radius: 8px;"
         )
         chart_label = QLabel("Mood Chart (matplotlib integration)")
         chart_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -345,8 +386,11 @@ class MoodTrackerWidget(QWidget):
         selected_date = self._calendar.selectedDate().toPyDate()
         selected_time = self._time_edit.time()
         timestamp = datetime(
-            selected_date.year, selected_date.month, selected_date.day,
-            selected_time.hour(), selected_time.minute(),
+            selected_date.year,
+            selected_date.month,
+            selected_date.day,
+            selected_time.hour(),
+            selected_time.minute(),
         )
 
         symptoms = [cb.text() for cb in self._symptom_checks if cb.isChecked()]
@@ -366,6 +410,7 @@ class MoodTrackerWidget(QWidget):
                     self._mood_manager.add_entry(entry)
                 elif hasattr(self._mood_manager, "_entries"):
                     from core.mood_analytics import MoodEntry
+
                     me = MoodEntry(
                         timestamp=timestamp,
                         mood_score=float(entry["mood_score"]),
@@ -427,9 +472,7 @@ class MoodTrackerWidget(QWidget):
                 trend = self._mood_manager.mood_trend()
                 if trend.moving_avg_7 is not None:
                     self._avg_7_label.setText(f"7-day average: {trend.moving_avg_7:.1f}")
-                self._trend_30_label.setText(
-                    f"30-day trend: {trend.direction.value.capitalize()}"
-                )
+                self._trend_30_label.setText(f"30-day trend: {trend.direction.value.capitalize()}")
             if hasattr(self._mood_manager, "mood_volatility"):
                 vol = self._mood_manager.mood_volatility()
                 self._volatility_label.setText(f"Mood volatility: {vol:.2f}")
@@ -449,16 +492,19 @@ class MoodTrackerWidget(QWidget):
             return
         try:
             import json
+
             entries: list = []
             if self._mood_manager and hasattr(self._mood_manager, "_entries"):
                 for e in self._mood_manager._entries:
-                    entries.append({
-                        "timestamp": e.timestamp.isoformat(),
-                        "mood_score": e.mood_score,
-                        "energy_score": 50,
-                        "symptoms": e.symptoms,
-                        "notes": e.notes,
-                    })
+                    entries.append(
+                        {
+                            "timestamp": e.timestamp.isoformat(),
+                            "mood_score": e.mood_score,
+                            "energy_score": 50,
+                            "symptoms": e.symptoms,
+                            "notes": e.notes,
+                        }
+                    )
             with open(path, "w") as fh:
                 json.dump(entries, fh, indent=2)
             QMessageBox.information(self, "Exported", f"Mood data exported to {path}")

@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 # Enums & data classes
 # ---------------------------------------------------------------------------
 
+
 class OperatingSystem(Enum):
     WINDOWS = "windows"
     MACOS = "macos"
@@ -42,6 +43,7 @@ class SystemTheme(Enum):
 @dataclass
 class PlatformInfo:
     """Snapshot of the current platform environment."""
+
     os: OperatingSystem
     os_version: str
     architecture: str
@@ -57,6 +59,7 @@ class PlatformInfo:
 # OS detection
 # ---------------------------------------------------------------------------
 
+
 def detect_os() -> OperatingSystem:
     """Return the current operating system."""
     name = platform.system().lower()
@@ -70,6 +73,7 @@ def detect_os() -> OperatingSystem:
 # ---------------------------------------------------------------------------
 # Data directory
 # ---------------------------------------------------------------------------
+
 
 def get_data_dir() -> Path:
     """Return the canonical application data directory.
@@ -120,6 +124,7 @@ def get_log_dir() -> Path:
 # Theme detection
 # ---------------------------------------------------------------------------
 
+
 def get_system_theme() -> SystemTheme:
     """Detect the operating system's light/dark theme setting."""
     current_os = detect_os()
@@ -137,6 +142,7 @@ def _windows_theme() -> SystemTheme:
     """Read the Windows registry for AppsUseLightTheme."""
     try:
         import winreg
+
         key = winreg.OpenKey(  # type: ignore[attr-defined]
             winreg.HKEY_CURRENT_USER,  # type: ignore[attr-defined]
             r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize",
@@ -200,6 +206,7 @@ def _linux_theme() -> SystemTheme:
 # ---------------------------------------------------------------------------
 # High DPI
 # ---------------------------------------------------------------------------
+
 
 def get_scale_factor() -> float:
     """Detect the display scale factor.
@@ -278,6 +285,7 @@ def configure_high_dpi() -> None:
 # System tray
 # ---------------------------------------------------------------------------
 
+
 def system_tray_supported() -> bool:
     """Check whether the desktop environment supports a system tray."""
     current_os = detect_os()
@@ -290,13 +298,19 @@ def system_tray_supported() -> bool:
     # Fallback: try to detect via DBus
     try:
         result = subprocess.run(
-            ["dbus-send", "--session", "--print-reply",
-             "--dest=org.kde.StatusNotifierWatcher",
-             "/StatusNotifierWatcher",
-             "org.freedesktop.DBus.Properties.Get",
-             "string:org.kde.StatusNotifierWatcher",
-             "string:IsStatusNotifierHostRegistered"],
-            capture_output=True, text=True, timeout=5,
+            [
+                "dbus-send",
+                "--session",
+                "--print-reply",
+                "--dest=org.kde.StatusNotifierWatcher",
+                "/StatusNotifierWatcher",
+                "org.freedesktop.DBus.Properties.Get",
+                "string:org.kde.StatusNotifierWatcher",
+                "string:IsStatusNotifierHostRegistered",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=5,
         )
         return result.returncode == 0
     except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
@@ -306,6 +320,7 @@ def system_tray_supported() -> bool:
 # ---------------------------------------------------------------------------
 # Desktop notifications
 # ---------------------------------------------------------------------------
+
 
 def send_desktop_notification(
     title: str,
@@ -329,11 +344,15 @@ def send_desktop_notification(
 
 
 def _windows_notification(
-    title: str, message: str, icon_path: str | None, timeout: int,
+    title: str,
+    message: str,
+    icon_path: str | None,
+    timeout: int,
 ) -> bool:
     """Try win10toast, then winotify, then fall back to a basic messagebox."""
     try:
         from win10toast import ToastNotifier
+
         toaster = ToastNotifier()
         toaster.show_toast(title, message, icon_path=icon_path, duration=timeout, threaded=True)
         return True
@@ -342,6 +361,7 @@ def _windows_notification(
 
     try:
         from winotify import Notification as WinNotification
+
         toast = WinNotification(app_id="Mindful Organizer", title=title, msg=message)
         toast.show()
         return True
@@ -360,19 +380,19 @@ def _macos_notification(title: str, message: str) -> bool:
 
     try:
         script = (
-            f'display notification "{esc(message)}" with title "{esc(title)}" '
-            f'sound name "default"'
+            f'display notification "{esc(message)}" with title "{esc(title)}" sound name "default"'
         )
-        result = subprocess.run(
-            ["osascript", "-e", script], capture_output=True, timeout=5
-        )
+        result = subprocess.run(["osascript", "-e", script], capture_output=True, timeout=5)
         return result.returncode == 0
     except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
         return False
 
 
 def _linux_notification(
-    title: str, message: str, icon_path: str | None, timeout: int,
+    title: str,
+    message: str,
+    icon_path: str | None,
+    timeout: int,
 ) -> bool:
     try:
         cmd = ["notify-send", title, message, "-t", str(timeout * 1000)]
@@ -415,6 +435,7 @@ def register_startup(
 def _windows_startup(exe: str, enabled: bool) -> bool:
     try:
         import winreg
+
         key = winreg.OpenKey(  # type: ignore[attr-defined]
             winreg.HKEY_CURRENT_USER,  # type: ignore[attr-defined]
             r"Software\Microsoft\Windows\CurrentVersion\Run",
@@ -493,6 +514,7 @@ def is_registered_for_startup() -> bool:
     if current_os == OperatingSystem.WINDOWS:
         try:
             import winreg
+
             key = winreg.OpenKey(  # type: ignore[attr-defined]
                 winreg.HKEY_CURRENT_USER,  # type: ignore[attr-defined]
                 r"Software\Microsoft\Windows\CurrentVersion\Run",
@@ -507,7 +529,9 @@ def is_registered_for_startup() -> bool:
         except (OSError, ImportError):
             return False
     elif current_os == OperatingSystem.MACOS:
-        return (Path.home() / "Library" / "LaunchAgents" / "com.mindfulorganizer.app.plist").exists()
+        return (
+            Path.home() / "Library" / "LaunchAgents" / "com.mindfulorganizer.app.plist"
+        ).exists()
     elif current_os == OperatingSystem.LINUX:
         return (Path.home() / ".config" / "autostart" / "mindful-organizer.desktop").exists()
     return False
@@ -516,6 +540,7 @@ def is_registered_for_startup() -> bool:
 # ---------------------------------------------------------------------------
 # Single instance enforcement
 # ---------------------------------------------------------------------------
+
 
 class SingleInstance:
     """Prevents multiple instances of the application from running.
@@ -573,6 +598,7 @@ class SingleInstance:
         self._lock_file = Path(tempfile.gettempdir()) / f"{self._app_id}.lock"
         try:
             import fcntl
+
             self._lock_handle = self._lock_file.open("w")
             fcntl.flock(self._lock_handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
             self._lock_handle.write(str(os.getpid()))
@@ -588,6 +614,7 @@ class SingleInstance:
         if self._lock_handle is not None:
             with contextlib.suppress(OSError, ValueError):
                 import fcntl
+
                 fcntl.flock(self._lock_handle, fcntl.LOCK_UN)
                 self._lock_handle.close()
             self._lock_handle = None
@@ -607,6 +634,7 @@ class SingleInstance:
 # ---------------------------------------------------------------------------
 # Convenience: full platform snapshot
 # ---------------------------------------------------------------------------
+
 
 def get_platform_info() -> PlatformInfo:
     """Collect a complete snapshot of the current platform environment."""

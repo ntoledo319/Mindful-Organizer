@@ -34,8 +34,8 @@ def tracker(db):
 # Add medication (log_dose)
 # ---------------------------------------------------------------------------
 
-class TestAddMedication:
 
+class TestAddMedication:
     def test_log_dose(self, tracker):
         row_id = tracker.log_dose(
             medication_name="Sertraline",
@@ -112,8 +112,8 @@ class TestAddMedication:
 # Track adherence
 # ---------------------------------------------------------------------------
 
-class TestTrackAdherence:
 
+class TestTrackAdherence:
     def test_adherence_all_taken(self, tracker):
         for _ in range(10):
             tracker.log_dose("Med", "10mg", "once_daily", "08:00", status="taken")
@@ -158,19 +158,26 @@ class TestTrackAdherence:
 # Refill reminder
 # ---------------------------------------------------------------------------
 
-class TestRefillReminder:
 
+class TestRefillReminder:
     def test_days_until_refill(self, tracker):
         tracker.log_dose(
-            "Sertraline", "50mg", "once_daily", "08:00",
-            status="taken", supply_count=14,
+            "Sertraline",
+            "50mg",
+            "once_daily",
+            "08:00",
+            status="taken",
+            supply_count=14,
         )
         days = tracker.days_until_refill("Sertraline")
         assert days == 14  # once daily, 14 pills
 
     def test_days_until_refill_with_override(self, tracker):
         tracker.log_dose(
-            "Sertraline", "50mg", "once_daily", "08:00",
+            "Sertraline",
+            "50mg",
+            "once_daily",
+            "08:00",
             status="taken",
         )
         days = tracker.days_until_refill("Sertraline", current_supply=7)
@@ -178,15 +185,23 @@ class TestRefillReminder:
 
     def test_needs_refill_true(self, tracker):
         tracker.log_dose(
-            "Sertraline", "50mg", "once_daily", "08:00",
-            status="taken", supply_count=3,
+            "Sertraline",
+            "50mg",
+            "once_daily",
+            "08:00",
+            status="taken",
+            supply_count=3,
         )
         assert tracker.needs_refill("Sertraline", threshold_days=7) is True
 
     def test_needs_refill_false(self, tracker):
         tracker.log_dose(
-            "Sertraline", "50mg", "once_daily", "08:00",
-            status="taken", supply_count=30,
+            "Sertraline",
+            "50mg",
+            "once_daily",
+            "08:00",
+            status="taken",
+            supply_count=30,
         )
         assert tracker.needs_refill("Sertraline", threshold_days=7) is False
 
@@ -198,10 +213,8 @@ class TestRefillReminder:
         assert tracker.days_until_refill("NoSupply") is None
 
     def test_get_refill_alerts(self, tracker):
-        tracker.log_dose("LowMed", "5mg", "once_daily", "08:00",
-                         status="taken", supply_count=3)
-        tracker.log_dose("OkMed", "10mg", "once_daily", "08:00",
-                         status="taken", supply_count=60)
+        tracker.log_dose("LowMed", "5mg", "once_daily", "08:00", status="taken", supply_count=3)
+        tracker.log_dose("OkMed", "10mg", "once_daily", "08:00", status="taken", supply_count=60)
 
         alerts = tracker.get_refill_alerts(threshold_days=7)
         names = [a["medication_name"] for a in alerts]
@@ -213,8 +226,8 @@ class TestRefillReminder:
 # Side-effect logging
 # ---------------------------------------------------------------------------
 
-class TestSideEffectLogging:
 
+class TestSideEffectLogging:
     def test_log_side_effect(self, tracker):
         row_id = tracker.log_side_effect(
             medication_name="Sertraline",
@@ -230,7 +243,10 @@ class TestSideEffectLogging:
     def test_side_effect_summary(self, tracker):
         for effects in ["nausea", "nausea, headache", "headache"]:
             tracker.log_side_effect(
-                "Med", "10mg", "once_daily", "08:00",
+                "Med",
+                "10mg",
+                "once_daily",
+                "08:00",
                 side_effects=effects,
             )
 
@@ -249,8 +265,8 @@ class TestSideEffectLogging:
 # Daily schedule
 # ---------------------------------------------------------------------------
 
-class TestDailySchedule:
 
+class TestDailySchedule:
     def test_create_daily_schedule(self, tracker):
         meds = [
             Medication(name="MedA", dosage="10mg", frequency="once_daily", scheduled_time="08:00"),
@@ -270,8 +286,8 @@ class TestDailySchedule:
 # Export
 # ---------------------------------------------------------------------------
 
-class TestExport:
 
+class TestExport:
     def test_export_history(self, tracker, tmp_data_dir):
         tracker.log_dose("Med", "10mg", "once_daily", "08:00", status="taken")
         output = tmp_data_dir / "med_export.json"
@@ -279,6 +295,7 @@ class TestExport:
 
         assert result_path.exists()
         import json
+
         data = json.loads(result_path.read_text())
         assert "disclaimer" in data
         assert "medications" in data

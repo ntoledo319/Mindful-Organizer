@@ -21,8 +21,10 @@ import numpy as np
 # Enums & data-classes
 # ---------------------------------------------------------------------------
 
+
 class TrendDirection(Enum):
     """Direction a metric is heading."""
+
     IMPROVING = "improving"
     DECLINING = "declining"
     STABLE = "stable"
@@ -30,11 +32,12 @@ class TrendDirection(Enum):
 
 class TimeOfDay(Enum):
     """Coarse time-of-day buckets."""
-    EARLY_MORNING = "early_morning"   # 05-08
-    MORNING = "morning"               # 08-12
-    AFTERNOON = "afternoon"           # 12-17
-    EVENING = "evening"               # 17-21
-    NIGHT = "night"                   # 21-05
+
+    EARLY_MORNING = "early_morning"  # 05-08
+    MORNING = "morning"  # 08-12
+    AFTERNOON = "afternoon"  # 12-17
+    EVENING = "evening"  # 17-21
+    NIGHT = "night"  # 21-05
 
 
 class Season(Enum):
@@ -47,9 +50,10 @@ class Season(Enum):
 @dataclass
 class MoodEntry:
     """A single mood journal entry."""
+
     timestamp: datetime
-    mood_score: float            # 1-10
-    energy_score: float          # 1-100
+    mood_score: float  # 1-10
+    energy_score: float  # 1-100
     symptoms: list[str] = field(default_factory=list)
     notes: str = ""
     activities: list[str] = field(default_factory=list)
@@ -61,6 +65,7 @@ class MoodEntry:
 @dataclass
 class TrendResult:
     """Result of a trend analysis."""
+
     direction: TrendDirection
     moving_avg_7: float | None
     moving_avg_30: float | None
@@ -71,8 +76,9 @@ class TrendResult:
 @dataclass
 class PatternResult:
     """Detected temporal pattern."""
-    pattern_type: str           # "time_of_day", "day_of_week", "seasonal"
-    detail: dict[str, float]    # bucket -> avg mood
+
+    pattern_type: str  # "time_of_day", "day_of_week", "seasonal"
+    detail: dict[str, float]  # bucket -> avg mood
     best: str
     worst: str
     description: str
@@ -81,15 +87,17 @@ class PatternResult:
 @dataclass
 class TriggerResult:
     """A mood trigger with correlation info."""
+
     trigger: str
-    correlation: float          # -1 to 1
-    direction: str              # "positive" or "negative"
+    correlation: float  # -1 to 1
+    direction: str  # "positive" or "negative"
     description: str
 
 
 @dataclass
 class ClusterResult:
     """Co-occurring symptom cluster."""
+
     symptoms: tuple[str, ...]
     co_occurrence_count: int
     avg_mood_when_present: float
@@ -99,6 +107,7 @@ class ClusterResult:
 @dataclass
 class StreakInfo:
     """Information about a streak."""
+
     streak_type: str
     current_length: int
     longest_length: int
@@ -108,9 +117,10 @@ class StreakInfo:
 @dataclass
 class ConditionInsight:
     """A condition-specific wellness insight."""
+
     condition: str
     insight_type: str
-    severity: str               # "info", "mild", "moderate", "severe"
+    severity: str  # "info", "mild", "moderate", "severe"
     description: str
     recommendation: str
 
@@ -118,6 +128,7 @@ class ConditionInsight:
 @dataclass
 class AnalyticsReport:
     """Full analytics report."""
+
     mood_trend: TrendResult | None = None
     energy_trend: TrendResult | None = None
     time_of_day_pattern: PatternResult | None = None
@@ -135,6 +146,7 @@ class AnalyticsReport:
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _parse_entries(raw: Sequence[dict[str, Any]]) -> list[MoodEntry]:
     """Convert list-of-dicts into validated MoodEntry objects."""
@@ -154,17 +166,19 @@ def _parse_entries(raw: Sequence[dict[str, Any]]) -> list[MoodEntry]:
         energy = float(d.get("energy_score", 50))
         energy = max(1.0, min(100.0, energy))
 
-        entries.append(MoodEntry(
-            timestamp=ts,
-            mood_score=mood,
-            energy_score=energy,
-            symptoms=list(d.get("symptoms", [])),
-            notes=str(d.get("notes", "")),
-            activities=list(d.get("activities", [])),
-            sleep_hours=d.get("sleep_hours"),
-            medication_taken=d.get("medication_taken"),
-            tasks_completed=d.get("tasks_completed"),
-        ))
+        entries.append(
+            MoodEntry(
+                timestamp=ts,
+                mood_score=mood,
+                energy_score=energy,
+                symptoms=list(d.get("symptoms", [])),
+                notes=str(d.get("notes", "")),
+                activities=list(d.get("activities", [])),
+                sleep_hours=d.get("sleep_hours"),
+                medication_taken=d.get("medication_taken"),
+                tasks_completed=d.get("tasks_completed"),
+            )
+        )
     entries.sort(key=lambda e: e.timestamp)
     return entries
 
@@ -223,6 +237,7 @@ _DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 # ---------------------------------------------------------------------------
 # Main analytics engine
 # ---------------------------------------------------------------------------
+
 
 class MoodAnalytics:
     """Analyse mood journal entries and produce actionable insights."""
@@ -472,26 +487,30 @@ class MoodAnalytics:
 
         # Stable mood streak: day-to-day change <= 1
         stable_current, stable_longest = self._streak(
-            [abs(self._entries[i].mood_score - self._entries[i - 1].mood_score) <= 1.0
-             for i in range(1, len(self._entries))]
+            [
+                abs(self._entries[i].mood_score - self._entries[i - 1].mood_score) <= 1.0
+                for i in range(1, len(self._entries))
+            ]
         )
-        results.append(StreakInfo(
-            "stable_mood",
-            stable_current,
-            stable_longest,
-            f"Current stable-mood streak: {stable_current} day(s) (best: {stable_longest}).",
-        ))
+        results.append(
+            StreakInfo(
+                "stable_mood",
+                stable_current,
+                stable_longest,
+                f"Current stable-mood streak: {stable_current} day(s) (best: {stable_longest}).",
+            )
+        )
 
         # Good energy streak: energy >= 60
-        good_current, good_longest = self._streak(
-            [e.energy_score >= 60 for e in self._entries]
+        good_current, good_longest = self._streak([e.energy_score >= 60 for e in self._entries])
+        results.append(
+            StreakInfo(
+                "good_energy",
+                good_current,
+                good_longest,
+                f"Current good-energy streak: {good_current} day(s) (best: {good_longest}).",
+            )
         )
-        results.append(StreakInfo(
-            "good_energy",
-            good_current,
-            good_longest,
-            f"Current good-energy streak: {good_current} day(s) (best: {good_longest}).",
-        ))
 
         return results
 
@@ -508,67 +527,90 @@ class MoodAnalytics:
 
         # --- Bipolar: observe elevated or low patterns (never diagnose) ---
         if "bipolar" in self._conditions and len(moods) >= 14:
-                recent = moods[-14:]
-                recent_energy = energies[-14:]
-                avg_recent = float(np.mean(recent))
-                avg_energy = float(np.mean(recent_energy))
-                if avg_recent >= 8.5 and avg_energy >= 80:
-                    insights.append(ConditionInsight(
-                        "bipolar", "elevated_period", "info",
+            recent = moods[-14:]
+            recent_energy = energies[-14:]
+            avg_recent = float(np.mean(recent))
+            avg_energy = float(np.mean(recent_energy))
+            if avg_recent >= 8.5 and avg_energy >= 80:
+                insights.append(
+                    ConditionInsight(
+                        "bipolar",
+                        "elevated_period",
+                        "info",
                         "Your mood and energy have been elevated recently. "
                         "If this feels unusual for you, consider noting it for your clinician.",
                         "Track sleep and continue your usual routines.",
-                    ))
-                if avg_recent <= 3.0:
-                    insights.append(ConditionInsight(
-                        "bipolar", "low_period", "mild",
+                    )
+                )
+            if avg_recent <= 3.0:
+                insights.append(
+                    ConditionInsight(
+                        "bipolar",
+                        "low_period",
+                        "mild",
                         "Your mood has been lower than usual recently.",
                         "Gentle self-care and reaching out to your support network can help.",
-                    ))
+                    )
+                )
 
         # --- Depression: observe low mood periods (never diagnose) ---
         if "depression" in self._conditions and len(moods) >= 14:
-                recent = moods[-14:]
-                low_days = int(np.sum(recent <= 4))
-                if low_days >= 10:
-                    insights.append(ConditionInsight(
-                        "depression", "persistent_low_mood", "moderate",
+            recent = moods[-14:]
+            low_days = int(np.sum(recent <= 4))
+            if low_days >= 10:
+                insights.append(
+                    ConditionInsight(
+                        "depression",
+                        "persistent_low_mood",
+                        "moderate",
                         f"Your mood has been at 4 or below for {low_days} of the last {len(recent)} entries.",
                         "Consider mentioning this pattern to your mental health provider.",
-                    ))
-                elif low_days >= 5:
-                    insights.append(ConditionInsight(
-                        "depression", "low_mood_trend", "mild",
+                    )
+                )
+            elif low_days >= 5:
+                insights.append(
+                    ConditionInsight(
+                        "depression",
+                        "low_mood_trend",
+                        "mild",
                         f"You've had {low_days} low-mood days recently.",
                         "Gentle activities like walking or calling a friend may help.",
-                    ))
+                    )
+                )
 
         # --- Anxiety: spikes ---
         if "anxiety" in self._conditions:
             anxiety_symptoms = {"anxiety", "panic", "worry", "restless", "nervous", "tense"}
             recent_entries = self._entries[-14:] if len(self._entries) >= 14 else self._entries
             spike_count = sum(
-                1 for e in recent_entries
-                if any(s.lower() in anxiety_symptoms for s in e.symptoms)
+                1 for e in recent_entries if any(s.lower() in anxiety_symptoms for s in e.symptoms)
             )
             if spike_count >= 7:
-                insights.append(ConditionInsight(
-                    "anxiety", "frequent_anxiety", "moderate",
-                    f"Anxiety-related symptoms appeared in {spike_count} of the last "
-                    f"{len(recent_entries)} entries.",
-                    "Consider grounding exercises, and speak with your therapist about adjustments.",
-                ))
+                insights.append(
+                    ConditionInsight(
+                        "anxiety",
+                        "frequent_anxiety",
+                        "moderate",
+                        f"Anxiety-related symptoms appeared in {spike_count} of the last "
+                        f"{len(recent_entries)} entries.",
+                        "Consider grounding exercises, and speak with your therapist about adjustments.",
+                    )
+                )
 
         # --- ADHD: energy volatility ---
         if "adhd" in self._conditions and len(energies) >= 5:
             vol = float(np.std(np.diff(energies)))
             if vol > 20:
-                insights.append(ConditionInsight(
-                    "adhd", "energy_volatility", "info",
-                    f"Your energy levels are quite variable (volatility {vol:.1f}). "
-                    "This is common with ADHD.",
-                    "Try anchoring your day with consistent routines and transition rituals.",
-                ))
+                insights.append(
+                    ConditionInsight(
+                        "adhd",
+                        "energy_volatility",
+                        "info",
+                        f"Your energy levels are quite variable (volatility {vol:.1f}). "
+                        "This is common with ADHD.",
+                        "Try anchoring your day with consistent routines and transition rituals.",
+                    )
+                )
 
         return insights
 
@@ -615,7 +657,9 @@ class MoodAnalytics:
                 insights.append(streak.description)
 
         for ci in report.condition_insights:
-            insights.append(f"[{ci.condition.upper()}] {ci.description} Suggestion: {ci.recommendation}")
+            insights.append(
+                f"[{ci.condition.upper()}] {ci.description} Suggestion: {ci.recommendation}"
+            )
 
         if not insights:
             insights.append("Keep logging daily to unlock personalised insights!")

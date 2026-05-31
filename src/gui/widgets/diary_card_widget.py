@@ -32,7 +32,13 @@ from gui.components import AccentButton, BodyLabel, CardFrame, SectionTitle
 
 logger = logging.getLogger(__name__)
 
-_EFFECTIVENESS_LABELS = {1: "Not helpful", 2: "Slightly helpful", 3: "Moderately helpful", 4: "Very helpful", 5: "Extremely helpful"}
+_EFFECTIVENESS_LABELS = {
+    1: "Not helpful",
+    2: "Slightly helpful",
+    3: "Moderately helpful",
+    4: "Very helpful",
+    5: "Extremely helpful",
+}
 
 
 class DiaryCardWidget(QWidget):
@@ -136,9 +142,7 @@ class DiaryCardWidget(QWidget):
         self._mood_slider.setTickPosition(QSlider.TickPosition.TicksBelow)
         self._mood_slider.setTickInterval(1)
         self._mood_label = BodyLabel("5", self._theme)
-        self._mood_slider.valueChanged.connect(
-            lambda v: self._mood_label.setText(str(v))
-        )
+        self._mood_slider.valueChanged.connect(lambda v: self._mood_label.setText(str(v)))
         row.addWidget(self._mood_slider)
         row.addWidget(self._mood_label)
         layout.addLayout(row)
@@ -303,24 +307,28 @@ class DiaryCardWidget(QWidget):
         if self._manager and hasattr(self._manager, "emotions_for_conditions"):
             return self._manager.emotions_for_conditions(self._get_conditions())
         from core.diary_card_manager import DiaryCardManager
+
         return DiaryCardManager.emotions_for_conditions(self._get_conditions())
 
     def _get_urges(self) -> dict[str, int]:
         if self._manager and hasattr(self._manager, "urges_for_conditions"):
             return self._manager.urges_for_conditions(self._get_conditions())
         from core.diary_card_manager import DiaryCardManager
+
         return DiaryCardManager.urges_for_conditions(self._get_conditions())
 
     def _get_skills(self) -> list[str]:
         if self._manager and hasattr(self._manager, "skills_for_conditions"):
             return self._manager.skills_for_conditions(self._get_conditions())
         from core.diary_card_manager import DiaryCardManager
+
         return DiaryCardManager.skills_for_conditions(self._get_conditions())
 
     def _get_targets(self) -> dict[str, int]:
         if self._manager and hasattr(self._manager, "targets_for_conditions"):
             return self._manager.targets_for_conditions(self._get_conditions())
         from core.diary_card_manager import DiaryCardManager
+
         return DiaryCardManager.targets_for_conditions(self._get_conditions())
 
     # ------------------------------------------------------------------

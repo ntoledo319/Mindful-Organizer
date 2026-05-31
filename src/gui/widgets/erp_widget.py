@@ -46,6 +46,7 @@ logger = logging.getLogger(__name__)
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _card_frame() -> QFrame:
     frame = QFrame()
     frame.setFrameShape(QFrame.Shape.StyledPanel)
@@ -75,10 +76,12 @@ def _accent_button(text: str) -> QPushButton:
 # Add/Edit hierarchy item dialog
 # ---------------------------------------------------------------------------
 
+
 class _HierarchyItemDialog(QDialog):
     def __init__(
         self,
-        title: str = "", suds: int = 50,
+        title: str = "",
+        suds: int = 50,
         parent: QWidget | None = None,
     ) -> None:
         super().__init__(parent)
@@ -114,6 +117,7 @@ class _HierarchyItemDialog(QDialog):
 # ---------------------------------------------------------------------------
 # Widget
 # ---------------------------------------------------------------------------
+
 
 class ERPWidget(QWidget):
     """ERP (Exposure and Response Prevention) tab for OCD management."""
@@ -362,8 +366,12 @@ class ERPWidget(QWidget):
         self._avg_suds_drop = _body_label("Avg SUDS drop per session: --")
         self._safety_behaviors_label = _body_label("Sessions with RP notes: 0")
 
-        for w in (self._total_sessions_label, self._total_urges_resisted,
-                  self._avg_suds_drop, self._safety_behaviors_label):
+        for w in (
+            self._total_sessions_label,
+            self._total_urges_resisted,
+            self._avg_suds_drop,
+            self._safety_behaviors_label,
+        ):
             layout.addWidget(w)
         parent.addWidget(card)
 
@@ -377,10 +385,7 @@ class ERPWidget(QWidget):
         for item in sorted_h:
             title = item.get("title", "Untitled")
             suds = item.get("predicted_suds", 0)
-            sessions = len([
-                s for s in self._sessions
-                if s.get("hierarchy_id") == item.get("id")
-            ])
+            sessions = len([s for s in self._sessions if s.get("hierarchy_id") == item.get("id")])
             text = f"SUDS {suds:3d}  |  {title}  ({sessions} sessions)"
             self._hierarchy_list.addItem(text)
         self._refresh_session_history()
@@ -425,7 +430,8 @@ class ERPWidget(QWidget):
             return
         item = sorted_h[row]
         reply = QMessageBox.question(
-            self, "Remove",
+            self,
+            "Remove",
             f"Remove '{item.get('title', '')}'?",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
         )
@@ -482,9 +488,9 @@ class ERPWidget(QWidget):
 
     def _prompt_suds(self) -> None:
         QMessageBox.information(
-            self, "SUDS Check",
-            "Time for a SUDS check. Rate your current anxiety level (0-100) "
-            "and click Record SUDS.",
+            self,
+            "SUDS Check",
+            "Time for a SUDS check. Rate your current anxiety level (0-100) and click Record SUDS.",
         )
 
     def _record_suds(self) -> None:
@@ -596,9 +602,7 @@ class ERPWidget(QWidget):
             "sessions": self._sessions,
             "summary": {
                 "total_sessions": len(self._sessions),
-                "total_urges_resisted": sum(
-                    s.get("urges_resisted", 0) for s in self._sessions
-                ),
+                "total_urges_resisted": sum(s.get("urges_resisted", 0) for s in self._sessions),
             },
         }
         try:

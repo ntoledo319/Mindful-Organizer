@@ -33,14 +33,14 @@ class SmartFileSystem:
             raise FileNotFoundError(f"Directory not found: {directory_path}")
 
         file_count = 0
-        for file_path in path.rglob('*'):
+        for file_path in path.rglob("*"):
             if file_path.is_file() and self.file_indexer.index_file(file_path):
                 file_count += 1
 
         return {
-            'status': 'success',
-            'files_indexed': file_count,
-            'time_elapsed': time.time() - start_time
+            "status": "success",
+            "files_indexed": file_count,
+            "time_elapsed": time.time() - start_time,
         }
 
     def cluster_files(self) -> dict:
@@ -48,41 +48,38 @@ class SmartFileSystem:
         start_time = time.time()
         clustering_results = self.file_clusterer.cluster_files()
 
-        if clustering_results['status'] == 'error':
+        if clustering_results["status"] == "error":
             return clustering_results
 
         self.output_generator = OutputGenerator(clustering_results)
 
         return {
-            'status': 'success',
-            'clusters_found': len(set(clustering_results['clusters'])) - 1,
-            'time_elapsed': time.time() - start_time
+            "status": "success",
+            "clusters_found": len(set(clustering_results["clusters"])) - 1,
+            "time_elapsed": time.time() - start_time,
         }
 
-    def generate_report(self, output_path: str, format: str = 'json') -> dict:
+    def generate_report(self, output_path: str, format: str = "json") -> dict:
         """Generate a report of file clusters"""
         if not self.output_generator:
-            return {'status': 'error', 'message': 'Must cluster files first'}
+            return {"status": "error", "message": "Must cluster files first"}
 
         try:
             self.output_generator.save_report(output_path, format)
-            return {'status': 'success', 'output_path': output_path}
+            return {"status": "success", "output_path": output_path}
         except (OSError, ValueError) as e:
-            return {'status': 'error', 'message': str(e)}
+            return {"status": "error", "message": str(e)}
 
     def visualize_clusters(self, output_path: str | None = None) -> dict:
         """Generate visualization of file clusters"""
         if not self.output_generator:
-            return {'status': 'error', 'message': 'Must cluster files first'}
+            return {"status": "error", "message": "Must cluster files first"}
 
         try:
             self.output_generator.generate_cluster_visualization(output_path)
-            return {
-                'status': 'success',
-                'output_path': output_path if output_path else 'displayed'
-            }
+            return {"status": "success", "output_path": output_path if output_path else "displayed"}
         except (OSError, ValueError) as e:
-            return {'status': 'error', 'message': str(e)}
+            return {"status": "error", "message": str(e)}
 
     def get_similar_files(self, query: str, top_k: int = 5) -> list[dict]:
         """Find files similar to the query text"""

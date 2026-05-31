@@ -1,6 +1,5 @@
 """Reusable container components."""
 
-
 from PyQt6.QtWidgets import QFrame, QScrollArea, QVBoxLayout, QWidget
 
 

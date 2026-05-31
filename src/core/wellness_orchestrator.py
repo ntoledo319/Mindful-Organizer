@@ -39,6 +39,7 @@ _CRISIS_RECOMMENDATION = (
 # Data structures
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class WellnessSnapshot:
     """A point-in-time view of the user's wellness state."""
@@ -80,6 +81,7 @@ class DailyBriefing:
 # ---------------------------------------------------------------------------
 # Orchestrator
 # ---------------------------------------------------------------------------
+
 
 class WellnessOrchestrator:
     """Aggregates cross-module wellness data and produces unified insights.
@@ -196,37 +198,43 @@ class WellnessOrchestrator:
                 where="date >= date('now', '-3 days')",
                 order_by="date DESC",
             )
-            sleep_values = [r["duration_hours"] for r in recent_sleep.rows if r.get("duration_hours")]
+            sleep_values = [
+                r["duration_hours"] for r in recent_sleep.rows if r.get("duration_hours")
+            ]
             avg_sleep = np.mean(sleep_values) if sleep_values else None
 
             if avg_mood is not None and avg_mood <= 3.5 and avg_sleep is not None and avg_sleep < 5:
-                signals.append(CrisisSignal(
-                    severity="moderate",
-                    source_modules=["mood", "sleep"],
-                    description=(
-                        "Your mood has been low and sleep has been short "
-                        f"over the past few days (avg mood {avg_mood:.1f}, "
-                        f"avg sleep {avg_sleep:.1f}h)."
-                    ),
-                    recommendation=(
-                        "Consider your crisis plan, reach out to a trusted "
-                        "contact, and prioritise rest over productivity today."
-                    ),
-                ))
+                signals.append(
+                    CrisisSignal(
+                        severity="moderate",
+                        source_modules=["mood", "sleep"],
+                        description=(
+                            "Your mood has been low and sleep has been short "
+                            f"over the past few days (avg mood {avg_mood:.1f}, "
+                            f"avg sleep {avg_sleep:.1f}h)."
+                        ),
+                        recommendation=(
+                            "Consider your crisis plan, reach out to a trusted "
+                            "contact, and prioritise rest over productivity today."
+                        ),
+                    )
+                )
 
             # --- Very low absolute mood (urgent regardless of trend) ---
             # A sustained low baseline is the strongest single-signal concern, so
             # it is surfaced at the highest severity with direct crisis access.
             latest_mood = mood_values[0] if mood_values else None
             if latest_mood is not None and latest_mood <= 2:
-                signals.append(CrisisSignal(
-                    severity="urgent",
-                    source_modules=["mood"],
-                    description=(
-                        f"Your most recent mood rating is very low ({latest_mood}/10)."
-                    ),
-                    recommendation=_CRISIS_RECOMMENDATION,
-                ))
+                signals.append(
+                    CrisisSignal(
+                        severity="urgent",
+                        source_modules=["mood"],
+                        description=(
+                            f"Your most recent mood rating is very low ({latest_mood}/10)."
+                        ),
+                        recommendation=_CRISIS_RECOMMENDATION,
+                    )
+                )
 
             # --- Rapid mood drop (severity scales with magnitude) ---
             if len(mood_values) >= 2:
@@ -248,12 +256,14 @@ class WellnessOrchestrator:
                         )
                     # Avoid double-flagging when the urgent absolute-low rule already fired.
                     if not (latest <= 2 and latest_mood is not None and latest_mood <= 2):
-                        signals.append(CrisisSignal(
-                            severity=severity,
-                            source_modules=["mood"],
-                            description=f"Your mood dropped from {previous} to {latest} recently.",
-                            recommendation=recommendation,
-                        ))
+                        signals.append(
+                            CrisisSignal(
+                                severity=severity,
+                                source_modules=["mood"],
+                                description=f"Your mood dropped from {previous} to {latest} recently.",
+                                recommendation=recommendation,
+                            )
+                        )
 
         # --- Medication miss streak ---
         missed_meds = self.db.query(
@@ -261,12 +271,14 @@ class WellnessOrchestrator:
             where="status = 'missed' AND scheduled_time >= datetime('now', '-7 days')",
         )
         if missed_meds.row_count >= 3:
-            signals.append(CrisisSignal(
-                severity="mild",
-                source_modules=["medication"],
-                description=f"{missed_meds.row_count} medications missed in the last week.",
-                recommendation="Set a consistent reminder time tied to a daily habit.",
-            ))
+            signals.append(
+                CrisisSignal(
+                    severity="mild",
+                    source_modules=["medication"],
+                    description=f"{missed_meds.row_count} medications missed in the last week.",
+                    recommendation="Set a consistent reminder time tied to a daily habit.",
+                )
+            )
 
         # --- Bipolar: elevated energy without sleep ---
         if "bipolar" in condition_names:
@@ -277,16 +289,22 @@ class WellnessOrchestrator:
             )
             if energys.rows:
                 energy_vals = [r["energy_level"] for r in energys.rows if r.get("energy_level")]
-                if energy_vals and np.mean(energy_vals) >= 8 and (avg_sleep is not None and avg_sleep < 5):
-                    signals.append(CrisisSignal(
-                        severity="info",
-                        source_modules=["energy", "sleep"],
-                        description=(
-                            "High energy combined with low sleep over the past week. "
-                            "If this feels unusual, note it for your clinician."
-                        ),
-                        recommendation="Maintain consistent sleep timing and avoid overstimulation.",
-                    ))
+                if (
+                    energy_vals
+                    and np.mean(energy_vals) >= 8
+                    and (avg_sleep is not None and avg_sleep < 5)
+                ):
+                    signals.append(
+                        CrisisSignal(
+                            severity="info",
+                            source_modules=["energy", "sleep"],
+                            description=(
+                                "High energy combined with low sleep over the past week. "
+                                "If this feels unusual, note it for your clinician."
+                            ),
+                            recommendation="Maintain consistent sleep timing and avoid overstimulation.",
+                        )
+                    )
 
         # Return most-severe first so every consumer (dashboard banner, system
         # notification, tray) surfaces the highest-priority signal — and its 988
@@ -350,13 +368,15 @@ class WellnessOrchestrator:
         )
         task_recs: list[dict[str, Any]] = []
         for t in tasks.rows:
-            task_recs.append({
-                "id": t["id"],
-                "title": t["title"],
-                "energy_required": t.get("energy_required", 5),
-                "priority": t.get("priority", "medium"),
-                "due_date": t.get("due_date"),
-            })
+            task_recs.append(
+                {
+                    "id": t["id"],
+                    "title": t["title"],
+                    "energy_required": t.get("energy_required", 5),
+                    "priority": t.get("priority", "medium"),
+                    "due_date": t.get("due_date"),
+                }
+            )
 
         return DailyBriefing(
             date=today,
@@ -414,10 +434,7 @@ class WellnessOrchestrator:
             params=(since.isoformat(),),
         )
         med_statuses = [r["status"] for r in meds.rows if r.get("status")]
-        adherence = (
-            med_statuses.count("taken") / len(med_statuses)
-            if med_statuses else None
-        )
+        adherence = med_statuses.count("taken") / len(med_statuses) if med_statuses else None
 
         # Tasks
         tasks = self.db.query(
@@ -434,9 +451,13 @@ class WellnessOrchestrator:
             "mood": {
                 "count": len(mood_values),
                 "average": round(float(np.mean(mood_values)), 2) if mood_values else None,
-                "trend": "improving" if len(mood_values) >= 7 and np.polyfit(range(len(mood_values)), mood_values, 1)[0] > 0.05 else
-                         "declining" if len(mood_values) >= 7 and np.polyfit(range(len(mood_values)), mood_values, 1)[0] < -0.05 else
-                         "stable",
+                "trend": "improving"
+                if len(mood_values) >= 7
+                and np.polyfit(range(len(mood_values)), mood_values, 1)[0] > 0.05
+                else "declining"
+                if len(mood_values) >= 7
+                and np.polyfit(range(len(mood_values)), mood_values, 1)[0] < -0.05
+                else "stable",
             },
             "energy": {
                 "count": len(energy_values),

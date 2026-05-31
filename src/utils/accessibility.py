@@ -26,8 +26,10 @@ DATA_DIR = get_data_dir(create=False)
 # Enums
 # ---------------------------------------------------------------------------
 
+
 class FontScale(Enum):
     """Predefined font size levels."""
+
     SMALL = "small"
     MEDIUM = "medium"
     LARGE = "large"
@@ -55,10 +57,11 @@ class FontScale(Enum):
 
 class ColorBlindnessMode(Enum):
     """Supported colour-vision deficiency simulations / corrections."""
+
     NONE = "none"
-    PROTANOPIA = "protanopia"       # Red-blind
-    DEUTERANOPIA = "deuteranopia"   # Green-blind
-    TRITANOPIA = "tritanopia"       # Blue-blind
+    PROTANOPIA = "protanopia"  # Red-blind
+    DEUTERANOPIA = "deuteranopia"  # Green-blind
+    TRITANOPIA = "tritanopia"  # Blue-blind
 
     @property
     def description(self) -> str:
@@ -72,6 +75,7 @@ class ColorBlindnessMode(Enum):
 
 class ContrastLevel(Enum):
     """Contrast levels for the UI."""
+
     NORMAL = "normal"
     HIGH = "high"
     EXTRA_HIGH = "extra_high"
@@ -81,9 +85,11 @@ class ContrastLevel(Enum):
 # Data classes
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class AccessibilitySettings:
     """Current accessibility configuration for the application."""
+
     font_scale: FontScale = FontScale.MEDIUM
     color_blindness_mode: ColorBlindnessMode = ColorBlindnessMode.NONE
     contrast_level: ContrastLevel = ContrastLevel.NORMAL
@@ -111,9 +117,7 @@ class AccessibilitySettings:
     def from_dict(cls, data: dict[str, Any]) -> "AccessibilitySettings":
         return cls(
             font_scale=FontScale(data.get("font_scale", "medium")),
-            color_blindness_mode=ColorBlindnessMode(
-                data.get("color_blindness_mode", "none")
-            ),
+            color_blindness_mode=ColorBlindnessMode(data.get("color_blindness_mode", "none")),
             contrast_level=ContrastLevel(data.get("contrast_level", "normal")),
             reduced_motion=data.get("reduced_motion", False),
             screen_reader_enabled=data.get("screen_reader_enabled", False),
@@ -127,6 +131,7 @@ class AccessibilitySettings:
 @dataclass
 class ColorPalette:
     """Colour palette adjusted for the current accessibility settings."""
+
     background: str = "#FFFFFF"
     surface: str = "#F5F5F5"
     primary: str = "#4A90D9"
@@ -151,8 +156,8 @@ _PROTANOPIA_PALETTE = ColorPalette(
     primary="#4A7FD9",
     primary_variant="#3567BD",
     secondary="#6B58DE",
-    success="#4682B4",    # Blue instead of green
-    warning="#D4A017",    # Gold instead of orange
+    success="#4682B4",  # Blue instead of green
+    warning="#D4A017",  # Gold instead of orange
     error="#D94A4A",
     focus_ring="#4A7FD9",
 )
@@ -161,7 +166,7 @@ _DEUTERANOPIA_PALETTE = ColorPalette(
     primary="#4A7FD9",
     primary_variant="#3567BD",
     secondary="#6B58DE",
-    success="#4682B4",    # Blue instead of green
+    success="#4682B4",  # Blue instead of green
     warning="#D4A017",
     error="#CC3333",
     focus_ring="#4A7FD9",
@@ -172,7 +177,7 @@ _TRITANOPIA_PALETTE = ColorPalette(
     primary_variant="#BD3567",
     secondary="#DE6B58",
     success="#4CAF50",
-    warning="#D94A4A",   # Red instead of orange-yellow
+    warning="#D94A4A",  # Red instead of orange-yellow
     error="#D94A4A",
     focus_ring="#D94A7F",
 )
@@ -236,6 +241,7 @@ def get_palette(settings: AccessibilitySettings) -> ColorPalette:
 # Screen reader helpers
 # ---------------------------------------------------------------------------
 
+
 def screen_reader_text(
     widget_type: str,
     label: str,
@@ -290,10 +296,9 @@ def announce_to_screen_reader(widget: Any, message: str) -> None:
     """
     try:
         from PyQt6.QtWidgets import QAccessible  # type: ignore[attr-defined]
+
         event = QAccessible.Event.NameChanged
-        QAccessible.updateAccessibility(
-            QAccessible.queryAccessibleInterface(widget), 0, event
-        )
+        QAccessible.updateAccessibility(QAccessible.queryAccessibleInterface(widget), 0, event)
     except (ImportError, AttributeError, RuntimeError):
         # Graceful fallback: just log
         logger.debug("Screen reader announcement: %s", message)
@@ -303,14 +308,17 @@ def announce_to_screen_reader(widget: Any, message: str) -> None:
 # High contrast detection
 # ---------------------------------------------------------------------------
 
+
 def detect_high_contrast() -> bool:
     """Detect if the OS has a high-contrast theme enabled."""
     sys_name = platform.system().lower()
     if sys_name == "windows":
         try:
             import ctypes
+
             spi_gethighcontrast = 0x0042
             hcf_highcontraston = 0x00000001
+
             # HIGHCONTRAST structure
             class HighContrast(ctypes.Structure):
                 _fields_ = [
@@ -318,10 +326,14 @@ def detect_high_contrast() -> bool:
                     ("dwFlags", ctypes.c_uint),
                     ("lpszDefaultScheme", ctypes.c_wchar_p),
                 ]
+
             hc = HighContrast()
             hc.cbSize = ctypes.sizeof(HighContrast)
             ctypes.windll.user32.SystemParametersInfoW(  # type: ignore[attr-defined]
-                spi_gethighcontrast, hc.cbSize, ctypes.byref(hc), 0,
+                spi_gethighcontrast,
+                hc.cbSize,
+                ctypes.byref(hc),
+                0,
             )
             return bool(hc.dwFlags & hcf_highcontraston)
         except (OSError, ImportError, AttributeError):
@@ -330,7 +342,9 @@ def detect_high_contrast() -> bool:
         try:
             result = subprocess.run(
                 ["gsettings", "get", "org.gnome.desktop.a11y.interface", "high-contrast"],
-                capture_output=True, text=True, timeout=5,
+                capture_output=True,
+                text=True,
+                timeout=5,
             )
             return "true" in result.stdout.lower()
         except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
@@ -341,6 +355,7 @@ def detect_high_contrast() -> bool:
 # ---------------------------------------------------------------------------
 # Keyboard navigation
 # ---------------------------------------------------------------------------
+
 
 class KeyboardNavigationHelper:
     """Manages tab-order and keyboard navigation for a set of widgets.
@@ -374,20 +389,14 @@ class KeyboardNavigationHelper:
             logger.warning("PyQt6 not available; cannot apply tab order")
             return
 
-        filtered = [
-            (o, g, w) for o, g, w in self._widgets
-            if group is None or g == group
-        ]
+        filtered = [(o, g, w) for o, g, w in self._widgets if group is None or g == group]
         filtered.sort(key=lambda x: x[0])
 
         for i in range(len(filtered) - 1):
             QWidget.setTabOrder(filtered[i][2], filtered[i + 1][2])
 
     def get_ordered_widgets(self, group: str | None = None) -> list[Any]:
-        filtered = [
-            (o, g, w) for o, g, w in self._widgets
-            if group is None or g == group
-        ]
+        filtered = [(o, g, w) for o, g, w in self._widgets if group is None or g == group]
         filtered.sort(key=lambda x: x[0])
         return [w for _, _, w in filtered]
 
@@ -398,6 +407,7 @@ class KeyboardNavigationHelper:
 # ---------------------------------------------------------------------------
 # Font scaling
 # ---------------------------------------------------------------------------
+
 
 def build_font_css(
     scale: FontScale,
@@ -438,6 +448,7 @@ def is_opendyslexic_available() -> bool:
     """Check whether the OpenDyslexic font is installed on the system."""
     try:
         from PyQt6.QtGui import QFontDatabase
+
         families = QFontDatabase.families()
         return any("opendyslexic" in f.lower() for f in families)
     except ImportError:
@@ -455,10 +466,12 @@ def is_opendyslexic_available() -> bool:
         windir = os.environ.get("WINDIR", r"C:\Windows")
         search_dirs.append(Path(windir) / "Fonts")
     elif sys_name == "darwin":
-        search_dirs.extend([
-            Path.home() / "Library" / "Fonts",
-            Path("/Library/Fonts"),
-        ])
+        search_dirs.extend(
+            [
+                Path.home() / "Library" / "Fonts",
+                Path("/Library/Fonts"),
+            ]
+        )
 
     for d in search_dirs:
         if d.exists():
@@ -472,6 +485,7 @@ def is_opendyslexic_available() -> bool:
 # Reduced motion
 # ---------------------------------------------------------------------------
 
+
 def detect_reduced_motion() -> bool:
     """Detect if the OS has a 'reduce motion' preference enabled."""
     sys_name = platform.system().lower()
@@ -479,7 +493,9 @@ def detect_reduced_motion() -> bool:
         try:
             result = subprocess.run(
                 ["defaults", "read", "com.apple.universalaccess", "reduceMotion"],
-                capture_output=True, text=True, timeout=5,
+                capture_output=True,
+                text=True,
+                timeout=5,
             )
             return result.stdout.strip() == "1"
         except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
@@ -488,7 +504,9 @@ def detect_reduced_motion() -> bool:
         try:
             result = subprocess.run(
                 ["gsettings", "get", "org.gnome.desktop.interface", "enable-animations"],
-                capture_output=True, text=True, timeout=5,
+                capture_output=True,
+                text=True,
+                timeout=5,
             )
             return "false" in result.stdout.lower()
         except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
@@ -496,10 +514,14 @@ def detect_reduced_motion() -> bool:
     elif sys_name == "windows":
         try:
             import ctypes
+
             spi_getclientareaanimation = 0x1042
             animation = ctypes.c_bool()
             ctypes.windll.user32.SystemParametersInfoW(  # type: ignore[attr-defined]
-                spi_getclientareaanimation, 0, ctypes.byref(animation), 0,
+                spi_getclientareaanimation,
+                0,
+                ctypes.byref(animation),
+                0,
             )
             return not animation.value
         except (OSError, ImportError, AttributeError):
@@ -508,7 +530,8 @@ def detect_reduced_motion() -> bool:
 
 
 def effective_animation_duration(
-    settings: AccessibilitySettings, base_ms: int = 200,
+    settings: AccessibilitySettings,
+    base_ms: int = 200,
 ) -> int:
     """Return the animation duration to use, respecting reduced-motion settings."""
     if settings.reduced_motion:
@@ -552,6 +575,7 @@ def focus_indicator_stylesheet(
 # ---------------------------------------------------------------------------
 # Full stylesheet builder
 # ---------------------------------------------------------------------------
+
 
 def build_accessibility_stylesheet(settings: AccessibilitySettings) -> str:
     """Combine all accessibility-related styles into one QSS string."""
@@ -600,6 +624,7 @@ QLineEdit, QTextEdit, QPlainTextEdit {{
 # AccessibilityManager (high-level coordinator)
 # ---------------------------------------------------------------------------
 
+
 class AccessibilityManager:
     """Central coordinator for all accessibility features.
 
@@ -645,6 +670,7 @@ class AccessibilityManager:
     def save(self, db: Any) -> None:
         """Persist current settings to the database."""
         import json
+
         db.set_setting(
             "accessibility",
             json.dumps(self.settings.to_dict()),
@@ -654,6 +680,7 @@ class AccessibilityManager:
     def load(self, db: Any) -> None:
         """Load settings from the database."""
         import json
+
         raw = db.get_setting("accessibility")
         if raw:
             try:

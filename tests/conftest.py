@@ -23,6 +23,7 @@ if str(_PROJECT_ROOT / "src") not in sys.path:
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def tmp_data_dir(tmp_path):
     """Return a temporary data directory, pre-created."""
@@ -100,15 +101,17 @@ def sample_mood_entries():
     entries = []
     for i in range(10):
         ts = base + timedelta(days=i, hours=10)
-        entries.append({
-            "timestamp": ts.isoformat(),
-            "mood_score": 4 + (i * 0.5),         # gradually improving 4 -> 8.5
-            "energy_score": 30 + i * 5,           # 30 -> 75
-            "symptoms": ["fatigue"] if i < 5 else [],
-            "notes": f"Day {i + 1} mood entry",
-            "activities": ["walking"] if i % 2 == 0 else [],
-            "sleep_hours": 6.5 + (i * 0.2),
-            "medication_taken": i % 2 == 0,
-            "tasks_completed": i,
-        })
+        entries.append(
+            {
+                "timestamp": ts.isoformat(),
+                "mood_score": 4 + (i * 0.5),  # gradually improving 4 -> 8.5
+                "energy_score": 30 + i * 5,  # 30 -> 75
+                "symptoms": ["fatigue"] if i < 5 else [],
+                "notes": f"Day {i + 1} mood entry",
+                "activities": ["walking"] if i % 2 == 0 else [],
+                "sleep_hours": 6.5 + (i * 0.2),
+                "medication_taken": i % 2 == 0,
+                "tasks_completed": i,
+            }
+        )
     return entries

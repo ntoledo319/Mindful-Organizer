@@ -10,6 +10,7 @@ FastAPI/Tauri rebuild.
 If the GUI process wants Qt thread-safety semantics on top of this bus, it
 can subscribe a Qt signal forwarder; the bus itself stays pure-Python.
 """
+
 from __future__ import annotations
 
 import logging
@@ -71,25 +72,25 @@ class StateBus:
 
     def __init__(self) -> None:
         # Task events
-        self.task_changed = Signal()         # emit(action: str, payload: dict)
-        self.task_added = Signal()           # emit(task)
-        self.task_completed = Signal()       # emit(task_id: str)
-        self.task_deleted = Signal()         # emit(task_id: str)
+        self.task_changed = Signal()  # emit(action: str, payload: dict)
+        self.task_added = Signal()  # emit(task)
+        self.task_completed = Signal()  # emit(task_id: str)
+        self.task_deleted = Signal()  # emit(task_id: str)
 
         # Wellness events
-        self.mood_logged = Signal()          # emit(entry)
-        self.energy_updated = Signal()       # emit(level: int)
-        self.sleep_logged = Signal()         # emit(entry)
-        self.medication_taken = Signal()     # emit(medication_id: str)
-        self.medication_missed = Signal()    # emit(medication_id: str)
+        self.mood_logged = Signal()  # emit(entry)
+        self.energy_updated = Signal()  # emit(level: int)
+        self.sleep_logged = Signal()  # emit(entry)
+        self.medication_taken = Signal()  # emit(medication_id: str)
+        self.medication_missed = Signal()  # emit(medication_id: str)
 
         # Crisis / safety
         self.crisis_signal_detected = Signal()  # emit(signal_dict)
 
         # Profile / settings
-        self.profile_changed = Signal()      # emit(profile)
-        self.theme_changed = Signal()        # emit(theme_name: str)
-        self.settings_changed = Signal()     # emit()
+        self.profile_changed = Signal()  # emit(profile)
+        self.theme_changed = Signal()  # emit(theme_name: str)
+        self.settings_changed = Signal()  # emit()
 
         # Journal
         self.journal_entry_saved = Signal()  # emit(entry)

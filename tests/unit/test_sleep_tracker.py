@@ -47,8 +47,8 @@ def _log_nights(tracker, n=7, base_hours=7.0, quality=7):
 # Log sleep
 # ---------------------------------------------------------------------------
 
-class TestLogSleep:
 
+class TestLogSleep:
     def test_log_sleep_basic(self, tracker):
         row_id = tracker.log_sleep(
             date="2026-04-01",
@@ -104,8 +104,10 @@ class TestLogSleep:
 
     def test_delete_entry(self, tracker):
         row_id = tracker.log_sleep(
-            date="2026-04-01", bedtime="23:00",
-            wake_time="07:00", quality=7,
+            date="2026-04-01",
+            bedtime="23:00",
+            wake_time="07:00",
+            quality=7,
         )
         affected = tracker.delete_entry(row_id)
         assert affected == 1
@@ -116,8 +118,8 @@ class TestLogSleep:
 # Sleep debt
 # ---------------------------------------------------------------------------
 
-class TestSleepDebt:
 
+class TestSleepDebt:
     def test_sleep_debt_with_short_sleep(self, tracker):
         """Logging consistently short sleep should accumulate debt."""
         for i in range(7):
@@ -155,8 +157,8 @@ class TestSleepDebt:
 # Pattern analysis
 # ---------------------------------------------------------------------------
 
-class TestPatternAnalysis:
 
+class TestPatternAnalysis:
     def test_get_stats(self, tracker):
         _log_nights(tracker, n=10, base_hours=7.0, quality=6)
         stats = tracker.get_stats(days=14)
@@ -222,8 +224,8 @@ class TestPatternAnalysis:
 # Condition insights
 # ---------------------------------------------------------------------------
 
-class TestConditionInsights:
 
+class TestConditionInsights:
     def test_adhd_insights(self, tracker):
         insights = tracker.get_condition_insights("ADHD")
         assert len(insights) >= 2
@@ -256,8 +258,8 @@ class TestConditionInsights:
 # Correlations
 # ---------------------------------------------------------------------------
 
-class TestCorrelations:
 
+class TestCorrelations:
     def test_correlate_with_mood_insufficient_data(self, tracker):
         corr = tracker.correlate_with_mood([], days=7)
         assert "not enough" in corr.insight.lower()

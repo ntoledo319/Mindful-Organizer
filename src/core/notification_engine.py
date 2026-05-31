@@ -22,9 +22,11 @@ logger = logging.getLogger(__name__)
 # Data structures
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class SmartNotification:
     """A context-aware notification."""
+
     id: str
     title: str
     message: str
@@ -38,6 +40,7 @@ class SmartNotification:
 # ---------------------------------------------------------------------------
 # Engine
 # ---------------------------------------------------------------------------
+
 
 class SmartNotificationEngine:
     """Generates notifications based on wellness patterns and task context."""
@@ -74,44 +77,50 @@ class SmartNotificationEngine:
         # Energy-based task suggestion
         if snapshot.energy_score is not None:
             if snapshot.energy_score >= 7 and snapshot.tasks_pending > 0:
-                notifications.append(SmartNotification(
-                    id="energy_peak_task",
-                    title="Energy Peak Detected",
-                    message=(
-                        "Your energy is high right now. "
-                        f"You have {snapshot.tasks_pending} pending tasks — "
-                        "consider tackling the hardest one."
-                    ),
-                    priority="info",
-                    category="energy",
-                    suggested_action="open_tasks",
-                ))
+                notifications.append(
+                    SmartNotification(
+                        id="energy_peak_task",
+                        title="Energy Peak Detected",
+                        message=(
+                            "Your energy is high right now. "
+                            f"You have {snapshot.tasks_pending} pending tasks — "
+                            "consider tackling the hardest one."
+                        ),
+                        priority="info",
+                        category="energy",
+                        suggested_action="open_tasks",
+                    )
+                )
             elif snapshot.energy_score <= 3 and snapshot.tasks_pending > 3:
-                notifications.append(SmartNotification(
-                    id="energy_low_trim",
-                    title="Low Energy — Gentle Mode",
-                    message=(
-                        "Your energy is low. Consider trimming today's list "
-                        "to 1-2 small tasks and prioritising rest."
-                    ),
-                    priority="mild",
-                    category="energy",
-                    suggested_action="trim_tasks",
-                ))
+                notifications.append(
+                    SmartNotification(
+                        id="energy_low_trim",
+                        title="Low Energy — Gentle Mode",
+                        message=(
+                            "Your energy is low. Consider trimming today's list "
+                            "to 1-2 small tasks and prioritising rest."
+                        ),
+                        priority="mild",
+                        category="energy",
+                        suggested_action="trim_tasks",
+                    )
+                )
 
         # Sleep debt warning
         if snapshot.sleep_hours is not None and snapshot.sleep_hours < 5:
-            notifications.append(SmartNotification(
-                id="sleep_debt",
-                title="Sleep Debt Alert",
-                message=(
-                    f"You slept {snapshot.sleep_hours:.1f} hours. "
-                    "Low sleep affects mood and focus — pace yourself today."
-                ),
-                priority="mild",
-                category="sleep",
-                suggested_action="breathing",
-            ))
+            notifications.append(
+                SmartNotification(
+                    id="sleep_debt",
+                    title="Sleep Debt Alert",
+                    message=(
+                        f"You slept {snapshot.sleep_hours:.1f} hours. "
+                        "Low sleep affects mood and focus — pace yourself today."
+                    ),
+                    priority="mild",
+                    category="sleep",
+                    suggested_action="breathing",
+                )
+            )
 
         # Medication reminder with adherence context
         if (
@@ -119,22 +128,23 @@ class SmartNotificationEngine:
             and snapshot.medication_adherence is not None
             and snapshot.medication_adherence < 1.0
         ):
-                missed = self.db.query(
-                    TableName.MEDICATION_LOGS,
-                    where="status = 'missed' AND date(scheduled_time) = date('now')",
-                )
-                if missed.row_count > 0:
-                    notifications.append(SmartNotification(
+            missed = self.db.query(
+                TableName.MEDICATION_LOGS,
+                where="status = 'missed' AND date(scheduled_time) = date('now')",
+            )
+            if missed.row_count > 0:
+                notifications.append(
+                    SmartNotification(
                         id="med_missed",
                         title="Medication Reminder",
                         message=(
-                            "You have missed medications today. "
-                            "Consistency supports stability."
+                            "You have missed medications today. Consistency supports stability."
                         ),
                         priority="moderate",
                         category="medication",
                         suggested_action="open_medication",
-                    ))
+                    )
+                )
 
         # Morning briefing (only 6-10 AM)
         if time(6, 0) <= now.time() <= time(10, 0):
@@ -150,30 +160,39 @@ class SmartNotificationEngine:
                 message = sig.description
                 if sig.severity in ("urgent", "moderate"):
                     message = f"{sig.description}\n{sig.recommendation}"
-                notifications.append(SmartNotification(
-                    id="crisis_signal",
-                    title="Wellness Check-In",
-                    message=message,
-                    priority=sig.severity,
-                    category="crisis",
-                    suggested_action="open_crisis_plan",
-                ))
+                notifications.append(
+                    SmartNotification(
+                        id="crisis_signal",
+                        title="Wellness Check-In",
+                        message=message,
+                        priority=sig.severity,
+                        category="crisis",
+                        suggested_action="open_crisis_plan",
+                    )
+                )
             elif briefing.suggested_skill:
-                notifications.append(SmartNotification(
-                    id="morning_briefing",
-                    title="Today's Suggestion",
-                    message=(
-                        f"{briefing.energy_forecast}\n"
-                        f"Suggested skill: {briefing.suggested_skill}"
-                    ),
-                    priority="info",
-                    category="general",
-                    suggested_action="open_breathing",
-                ))
+                notifications.append(
+                    SmartNotification(
+                        id="morning_briefing",
+                        title="Today's Suggestion",
+                        message=(
+                            f"{briefing.energy_forecast}\n"
+                            f"Suggested skill: {briefing.suggested_skill}"
+                        ),
+                        priority="info",
+                        category="general",
+                        suggested_action="open_breathing",
+                    )
+                )
 
         # ADHD transition support (3:00-3:30 PM slump)
-        if conditions and "adhd" in [c.lower() for c in conditions] and time(15, 0) <= now.time() <= time(15, 30):
-                notifications.append(SmartNotification(
+        if (
+            conditions
+            and "adhd" in [c.lower() for c in conditions]
+            and time(15, 0) <= now.time() <= time(15, 30)
+        ):
+            notifications.append(
+                SmartNotification(
                     id="adhd_afternoon",
                     title="Afternoon Transition",
                     message=(
@@ -183,11 +202,18 @@ class SmartNotificationEngine:
                     priority="info",
                     category="energy",
                     suggested_action="breathing",
-                ))
+                )
+            )
 
         # Depression behavioral activation nudge
-        if conditions and "depression" in [c.lower() for c in conditions] and snapshot.tasks_completed_today == 0 and now.hour >= 14:
-                notifications.append(SmartNotification(
+        if (
+            conditions
+            and "depression" in [c.lower() for c in conditions]
+            and snapshot.tasks_completed_today == 0
+            and now.hour >= 14
+        ):
+            notifications.append(
+                SmartNotification(
                     id="depression_activation",
                     title="Small Win Opportunity",
                     message=(
@@ -197,6 +223,7 @@ class SmartNotificationEngine:
                     priority="mild",
                     category="task",
                     suggested_action="open_tasks",
-                ))
+                )
+            )
 
         return notifications

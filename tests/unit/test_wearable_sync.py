@@ -53,9 +53,7 @@ def test_import_apple_health_xml_imports_asleep_records(db, tmp_path):
 def test_import_google_fit_csv_imports_sleep_rows(db, tmp_path):
     export = tmp_path / "Daily Sleep.csv"
     export.write_text(
-        "Start time,End time\n"
-        "2026-05-28T23:00:00Z,2026-05-29T06:30:00Z\n"
-        "missing-end,\n",
+        "Start time,End time\n2026-05-28T23:00:00Z,2026-05-29T06:30:00Z\nmissing-end,\n",
         encoding="utf-8",
     )
 
@@ -87,8 +85,7 @@ def test_sync_all_available_detects_nested_exports(db, tmp_path):
     google_dir = tmp_path / "Takeout" / "Fit"
     google_dir.mkdir(parents=True)
     (google_dir / "Sleep Sessions.csv").write_text(
-        "Start time,End time\n"
-        "2026-05-28 23:00:00,2026-05-29 05:00:00\n",
+        "Start time,End time\n2026-05-28 23:00:00,2026-05-29 05:00:00\n",
         encoding="utf-8",
     )
 

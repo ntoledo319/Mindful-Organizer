@@ -1,4 +1,5 @@
 """Tests for tier-gated automation features."""
+
 from __future__ import annotations
 
 from datetime import time
@@ -29,12 +30,14 @@ class MockSubscriptionManager(SubscriptionManager):
 
     def has_feature(self, feature: str) -> bool:
         from core.subscription_manager import FEATURES_BY_TIER
+
         return feature in FEATURES_BY_TIER.get(self._tier, set())
 
 
 # ---------------------------------------------------------------------------
 # FREE tier
 # ---------------------------------------------------------------------------
+
 
 class TestFreeTier:
     """FREE tier: suggestions only, no system actions executed."""
@@ -83,6 +86,7 @@ class TestFreeTier:
 # ---------------------------------------------------------------------------
 # PRO tier
 # ---------------------------------------------------------------------------
+
 
 class TestProTier:
     """PRO tier: autonomous execution, system actions, no custom rules."""
@@ -151,6 +155,7 @@ class TestProTier:
 # PREMIUM tier
 # ---------------------------------------------------------------------------
 
+
 class TestPremiumTier:
     """PREMIUM tier: custom rules, analytics, profiles, scheduled blocks."""
 
@@ -216,6 +221,7 @@ class TestPremiumTier:
 # ---------------------------------------------------------------------------
 # Config Manager
 # ---------------------------------------------------------------------------
+
 
 class TestAutomationConfigManager:
     """Test AutomationConfigManager persistence and operations."""
@@ -305,6 +311,7 @@ class TestAutomationConfigManager:
 # ---------------------------------------------------------------------------
 # Analytics
 # ---------------------------------------------------------------------------
+
 
 class TestAutomationAnalytics:
     """Test AutomationAnalytics event tracking and reporting."""

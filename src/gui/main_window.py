@@ -2,6 +2,7 @@
 Refactored main window for Hearth.
 Orchestrates all widget modules and manages application state.
 """
+
 import json
 import logging
 import sys
@@ -83,13 +84,16 @@ class AdaptiveMainWindow(QMainWindow):
         # (Previously some managers fell back to their own default path, which
         # silently split a user's data across multiple databases.)
         from core.database import DatabaseManager
+
         self.db = DatabaseManager(self.data_dir / "mindful_organizer.db")
         self.db.initialize()
 
         # Initialize core managers
         self.profile_manager = ProfileManager(self.data_dir)
         self.task_manager = TaskManager(self.data_dir, db_manager=self.db)
-        self.file_organizer = FileOrganizer(self.data_dir, profile=self.profile_manager.current_profile)
+        self.file_organizer = FileOrganizer(
+            self.data_dir, profile=self.profile_manager.current_profile
+        )
         self.system_optimizer = SystemOptimizer(self.data_dir)
         self.ai_optimizer = AISystemOptimizer(self.data_dir)
 
@@ -158,6 +162,7 @@ class AdaptiveMainWindow(QMainWindow):
         """Get platform-appropriate data directory."""
         try:
             from windows.platform_utils import get_data_dir
+
             return cast(Path, get_data_dir())
         except ImportError:
             if sys.platform == "win32":
@@ -217,6 +222,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._sleep_tracker is None:
             try:
                 from core.sleep_tracker import SleepTracker
+
                 self._sleep_tracker = SleepTracker(self.db)
             except ImportError:
                 logger.warning("SleepTracker not available")
@@ -227,6 +233,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._medication_tracker is None:
             try:
                 from core.medication_tracker import MedicationTracker
+
                 self._medication_tracker = MedicationTracker(self.db)
             except ImportError:
                 logger.warning("MedicationTracker not available")
@@ -239,6 +246,7 @@ class AdaptiveMainWindow(QMainWindow):
         # MoodAnalytics() with no entries raised a TypeError the callers swallowed.
         try:
             from core.mood_analytics import MoodAnalytics
+
             mgr = self.mood_manager
             entries = list(mgr.entries) if mgr else []
             return MoodAnalytics(entries)
@@ -251,6 +259,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._energy_predictor is None:
             try:
                 from core.energy_predictor import EnergyPredictor
+
                 self._energy_predictor = EnergyPredictor(self.data_dir)
             except ImportError:
                 logger.warning("EnergyPredictor not available")
@@ -261,6 +270,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._diary_card_manager is None:
             try:
                 from core.diary_card_manager import DiaryCardManager
+
                 self._diary_card_manager = DiaryCardManager(self.db)
             except Exception as exc:
                 logger.warning("DiaryCardManager not available: %s", exc)
@@ -271,6 +281,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._mood_manager is None:
             try:
                 from core.mood_manager import MoodManager
+
                 self._mood_manager = MoodManager(self.db)
             except Exception as exc:
                 logger.warning("MoodManager not available: %s", exc)
@@ -281,6 +292,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._nlp_parser is None:
             try:
                 from core.nlp_parser import NLPTaskParser
+
                 self._nlp_parser = NLPTaskParser()
             except ImportError:
                 logger.warning("NLPTaskParser not available")
@@ -291,6 +303,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._task_decomposer is None:
             try:
                 from core.smart_task_decomposer import SmartTaskDecomposer
+
                 self._task_decomposer = SmartTaskDecomposer()
             except ImportError:
                 logger.warning("SmartTaskDecomposer not available")
@@ -301,6 +314,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._notification_manager is None:
             try:
                 from core.notification_manager import NotificationManager
+
                 self._notification_manager = NotificationManager(self.data_dir)
             except ImportError:
                 logger.warning("NotificationManager not available")
@@ -311,6 +325,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._export_manager is None:
             try:
                 from core.export_manager import ExportManager
+
                 # Must receive the shared DatabaseManager — passing a Path made
                 # every export/import raise AttributeError and silently fall back
                 # to exporting only loose JSON files (zero SQLite health data).
@@ -324,6 +339,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._spoon_manager is None:
             try:
                 from profiles.spoon_theory import SpoonManager
+
                 conditions = set()
                 if self.profile_manager.current_profile:
                     conditions = self.profile_manager.current_profile.conditions
@@ -337,6 +353,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._breathing_manager is None:
             try:
                 from wellness.breathing import BreathingManager
+
                 self._breathing_manager = BreathingManager(self.data_dir)
             except ImportError:
                 logger.warning("BreathingManager not available")
@@ -347,6 +364,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._grounding_manager is None:
             try:
                 from wellness.grounding import GroundingManager
+
                 self._grounding_manager = GroundingManager(self.data_dir)
             except ImportError:
                 logger.warning("GroundingManager not available")
@@ -357,6 +375,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._journaling_manager is None:
             try:
                 from wellness.journaling import JournalingManager
+
                 self._journaling_manager = JournalingManager(self.data_dir)
             except ImportError:
                 logger.warning("JournalingManager not available")
@@ -367,6 +386,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._crisis_plan_manager is None:
             try:
                 from wellness.crisis_plan import CrisisPlanManager
+
                 self._crisis_plan_manager = CrisisPlanManager(self.data_dir)
             except ImportError:
                 logger.warning("CrisisPlanManager not available")
@@ -377,6 +397,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._erp_tracker is None:
             try:
                 from wellness.erp_tracker import ERPTracker
+
                 self._erp_tracker = ERPTracker(self.data_dir)
             except ImportError:
                 logger.warning("ERPTracker not available")
@@ -387,6 +408,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._meditation_manager is None:
             try:
                 from wellness.meditation import MeditationManager
+
                 self._meditation_manager = MeditationManager(self.data_dir)
             except ImportError:
                 logger.warning("MeditationManager not available")
@@ -397,6 +419,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._coping_engine is None:
             try:
                 from wellness.coping_engine import CopingEngine
+
                 self._coping_engine = CopingEngine(self.data_dir)
             except ImportError:
                 logger.warning("CopingEngine not available")
@@ -407,6 +430,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._wellness_orchestrator is None:
             try:
                 from core.wellness_orchestrator import WellnessOrchestrator
+
                 self._wellness_orchestrator = WellnessOrchestrator(db=self.db)
             except ImportError:
                 logger.warning("WellnessOrchestrator not available")
@@ -417,6 +441,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._gamification_manager is None:
             try:
                 from file_organization.adhd_gamification import ADHDGameManager
+
                 self._gamification_manager = ADHDGameManager(self.data_dir)
             except ImportError:
                 logger.warning("ADHDGameManager not available")
@@ -427,6 +452,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._subscription_manager is None:
             try:
                 from core.subscription_manager import SubscriptionManager
+
                 self._subscription_manager = SubscriptionManager(self.data_dir)
             except ImportError:
                 logger.warning("SubscriptionManager not available")
@@ -439,6 +465,7 @@ class AdaptiveMainWindow(QMainWindow):
                 import importlib.metadata
 
                 from core.auto_updater import AutoUpdater
+
                 try:
                     version = importlib.metadata.version("mindful-organizer")
                 except importlib.metadata.PackageNotFoundError:
@@ -453,6 +480,7 @@ class AdaptiveMainWindow(QMainWindow):
         if self._onboarding_analytics is None:
             try:
                 from core.onboarding_analytics import OnboardingAnalytics
+
                 self._onboarding_analytics = OnboardingAnalytics(self.data_dir)
             except ImportError:
                 logger.warning("OnboardingAnalytics not available")
@@ -480,6 +508,7 @@ class AdaptiveMainWindow(QMainWindow):
         """Show the onboarding wizard for new users."""
         try:
             from gui.widgets.onboarding import OnboardingWizard
+
             wizard = OnboardingWizard(self.profile_manager, self.data_dir, parent=self)
             if wizard.exec():
                 self._initialize_ui()
@@ -501,6 +530,7 @@ class AdaptiveMainWindow(QMainWindow):
     def _show_basic_profile_setup(self):
         """Fallback profile setup if onboarding widget is unavailable."""
         from PyQt6.QtWidgets import QCheckBox, QDialog, QDialogButtonBox, QLineEdit
+
         dialog = QDialog(self)
         dialog.setWindowTitle("Welcome to Hearth")
         dialog.setMinimumWidth(500)
@@ -666,7 +696,11 @@ class AdaptiveMainWindow(QMainWindow):
         # Condition-specific tabs
         if Condition.OCD in conditions:
             self._add_tab("erp", "ERP")
-        if Condition.PANIC in conditions or Condition.ANXIETY in conditions or Condition.PTSD in conditions:
+        if (
+            Condition.PANIC in conditions
+            or Condition.ANXIETY in conditions
+            or Condition.PTSD in conditions
+        ):
             self._add_tab("panic_tracker", "Panic Log")
 
         # Tracking tabs
@@ -726,6 +760,7 @@ class AdaptiveMainWindow(QMainWindow):
         try:
             if name == "dashboard":
                 from gui.widgets.dashboard import DashboardWidget
+
                 widget = DashboardWidget(
                     theme,
                     task_manager=self.task_manager,
@@ -738,18 +773,14 @@ class AdaptiveMainWindow(QMainWindow):
                 )
                 # Wire the "Today" quick-action buttons to real navigation.
                 # (These signals previously had zero receivers — dead buttons.)
-                widget.mood_track_requested.connect(
-                    lambda: self._switch_to_tab("mood_tracker"))
-                widget.task_add_requested.connect(
-                    lambda: self._switch_to_tab("task_manager"))
-                widget.breathing_requested.connect(
-                    lambda: self._switch_to_tab("breathing"))
-                widget.journal_requested.connect(
-                    lambda: self._switch_to_tab("journaling"))
-                widget.stats_requested.connect(
-                    lambda: self._switch_to_tab("mood_tracker"))
+                widget.mood_track_requested.connect(lambda: self._switch_to_tab("mood_tracker"))
+                widget.task_add_requested.connect(lambda: self._switch_to_tab("task_manager"))
+                widget.breathing_requested.connect(lambda: self._switch_to_tab("breathing"))
+                widget.journal_requested.connect(lambda: self._switch_to_tab("journaling"))
+                widget.stats_requested.connect(lambda: self._switch_to_tab("mood_tracker"))
             elif name == "task_manager":
                 from gui.widgets.task_manager_widget import TaskManagerWidget
+
                 widget = TaskManagerWidget(
                     theme,
                     task_manager=self.task_manager,
@@ -757,6 +788,7 @@ class AdaptiveMainWindow(QMainWindow):
                 )
             elif name == "mood_tracker":
                 from gui.widgets.mood_tracker import MoodTrackerWidget
+
                 widget = MoodTrackerWidget(
                     theme,
                     mood_manager=self.mood_manager,
@@ -764,6 +796,7 @@ class AdaptiveMainWindow(QMainWindow):
                 )
             elif name == "diary_card":
                 from gui.widgets.diary_card_widget import DiaryCardWidget
+
                 widget = DiaryCardWidget(
                     theme,
                     diary_card_manager=self.diary_card_manager,
@@ -771,6 +804,7 @@ class AdaptiveMainWindow(QMainWindow):
                 )
             elif name == "journaling":
                 from gui.widgets.journaling_widget import JournalingWidget
+
                 widget = JournalingWidget(
                     theme,
                     journal_manager=self.journaling_manager,
@@ -778,10 +812,10 @@ class AdaptiveMainWindow(QMainWindow):
                 )
                 # If an entry trips self-harm/ideation detection, let the user
                 # jump straight to crisis resources.
-                widget.crisis_requested.connect(
-                    lambda: self._switch_to_tab("crisis"))
+                widget.crisis_requested.connect(lambda: self._switch_to_tab("crisis"))
             elif name == "breathing":
                 from gui.widgets.breathing_widget import BreathingWidget
+
                 widget = BreathingWidget(
                     theme,
                     breathing_manager=self.breathing_manager,
@@ -789,24 +823,31 @@ class AdaptiveMainWindow(QMainWindow):
                 )
             elif name == "erp":
                 from gui.widgets.erp_widget import ERPWidget
+
                 widget = ERPWidget(self)
             elif name == "meditation":
                 from gui.widgets.meditation_widget import MeditationWidget
+
                 widget = MeditationWidget(self)
             elif name == "crisis":
                 from gui.widgets.crisis_widget import CrisisWidget
+
                 widget = CrisisWidget(self)
             elif name == "panic_tracker":
                 from gui.widgets.panic_tracker_widget import PanicTrackerWidget
+
                 widget = PanicTrackerWidget(self)
             elif name == "sleep":
                 from gui.widgets.sleep_widget import SleepWidget
+
                 widget = SleepWidget(self)
             elif name == "medication":
                 from gui.widgets.medication_widget import MedicationWidget
+
                 widget = MedicationWidget(self)
             elif name == "file_organizer":
                 from gui.widgets.file_organizer_widget import FileOrganizerWidget
+
                 widget = FileOrganizerWidget(
                     theme,
                     file_organizer=self.file_organizer,
@@ -814,9 +855,11 @@ class AdaptiveMainWindow(QMainWindow):
                 )
             elif name == "settings":
                 from gui.widgets.settings_widget import SettingsWidget
+
                 widget = SettingsWidget(self)
             elif name == "automation":
                 from gui.widgets.automation_widget import AutomationWidget
+
                 widget = AutomationWidget(
                     theme,
                     automation_engine=self.system_automation,
@@ -824,6 +867,7 @@ class AdaptiveMainWindow(QMainWindow):
                 )
             elif name == "search":
                 from gui.widgets.search_widget import SearchWidget
+
                 widget = SearchWidget(self)
         except ImportError as e:
             logger.info(f"Widget '{name}' not available: {e}")
@@ -859,7 +903,9 @@ class AdaptiveMainWindow(QMainWindow):
 
         return widget
 
-    def _create_upsell_tab(self, feature_key: str, display_name: str, required_tier: str) -> QWidget:
+    def _create_upsell_tab(
+        self, feature_key: str, display_name: str, required_tier: str
+    ) -> QWidget:
         """Create an upsell placeholder for gated features."""
         from core.subscription_manager import FEATURE_DISPLAY_NAMES
 
@@ -940,12 +986,14 @@ class AdaptiveMainWindow(QMainWindow):
     def _organize_files_action(self):
         """Handle file organization action."""
         from PyQt6.QtWidgets import QFileDialog
+
         dir_path = QFileDialog.getExistingDirectory(self, "Select Directory", str(Path.home()))
         if dir_path:
             summary = self.file_organizer.organize_files(Path(dir_path))
             QMessageBox.information(
-                self, "Organization Complete",
-                f"Moved: {summary['moved']}\nSkipped: {summary['skipped']}\nErrors: {summary['errors']}"
+                self,
+                "Organization Complete",
+                f"Moved: {summary['moved']}\nSkipped: {summary['skipped']}\nErrors: {summary['errors']}",
             )
 
     # === Theme Management ===
@@ -981,8 +1029,12 @@ class AdaptiveMainWindow(QMainWindow):
 
         profile = self.profile_manager.current_profile
         if profile:
-            conditions_text = ", ".join(c.value for c in profile.conditions) if profile.conditions else "General"
-            self.status_bar.showMessage(f"Profile: {profile.name} | Conditions: {conditions_text} | All data stored locally")
+            conditions_text = (
+                ", ".join(c.value for c in profile.conditions) if profile.conditions else "General"
+            )
+            self.status_bar.showMessage(
+                f"Profile: {profile.name} | Conditions: {conditions_text} | All data stored locally"
+            )
         else:
             self.status_bar.showMessage(f"Hearth v{APP_VERSION} | All data stored locally")
 
@@ -990,9 +1042,7 @@ class AdaptiveMainWindow(QMainWindow):
 
     def _setup_shortcut_callbacks(self):
         """Register callbacks with ShortcutManager."""
-        self.shortcut_manager.set_callback(
-            "new_task", lambda: self._switch_to_tab("task_manager")
-        )
+        self.shortcut_manager.set_callback("new_task", lambda: self._switch_to_tab("task_manager"))
         self.shortcut_manager.set_callback(
             "mood_entry", lambda: self._switch_to_tab("mood_tracker")
         )
@@ -1035,6 +1085,7 @@ class AdaptiveMainWindow(QMainWindow):
         """Show the global search overlay."""
         try:
             from gui.widgets.search_widget import SearchWidget
+
             search = SearchWidget(self)
             search.show()
         except ImportError:
@@ -1055,7 +1106,7 @@ class AdaptiveMainWindow(QMainWindow):
             "F1 - This Help\n\n"
             "All your data is stored locally on your device.\n"
             "Visit Settings to customize your experience.\n\n"
-            "This app is a supplement to professional care, not a replacement."
+            "This app is a supplement to professional care, not a replacement.",
         )
 
     # === Background Timers ===
@@ -1095,9 +1146,7 @@ class AdaptiveMainWindow(QMainWindow):
             try:
                 pending = self.notification_manager.get_pending()
                 for notif in pending[:3]:
-                    self.status_bar.showMessage(
-                        f"Reminder: {notif.get('message', '')}", 10000
-                    )
+                    self.status_bar.showMessage(f"Reminder: {notif.get('message', '')}", 10000)
             except (OSError, ValueError, TypeError) as e:
                 logger.debug(f"Notification check error: {e}")
 
@@ -1112,6 +1161,7 @@ class AdaptiveMainWindow(QMainWindow):
             release = updater.check()
             if release and not updater.is_skipped(release.version):
                 from PyQt6.QtWidgets import QMessageBox
+
                 reply = QMessageBox.question(
                     self,
                     "Update Available",

@@ -10,6 +10,7 @@ When active, Focus Mode:
 
 Sessions are persisted so the AI optimizer can learn from them.
 """
+
 from __future__ import annotations
 
 import json
@@ -118,15 +119,21 @@ class FocusModeManager:
             try:
                 with open(self.config_file) as f:
                     cfg = json.load(f)
-                self._distracting_apps = set(cfg.get("distracting_apps", list(self.DEFAULT_DISTRACTING_APPS)))
+                self._distracting_apps = set(
+                    cfg.get("distracting_apps", list(self.DEFAULT_DISTRACTING_APPS))
+                )
             except (json.JSONDecodeError, OSError):
                 pass
 
     def _save_config(self) -> None:
         with open(self.config_file, "w") as f:
-            json.dump({
-                "distracting_apps": sorted(self._distracting_apps),
-            }, f, indent=2)
+            json.dump(
+                {
+                    "distracting_apps": sorted(self._distracting_apps),
+                },
+                f,
+                indent=2,
+            )
 
     def _load_history(self) -> list[FocusSession]:
         if self.session_file.exists():
@@ -155,7 +162,10 @@ class FocusModeManager:
         Returns a dict describing what happened.
         """
         if self.state == FocusModeState.ACTIVE:
-            return {"status": "already_active", "session_id": self.current_session.session_id if self.current_session else None}
+            return {
+                "status": "already_active",
+                "session_id": self.current_session.session_id if self.current_session else None,
+            }
 
         logger.info("Activating focus mode (reason=%s, trigger=%s)", reason, trigger)
 
@@ -230,7 +240,10 @@ class FocusModeManager:
             return {"status": "not_active"}
         self.state = FocusModeState.PAUSED
         self.backend.set_dnd(False)
-        return {"status": "paused", "session_id": self.current_session.session_id if self.current_session else None}
+        return {
+            "status": "paused",
+            "session_id": self.current_session.session_id if self.current_session else None,
+        }
 
     def resume(self) -> dict[str, Any]:
         """Resume a paused focus mode."""
@@ -239,7 +252,10 @@ class FocusModeManager:
         self.state = FocusModeState.ACTIVE
         self.backend.set_dnd(True)
         self.backend.close_distracting_apps(self._distracting_apps)
-        return {"status": "resumed", "session_id": self.current_session.session_id if self.current_session else None}
+        return {
+            "status": "resumed",
+            "session_id": self.current_session.session_id if self.current_session else None,
+        }
 
     # -- configuration --------------------------------------------------------
 

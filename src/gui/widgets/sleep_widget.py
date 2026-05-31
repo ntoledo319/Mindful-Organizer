@@ -85,6 +85,7 @@ _SLEEP_TIPS: dict[str, list[str]] = {
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _section_title(text: str) -> QLabel:
     label = QLabel(text)
     label.setFont(QFont("Segoe UI", 14, QFont.Weight.Bold))
@@ -106,6 +107,7 @@ def _accent_button(text: str) -> QPushButton:
 # ---------------------------------------------------------------------------
 # Widget
 # ---------------------------------------------------------------------------
+
 
 class SleepWidget(QWidget):
     """Sleep tracking tab with entry form, log, stats, and tips."""

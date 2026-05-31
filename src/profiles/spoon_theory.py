@@ -25,8 +25,10 @@ from core.constants import Condition
 # Enums
 # ---------------------------------------------------------------------------
 
+
 class ActivityType(Enum):
     """Built-in activity categories."""
+
     SELF_CARE = "self_care"
     SIMPLE_TASK = "simple_task"
     MODERATE_TASK = "moderate_task"
@@ -46,30 +48,34 @@ class ActivityType(Enum):
 
 class WarningLevel(Enum):
     """Spoon warning severity."""
+
     OK = "ok"
-    CAUTION = "caution"        # <= 3 spoons remaining
-    LOW = "low"                # <= 1 spoon remaining
-    OVERDRAFT = "overdraft"    # negative spoons (spoon debt)
+    CAUTION = "caution"  # <= 3 spoons remaining
+    LOW = "low"  # <= 1 spoon remaining
+    OVERDRAFT = "overdraft"  # negative spoons (spoon debt)
 
 
 # ---------------------------------------------------------------------------
 # Data-classes
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class SpoonCostEntry:
     """A record of spoons spent or recovered."""
+
     entry_id: str = field(default_factory=lambda: uuid.uuid4().hex[:8])
     timestamp: datetime = field(default_factory=datetime.now)
     activity: str = ""
     activity_type: ActivityType = ActivityType.SIMPLE_TASK
-    spoon_cost: float = 0.0     # positive = spent, negative = recovered
+    spoon_cost: float = 0.0  # positive = spent, negative = recovered
     note: str = ""
 
 
 @dataclass
 class DailySpoonState:
     """Snapshot of a single day's spoon budget."""
+
     day: date
     total_spoons: float
     spent: float
@@ -90,6 +96,7 @@ class DailySpoonState:
 @dataclass
 class WeeklySpoonSummary:
     """Summary of a full week's spoon usage."""
+
     start_date: date
     end_date: date
     daily_states: list[DailySpoonState]
@@ -105,13 +112,14 @@ class WeeklySpoonSummary:
 @dataclass
 class SpoonDisplay:
     """Data for rendering a visual spoon display."""
+
     total: float
     remaining: float
     spent: float
     recovered: float
-    filled_spoons: int      # number of full spoon icons
-    empty_spoons: int       # number of empty spoon icons
-    partial_spoon: float    # 0.0-1.0 for a partially filled spoon
+    filled_spoons: int  # number of full spoon icons
+    empty_spoons: int  # number of empty spoon icons
+    partial_spoon: float  # 0.0-1.0 for a partially filled spoon
     warning: WarningLevel
     message: str
 
@@ -119,6 +127,7 @@ class SpoonDisplay:
 @dataclass
 class RecoveryRecommendation:
     """A recommendation for recovering spoons."""
+
     activity: str
     activity_type: ActivityType
     estimated_recovery: float
@@ -215,6 +224,7 @@ _CONDITION_SPOON_ADJUSTMENTS: dict[Condition, dict[str, Any]] = {
 # Main system
 # ---------------------------------------------------------------------------
 
+
 class SpoonBudget:
     """Spoon Theory energy budgeting system.
 
@@ -236,7 +246,7 @@ class SpoonBudget:
     ) -> None:
         # Resolve conditions
         self._conditions: list[Condition] = []
-        for c in (conditions or []):
+        for c in conditions or []:
             matched: Condition | None = None
             for cond in Condition:
                 if cond.name.lower() == c.lower() or cond.value.lower() == c.lower():
@@ -307,7 +317,9 @@ class SpoonBudget:
         Returns the created entry.
         """
         ts = when or datetime.now()
-        cost = cost_override if cost_override is not None else abs(self._costs.get(activity_type, 1.0))
+        cost = (
+            cost_override if cost_override is not None else abs(self._costs.get(activity_type, 1.0))
+        )
         entry = SpoonCostEntry(
             timestamp=ts,
             activity=activity_name or activity_type.value,
@@ -386,7 +398,9 @@ class SpoonBudget:
         elif state.warning == WarningLevel.CAUTION:
             message = f"Caution: only {state.remaining:.1f} spoons remaining. Plan carefully."
         else:
-            message = f"You have {state.remaining:.1f} of {state.total_spoons:.0f} spoons remaining."
+            message = (
+                f"You have {state.remaining:.1f} of {state.total_spoons:.0f} spoons remaining."
+            )
 
         return SpoonDisplay(
             total=state.total_spoons,
@@ -413,12 +427,14 @@ class SpoonBudget:
         ]
         for atype, desc in recovery_activities:
             recovery_amount = abs(self._costs.get(atype, 0.5))
-            recs.append(RecoveryRecommendation(
-                activity=atype.value,
-                activity_type=atype,
-                estimated_recovery=recovery_amount,
-                description=desc,
-            ))
+            recs.append(
+                RecoveryRecommendation(
+                    activity=atype.value,
+                    activity_type=atype,
+                    estimated_recovery=recovery_amount,
+                    description=desc,
+                )
+            )
         return recs
 
     # -- debt tracking ---------------------------------------------------------
@@ -515,7 +531,9 @@ class SpoonBudget:
             f"This week you spent {total_spent:.1f} of {total_budget:.0f} available spoons.",
         ]
         if total_recovered > 0:
-            desc_parts.append(f"You recovered {total_recovered:.1f} spoons through restorative activities.")
+            desc_parts.append(
+                f"You recovered {total_recovered:.1f} spoons through restorative activities."
+            )
         if debt_days > 0:
             desc_parts.append(f"You went into spoon debt on {debt_days} day(s).")
         if most_expensive:
@@ -557,7 +575,9 @@ class SpoonBudget:
     # -- internal helpers ------------------------------------------------------
 
     def _build_daily_state(
-        self, day: date, entries: list[SpoonCostEntry],
+        self,
+        day: date,
+        entries: list[SpoonCostEntry],
     ) -> DailySpoonState:
         spent = sum(e.spoon_cost for e in entries if e.spoon_cost > 0)
         recovered = sum(abs(e.spoon_cost) for e in entries if e.spoon_cost < 0)

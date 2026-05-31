@@ -21,9 +21,11 @@ logger = logging.getLogger(__name__)
 # Data structures
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class CommunityInsight:
     """A single anonymized community insight."""
+
     condition: str
     insight_type: str  # energy_pattern, technique_effectiveness, sleep_trend
     message: str
@@ -35,6 +37,7 @@ class CommunityInsight:
 # ---------------------------------------------------------------------------
 # Engine
 # ---------------------------------------------------------------------------
+
 
 class CommunityInsightsEngine:
     """Generate community insights from local anonymized aggregates.
@@ -191,17 +194,20 @@ class CommunityInsightsEngine:
             for itype in insight_types:
                 data = cond_data.get(itype)
                 if data:
-                    results.append(CommunityInsight(
-                        condition=condition,
-                        insight_type=itype,
-                        message=data["message"],
-                        sample_size=data.get("sample_size", 0),
-                        confidence=data.get("confidence", "low"),
-                    ))
+                    results.append(
+                        CommunityInsight(
+                            condition=condition,
+                            insight_type=itype,
+                            message=data["message"],
+                            sample_size=data.get("sample_size", 0),
+                            confidence=data.get("confidence", "low"),
+                        )
+                    )
         return results
 
     def get_random_insight(self, conditions: list[str]) -> CommunityInsight | None:
         """Get a single random insight relevant to the user's conditions."""
         import random
+
         insights = self.get_insights(conditions)
         return random.choice(insights) if insights else None

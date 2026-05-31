@@ -17,6 +17,7 @@ from core.mood_analytics import (
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_entries(scores, days_back=None, start_hour=10):
     """Build mood entry dicts from a list of scores."""
     n = len(scores)
@@ -24,13 +25,15 @@ def _make_entries(scores, days_back=None, start_hour=10):
     entries = []
     for i, score in enumerate(scores):
         ts = base + timedelta(days=i, hours=start_hour)
-        entries.append({
-            "timestamp": ts.isoformat(),
-            "mood_score": score,
-            "energy_score": 30 + i * 3,
-            "symptoms": [],
-            "activities": [],
-        })
+        entries.append(
+            {
+                "timestamp": ts.isoformat(),
+                "mood_score": score,
+                "energy_score": 30 + i * 3,
+                "symptoms": [],
+                "activities": [],
+            }
+        )
     return entries
 
 
@@ -53,8 +56,8 @@ def _stable_entries(n=14):
 # Trend analysis
 # ---------------------------------------------------------------------------
 
-class TestTrendAnalysis:
 
+class TestTrendAnalysis:
     def test_improving_mood_trend(self):
         """Steadily rising scores should produce an IMPROVING trend."""
         entries = _improving_entries()
@@ -103,8 +106,8 @@ class TestTrendAnalysis:
 # Pattern detection
 # ---------------------------------------------------------------------------
 
-class TestPatternDetection:
 
+class TestPatternDetection:
     def test_time_of_day_pattern(self):
         """Entries at different hours should yield a time-of-day pattern."""
         base = datetime.now() - timedelta(days=20)
@@ -115,11 +118,13 @@ class TestPatternDetection:
             ts = ts.replace(hour=hour, minute=0)
             # Morning entries have higher mood
             score = 8 if hour == 9 else 4
-            entries.append({
-                "timestamp": ts.isoformat(),
-                "mood_score": score,
-                "energy_score": 50,
-            })
+            entries.append(
+                {
+                    "timestamp": ts.isoformat(),
+                    "mood_score": score,
+                    "energy_score": 50,
+                }
+            )
 
         analytics = MoodAnalytics(entries)
         pattern = analytics.time_of_day_pattern()
@@ -152,8 +157,8 @@ class TestPatternDetection:
 # Mood volatility
 # ---------------------------------------------------------------------------
 
-class TestMoodVolatility:
 
+class TestMoodVolatility:
     def test_volatility_stable(self):
         entries = _stable_entries(n=10)
         analytics = MoodAnalytics(entries)
@@ -180,8 +185,8 @@ class TestMoodVolatility:
 # Empty data handling
 # ---------------------------------------------------------------------------
 
-class TestEmptyDataHandling:
 
+class TestEmptyDataHandling:
     def test_empty_entries_full_report(self):
         analytics = MoodAnalytics([])
         report = analytics.full_report()
@@ -189,7 +194,10 @@ class TestEmptyDataHandling:
         assert isinstance(report, AnalyticsReport)
         assert report.mood_trend is None
         assert len(report.insights) >= 1
-        assert "not enough data" in report.insights[0].lower() or "keep logging" in report.insights[0].lower()
+        assert (
+            "not enough data" in report.insights[0].lower()
+            or "keep logging" in report.insights[0].lower()
+        )
 
     def test_empty_entries_mood_volatility(self):
         analytics = MoodAnalytics([])
@@ -213,8 +221,8 @@ class TestEmptyDataHandling:
 # Insight generation
 # ---------------------------------------------------------------------------
 
-class TestInsightGeneration:
 
+class TestInsightGeneration:
     def test_insights_from_improving_data(self, sample_mood_entries):
         analytics = MoodAnalytics(sample_mood_entries)
         report = analytics.full_report()
@@ -245,11 +253,13 @@ class TestInsightGeneration:
         entries = []
         for i in range(10):
             ts = base + timedelta(days=i, hours=10)
-            entries.append({
-                "timestamp": ts.isoformat(),
-                "mood_score": 6,
-                "energy_score": 20 if i % 2 == 0 else 90,
-            })
+            entries.append(
+                {
+                    "timestamp": ts.isoformat(),
+                    "mood_score": 6,
+                    "energy_score": 20 if i % 2 == 0 else 90,
+                }
+            )
 
         analytics = MoodAnalytics(entries, conditions=["adhd"])
         insights = analytics.condition_insights()
@@ -262,12 +272,14 @@ class TestInsightGeneration:
         entries = []
         for i in range(14):
             ts = base + timedelta(days=i, hours=10)
-            entries.append({
-                "timestamp": ts.isoformat(),
-                "mood_score": 5,
-                "energy_score": 50,
-                "symptoms": ["anxiety", "worry"],
-            })
+            entries.append(
+                {
+                    "timestamp": ts.isoformat(),
+                    "mood_score": 5,
+                    "energy_score": 50,
+                    "symptoms": ["anxiety", "worry"],
+                }
+            )
 
         analytics = MoodAnalytics(entries, conditions=["anxiety"])
         insights = analytics.condition_insights()
@@ -279,20 +291,22 @@ class TestInsightGeneration:
 # Triggers and clusters
 # ---------------------------------------------------------------------------
 
-class TestTriggersAndClusters:
 
+class TestTriggersAndClusters:
     def test_identify_triggers_with_activities(self):
         base = datetime.now() - timedelta(days=20)
         entries = []
         for i in range(20):
             ts = base + timedelta(days=i, hours=10)
             has_exercise = i % 2 == 0
-            entries.append({
-                "timestamp": ts.isoformat(),
-                "mood_score": 8 if has_exercise else 4,
-                "energy_score": 60,
-                "activities": ["exercise"] if has_exercise else [],
-            })
+            entries.append(
+                {
+                    "timestamp": ts.isoformat(),
+                    "mood_score": 8 if has_exercise else 4,
+                    "energy_score": 60,
+                    "activities": ["exercise"] if has_exercise else [],
+                }
+            )
 
         analytics = MoodAnalytics(entries)
         triggers = analytics.identify_triggers()
@@ -307,12 +321,14 @@ class TestTriggersAndClusters:
         entries = []
         for i in range(10):
             ts = base + timedelta(days=i, hours=10)
-            entries.append({
-                "timestamp": ts.isoformat(),
-                "mood_score": 4,
-                "energy_score": 30,
-                "symptoms": ["fatigue", "headache"] if i < 7 else ["fatigue"],
-            })
+            entries.append(
+                {
+                    "timestamp": ts.isoformat(),
+                    "mood_score": 4,
+                    "energy_score": 30,
+                    "symptoms": ["fatigue", "headache"] if i < 7 else ["fatigue"],
+                }
+            )
 
         analytics = MoodAnalytics(entries)
         clusters = analytics.symptom_clusters(min_co_occurrence=2)

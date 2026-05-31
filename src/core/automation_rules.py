@@ -4,6 +4,7 @@ Automation rule definitions for the System Automation Engine.
 Maps psychological states and conditions to concrete system actions.
 Rules are evidence-informed heuristics, not medical advice.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -35,21 +36,21 @@ class ActionType(Enum):
 class TriggerType(Enum):
     """What causes a rule to fire."""
 
-    ENERGY_LOW = auto()           # energy <= 3
-    ENERGY_VERY_LOW = auto()      # energy <= 2
-    ENERGY_HIGH = auto()          # energy >= 7
-    ENERGY_PEAK = auto()          # energy >= 8
-    MOOD_LOW = auto()             # mood <= 3
-    MOOD_VERY_LOW = auto()        # mood <= 2
-    ANXIETY_SPIKE = auto()        # anxiety detected / panic flagged
-    ADHD_SLUMP = auto()           # 3-3:30 PM + ADHD profile
-    BURNOUT_RISK = auto()         # burnout risk >= moderate
-    HYPOMANIA_SIGNS = auto()      # hypomania pattern detected
-    MANUAL_FOCUS = auto()         # user pressed focus hotkey
-    MANUAL_CRISIS = auto()        # user pressed crisis hotkey
-    MANUAL_GROUNDING = auto()     # user pressed grounding hotkey
-    SCHEDULED_FOCUS = auto()      # scheduled focus block
-    SLEEP_DEBT = auto()           # < 5 hours sleep
+    ENERGY_LOW = auto()  # energy <= 3
+    ENERGY_VERY_LOW = auto()  # energy <= 2
+    ENERGY_HIGH = auto()  # energy >= 7
+    ENERGY_PEAK = auto()  # energy >= 8
+    MOOD_LOW = auto()  # mood <= 3
+    MOOD_VERY_LOW = auto()  # mood <= 2
+    ANXIETY_SPIKE = auto()  # anxiety detected / panic flagged
+    ADHD_SLUMP = auto()  # 3-3:30 PM + ADHD profile
+    BURNOUT_RISK = auto()  # burnout risk >= moderate
+    HYPOMANIA_SIGNS = auto()  # hypomania pattern detected
+    MANUAL_FOCUS = auto()  # user pressed focus hotkey
+    MANUAL_CRISIS = auto()  # user pressed crisis hotkey
+    MANUAL_GROUNDING = auto()  # user pressed grounding hotkey
+    SCHEDULED_FOCUS = auto()  # scheduled focus block
+    SLEEP_DEBT = auto()  # < 5 hours sleep
 
 
 @dataclass(frozen=True)
@@ -57,7 +58,7 @@ class AutomationAction:
     """A single concrete action the engine can execute."""
 
     action_type: ActionType
-    target: str | None = None          # app name, brightness value, etc.
+    target: str | None = None  # app name, brightness value, etc.
     payload: dict = field(default_factory=dict)
     reason: str = ""
 
@@ -70,7 +71,7 @@ class AutomationRule:
     trigger: TriggerType
     required_conditions: set[Condition] = field(default_factory=set)
     actions: list[AutomationAction] = field(default_factory=list)
-    cooldown_minutes: int = 30         # prevent spam
+    cooldown_minutes: int = 30  # prevent spam
     enabled_by_default: bool = True
 
 
@@ -180,7 +181,9 @@ _DEFAULT_RULES: list[AutomationRule] = [
             AutomationAction(
                 ActionType.SHOW_OVERLAY,
                 target="focus_prompt",
-                payload={"message": "Afternoon transition detected. 5-min movement break, then one task."},
+                payload={
+                    "message": "Afternoon transition detected. 5-min movement break, then one task."
+                },
                 reason="ADHD-specific transition support",
             ),
         ],
@@ -250,7 +253,9 @@ _DEFAULT_RULES: list[AutomationRule] = [
             AutomationAction(
                 ActionType.SHOW_OVERLAY,
                 target="pacing_reminder",
-                payload={"message": "High activity pattern detected. Remember: rest is productive too."},
+                payload={
+                    "message": "High activity pattern detected. Remember: rest is productive too."
+                },
                 reason="Bipolar pacing support",
             ),
             AutomationAction(
@@ -390,6 +395,7 @@ _DEFAULT_RULES: list[AutomationRule] = [
 def get_default_rules() -> list[AutomationRule]:
     """Return a deep copy of the default rule set."""
     import copy
+
     return copy.deepcopy(_DEFAULT_RULES)
 
 

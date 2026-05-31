@@ -3,6 +3,7 @@ Task management system for organizing and prioritizing tasks.
 Supports recurring tasks, subtasks, dependencies, templates, undo/redo,
 tags, values alignment, and comprehensive statistics.
 """
+
 import json
 import uuid
 from collections.abc import Callable
@@ -18,6 +19,7 @@ from core.database import DatabaseManager, TableName
 
 class TaskPriority(Enum):
     """Priority levels for tasks."""
+
     Low = 1
     Medium = 2
     High = 3
@@ -26,6 +28,7 @@ class TaskPriority(Enum):
 
 class TaskCategory(Enum):
     """Built-in categories for tasks."""
+
     Work = "Work"
     Personal = "Personal"
     Health = "Health"
@@ -37,6 +40,7 @@ class TaskCategory(Enum):
 
 class RecurrencePattern(Enum):
     """Recurrence patterns for recurring tasks."""
+
     DAILY = "daily"
     WEEKLY = "weekly"
     BIWEEKLY = "biweekly"
@@ -47,6 +51,7 @@ class RecurrencePattern(Enum):
 @dataclass
 class SubTask:
     """A subtask belonging to a parent task."""
+
     title: str
     completed: bool = False
     completed_at: str | None = None
@@ -72,6 +77,7 @@ class SubTask:
 @dataclass
 class RecurrenceConfig:
     """Configuration for recurring tasks."""
+
     pattern: RecurrencePattern
     custom_days: list[int] | None = None  # 0=Mon..6=Sun for CUSTOM_DAYS
     end_date: str | None = None  # ISO date string or None for no end
@@ -127,6 +133,7 @@ class RecurrenceConfig:
 @dataclass
 class Task:
     """A task with full metadata."""
+
     title: str
     priority: TaskPriority
     category: TaskCategory
@@ -160,8 +167,12 @@ class Task:
         return {
             "guid": self.id,
             "title": self.title,
-            "priority": self.priority.name if isinstance(self.priority, TaskPriority) else str(self.priority),
-            "category": self.category.value if isinstance(self.category, TaskCategory) else str(self.category),
+            "priority": self.priority.name
+            if isinstance(self.priority, TaskPriority)
+            else str(self.priority),
+            "category": self.category.value
+            if isinstance(self.category, TaskCategory)
+            else str(self.category),
             "energy_required": self.energy_required,
             "due_date": self.due_date,
             "completed": 1 if self.completed else 0,
@@ -229,8 +240,12 @@ class Task:
         return {
             "id": self.id,
             "title": self.title,
-            "priority": self.priority.value if isinstance(self.priority, TaskPriority) else self.priority,
-            "category": self.category.value if isinstance(self.category, TaskCategory) else self.category,
+            "priority": self.priority.value
+            if isinstance(self.priority, TaskPriority)
+            else self.priority,
+            "category": self.category.value
+            if isinstance(self.category, TaskCategory)
+            else self.category,
             "energy_required": self.energy_required,
             "due_date": self.due_date,
             "completed": self.completed,
@@ -264,7 +279,9 @@ class Task:
             except ValueError:
                 priority = TaskPriority.Medium
         else:
-            priority = priority_val if isinstance(priority_val, TaskPriority) else TaskPriority.Medium
+            priority = (
+                priority_val if isinstance(priority_val, TaskPriority) else TaskPriority.Medium
+            )
 
         # Handle category
         cat_val = data.get("category", "Other")
@@ -332,6 +349,7 @@ class Task:
 @dataclass
 class TaskTemplate:
     """A reusable task template."""
+
     name: str
     title: str
     priority: int
@@ -459,6 +477,7 @@ class TaskManager:
     def __init__(self, data_dir: Path | None = None, db_manager: DatabaseManager | None = None):
         if data_dir is None:
             from core.database import DATA_DIR
+
             self.data_dir = DATA_DIR
         else:
             self.data_dir = data_dir
@@ -566,6 +585,7 @@ class TaskManager:
         # Emit state change
         try:
             from core.state_bus import get_state_bus
+
             bus = get_state_bus()
             bus.emit_task_changed("added", task_id=task.id, title=task.title)
         except RuntimeError:
@@ -654,6 +674,7 @@ class TaskManager:
         # Emit state change
         try:
             from core.state_bus import get_state_bus
+
             bus = get_state_bus()
             bus.emit_task_changed("completed", task_id=task.id, title=task.title)
         except RuntimeError:
@@ -765,7 +786,11 @@ class TaskManager:
         completed_ids = {t.id for t in self.tasks if t.completed}
         blocked = []
         for t in self.tasks:
-            if not t.completed and t.blocked_by and not all(dep_id in completed_ids for dep_id in t.blocked_by):
+            if (
+                not t.completed
+                and t.blocked_by
+                and not all(dep_id in completed_ids for dep_id in t.blocked_by)
+            ):
                 blocked.append(t)
         return blocked
 
@@ -774,17 +799,16 @@ class TaskManager:
         completed_ids = {t.id for t in self.tasks if t.completed}
         unblocked = []
         for t in self.tasks:
-            if not t.completed and (not t.blocked_by or all(dep_id in completed_ids for dep_id in t.blocked_by)):
+            if not t.completed and (
+                not t.blocked_by or all(dep_id in completed_ids for dep_id in t.blocked_by)
+            ):
                 unblocked.append(t)
         return unblocked
 
     def get_overdue_tasks(self) -> list[Task]:
         """Get incomplete tasks past their due date."""
         today_str = date.today().isoformat()
-        return [
-            t for t in self.tasks
-            if not t.completed and t.due_date and t.due_date < today_str
-        ]
+        return [t for t in self.tasks if not t.completed and t.due_date and t.due_date < today_str]
 
     def get_upcoming_reminders(self, within_minutes: int = 60) -> list[Task]:
         """Get tasks with reminders due within the given time window."""
@@ -935,7 +959,9 @@ class TaskManager:
         )
 
         # Average actual duration
-        actual_durations = [t.actual_duration for t in completed_tasks if t.actual_duration is not None]
+        actual_durations = [
+            t.actual_duration for t in completed_tasks if t.actual_duration is not None
+        ]
         avg_actual_duration = (
             sum(actual_durations) / len(actual_durations) if actual_durations else 0.0
         )

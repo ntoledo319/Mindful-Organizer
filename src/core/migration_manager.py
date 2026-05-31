@@ -24,9 +24,11 @@ logger = logging.getLogger(__name__)
 # Data structures
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class MigrationResult:
     """Result of a single migration step."""
+
     module: str
     success: bool
     records_migrated: int = 0
@@ -36,6 +38,7 @@ class MigrationResult:
 @dataclass
 class MigrationReport:
     """Complete migration report."""
+
     started_at: datetime = field(default_factory=datetime.now)
     finished_at: datetime | None = None
     results: list[MigrationResult] = field(default_factory=list)
@@ -53,6 +56,7 @@ class MigrationReport:
 # ---------------------------------------------------------------------------
 # Manager
 # ---------------------------------------------------------------------------
+
 
 class MigrationManager:
     """Migrate legacy JSON wellness data to SQLite with safety guarantees."""
@@ -174,9 +178,7 @@ class MigrationManager:
         try:
             shutil.copy2(str(json_path), str(backup_path))
         except (OSError, shutil.Error) as exc:
-            return MigrationResult(
-                module=module, success=False, error=f"Backup failed: {exc}"
-            )
+            return MigrationResult(module=module, success=False, error=f"Backup failed: {exc}")
 
         # Migrate
         try:
@@ -197,13 +199,9 @@ class MigrationManager:
             archive = self.data_dir / f"{module}_migrated_{datetime.now():%Y%m%d_%H%M%S}.json"
             json_path.rename(archive)
 
-            return MigrationResult(
-                module=module, success=True, records_migrated=migrated
-            )
+            return MigrationResult(module=module, success=True, records_migrated=migrated)
         except (OSError, json.JSONDecodeError, TypeError) as exc:
-            return MigrationResult(
-                module=module, success=False, error=str(exc)
-            )
+            return MigrationResult(module=module, success=False, error=str(exc))
 
     # -- transformers -----------------------------------------------------
 

@@ -21,8 +21,8 @@ from wellness.crisis_plan import (
 # Create / load plan
 # ---------------------------------------------------------------------------
 
-class TestCreatePlan:
 
+class TestCreatePlan:
     def test_create_plan_returns_real_plan(self, tmp_data_dir):
         manager = CrisisPlanManager(tmp_data_dir)
         plan = manager.create_plan(
@@ -66,8 +66,8 @@ class TestCreatePlan:
 # Default crisis resources (always available, even with no user plan)
 # ---------------------------------------------------------------------------
 
-class TestDefaultResources:
 
+class TestDefaultResources:
     def test_default_resources_available_without_any_plan(self, tmp_data_dir):
         """The hotlines must be reachable before the user builds anything."""
         manager = CrisisPlanManager(tmp_data_dir)
@@ -122,8 +122,8 @@ class TestDefaultResources:
 # Contacts and plan editing
 # ---------------------------------------------------------------------------
 
-class TestPlanEditing:
 
+class TestPlanEditing:
     def test_add_support_contact_and_update(self, tmp_data_dir):
         manager = CrisisPlanManager(tmp_data_dir)
         plan = manager.create_plan(name="Contact Plan")
@@ -154,8 +154,7 @@ class TestPlanEditing:
         fetched = manager.get_plan(plan.plan_id)
         assert len(fetched.professional_contacts) == before + 1
         therapists = [
-            c for c in fetched.professional_contacts
-            if c.contact_type == ContactType.THERAPIST
+            c for c in fetched.professional_contacts if c.contact_type == ContactType.THERAPIST
         ]
         assert any(c.name == "Dr. Jones" for c in therapists)
 
@@ -164,8 +163,8 @@ class TestPlanEditing:
 # Plan validation
 # ---------------------------------------------------------------------------
 
-class TestPlanValidation:
 
+class TestPlanValidation:
     def test_empty_plan_reports_missing_sections(self, tmp_data_dir):
         manager = CrisisPlanManager(tmp_data_dir)
         plan = manager.create_plan(name="Bare Plan")
@@ -206,8 +205,8 @@ class TestPlanValidation:
 # Persistence / round-trip
 # ---------------------------------------------------------------------------
 
-class TestPlanPersistence:
 
+class TestPlanPersistence:
     def test_plan_round_trips_on_reload(self, tmp_data_dir):
         manager1 = CrisisPlanManager(tmp_data_dir)
         plan = manager1.create_plan(

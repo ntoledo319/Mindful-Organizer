@@ -43,8 +43,8 @@ def db(tmp_data_dir):
 # Profile -> Task management flow
 # ---------------------------------------------------------------------------
 
-class TestProfileToTaskFlow:
 
+class TestProfileToTaskFlow:
     def test_create_tasks_with_conditions(self, tmp_data_dir, sample_profile):
         """Tasks created for a user with ADHD+Anxiety should work end-to-end."""
         tm = TaskManager(tmp_data_dir)
@@ -84,8 +84,12 @@ class TestProfileToTaskFlow:
         tm = TaskManager(tmp_data_dir)
         task = Task(
             title=parsed.title,
-            priority=TaskPriority[parsed.priority.value.capitalize()] if parsed.priority else TaskPriority.Medium,
-            category=TaskCategory.Work if parsed.category and "work" in parsed.category.value.lower() else TaskCategory.Other,
+            priority=TaskPriority[parsed.priority.value.capitalize()]
+            if parsed.priority
+            else TaskPriority.Medium,
+            category=TaskCategory.Work
+            if parsed.category and "work" in parsed.category.value.lower()
+            else TaskCategory.Other,
             energy_required=5,
             due_date=parsed.due_date,
         )
@@ -99,12 +103,14 @@ class TestProfileToTaskFlow:
 
         # Add tasks with varying energy
         for energy in [2, 5, 8]:
-            tm.add_task(Task(
-                title=f"Task energy {energy}",
-                priority=TaskPriority.Medium,
-                category=TaskCategory.Other,
-                energy_required=energy,
-            ))
+            tm.add_task(
+                Task(
+                    title=f"Task energy {energy}",
+                    priority=TaskPriority.Medium,
+                    category=TaskCategory.Other,
+                    energy_required=energy,
+                )
+            )
 
         remaining = budget.remaining_spoons()
         affordable = tm.get_tasks_by_energy(max_energy=remaining)
@@ -116,8 +122,8 @@ class TestProfileToTaskFlow:
 # Mood -> Analytics flow
 # ---------------------------------------------------------------------------
 
-class TestMoodToAnalyticsFlow:
 
+class TestMoodToAnalyticsFlow:
     def test_db_entries_to_analytics(self, db):
         """Insert mood data via DB, then run analytics on it."""
         base = datetime.now() - timedelta(days=10)
@@ -178,8 +184,8 @@ class TestMoodToAnalyticsFlow:
 # Full data lifecycle
 # ---------------------------------------------------------------------------
 
-class TestFullDataLifecycle:
 
+class TestFullDataLifecycle:
     def test_create_export_import_verify(self, db, tmp_data_dir):
         """Create data -> export to JSON -> import into fresh DB -> verify."""
         # 1. Create data
@@ -293,8 +299,8 @@ class TestFullDataLifecycle:
 # Notification + condition flow
 # ---------------------------------------------------------------------------
 
-class TestNotificationConditionFlow:
 
+class TestNotificationConditionFlow:
     def test_schedule_and_deliver_for_adhd(self, db):
         """ADHD user schedules task deadline -> immediate delivery style."""
         nm = NotificationManager(db)
@@ -306,6 +312,7 @@ class TestNotificationConditionFlow:
         )
 
         from core.notification_manager import DeliveryStyle
+
         style = nm.get_delivery_style(NotificationType.TASK_DEADLINE)
         assert style == DeliveryStyle.IMMEDIATE
         assert n.id is not None
@@ -320,6 +327,7 @@ class TestNotificationConditionFlow:
         snoozed = nm.get_by_id(n.id)
 
         from core.notification_manager import NotificationStatus
+
         assert snoozed.status == NotificationStatus.SNOOZED
 
 
@@ -327,8 +335,8 @@ class TestNotificationConditionFlow:
 # Breathing + energy flow
 # ---------------------------------------------------------------------------
 
-class TestBreathingEnergyFlow:
 
+class TestBreathingEnergyFlow:
     def test_recommend_then_track_session(self, tmp_data_dir):
         """Get recommendation, run session, check stats improve."""
         bm = BreathingManager(tmp_data_dir)
@@ -349,8 +357,8 @@ class TestBreathingEnergyFlow:
 # File organizer + gamification flow
 # ---------------------------------------------------------------------------
 
-class TestFileOrganizationFlow:
 
+class TestFileOrganizationFlow:
     def test_organize_and_stats(self, tmp_data_dir, tmp_path):
         """Organize files, then verify stats reflect the actions."""
         fo = FileOrganizer(tmp_data_dir)
@@ -406,8 +414,8 @@ class TestFileOrganizationFlow:
 # Cross-module data consistency
 # ---------------------------------------------------------------------------
 
-class TestCrossModuleConsistency:
 
+class TestCrossModuleConsistency:
     def test_db_mood_and_task_counts(self, db):
         """Verify that mood and task counts stay consistent across operations."""
         db.insert(TableName.MOOD_ENTRIES, mood_score=7)
@@ -440,7 +448,10 @@ class TestCrossModuleConsistency:
         db.insert(TableName.TASKS, title="X", priority="medium", category="Other")
         db.insert(
             TableName.SLEEP_LOGS,
-            date="2026-04-05", bedtime="23:00", wake_time="07:00", quality=7,
+            date="2026-04-05",
+            bedtime="23:00",
+            wake_time="07:00",
+            quality=7,
         )
         db.insert(
             TableName.JOURNAL_ENTRIES,
