@@ -507,12 +507,37 @@ class AutomationWidget(QWidget):
         self._refresh_focus_status()
 
     def _on_grounding_clicked(self) -> None:
-        self.engine.manual_grounding()
-        QMessageBox.information(self, "Grounding Mode", "Grounding mode activated. Display adapted for calm.")
+        result = self.engine.manual_grounding()
+        QMessageBox.information(self, "Grounding Mode", self._summarize(result, "Grounding"))
 
     def _on_crisis_clicked(self) -> None:
-        self.engine.manual_crisis()
-        QMessageBox.information(self, "Crisis Mode", "Crisis mode activated. All distractions minimized.")
+        result = self.engine.manual_crisis()
+        QMessageBox.information(self, "Crisis Mode", self._summarize(result, "Crisis"))
+
+    def _summarize(self, result: dict, mode_name: str) -> str:
+        """Build an honest message about what the mode actually did.
+
+        Free tier = suggestions only; otherwise report how many system actions
+        actually succeeded rather than claiming a blanket success.
+        """
+        results = result.get("automation_results") or []
+        try:
+            can_act = bool(self.engine._can_execute_system_actions)
+        except Exception:
+            can_act = False
+        if not can_act:
+            return (
+                f"{mode_name} mode is on. On your current plan Hearth suggests "
+                "supportive changes; upgrade to Pro to let it apply them to your "
+                "system automatically."
+            )
+        applied = [r for r in results if isinstance(r, dict) and r.get("success")]
+        if applied:
+            return f"{mode_name} mode is on — applied {len(applied)} change(s) to your environment."
+        return (
+            f"{mode_name} mode is on. No system changes were applied "
+            "(your platform may not support them yet)."
+        )
 
     def _on_start_focus(self) -> None:
         duration = self.focus_duration.value()

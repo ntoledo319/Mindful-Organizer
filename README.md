@@ -31,7 +31,7 @@ Hearth is a single-user, offline-first desktop application that adapts the compu
 - **Therapeutic tools** — Breathing exercises, grounding techniques, guided meditation metadata, journaling with prompts, ERP exposure tracking, crisis plan with contacts.
 - **File organizer** — Sorts files into a clean type-based structure, with an optional smart file system that uses ML clustering (`sentence-transformers`, `hdbscan`) when those extras are installed.
 - **Secure content vault** *(library/API; no GUI surface yet)* — Passcode-gated folders whose file contents are Fernet-encrypted at rest, with scrypt passcode hashing. The Fernet key lives in the OS credential store (Keychain / Credential Manager / SecretService), not next to the ciphertext. Exposed as `security.content_management.ContentManager`; a dedicated UI is on the roadmap.
-- **Shareable reports** — Self-contained HTML reports with Chart.js (loaded from CDN). No runtime dependency.
+- **Shareable reports** — Fully self-contained HTML reports with Chart.js vendored inline. They open offline and make **no network request**, so a report full of health data never phones home.
 - **Calendar sync** — Exports tasks as ICS and parses external busy blocks for focus scheduling.
 - **Wearable sync** — Imports Apple Health XML and Google Fit sleep CSV exports into local sleep logs.
 - **Subscription tiers** — Free / Pro / Premium. License keys are signed with Ed25519; only the public verification key ships in the binary. A 14-day Premium trial is available without a key.

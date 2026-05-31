@@ -295,6 +295,28 @@ class ShareableReport:
     # Export
     # ------------------------------------------------------------------
 
+    @staticmethod
+    def _chart_js_tag() -> str:
+        """Return a <script> tag for Chart.js.
+
+        Inlines the vendored copy so a report containing health data renders
+        FULLY OFFLINE — opening it makes no network request, consistent with
+        Hearth's zero-telemetry promise. Falls back to an SRI-pinned CDN only if
+        the vendored file is somehow unavailable.
+        """
+        from core.paths import resource_dir
+
+        vendored = resource_dir() / "vendor" / "chart.umd.min.js"
+        try:
+            js = vendored.read_text(encoding="utf-8")
+            return f"<script>{js}</script>"
+        except OSError:
+            logger.warning("Vendored Chart.js not found; report will reference the CDN.")
+            return (
+                '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/'
+                'chart.umd.min.js" crossorigin="anonymous"></script>'
+            )
+
     def export(self, path: str | Path) -> Path:
         """Write the report to *path* and return the Path."""
         out = Path(path)
@@ -307,7 +329,7 @@ class ShareableReport:
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{self._title}</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{self._chart_js_tag()}
 <style>
 :root {{
     --accent: {self._accent};

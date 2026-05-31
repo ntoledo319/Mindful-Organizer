@@ -70,3 +70,15 @@ def _harden_permissions(path: Path) -> None:
 def get_db_path() -> Path:
     """Return the canonical SQLite database path."""
     return get_data_dir() / _DB_FILENAME
+
+
+def resource_dir() -> Path:
+    """Return the bundled ``resources/`` directory (dev checkout or frozen app).
+
+    PyInstaller unpacks bundled data under ``sys._MEIPASS``; in a source checkout
+    it lives at ``<repo>/resources``.
+    """
+    base = getattr(sys, "_MEIPASS", None)
+    if base:
+        return Path(base) / "resources"
+    return Path(__file__).resolve().parent.parent.parent / "resources"
