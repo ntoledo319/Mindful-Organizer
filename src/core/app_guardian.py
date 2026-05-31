@@ -16,6 +16,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+from core.paths import get_data_dir
 from core.platform_actions import PlatformBackend, get_backend
 
 logger = logging.getLogger(__name__)
@@ -49,7 +50,7 @@ class AppGuardian:
         data_dir: Path | None = None,
         backend: PlatformBackend | None = None,
     ) -> None:
-        self.data_dir = data_dir or Path.home() / ".mindful_organizer"
+        self.data_dir = data_dir or get_data_dir()
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.history_file = self.data_dir / "app_guardian_history.json"
         self.config_file = self.data_dir / "app_guardian_config.json"

@@ -10,12 +10,13 @@ import logging
 import statistics
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from pathlib import Path
 from typing import Any
+
+from core.paths import get_data_dir
 
 logger = logging.getLogger(__name__)
 
-DATA_DIR = Path.home() / ".mindful_organizer"
+DATA_DIR = get_data_dir(create=False)
 
 # Recommended sleep duration (hours) by general guidance
 _RECOMMENDED_SLEEP_HOURS = 8.0

@@ -37,6 +37,8 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
+from core.paths import get_data_dir
+
 logger = logging.getLogger(__name__)
 
 
@@ -169,7 +171,7 @@ class MedicationWidget(QWidget):
         try:
             base = Path(self.main_window.data_dir)
         except (AttributeError, TypeError):
-            base = Path.home() / ".mindful_organizer"
+            base = get_data_dir()
         p = base / "medication"
         p.mkdir(parents=True, exist_ok=True)
         return p

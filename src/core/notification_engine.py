@@ -143,11 +143,17 @@ class SmartNotificationEngine:
                 max_tasks=3,
             )
             if briefing.crisis_signals:
+                # crisis_signals are ordered most-severe-first by the orchestrator.
+                # For urgent/moderate signals include the recommendation so the
+                # 988 lifeline text rides along with the notification itself.
                 sig = briefing.crisis_signals[0]
+                message = sig.description
+                if sig.severity in ("urgent", "moderate"):
+                    message = f"{sig.description}\n{sig.recommendation}"
                 notifications.append(SmartNotification(
                     id="crisis_signal",
                     title="Wellness Check-In",
-                    message=sig.description,
+                    message=message,
                     priority=sig.severity,
                     category="crisis",
                     suggested_action="open_crisis_plan",

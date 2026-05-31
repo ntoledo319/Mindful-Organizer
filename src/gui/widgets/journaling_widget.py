@@ -32,6 +32,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
+from core.paths import get_data_dir
 from gui.components import AccentButton, BodyLabel, CardFrame, SectionTitle
 
 logger = logging.getLogger(__name__)
@@ -109,6 +110,7 @@ class JournalingWidget(QWidget):
     """Journaling tab with prompts, editor, history, and streak tracking."""
 
     entry_saved = pyqtSignal(dict)
+    crisis_requested = pyqtSignal()  # emitted when an entry trips risk-language detection
 
     def __init__(
         self,
@@ -138,7 +140,7 @@ class JournalingWidget(QWidget):
     def _data_file(self) -> Path | None:
         if self._journal_manager and hasattr(self._journal_manager, "data_dir"):
             return Path(self._journal_manager.data_dir) / "journal_entries.json"
-        home = Path.home() / ".mindful_organizer" / "journal_entries.json"
+        home = get_data_dir() / "journal_entries.json"
         home.parent.mkdir(parents=True, exist_ok=True)
         return home
 
@@ -420,6 +422,10 @@ class JournalingWidget(QWidget):
         self._save_entries()
         self.entry_saved.emit(entry)
 
+        # Scan the entry for explicit self-harm / ideation language BEFORE the
+        # routine "saved" toast. If matched, surface crisis resources prominently.
+        risk_flagged = self._check_risk(text)
+
         # Reset
         self._editor.clear()
         self._tags_input.clear()
@@ -428,7 +434,34 @@ class JournalingWidget(QWidget):
 
         self._refresh_history()
         self._update_streak()
-        QMessageBox.information(self, "Saved", "Journal entry saved successfully.")
+
+        if risk_flagged:
+            self._surface_crisis_resources()
+        else:
+            QMessageBox.information(self, "Saved", "Journal entry saved successfully.")
+
+    def _check_risk(self, text: str) -> bool:
+        """Return True if the entry contains explicit self-harm/ideation language."""
+        try:
+            from wellness.journal_analyzer import JournalAnalyzer
+            return JournalAnalyzer().analyze(text).risk_flagged
+        except Exception as exc:  # analysis must never block saving
+            logger.debug("Journal risk analysis failed: %s", exc)
+            return False
+
+    def _surface_crisis_resources(self) -> None:
+        """Show a prominent, supportive crisis prompt with one-tap access to help."""
+        from wellness.journal_analyzer import _RISK_RESOURCE_INSIGHT
+
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Icon.Warning)
+        box.setWindowTitle("You're not alone")
+        box.setText(_RISK_RESOURCE_INSIGHT)
+        open_crisis = box.addButton("Open crisis plan", QMessageBox.ButtonRole.AcceptRole)
+        box.addButton("Close", QMessageBox.ButtonRole.RejectRole)
+        box.exec()
+        if box.clickedButton() is open_crisis:
+            self.crisis_requested.emit()
 
     def _refresh_history(self, filter_text: str = "") -> None:
         self._history_list.clear()

@@ -8,7 +8,6 @@ data management, and about information.
 
 from __future__ import annotations
 
-import json
 import logging
 import shutil
 from pathlib import Path
@@ -473,36 +472,23 @@ class SettingsWidget(QWidget):
         from gui.subscription_helpers import gated
         if not gated("data_export", getattr(self.main_window, "subscription_manager", None), self):
             return
-        try:
-            em = self.main_window.export_manager
-            if em and hasattr(em, "export_all"):
-                path, _ = QFileDialog.getSaveFileName(
-                    self, "Export Data", "mindful_organizer_export.json", "JSON (*.json)"
-                )
-                if path:
-                    em.export_all(path)
-                    QMessageBox.information(self, "Export", f"Data exported to {path}")
-                return
-        except (AttributeError, TypeError) as exc:
-            logger.debug(f"Import manager error: {exc}")
-
         path, _ = QFileDialog.getSaveFileName(
-            self, "Export Data", "mindful_organizer_export.json", "JSON (*.json)"
+            self, "Export Data", "hearth_export.json", "JSON (*.json)"
         )
         if not path:
             return
         try:
-            data_dir = Path(self.main_window.data_dir)
-            all_data: dict[str, Any] = {}
-            for f in data_dir.rglob("*.json"):
-                try:
-                    with open(f) as fh:
-                        all_data[str(f.relative_to(data_dir))] = json.load(fh)
-                except (json.JSONDecodeError, OSError) as exc:
-                    logger.debug(f"Data export read error: {exc}")
-            with open(path, "w") as fh:
-                json.dump(all_data, fh, indent=2, default=str)
-            QMessageBox.information(self, "Export", f"Data exported to {path}")
+            # Export the real SQLite-backed health data (moods, journal,
+            # medications, sleep, tasks, ...) via the export manager.
+            from core.export_manager import ExportFormat, ExportOptions
+            em = self.main_window.export_manager
+            options = ExportOptions(
+                format=ExportFormat.JSON,
+                output_path=Path(path),
+                include_settings=True,
+            )
+            out = em.export(options)
+            QMessageBox.information(self, "Export", f"Data exported to {out}")
         except Exception as e:
             QMessageBox.warning(self, "Error", f"Export failed: {e}")
 
@@ -521,16 +507,14 @@ class SettingsWidget(QWidget):
             return
         try:
             em = self.main_window.export_manager
-            if em and hasattr(em, "import_all"):
-                em.import_all(path)
-                QMessageBox.information(self, "Import", "Data imported successfully.")
-                return
-        except (AttributeError, TypeError) as exc:
-            logger.debug(f"Import manager error: {exc}")
-        QMessageBox.information(
-            self, "Import",
-            "Import completed. You may need to restart the application to see changes."
-        )
+            counts = em.import_from_json(Path(path), merge=True, validate_first=True)
+            total = sum(counts.values()) if isinstance(counts, dict) else 0
+            QMessageBox.information(
+                self, "Import",
+                f"Imported {total} record(s). You may need to restart to see all changes."
+            )
+        except Exception as e:  # noqa: BLE001
+            QMessageBox.warning(self, "Import failed", f"Could not import data: {e}")
 
     def _reset_data(self) -> None:
         reply = QMessageBox.warning(

@@ -21,6 +21,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
+from core.paths import get_data_dir
 from core.platform_actions import PlatformBackend, get_backend
 
 logger = logging.getLogger(__name__)
@@ -96,7 +97,7 @@ class FocusModeManager:
         data_dir: Path | None = None,
         backend: PlatformBackend | None = None,
     ) -> None:
-        self.data_dir = data_dir or Path.home() / ".mindful_organizer"
+        self.data_dir = data_dir or get_data_dir()
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.session_file = self.data_dir / "focus_sessions.json"
         self.config_file = self.data_dir / "focus_config.json"

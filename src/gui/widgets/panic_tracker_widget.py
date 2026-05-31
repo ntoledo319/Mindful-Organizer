@@ -32,6 +32,8 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
+from core.paths import get_data_dir
+
 logger = logging.getLogger(__name__)
 
 
@@ -152,7 +154,7 @@ class PanicTrackerWidget(QWidget):
         try:
             return Path(self.main_window.data_dir) / "panic_logs"
         except (AttributeError, TypeError):
-            return Path.home() / ".mindful_organizer" / "panic_logs"
+            return get_data_dir() / "panic_logs"
 
     def _load_entries(self) -> None:
         file_path = self._data_dir / "panic_logs.json"

@@ -288,6 +288,11 @@ class WellnessOrchestrator:
                         recommendation="Maintain consistent sleep timing and avoid overstimulation.",
                     ))
 
+        # Return most-severe first so every consumer (dashboard banner, system
+        # notification, tray) surfaces the highest-priority signal — and its 988
+        # recommendation — rather than whichever heuristic happened to append first.
+        rank = {"urgent": 0, "moderate": 1, "mild": 2, "info": 3}
+        signals.sort(key=lambda s: rank.get(s.severity, 9))
         return signals
 
     # -- daily briefing ----------------------------------------------------

@@ -111,6 +111,25 @@ class TestCrisisSignals:
         )
         db.close()
 
+    def test_signals_are_ordered_most_severe_first(self, tmp_data_dir: Path) -> None:
+        """When a moderate and an urgent signal co-occur (mood crashed AND not
+        sleeping), the urgent 988 signal must be first so every consumer surfaces
+        it — not whichever heuristic happened to append first."""
+        db = DatabaseManager(tmp_data_dir / "test.db")
+        db.initialize()
+        self._insert_moods(db, [2, 3, 3])          # latest 2/10 -> urgent absolute-low
+        self._insert_sleep(db, [4.0, 4.0, 4.0])    # avg <5h -> moderate mood+sleep
+        orch = WellnessOrchestrator(db)
+        signals = orch.detect_crisis_signals(conditions=[])
+
+        assert len(signals) >= 2
+        assert signals[0].severity == "urgent"
+        assert "988" in signals[0].recommendation
+        rank = {"urgent": 0, "moderate": 1, "mild": 2, "info": 3}
+        ranks = [rank[s.severity] for s in signals]
+        assert ranks == sorted(ranks), "signals must be sorted by descending severity"
+        db.close()
+
     def test_medication_miss_streak(self, tmp_data_dir: Path) -> None:
         db = DatabaseManager(tmp_data_dir / "test.db")
         db.initialize()

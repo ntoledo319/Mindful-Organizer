@@ -38,6 +38,7 @@ from core.constants import Condition
 from core.database import DatabaseManager
 from core.display_adaptation import DisplayAdaptationEngine
 from core.focus_mode import FocusModeManager
+from core.paths import get_data_dir
 from core.platform_actions import PlatformBackend, get_backend
 from core.subscription_manager import SubscriptionManager
 from core.wellness_orchestrator import WellnessOrchestrator
@@ -60,7 +61,7 @@ class SystemAutomationEngine:
         config_manager: AutomationConfigManager | None = None,
         analytics: AutomationAnalytics | None = None,
     ) -> None:
-        self.data_dir = data_dir or Path.home() / ".mindful_organizer"
+        self.data_dir = data_dir or get_data_dir()
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
         self.backend = backend or get_backend()

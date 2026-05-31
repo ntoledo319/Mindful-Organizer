@@ -16,9 +16,11 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
+from core.paths import get_data_dir
+
 logger = logging.getLogger(__name__)
 
-DATA_DIR = Path.home() / ".mindful_organizer"
+DATA_DIR = get_data_dir(create=False)
 ANALYTICS_FILE = DATA_DIR / "onboarding_analytics.json"
 
 

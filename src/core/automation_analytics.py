@@ -18,6 +18,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+from core.paths import get_data_dir
+
 logger = logging.getLogger(__name__)
 
 
@@ -75,7 +77,7 @@ class AutomationAnalytics:
     """Collects and reports on automation effectiveness."""
 
     def __init__(self, data_dir: Path | None = None) -> None:
-        self.data_dir = data_dir or Path.home() / ".mindful_organizer"
+        self.data_dir = data_dir or get_data_dir()
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.analytics_file = self.data_dir / "automation_analytics.json"
 

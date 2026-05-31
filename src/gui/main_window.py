@@ -311,7 +311,10 @@ class AdaptiveMainWindow(QMainWindow):
         if self._export_manager is None:
             try:
                 from core.export_manager import ExportManager
-                self._export_manager = ExportManager(self.data_dir)
+                # Must receive the shared DatabaseManager — passing a Path made
+                # every export/import raise AttributeError and silently fall back
+                # to exporting only loose JSON files (zero SQLite health data).
+                self._export_manager = ExportManager(self.db)
             except ImportError:
                 logger.warning("ExportManager not available")
         return self._export_manager
@@ -773,6 +776,10 @@ class AdaptiveMainWindow(QMainWindow):
                     journal_manager=self.journaling_manager,
                     profile_manager=self.profile_manager,
                 )
+                # If an entry trips self-harm/ideation detection, let the user
+                # jump straight to crisis resources.
+                widget.crisis_requested.connect(
+                    lambda: self._switch_to_tab("crisis"))
             elif name == "breathing":
                 from gui.widgets.breathing_widget import BreathingWidget
                 widget = BreathingWidget(

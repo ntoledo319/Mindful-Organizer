@@ -32,6 +32,8 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
+from core.paths import get_data_dir
+
 logger = logging.getLogger(__name__)
 
 
@@ -133,7 +135,7 @@ class SleepWidget(QWidget):
         try:
             return Path(self.main_window.data_dir)
         except (AttributeError, TypeError):
-            p = Path.home() / ".mindful_organizer"
+            p = get_data_dir()
             p.mkdir(parents=True, exist_ok=True)
             return p
 
