@@ -11,84 +11,24 @@ from datetime import date, datetime, timedelta
 
 import pytest
 
-# --- Conditional imports -------------------------------------------------------
-
-try:
-    from core.database import DatabaseManager, TableName
-    _HAS_DB = True
-except ImportError:
-    _HAS_DB = False
-
-try:
-    from core.task_manager import (
-        Task,
-        TaskCategory,
-        TaskManager,
-        TaskPriority,
-    )
-    _HAS_TASKS = True
-except ImportError:
-    _HAS_TASKS = False
-
-try:
-    from core.mood_analytics import MoodAnalytics
-    _HAS_ANALYTICS = True
-except ImportError:
-    _HAS_ANALYTICS = False
-
-try:
-    from core.export_manager import (
-        DataCategory,
-        ExportFormat,
-        ExportManager,
-        ExportOptions,
-    )
-    _HAS_EXPORT = True
-except ImportError:
-    _HAS_EXPORT = False
-
-try:
-    from core.nlp_parser import NLPTaskParser
-    _HAS_NLP = True
-except ImportError:
-    _HAS_NLP = False
-
-try:
-    from core.smart_task_decomposer import SmartTaskDecomposer
-    _HAS_DECOMPOSER = True
-except ImportError:
-    _HAS_DECOMPOSER = False
-
-try:
-    from core.notification_manager import (
-        NotificationManager,
-        NotificationType,
-    )
-    _HAS_NOTIFICATIONS = True
-except ImportError:
-    _HAS_NOTIFICATIONS = False
-
-try:
-    from core.file_organizer import FileOrganizer
-    _HAS_FILE_ORG = True
-except ImportError:
-    _HAS_FILE_ORG = False
-
-try:
-    from wellness.breathing import BreathingManager
-    from wellness.breathing import Condition as BreathCondition
-    _HAS_BREATHING = True
-except ImportError:
-    _HAS_BREATHING = False
-
-try:
-    from profiles.spoon_theory import SpoonBudget
-    _HAS_SPOONS = True
-except ImportError:
-    _HAS_SPOONS = False
-
-
-pytestmark = pytest.mark.skipif(not _HAS_DB, reason="database module not available")
+# First-party imports are hard imports: a break in any of these modules must FAIL
+# this suite loudly, never silently skip it green.
+from core.database import DatabaseManager, TableName
+from core.export_manager import (
+    DataCategory,
+    ExportFormat,
+    ExportManager,
+    ExportOptions,
+)
+from core.file_organizer import FileOrganizer
+from core.mood_analytics import MoodAnalytics
+from core.nlp_parser import NLPTaskParser
+from core.notification_manager import NotificationManager, NotificationType
+from core.smart_task_decomposer import SmartTaskDecomposer
+from core.task_manager import Task, TaskCategory, TaskManager, TaskPriority
+from profiles.spoon_theory import SpoonBudget
+from wellness.breathing import BreathingManager
+from wellness.breathing import Condition as BreathCondition
 
 
 @pytest.fixture
@@ -103,7 +43,6 @@ def db(tmp_data_dir):
 # Profile -> Task management flow
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skipif(not _HAS_TASKS, reason="task_manager not available")
 class TestProfileToTaskFlow:
 
     def test_create_tasks_with_conditions(self, tmp_data_dir, sample_profile):
@@ -124,7 +63,6 @@ class TestProfileToTaskFlow:
         assert len(high_tasks) == 1
         assert high_tasks[0].title == "Prepare presentation"
 
-    @pytest.mark.skipif(not _HAS_DECOMPOSER, reason="decomposer not available")
     def test_decompose_task_for_adhd_user(self, sample_profile):
         """ADHD user gets task decomposed into small steps."""
         decomposer = SmartTaskDecomposer()
@@ -138,7 +76,6 @@ class TestProfileToTaskFlow:
         for step in result.subtasks:
             assert step.estimated_minutes <= 30
 
-    @pytest.mark.skipif(not _HAS_NLP, reason="nlp_parser not available")
     def test_parse_and_add_task(self, tmp_data_dir):
         """Parse natural language into a task, then add to TaskManager."""
         parser = NLPTaskParser()
@@ -155,7 +92,6 @@ class TestProfileToTaskFlow:
         tm.add_task(task)
         assert tm.get_tasks_by_priority(task.priority)[0].title == parsed.title
 
-    @pytest.mark.skipif(not _HAS_SPOONS, reason="spoon_theory not available")
     def test_spoon_budget_filters_tasks(self, tmp_data_dir):
         """Only tasks within remaining spoon budget should be suggested."""
         budget = SpoonBudget(conditions={"ADHD"})
@@ -180,7 +116,6 @@ class TestProfileToTaskFlow:
 # Mood -> Analytics flow
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skipif(not _HAS_ANALYTICS, reason="mood_analytics not available")
 class TestMoodToAnalyticsFlow:
 
     def test_db_entries_to_analytics(self, db):
@@ -243,7 +178,6 @@ class TestMoodToAnalyticsFlow:
 # Full data lifecycle
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skipif(not _HAS_EXPORT, reason="export_manager not available")
 class TestFullDataLifecycle:
 
     def test_create_export_import_verify(self, db, tmp_data_dir):
@@ -359,7 +293,6 @@ class TestFullDataLifecycle:
 # Notification + condition flow
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skipif(not _HAS_NOTIFICATIONS, reason="notification_manager not available")
 class TestNotificationConditionFlow:
 
     def test_schedule_and_deliver_for_adhd(self, db):
@@ -394,7 +327,6 @@ class TestNotificationConditionFlow:
 # Breathing + energy flow
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skipif(not _HAS_BREATHING, reason="breathing module not available")
 class TestBreathingEnergyFlow:
 
     def test_recommend_then_track_session(self, tmp_data_dir):
@@ -417,10 +349,6 @@ class TestBreathingEnergyFlow:
 # File organizer + gamification flow
 # ---------------------------------------------------------------------------
 
-@pytest.mark.skipif(
-    not (_HAS_FILE_ORG),
-    reason="file_organizer not available",
-)
 class TestFileOrganizationFlow:
 
     def test_organize_and_stats(self, tmp_data_dir, tmp_path):
