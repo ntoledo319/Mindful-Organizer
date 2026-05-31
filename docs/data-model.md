@@ -7,16 +7,17 @@
 
 ## Overview
 
-Hearth uses **SQLite** (WAL mode, foreign keys enabled) as the primary persistence layer. `TaskManager` now stores task records in SQLite; JSON files remain for lightweight local settings, task templates, custom categories, and legacy import sources.
+Hearth uses **SQLite** (WAL mode, foreign keys enabled) as the primary persistence layer. A single shared `DatabaseManager` instance — opened against the one canonical database resolved by `src/core/paths.py` — is injected into every manager, so all health data lives in one file rather than scattered across per-feature JSON. JSON files remain only for lightweight local settings, task templates, custom categories, and legacy import sources.
 
 ## Schema Version
 
-Current version: **3**
+Current version: **4**
 
 Version history:
 - v1 — Initial schema (implicit, created by `executescript`)
 - v2 — Added `diary_cards` table (migration defined in `src/core/database.py` `_MIGRATIONS`)
 - v3 — Expanded `tasks` with GUIDs, subtasks/tags JSON fields, recurrence, dependencies, duration, values alignment, and reminders.
+- v4 — Backfills `guid` values for `tasks` rows created before the `guid` column existed, so every task has a stable identifier after upgrade.
 
 ## Entity Diagram (SQLite Tables)
 
@@ -265,13 +266,19 @@ erDiagram
 
 ## JSON Files (Local Config / Legacy Inputs)
 
+All paths below are relative to the canonical data directory (`<data_dir>`) resolved by
+`src/core/paths.py`. The directory is named `.mindful_organizer` on every platform but
+its parent differs by OS (see [`docs/deployment.md`](deployment.md) for the resolved
+locations). On POSIX systems the directory is created `0700` and the database file `0600`.
+
 | File | Location | Managed by |
 |------|----------|------------|
-| `tasks.json` | `~/.mindful_organizer/tasks.json` | Legacy task migration input |
-| `task_templates.json` | `~/.mindful_organizer/task_templates.json` | `TaskManager` templates |
-| `custom_categories.json` | `~/.mindful_organizer/custom_categories.json` | `TaskManager` custom category labels |
-| `settings.json` | `~/.mindful_organizer/settings.json` | `AdaptiveMainWindow` |
-| `license.json` | `~/.mindful_organizer/license.json` | `SubscriptionManager` |
+| `mindful_organizer.db` | `<data_dir>/mindful_organizer.db` | `DatabaseManager` (canonical store) |
+| `tasks.json` | `<data_dir>/tasks.json` | Legacy task migration input |
+| `task_templates.json` | `<data_dir>/task_templates.json` | `TaskManager` templates |
+| `custom_categories.json` | `<data_dir>/custom_categories.json` | `TaskManager` custom category labels |
+| `settings.json` | `<data_dir>/settings.json` | `AdaptiveMainWindow` |
+| `license.json` | `<data_dir>/license.json` | `SubscriptionManager` |
 
 
 ## Validation Rules

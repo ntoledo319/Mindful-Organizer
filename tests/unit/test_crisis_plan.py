@@ -1,139 +1,163 @@
 """
-Tests for CrisisPlanManager functionality (src/wellness/crisis_plan.py).
+Tests for CrisisPlanManager (src/wellness/crisis_plan.py).
 
-Since the CrisisPlanManager class does not exist as a standalone module,
-these tests exercise crisis plan functionality through the DatabaseManager's
-crisis_plans table. Covers CRUD, default resources, contacts, validation,
-and persistence.
+These tests exercise the real CrisisPlanManager class: creating and loading
+plans, that the default crisis resources (988 Suicide & Crisis Lifeline,
+Crisis Text Line 741741, SAMHSA) are always available even before a user
+builds a plan, plan validation, quick-access output, and that saving a plan
+round-trips through disk on reload.
 """
 
-import json
-
-import pytest
-
-try:
-    from src.core.database import DatabaseManager, TableName
-    _HAS_MODULE = True
-except ImportError:
-    _HAS_MODULE = False
-
-pytestmark = pytest.mark.skipif(not _HAS_MODULE, reason="database module not available")
-
-
-@pytest.fixture
-def db(tmp_data_dir):
-    database = DatabaseManager(db_path=tmp_data_dir / "test.db")
-    database.initialize()
-    yield database
-    database.close()
-
+from wellness.crisis_plan import (
+    ContactType,
+    CrisisPlan,
+    CrisisPlanManager,
+    PlanSituation,
+    ProfessionalContact,
+    SupportContact,
+)
 
 # ---------------------------------------------------------------------------
-# Create plan
+# Create / load plan
 # ---------------------------------------------------------------------------
 
 class TestCreatePlan:
 
-    def test_create_plan(self, db):
-        row_id = db.insert(
-            TableName.CRISIS_PLANS,
+    def test_create_plan_returns_real_plan(self, tmp_data_dir):
+        manager = CrisisPlanManager(tmp_data_dir)
+        plan = manager.create_plan(
             name="My Safety Plan",
-            warning_signs="Feeling isolated, racing thoughts",
-            coping_strategies="Deep breathing, call friend, go for a walk",
-            support_contacts=json.dumps([{"name": "Jane", "phone": "555-0101"}]),
-            professional_contacts=json.dumps([{"name": "Dr. Smith", "phone": "555-0202"}]),
-            safe_environment="Go to living room, remove sharp objects",
-            emergency_numbers="988, 911",
+            situation=PlanSituation.PANIC_ATTACK,
         )
-        assert row_id > 0
 
-    def test_retrieve_plan(self, db):
-        row_id = db.insert(
-            TableName.CRISIS_PLANS,
-            name="Test Plan",
-            warning_signs="Withdrawal",
-            coping_strategies="Journaling",
-        )
-        plan = db.get_by_id(TableName.CRISIS_PLANS, row_id)
-        assert plan is not None
-        assert plan["name"] == "Test Plan"
-        assert plan["warning_signs"] == "Withdrawal"
+        assert isinstance(plan, CrisisPlan)
+        assert plan.name == "My Safety Plan"
+        assert plan.situation == PlanSituation.PANIC_ATTACK
+        assert plan.plan_id  # a non-empty generated id
 
-    def test_plan_is_active_by_default(self, db):
-        row_id = db.insert(
-            TableName.CRISIS_PLANS,
-            name="Active Plan",
-            coping_strategies="Breathing",
-        )
-        plan = db.get_by_id(TableName.CRISIS_PLANS, row_id)
-        assert plan["is_active"] == 1
+    def test_created_plan_is_retrievable_by_id(self, tmp_data_dir):
+        manager = CrisisPlanManager(tmp_data_dir)
+        plan = manager.create_plan(name="Retrievable Plan")
+
+        fetched = manager.get_plan(plan.plan_id)
+        assert fetched is not None
+        assert fetched.plan_id == plan.plan_id
+        assert fetched.name == "Retrievable Plan"
+
+    def test_new_manager_has_no_plans(self, tmp_data_dir):
+        manager = CrisisPlanManager(tmp_data_dir)
+        assert manager.list_plans() == []
+
+    def test_get_unknown_plan_returns_none(self, tmp_data_dir):
+        manager = CrisisPlanManager(tmp_data_dir)
+        assert manager.get_plan("does-not-exist") is None
+
+    def test_get_plan_by_situation(self, tmp_data_dir):
+        manager = CrisisPlanManager(tmp_data_dir)
+        manager.create_plan(name="Panic Plan", situation=PlanSituation.PANIC_ATTACK)
+
+        found = manager.get_plan_by_situation(PlanSituation.PANIC_ATTACK)
+        assert found is not None
+        assert found.name == "Panic Plan"
+        assert manager.get_plan_by_situation(PlanSituation.SUBSTANCE_URGE) is None
 
 
 # ---------------------------------------------------------------------------
-# Default resources
+# Default crisis resources (always available, even with no user plan)
 # ---------------------------------------------------------------------------
 
 class TestDefaultResources:
 
-    def test_emergency_numbers_stored(self, db):
-        row_id = db.insert(
-            TableName.CRISIS_PLANS,
-            name="Emergency Plan",
-            emergency_numbers="988 Suicide & Crisis Lifeline, 911",
-        )
-        plan = db.get_by_id(TableName.CRISIS_PLANS, row_id)
-        assert "988" in plan["emergency_numbers"]
-        assert "911" in plan["emergency_numbers"]
+    def test_default_resources_available_without_any_plan(self, tmp_data_dir):
+        """The hotlines must be reachable before the user builds anything."""
+        manager = CrisisPlanManager(tmp_data_dir)
+        assert manager.list_plans() == []
+
+        resources = manager.get_default_crisis_resources()
+        names = [r.name for r in resources]
+
+        assert "988 Suicide & Crisis Lifeline" in names
+        assert "Crisis Text Line" in names
+        assert any("SAMHSA" in r.name or r.organization == "SAMHSA" for r in resources)
+
+    def test_default_988_lifeline_details(self, tmp_data_dir):
+        manager = CrisisPlanManager(tmp_data_dir)
+        resources = manager.get_default_crisis_resources()
+        lifeline = next(r for r in resources if r.name == "988 Suicide & Crisis Lifeline")
+
+        assert lifeline.phone == "988"
+        assert lifeline.contact_type == ContactType.CRISIS_LINE
+        assert lifeline.available_hours == "24/7"
+
+    def test_default_crisis_text_line_741741(self, tmp_data_dir):
+        manager = CrisisPlanManager(tmp_data_dir)
+        resources = manager.get_default_crisis_resources()
+        text_line = next(r for r in resources if r.name == "Crisis Text Line")
+
+        assert text_line.phone == "741741"
+        assert "741741" in text_line.instructions
+
+    def test_quick_access_exposes_crisis_lines_with_no_user_plan(self, tmp_data_dir):
+        """get_quick_access with no plan must still surface the hotlines."""
+        manager = CrisisPlanManager(tmp_data_dir)
+        quick = manager.get_quick_access()
+
+        crisis_line_names = [c["name"] for c in quick["crisis_lines"]]
+        assert "988 Suicide & Crisis Lifeline" in crisis_line_names
+        assert "Crisis Text Line" in crisis_line_names
+        assert quick["disclaimer"]
+        assert quick["message"]
+
+    def test_new_plan_ships_with_default_professional_contacts(self, tmp_data_dir):
+        """A freshly created plan carries the crisis lines out of the box."""
+        manager = CrisisPlanManager(tmp_data_dir)
+        plan = manager.create_plan(name="Fresh Plan")
+
+        names = [c.name for c in plan.professional_contacts]
+        assert "988 Suicide & Crisis Lifeline" in names
+        assert "Crisis Text Line" in names
 
 
 # ---------------------------------------------------------------------------
-# Add contact
+# Contacts and plan editing
 # ---------------------------------------------------------------------------
 
-class TestAddContact:
+class TestPlanEditing:
 
-    def test_add_support_contact(self, db):
-        contacts = [{"name": "Alice", "phone": "555-1111"}]
-        row_id = db.insert(
-            TableName.CRISIS_PLANS,
-            name="Contact Plan",
-            support_contacts=json.dumps(contacts),
+    def test_add_support_contact_and_update(self, tmp_data_dir):
+        manager = CrisisPlanManager(tmp_data_dir)
+        plan = manager.create_plan(name="Contact Plan")
+        plan.support_contacts.append(
+            SupportContact(name="Jane", phone="555-0101", relationship="sister")
         )
+        manager.update_plan(plan)
 
-        # Add a new contact
-        plan = db.get_by_id(TableName.CRISIS_PLANS, row_id)
-        existing = json.loads(plan["support_contacts"])
-        existing.append({"name": "Bob", "phone": "555-2222"})
-        db.update(
-            TableName.CRISIS_PLANS,
-            row_id,
-            support_contacts=json.dumps(existing),
+        fetched = manager.get_plan(plan.plan_id)
+        assert len(fetched.support_contacts) == 1
+        assert fetched.support_contacts[0].name == "Jane"
+        assert fetched.support_contacts[0].relationship == "sister"
+
+    def test_add_professional_contact(self, tmp_data_dir):
+        manager = CrisisPlanManager(tmp_data_dir)
+        plan = manager.create_plan(name="Pro Plan")
+        before = len(plan.professional_contacts)
+        plan.professional_contacts.append(
+            ProfessionalContact(
+                name="Dr. Jones",
+                phone="555-3333",
+                role="Therapist",
+                contact_type=ContactType.THERAPIST,
+            )
         )
+        manager.update_plan(plan)
 
-        updated = db.get_by_id(TableName.CRISIS_PLANS, row_id)
-        loaded = json.loads(updated["support_contacts"])
-        assert len(loaded) == 2
-        assert loaded[1]["name"] == "Bob"
-
-    def test_add_professional_contact(self, db):
-        row_id = db.insert(
-            TableName.CRISIS_PLANS,
-            name="Pro Contact Plan",
-            professional_contacts=json.dumps([]),
-        )
-        plan = db.get_by_id(TableName.CRISIS_PLANS, row_id)
-        pros = json.loads(plan["professional_contacts"])
-        pros.append({"name": "Dr. Jones", "phone": "555-3333", "role": "Therapist"})
-        db.update(
-            TableName.CRISIS_PLANS,
-            row_id,
-            professional_contacts=json.dumps(pros),
-        )
-
-        updated = db.get_by_id(TableName.CRISIS_PLANS, row_id)
-        loaded = json.loads(updated["professional_contacts"])
-        assert len(loaded) == 1
-        assert loaded[0]["role"] == "Therapist"
+        fetched = manager.get_plan(plan.plan_id)
+        assert len(fetched.professional_contacts) == before + 1
+        therapists = [
+            c for c in fetched.professional_contacts
+            if c.contact_type == ContactType.THERAPIST
+        ]
+        assert any(c.name == "Dr. Jones" for c in therapists)
 
 
 # ---------------------------------------------------------------------------
@@ -142,60 +166,107 @@ class TestAddContact:
 
 class TestPlanValidation:
 
-    def test_plan_requires_name(self, db):
-        """The crisis_plans table requires a name (NOT NULL)."""
-        import sqlite3
-        with pytest.raises(sqlite3.IntegrityError):
-            db.insert(TableName.CRISIS_PLANS, coping_strategies="Breathing")
+    def test_empty_plan_reports_missing_sections(self, tmp_data_dir):
+        manager = CrisisPlanManager(tmp_data_dir)
+        plan = manager.create_plan(name="Bare Plan")
+        warnings = plan.validate()
 
-    def test_multiple_plans_allowed(self, db):
-        db.insert(TableName.CRISIS_PLANS, name="Plan A")
-        db.insert(TableName.CRISIS_PLANS, name="Plan B")
+        # A bare plan should flag warning signs, coping strategies,
+        # support contacts, safe places, and reasons for living.
+        joined = " ".join(warnings).lower()
+        assert "warning signs" in joined
+        assert "coping strateg" in joined
+        assert "safe place" in joined
+        assert "reasons for living" in joined
 
-        result = db.query(TableName.CRISIS_PLANS)
-        assert result.row_count == 2
+    def test_complete_plan_has_no_warnings(self, tmp_data_dir):
+        manager = CrisisPlanManager(tmp_data_dir)
+        plan = manager.create_plan(name="Complete Plan")
+        plan.warning_signs = ["Racing thoughts"]
+        plan.coping_strategies = ["Box breathing", "Call a friend"]
+        plan.support_contacts = [
+            SupportContact(name="Alex", phone="555-0000", relationship="friend")
+        ]
+        plan.safe_places = ["Living room"]
+        plan.reasons_for_living = ["My dog"]
+        manager.update_plan(plan)
 
-    def test_deactivate_plan(self, db):
-        row_id = db.insert(TableName.CRISIS_PLANS, name="To Deactivate")
-        db.update(TableName.CRISIS_PLANS, row_id, is_active=0)
+        assert plan.validate() == []
 
-        plan = db.get_by_id(TableName.CRISIS_PLANS, row_id)
-        assert plan["is_active"] == 0
+    def test_validate_all_plans_keys_by_plan_id(self, tmp_data_dir):
+        manager = CrisisPlanManager(tmp_data_dir)
+        bare = manager.create_plan(name="Still Bare")
+
+        results = manager.validate_all_plans()
+        assert bare.plan_id in results
+        assert results[bare.plan_id]  # non-empty warnings
 
 
 # ---------------------------------------------------------------------------
-# Plan persistence
+# Persistence / round-trip
 # ---------------------------------------------------------------------------
 
 class TestPlanPersistence:
 
-    def test_plan_survives_reconnect(self, tmp_data_dir):
-        db1 = DatabaseManager(db_path=tmp_data_dir / "persist.db")
-        db1.initialize()
-        row_id = db1.insert(
-            TableName.CRISIS_PLANS,
+    def test_plan_round_trips_on_reload(self, tmp_data_dir):
+        manager1 = CrisisPlanManager(tmp_data_dir)
+        plan = manager1.create_plan(
             name="Persistent Plan",
-            warning_signs="Isolation",
-            coping_strategies="Call friend",
+            situation=PlanSituation.SUICIDAL_IDEATION,
         )
-        db1.close()
+        plan.warning_signs = ["Isolation", "Hopelessness"]
+        plan.coping_strategies = ["Cold water on face", "Text a friend"]
+        plan.support_contacts = [
+            SupportContact(name="Sam", phone="555-9999", relationship="brother")
+        ]
+        plan.safe_places = ["The park"]
+        plan.reasons_for_living = ["My family"]
+        plan.notes = "Keep this somewhere visible."
+        manager1.update_plan(plan)
 
-        db2 = DatabaseManager(db_path=tmp_data_dir / "persist.db")
-        db2.initialize()
-        plan = db2.get_by_id(TableName.CRISIS_PLANS, row_id)
-        assert plan is not None
-        assert plan["name"] == "Persistent Plan"
-        db2.close()
+        # Fresh manager reads what the first one wrote.
+        manager2 = CrisisPlanManager(tmp_data_dir)
+        reloaded = manager2.get_plan(plan.plan_id)
 
-    def test_update_plan_persists(self, tmp_data_dir):
-        db1 = DatabaseManager(db_path=tmp_data_dir / "persist2.db")
-        db1.initialize()
-        row_id = db1.insert(TableName.CRISIS_PLANS, name="Original")
-        db1.update(TableName.CRISIS_PLANS, row_id, name="Updated")
-        db1.close()
+        assert reloaded is not None
+        assert reloaded.name == "Persistent Plan"
+        assert reloaded.situation == PlanSituation.SUICIDAL_IDEATION
+        assert reloaded.warning_signs == ["Isolation", "Hopelessness"]
+        assert reloaded.coping_strategies == ["Cold water on face", "Text a friend"]
+        assert reloaded.support_contacts[0].name == "Sam"
+        assert reloaded.support_contacts[0].relationship == "brother"
+        assert reloaded.safe_places == ["The park"]
+        assert reloaded.reasons_for_living == ["My family"]
+        assert reloaded.notes == "Keep this somewhere visible."
 
-        db2 = DatabaseManager(db_path=tmp_data_dir / "persist2.db")
-        db2.initialize()
-        plan = db2.get_by_id(TableName.CRISIS_PLANS, row_id)
-        assert plan["name"] == "Updated"
-        db2.close()
+    def test_default_resources_survive_round_trip(self, tmp_data_dir):
+        manager1 = CrisisPlanManager(tmp_data_dir)
+        plan = manager1.create_plan(name="Has Defaults")
+
+        manager2 = CrisisPlanManager(tmp_data_dir)
+        reloaded = manager2.get_plan(plan.plan_id)
+        names = [c.name for c in reloaded.professional_contacts]
+        assert "988 Suicide & Crisis Lifeline" in names
+        assert "Crisis Text Line" in names
+
+    def test_delete_plan_removes_it_from_disk(self, tmp_data_dir):
+        manager1 = CrisisPlanManager(tmp_data_dir)
+        plan = manager1.create_plan(name="Doomed Plan")
+        assert manager1.delete_plan(plan.plan_id) is True
+        assert manager1.get_plan(plan.plan_id) is None
+
+        manager2 = CrisisPlanManager(tmp_data_dir)
+        assert manager2.get_plan(plan.plan_id) is None
+
+    def test_export_plan_produces_text_with_disclaimer(self, tmp_data_dir):
+        manager = CrisisPlanManager(tmp_data_dir)
+        plan = manager.create_plan(name="Exportable Plan")
+        plan.coping_strategies = ["Breathe"]
+        manager.update_plan(plan)
+
+        text = manager.export_plan(plan.plan_id)
+        assert text is not None
+        assert "CRISIS SAFETY PLAN" in text
+        assert "Exportable Plan" in text
+        assert "988 Suicide & Crisis Lifeline" in text
+        assert manager.export_plan("missing") is None

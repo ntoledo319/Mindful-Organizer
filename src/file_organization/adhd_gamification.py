@@ -183,7 +183,14 @@ class ADHDGameManager:
 
     def get_level_progress(self) -> dict:
         """Get current level progress."""
-        current_threshold = sum(xp_for_level(i) for i in range(self.level + 1))
+        # The floor of the current level is the cumulative XP that was required
+        # to reach it. Level 0 starts at 0 XP; for level L>=1 it is the same
+        # threshold the level-up check crossed to enter L. (The previous code
+        # used range(level+1) unconditionally, so level 0's floor was
+        # xp_for_level(0) instead of 0, producing a negative progress_percent.)
+        current_threshold = (
+            sum(xp_for_level(i) for i in range(self.level + 1)) if self.level else 0
+        )
         next_threshold = sum(xp_for_level(i) for i in range(self.level + 2))
         progress_xp = self.total_xp - current_threshold
         needed_xp = next_threshold - current_threshold
@@ -193,7 +200,7 @@ class ADHDGameManager:
             "level_name": LEVEL_NAMES[min(self.level, len(LEVEL_NAMES) - 1)],
             "current_xp": progress_xp,
             "needed_xp": needed_xp,
-            "progress_percent": min(100, int(progress_xp / max(needed_xp, 1) * 100)),
+            "progress_percent": max(0, min(100, int(progress_xp / max(needed_xp, 1) * 100))),
             "total_xp": self.total_xp,
         }
 

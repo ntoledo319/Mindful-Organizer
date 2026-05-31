@@ -3,12 +3,14 @@
 **Purpose:** System architecture, data flow, and design decisions.  
 **Intended audience:** Engineers, architects, auditors.  
 **Confidence:** Confirmed from source code. Inferences are labeled.  
-**Source references:** `src/main.py`, `src/gui/main_window.py`, `src/core/database.py`, `src/core/wellness_orchestrator.py`, `src/gui/state_bus.py`  
-**Last updated:** 2026-05-29
+**Source references:** `src/main.py`, `src/gui/main_window.py`, `src/core/database.py`, `src/core/paths.py`, `src/core/wellness_orchestrator.py`, `src/gui/state_bus.py`  
+**Last updated:** 2026-05-30 (Hearth 1.1.0)
 
 ## Overall Architecture
 
-Hearth follows a **layered desktop-application pattern** with reactive cross-widget communication.
+Hearth follows a **layered desktop-application pattern** with reactive cross-widget communication. It is a self-contained PyQt6 process: there is **no HTTP server, no web frontend, and no inter-process API** in the shipping product.
+
+> **Not shipped (future idea, not present in 1.1.0):** An experimental local HTTP layer (`src/hearth_api`, built on FastAPI) and a separate web/Tauri client were prototyped and then removed before release. They were orphaned (no frontend consumed them), their data routes were broken, and they added heavy runtime dependencies. Any reference to a "Hearth API", FastAPI routes, a Next.js/Tauri frontend, or a "Phase 2 sidecar" describes that abandoned prototype, not the current architecture. If the idea is revived it would be a future phase, not a current component.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -52,9 +54,11 @@ Hearth follows a **layered desktop-application pattern** with reactive cross-wid
 - **`SubscriptionManager`** gates features by tier without network calls.
 - **`TaskManager`** persists task records to SQLite and keeps templates/custom category labels in JSON.
 
-### Data Layer (`src/core/database.py`)
+### Data Layer (`src/core/database.py`, `src/core/paths.py`)
 - **`DatabaseManager`** provides thread-local SQLite connections, CRUD helpers, schema versioning, and migrations.
-- **Schema version** is tracked in the `schema_version` table (currently v3).
+- **Single canonical store.** `src/core/paths.py` resolves exactly one platform-appropriate data directory (`.mindful_organizer`) and one database file (`mindful_organizer.db`). A single shared `DatabaseManager` is constructed at startup and injected into every manager, so health data is never split across multiple SQLite files or ad-hoc JSON stores. (Historically three directory conventions coexisted and silently fragmented user data; `paths.py` ended that.)
+- **Schema version** is tracked in the `schema_version` table (currently v4; v4 backfills task GUIDs on upgrade).
+- **POSIX hardening.** The data directory is created `0700` and the database file `0600` so other accounts on a shared machine cannot read local health data.
 - **JSON files** are used for settings, templates, custom category labels, license state, and some legacy wellness resources.
 
 ## Request / Interaction Lifecycle

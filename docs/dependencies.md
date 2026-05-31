@@ -3,7 +3,7 @@
 **Purpose:** Inventory of third-party packages and integrations with risk assessment.  
 **Intended audience:** Architects, security reviewers, operators.  
 **Confidence:** Confirmed from `pyproject.toml`, `requirements.txt`, and source imports.  
-**Last updated:** 2026-05-02
+**Last updated:** 2026-05-30 (Hearth 1.1.0)
 
 ## Core Runtime Dependencies
 
@@ -16,10 +16,11 @@ Defined in `pyproject.toml` `[project.dependencies]`:
 | cryptography | >=41.0.0 | Encryption (Fernet, scrypt) | No |
 | psutil | >=5.9.0 | System monitoring | No |
 | keyring | >=24.0.0 | OS credential storage | No |
-| fastapi | >=0.110.0 | Local API layer | No |
-| uvicorn | >=0.27.0 | Local API server | No |
-| pydantic | >=2.5.0 | API schema validation | No |
-| httpx | >=0.26.0 | API test client and HTTP client | No |
+
+**Removed in 1.1.0:** `fastapi`, `uvicorn`, `pydantic`, and `httpx` are no longer
+dependencies. They backed an experimental local HTTP layer (`src/hearth_api`) that
+never shipped with the desktop product and has been removed from the runtime. See
+[`docs/architecture.md`](architecture.md) for the rationale.
 
 ## Optional Dependencies
 

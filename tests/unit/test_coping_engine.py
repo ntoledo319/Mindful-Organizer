@@ -1,160 +1,176 @@
 """
-Tests for CopingEngine functionality (src/wellness/coping_engine.py).
+Tests for CopingEngine (src/wellness/coping_engine.py).
 
-Since the CopingEngine class does not exist as a standalone module,
-these tests validate coping-related logic using the available breathing
-and grounding modules, and the database layer for coping recommendations.
+These tests exercise the real CopingEngine: ranked recommendations that
+respect time/energy/crisis filters, condition-match scoring, the dedicated
+emergency-strategy path (fast, low-energy, crisis-appropriate), and that
+recorded feedback is learned and persists across reloads.
 """
 
-import pytest
-
-try:
-    from src.wellness.breathing import (
-        BreathingExerciseType,
-        BreathingManager,
-    )
-    from src.wellness.breathing import (
-        Condition as BreathCondition,
-    )
-    _HAS_BREATHING = True
-except ImportError:
-    _HAS_BREATHING = False
-
-pytestmark = pytest.mark.skipif(
-    not _HAS_BREATHING,
-    reason="breathing module not available",
+from wellness.coping_engine import (
+    CopingCategory,
+    CopingEngine,
+    CrisisLevel,
 )
 
-
 # ---------------------------------------------------------------------------
-# Recommendation logic (via breathing recommend)
+# Recommendation logic
 # ---------------------------------------------------------------------------
 
 class TestGetRecommendations:
 
-    def test_recommendations_for_low_mood(self, tmp_data_dir):
-        """Low mood should yield calming/grounding exercises."""
-        bm = BreathingManager(tmp_data_dir)
-        recs = bm.recommend(mood=2)
+    def test_returns_ranked_strategies(self, tmp_data_dir):
+        engine = CopingEngine(tmp_data_dir)
+        recs = engine.get_recommendations()
 
         assert len(recs) > 0
-        # First recommendation should be calming
-        top_names = [r.name.lower() for r in recs[:3]]
-        assert any("calm" in n or "ground" in n or "deep" in n for n in top_names)
+        assert len(recs) <= 10  # engine caps at top 10
+        # Each item carries a real strategy and a numeric score.
+        for rec in recs:
+            assert "strategy" in rec
+            assert "score" in rec
+            assert "id" in rec["strategy"]
+        # Sorted by score, descending.
+        scores = [r["score"] for r in recs]
+        assert scores == sorted(scores, reverse=True)
 
-    def test_recommendations_for_high_energy(self, tmp_data_dir):
-        bm = BreathingManager(tmp_data_dir)
-        recs = bm.recommend(energy=90)
-        assert len(recs) > 0
+    def test_time_filter_excludes_long_strategies(self, tmp_data_dir):
+        engine = CopingEngine(tmp_data_dir)
+        recs = engine.get_recommendations(time_available=5)
 
-    def test_recommendations_for_low_energy(self, tmp_data_dir):
-        bm = BreathingManager(tmp_data_dir)
-        recs = bm.recommend(energy=15)
         assert len(recs) > 0
-        # Low energy should prefer easy exercises
-        assert recs[0].difficulty <= 2
+        for rec in recs:
+            assert rec["strategy"]["time_required_minutes"] <= 5
+
+    def test_condition_match_boosts_score(self, tmp_data_dir):
+        """Supplying a matching condition must raise the score of at least one
+        strategy relative to the same run with no conditions, and never lower one."""
+        engine = CopingEngine(tmp_data_dir)
+
+        with_adhd = {
+            r["strategy"]["id"]: r["score"]
+            for r in engine.get_recommendations(conditions={"adhd"}, time_available=60)
+        }
+        without = {
+            r["strategy"]["id"]: r["score"]
+            for r in engine.get_recommendations(time_available=60)
+        }
+
+        common = set(with_adhd) & set(without)
+        assert common, "the two runs should share at least one strategy to compare"
+        boosted = [sid for sid in common if with_adhd[sid] > without[sid]]
+        assert boosted, "a matching condition should boost at least one strategy's score"
+        assert all(with_adhd[sid] >= without[sid] for sid in common)
+
+    def test_low_energy_filters_out_high_energy_strategies(self, tmp_data_dir):
+        engine = CopingEngine(tmp_data_dir)
+        recs = engine.get_recommendations(energy=15, time_available=60)
+
+        ids = {r["strategy"]["id"] for r in recs}
+        # Intense exercise (phy_04) requires HIGH energy and must be excluded.
+        assert "phy_04" not in ids
 
 
 # ---------------------------------------------------------------------------
-# Emergency mode (crisis situations -> fastest intervention)
+# Emergency mode
 # ---------------------------------------------------------------------------
 
-class TestEmergencyMode:
+class TestEmergencyStrategies:
 
-    def test_anxiety_emergency_yields_grounding_or_calming(self, tmp_data_dir):
-        """In anxiety emergency, calming or grounding exercises should be first."""
-        bm = BreathingManager(tmp_data_dir)
-        recs = bm.recommend(
-            mood=1,
-            energy=20,
-            conditions={BreathCondition.ANXIETY, BreathCondition.PANIC},
+    def test_emergency_strategies_are_all_crisis_appropriate(self, tmp_data_dir):
+        engine = CopingEngine(tmp_data_dir)
+        recs = engine.get_emergency_strategies()
+
+        assert len(recs) > 0
+        for rec in recs:
+            assert rec["strategy"]["crisis_appropriate"] is True
+
+    def test_emergency_strategies_are_fast(self, tmp_data_dir):
+        """Crisis help must be reachable in five minutes or less."""
+        engine = CopingEngine(tmp_data_dir)
+        recs = engine.get_emergency_strategies()
+
+        for rec in recs:
+            assert rec["strategy"]["time_required_minutes"] <= 5
+
+    def test_severe_crisis_excludes_non_crisis_strategies(self, tmp_data_dir):
+        engine = CopingEngine(tmp_data_dir)
+        recs = engine.get_recommendations(
+            time_available=60,
+            crisis_level=CrisisLevel.CRISIS,
         )
 
         assert len(recs) > 0
-        # Top exercise should be suitable for panic
-        top = recs[0]
-        assert (
-            BreathCondition.PANIC in top.condition_suitability
-            or BreathCondition.ANXIETY in top.condition_suitability
-        )
-
-    def test_ptsd_emergency(self, tmp_data_dir):
-        bm = BreathingManager(tmp_data_dir)
-        recs = bm.recommend(
-            mood=1,
-            conditions={BreathCondition.PTSD},
-        )
-        assert len(recs) > 0
-        top = recs[0]
-        assert BreathCondition.PTSD in top.condition_suitability
+        assert all(r["strategy"]["crisis_appropriate"] for r in recs)
 
 
 # ---------------------------------------------------------------------------
-# Feedback learning (historical effectiveness)
+# Feedback learning and persistence
 # ---------------------------------------------------------------------------
 
 class TestFeedbackLearning:
 
-    def test_historically_effective_exercise_ranks_higher(self, tmp_data_dir):
-        bm = BreathingManager(tmp_data_dir)
+    def test_positive_feedback_raises_a_strategy_score(self, tmp_data_dir):
+        engine = CopingEngine(tmp_data_dir)
 
-        # Create sessions with great improvement for 4-7-8
-        for _ in range(5):
-            s = bm.create_session(BreathingExerciseType.FOUR_SEVEN_EIGHT, mood_before=2)
-            bm.complete_session(s, cycles_completed=4, mood_after=8)
+        def score_for(sid):
+            for r in engine.get_recommendations(time_available=60):
+                if r["strategy"]["id"] == sid:
+                    return r["score"]
+            return None
 
-        # Create sessions with poor improvement for energizing
-        for _ in range(5):
-            s = bm.create_session(BreathingExerciseType.ENERGIZING_BREATH, mood_before=5)
-            bm.complete_session(s, cycles_completed=10, mood_after=5)
+        # Use whatever strategy currently ranks first, rather than a hard-coded id.
+        top = engine.get_recommendations(time_available=60)[0]["strategy"]["id"]
+        baseline = score_for(top)
+        assert baseline is not None
 
-        recs = bm.recommend()
-        names = [r.exercise_type for r in recs]
-        idx_478 = names.index(BreathingExerciseType.FOUR_SEVEN_EIGHT)
-        idx_energy = names.index(BreathingExerciseType.ENERGIZING_BREATH)
+        for _ in range(3):
+            engine.record_feedback(top, helpfulness=5, notes="helped a lot")
 
-        assert idx_478 < idx_energy  # 4-7-8 should rank higher
+        improved = score_for(top)
+        assert improved is not None
+        assert improved > baseline
+
+    def test_feedback_persists_across_reload(self, tmp_data_dir):
+        engine1 = CopingEngine(tmp_data_dir)
+        engine1.record_feedback("cog_07", helpfulness=5)
+        engine1.record_feedback("cog_07", helpfulness=4)
+
+        engine2 = CopingEngine(tmp_data_dir)
+        assert len(engine2.feedback_history) == 2
+
+        stats = engine2.get_strategy_stats()
+        assert stats["total_feedback_entries"] == 2
+        used_ids = {entry["strategy_id"] for entry in stats["most_used"]}
+        assert "cog_07" in used_ids
+
+    def test_helpfulness_is_clamped_to_one_through_five(self, tmp_data_dir):
+        engine = CopingEngine(tmp_data_dir)
+        engine.record_feedback("phy_03", helpfulness=99)
+        engine.record_feedback("phy_03", helpfulness=-5)
+
+        recorded = [fb["helpfulness"] for fb in engine.feedback_history]
+        assert recorded == [5, 1]
 
 
 # ---------------------------------------------------------------------------
-# Condition-specific strategies
+# Library access
 # ---------------------------------------------------------------------------
 
-class TestConditionSpecificStrategies:
+class TestStrategyLibrary:
 
-    def test_adhd_strategies(self, tmp_data_dir):
-        bm = BreathingManager(tmp_data_dir)
-        recs = bm.recommend(conditions={BreathCondition.ADHD})
+    def test_library_is_populated(self, tmp_data_dir):
+        engine = CopingEngine(tmp_data_dir)
+        all_strategies = engine.get_all_strategies()
+        assert len(all_strategies) >= 40
 
-        assert len(recs) > 0
-        # At least one exercise should be ADHD-suitable
-        suitable = [r for r in recs if BreathCondition.ADHD in r.condition_suitability]
-        assert len(suitable) >= 1
+        # IDs are unique across the library.
+        ids = [s["id"] for s in all_strategies]
+        assert len(ids) == len(set(ids))
 
-    def test_depression_strategies(self, tmp_data_dir):
-        bm = BreathingManager(tmp_data_dir)
-        recs = bm.recommend(conditions={BreathCondition.DEPRESSION})
+    def test_filter_by_category(self, tmp_data_dir):
+        engine = CopingEngine(tmp_data_dir)
+        sensory = engine.get_strategies_by_category(CopingCategory.SENSORY)
 
-        suitable = [r for r in recs if BreathCondition.DEPRESSION in r.condition_suitability]
-        assert len(suitable) >= 1
-
-    def test_ocd_strategies(self, tmp_data_dir):
-        bm = BreathingManager(tmp_data_dir)
-        recs = bm.recommend(conditions={BreathCondition.OCD})
-
-        suitable = [r for r in recs if BreathCondition.OCD in r.condition_suitability]
-        assert len(suitable) >= 1
-
-    def test_general_strategies(self, tmp_data_dir):
-        bm = BreathingManager(tmp_data_dir)
-        recs = bm.recommend(conditions={BreathCondition.GENERAL})
-
-        suitable = [r for r in recs if BreathCondition.GENERAL in r.condition_suitability]
-        assert len(suitable) >= 1
-
-    def test_multiple_conditions(self, tmp_data_dir):
-        bm = BreathingManager(tmp_data_dir)
-        recs = bm.recommend(
-            conditions={BreathCondition.ANXIETY, BreathCondition.DEPRESSION},
-        )
-        assert len(recs) > 0
+        assert len(sensory) > 0
+        assert all(s["category"] == CopingCategory.SENSORY.value for s in sensory)
