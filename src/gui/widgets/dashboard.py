@@ -16,7 +16,6 @@ from PyQt6.QtWidgets import (
     QFrame,
     QHBoxLayout,
     QLabel,
-    QPushButton,
     QScrollArea,
     QVBoxLayout,
     QWidget,
@@ -124,36 +123,12 @@ class DashboardWidget(QWidget):
     # -- welcome -------------------------------------------------------
 
     def _build_tier_banner(self) -> None:
-        from gui.subscription_helpers import tier_badge_text, trial_days_text
+        from gui.subscription_helpers import trial_days_text
 
-        tier = tier_badge_text(self._subscription_manager)
         trial = trial_days_text(self._subscription_manager)
-        if tier == "FREE" and not trial:
-            self._tier_banner = QFrame()
-            self._tier_banner.setStyleSheet(
-                f"background-color: {self._theme.get('card_bg', '#221C16')}; "
-                f"border: 1px solid {self._theme.get('border', '#3D3128')}; "
-                "border-radius: 6px; padding: 8px;"
-            )
-            banner_layout = QHBoxLayout(self._tier_banner)
-            banner_layout.setContentsMargins(12, 8, 12, 8)
-            lbl = QLabel(
-                "Free plan. Start a 14-day trial for insights, smart notifications, and reports."
-            )
-            lbl.setWordWrap(True)
-            lbl.setStyleSheet(f"color: {self._theme.get('accent', '#3498DB')}; font-size: 12px;")
-            banner_layout.addWidget(lbl, stretch=1)
-            trial_btn = QPushButton("Start trial")
-            trial_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-            trial_btn.setStyleSheet(
-                f"QPushButton {{ background-color: {self._theme.get('accent', '#A8845F')}; color: {self._theme.get('background', '#18130F')}; "
-                f"border-radius: 5px; padding: 6px 12px; font-weight: 500; font-size: 11px; }}"
-                f"QPushButton:hover {{ background-color: {self._theme.get('accent_hover', '#2980B9')}; }}"
-            )
-            trial_btn.clicked.connect(self._on_trial_clicked)
-            banner_layout.addWidget(trial_btn)
-            self._layout.addWidget(self._tier_banner)
-        elif trial:
+        # The Today view stays a calm place. No upsell banner here — if a trial
+        # is genuinely running we confirm it, otherwise Today says nothing about plans.
+        if trial:
             self._tier_banner = QFrame()
             self._tier_banner.setStyleSheet(
                 f"background-color: {self._theme.get('card_bg', '#221C16')}; "
@@ -168,14 +143,6 @@ class DashboardWidget(QWidget):
             self._layout.addWidget(self._tier_banner)
         else:
             self._tier_banner = None
-
-    def _on_trial_clicked(self) -> None:
-        if self._subscription_manager:
-            try:
-                self._subscription_manager.start_trial()
-                self.refresh()
-            except Exception:
-                pass
 
     def _build_crisis_banner(self) -> None:
         self._crisis_banner = QFrame()
@@ -225,10 +192,6 @@ class DashboardWidget(QWidget):
             f"color: {self._theme.get('secondary', '#888888')}; font-size: 13px;"
         )
         row.addWidget(self._date_label)
-
-        refresh_btn = GhostButton("Refresh", self._theme)
-        refresh_btn.clicked.connect(self.refresh)
-        row.addWidget(refresh_btn)
 
         self._layout.addLayout(row)
 

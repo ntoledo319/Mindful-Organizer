@@ -1,9 +1,9 @@
 """
 Medication tracking widget for Mindful Organizer.
 
-Provides a medication list with add/edit/remove, daily schedule with
-take-it checkboxes, adherence summary (taken/missed/late counts),
-disclaimer, and export-for-doctor functionality.
+Provides a medication list with add/edit/remove, a daily schedule with
+take-it checkboxes, a recent forgiving "rhythm" summary (steady days, not a
+shrinking percentage), a quiet disclaimer, and export-for-doctor functionality.
 """
 
 from __future__ import annotations
@@ -11,7 +11,7 @@ from __future__ import annotations
 import contextlib
 import json
 import logging
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -49,7 +49,12 @@ logger = logging.getLogger(__name__)
 
 def _section_title(text: str) -> QLabel:
     label = QLabel(text)
-    label.setFont(QFont("Segoe UI", 14, QFont.Weight.Bold))
+    # Keep the family the app theme already set on inherited fonts; only adjust
+    # size and weight so headings never pin a hardcoded "Segoe UI".
+    font = label.font()
+    font.setPointSize(14)
+    font.setWeight(QFont.Weight.Bold)
+    label.setFont(font)
     return label
 
 
@@ -169,7 +174,34 @@ class MedicationWidget(QWidget):
 
         self._load_data()
         self._build_ui()
+        self._apply_theme()
         self._refresh_all()
+
+    # ------------------------------------------------------------------
+    # Theme
+    # ------------------------------------------------------------------
+
+    def _theme(self) -> dict[str, str]:
+        """Live theme color tokens, with safe fallbacks if unavailable."""
+        with contextlib.suppress(Exception):
+            return self.main_window.theme_manager.get_colors()
+        return {}
+
+    def _apply_theme(self) -> None:
+        t = self._theme()
+        accent = t.get("accent", "#D9A05B")
+        text = t.get("text", "#F3F3F4")
+        muted = t.get("text_muted", t.get("secondary", "#8E8E93"))
+        self._streak_label.setStyleSheet(
+            f"QLabel#medRhythmStreak {{ color: {accent}; font-size: 19px; font-weight: 600; }}"
+        )
+        self._rhythm_note.setStyleSheet(
+            f"QLabel#medRhythmNote {{ color: {muted}; font-size: 13px; }}"
+        )
+        # Disclaimer stays quiet and unalarming, not bolded shouting.
+        self._disclaimer.setStyleSheet(f"QLabel {{ color: {muted}; font-style: italic; }}")
+        # Keep header tone aligned with the rest of the app.
+        self._header.setStyleSheet(f"QLabel {{ color: {text}; }}")
 
     # ------------------------------------------------------------------
     # Persistence
@@ -233,15 +265,15 @@ class MedicationWidget(QWidget):
         self._root.setContentsMargins(24, 24, 24, 24)
         scroll.setWidget(container)
 
-        self._root.addWidget(_section_title("Medication Tracker"))
+        self._header = _section_title("Medication Tracker")
+        self._root.addWidget(self._header)
 
-        # Disclaimer
-        disclaimer = _body_label(
-            "This is not medical advice. Consult your healthcare provider "
-            "for all medication decisions. This tool is for personal tracking only."
+        # Disclaimer -- present, honest, but never the loudest thing on screen.
+        self._disclaimer = _body_label(
+            "Not medical advice. Talk to your prescriber or pharmacist about any "
+            "medication decision. This is just for keeping track."
         )
-        disclaimer.setStyleSheet("font-style: italic; font-weight: bold;")
-        self._root.addWidget(disclaimer)
+        self._root.addWidget(self._disclaimer)
 
         body = QHBoxLayout()
         body.setSpacing(16)
@@ -304,16 +336,23 @@ class MedicationWidget(QWidget):
     # -- adherence section -----------------------------------------------
 
     def _build_adherence_section(self, parent: QVBoxLayout) -> None:
-        group = QGroupBox("Adherence Summary")
+        group = QGroupBox("Your Rhythm")
+        self._rhythm_group = group
         layout = QVBoxLayout(group)
 
-        self._taken_label = _body_label("Taken: 0")
-        self._missed_label = _body_label("Missed: 0")
-        self._late_label = _body_label("Late: 0")
-        self._rate_label = _body_label("Adherence rate: --")
+        # A big, plain count of steady days in the recent window -- the number
+        # that should grow, not a shrinking failure percentage.
+        self._streak_label = QLabel("")
+        self._streak_label.setObjectName("medRhythmStreak")
+        self._streak_label.setWordWrap(True)
 
-        for w in (self._taken_label, self._missed_label, self._late_label, self._rate_label):
-            layout.addWidget(w)
+        # One forgiving sentence about how the last couple of weeks have gone.
+        self._rhythm_note = QLabel("")
+        self._rhythm_note.setObjectName("medRhythmNote")
+        self._rhythm_note.setWordWrap(True)
+
+        layout.addWidget(self._streak_label)
+        layout.addWidget(self._rhythm_note)
         parent.addWidget(group)
 
     # ------------------------------------------------------------------
@@ -370,7 +409,9 @@ class MedicationWidget(QWidget):
             row = QHBoxLayout()
             cb = QCheckBox(f"{time_str} -- {name} ({dosage})")
             cb.setChecked(status == "taken")
-            cb.setFont(QFont("Segoe UI", 12))
+            cb_font = cb.font()
+            cb_font.setPointSize(12)
+            cb.setFont(cb_font)
 
             def _on_toggled(checked: bool, med_name: str = name) -> None:
                 self._mark_taken(med_name, checked)
@@ -379,22 +420,29 @@ class MedicationWidget(QWidget):
             row.addWidget(cb)
 
             if status == "taken":
-                taken_label = QLabel("Taken")
-                taken_label.setStyleSheet("color: green; font-weight: bold;")
+                kept = self._theme().get("success", "#5E9A68")
+                taken_label = QLabel("Kept")
+                taken_label.setStyleSheet(f"color: {kept}; font-weight: bold;")
                 row.addWidget(taken_label)
 
             row.addStretch()
             self._schedule_layout.addLayout(row)
 
     def _mark_taken(self, med_name: str, taken: bool) -> None:
+        # Checking the box is a deliberate "I took this." Un-checking is almost
+        # always an undo or a misclick -- it is NOT a person telling us they
+        # skipped a dose. So an untick clears the day back to pending; it never
+        # records a "missed" that would feed the crisis miss-streak heuristic a
+        # false alarm. A real miss is inferred elsewhere, not by a stray click.
         today_str = date.today().isoformat()
-        status = "taken" if taken else "missed"
+        status = "taken" if taken else "pending"
         if today_str not in self._adherence:
             self._adherence[today_str] = {}
         self._adherence[today_str][med_name] = status
         self._save_data()
         self._sync_status_to_db(med_name, today_str, status)
-        self.medication_taken.emit(med_name)
+        if taken:
+            self.medication_taken.emit(med_name)
         self._refresh_adherence()
 
     def _sync_status_to_db(self, med_name: str, day: str, status: str) -> None:
@@ -418,30 +466,95 @@ class MedicationWidget(QWidget):
         except Exception as exc:  # noqa: BLE001 - persistence must not crash the UI
             logger.debug("Medication DB sync failed for %s: %s", med_name, exc)
 
+    # Recent window we summarise. Long enough to see a rhythm, short enough
+    # that a rough patch from a month ago never haunts the present.
+    _RHYTHM_WINDOW_DAYS = 14
+
+    def _recent_window_days(self) -> list[str]:
+        """ISO dates for the last RHYTHM_WINDOW_DAYS, oldest first, today last."""
+        today = date.today()
+        days = [
+            (today - timedelta(days=offset)).isoformat()
+            for offset in range(self._RHYTHM_WINDOW_DAYS - 1, -1, -1)
+        ]
+        return days
+
     def _refresh_adherence(self) -> None:
-        total = 0
-        taken = 0
-        missed = 0
-        late = 0
+        # Forgiving, self-healing rhythm over a short recent window. We count
+        # the steady days near the present and never surface a lifetime
+        # "missed" tally or a shrinking percentage -- a rough patch in the past
+        # should not follow someone around. A day only counts as "kept" if a
+        # dose was actually marked taken/late that day; days you never opened
+        # the app are simply quiet, not failures.
+        recent_days = self._recent_window_days()
+        kept_days = 0
+        current_streak = 0  # consecutive kept days ending today
+        streak_open = True
+        last_kept_index = -1
 
-        for day_data in self._adherence.values():
-            for status in day_data.values():
-                total += 1
-                if status == "taken":
-                    taken += 1
-                elif status == "missed":
-                    missed += 1
-                elif status == "late":
-                    late += 1
+        for i, day in enumerate(recent_days):
+            day_data = self._adherence.get(day, {})
+            if any(s in ("taken", "late") for s in day_data.values()):
+                kept_days += 1
+                last_kept_index = i
 
-        self._taken_label.setText(f"Taken: {taken}")
-        self._missed_label.setText(f"Missed: {missed}")
-        self._late_label.setText(f"Late: {late}")
-        if total > 0:
-            rate = round(taken / total * 100, 1)
-            self._rate_label.setText(f"Adherence rate: {rate}%")
-        else:
-            self._rate_label.setText("Adherence rate: --")
+        # Size the live streak by walking back from the most recent day.
+        for day in reversed(recent_days):
+            day_data = self._adherence.get(day, {})
+            if any(s in ("taken", "late") for s in day_data.values()):
+                if streak_open:
+                    current_streak += 1
+            else:
+                streak_open = False
+
+        self._streak_label.setText(self._streak_text(current_streak, kept_days))
+        self._rhythm_note.setText(
+            self._rhythm_note_text(recent_days, kept_days, current_streak, last_kept_index)
+        )
+
+    @staticmethod
+    def _streak_text(current_streak: int, kept_days: int) -> str:
+        if current_streak >= 2:
+            return f"{current_streak} steady days in a row."
+        if current_streak == 1:
+            return "Marked today. That's the one that counts."
+        if kept_days > 0:
+            return "Today's still open."
+        return "Nothing marked yet."
+
+    def _rhythm_note_text(
+        self,
+        recent_days: list[str],
+        kept_days: int,
+        current_streak: int,
+        last_kept_index: int,
+    ) -> str:
+        if not self._medications:
+            return "Add a medication and the days you keep will show up here."
+        if kept_days == 0:
+            return "No pressure -- check one off whenever you take it and we'll start counting."
+
+        window = len(recent_days)
+        today_idx = window - 1
+        yesterday_idx = window - 2
+
+        def _kept(day_index: int) -> bool:
+            if day_index < 0:
+                return False
+            statuses = self._adherence.get(recent_days[day_index], {}).values()
+            return any(s in ("taken", "late") for s in statuses)
+
+        today_kept = _kept(today_idx)
+        yesterday_kept = _kept(yesterday_idx)
+
+        # A slip yesterday after a good run is the most forgiving thing to name.
+        if not yesterday_kept and yesterday_idx >= 0 and current_streak >= 1:
+            return f"{kept_days} kept days these two weeks. Yesterday slipped by -- it happens."
+        if current_streak >= 5:
+            return f"{kept_days} of the last {window} days kept. This rhythm is holding."
+        if today_kept and not yesterday_kept:
+            return "Back on it today. One day at a time is plenty."
+        return f"{kept_days} of the last {window} days kept. Picking it back up is the whole game."
 
     # -- medication CRUD ------------------------------------------------
 

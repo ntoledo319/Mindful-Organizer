@@ -136,23 +136,21 @@ class AutomationWidget(QWidget):
         mode_group = QGroupBox("Execution Mode")
         mode_layout = QVBoxLayout(mode_group)
 
-        mode_desc = QLabel("Choose how aggressively the automation engine acts on your system.")
+        mode_desc = QLabel("How much should Hearth do on its own?")
         mode_desc.setWordWrap(True)
         mode_desc.setStyleSheet("color: #666;")
         mode_layout.addWidget(mode_desc)
 
         self.mode_combo = QComboBox()
-        self.mode_combo.addItem(
-            "Suggestions Only — Notify but don't change anything", "suggestions_only"
-        )
-        self.mode_combo.addItem("Ask First — Prompt before each action", "ask_first")
-        self.mode_combo.addItem("Autonomous — Execute immediately", "autonomous")
+        self.mode_combo.addItem("Just tell me — Hearth notices, you decide", "suggestions_only")
+        self.mode_combo.addItem("Ask me first — Hearth checks before each change", "ask_first")
+        self.mode_combo.addItem("Go ahead — Hearth makes the change for you", "autonomous")
         self.mode_combo.currentIndexChanged.connect(self._on_mode_changed)
         mode_layout.addWidget(self.mode_combo)
 
         if not self._can_change_execution_mode:
             self.mode_combo.setEnabled(False)
-            mode_note = QLabel("⚡ Upgrade to PRO to enable autonomous mode.")
+            mode_note = QLabel("Letting Hearth act on its own comes with Pro.")
             mode_note.setStyleSheet("color: #E67E22; font-weight: bold;")
             mode_layout.addWidget(mode_note)
 
@@ -302,7 +300,7 @@ class AutomationWidget(QWidget):
         focus_group = QGroupBox("Focus Sessions")
         focus_layout = QVBoxLayout(focus_group)
 
-        self.focus_status = QLabel("Focus mode: Inactive")
+        self.focus_status = QLabel("Focus is off. Start it when you're ready to dig in.")
         focus_layout.addWidget(self.focus_status)
 
         duration_layout = QHBoxLayout()
@@ -401,14 +399,19 @@ class AutomationWidget(QWidget):
         idx = mode_map.get(profile.execution_mode, 0)
         self.mode_combo.setCurrentIndex(idx)
 
+    _MODE_PHRASES = {
+        ExecutionMode.SUGGESTIONS_ONLY: "Hearth only suggests changes",
+        ExecutionMode.ASK_FIRST: "Hearth asks before changing anything",
+        ExecutionMode.AUTONOMOUS: "Hearth makes changes for you",
+    }
+
     def _refresh_status(self) -> None:
         enabled = self.engine.is_enabled
-        self.status_label.setText(
-            f"Engine: {'Running' if enabled else 'Paused'} | "
-            f"Profile: {self.config.active_profile.name} | "
-            f"Mode: {self.config.active_profile.execution_mode.value}"
-        )
-        self.toggle_engine_btn.setText("Pause Engine" if enabled else "Resume Engine")
+        mode = self.config.active_profile.execution_mode
+        mode_phrase = self._MODE_PHRASES.get(mode, "Hearth only suggests changes")
+        state = "on and watching" if enabled else "resting"
+        self.status_label.setText(f"Hearth is {state}. Right now, {mode_phrase}.")
+        self.toggle_engine_btn.setText("Pause Hearth" if enabled else "Resume Hearth")
 
     def _refresh_rules_table(self) -> None:
         rules = self.engine.list_rules()
@@ -424,13 +427,18 @@ class AutomationWidget(QWidget):
     def _refresh_focus_status(self) -> None:
         focus = self.engine.focus
         if focus.state.name == "ACTIVE":
-            self.focus_status.setText(
-                f"Focus mode: ACTIVE | Started: {focus.current_session.started_at.strftime('%H:%M') if focus.current_session else 'N/A'}"
+            since = (
+                focus.current_session.started_at.strftime("%H:%M")
+                if focus.current_session
+                else None
             )
-            self.focus_btn.setText("🛑 Deactivate Focus")
+            self.focus_status.setText(
+                f"Focus is on — holding the line since {since}." if since else "Focus is on."
+            )
+            self.focus_btn.setText("🛑 End focus")
         else:
-            self.focus_status.setText("Focus mode: Inactive")
-            self.focus_btn.setText("🎯 Activate Focus Mode")
+            self.focus_status.setText("Focus is off. Start it when you're ready to dig in.")
+            self.focus_btn.setText("🎯 Start focus")
 
     def _refresh_profiles(self) -> None:
         if not self._is_premium or not hasattr(self, "profile_combo"):

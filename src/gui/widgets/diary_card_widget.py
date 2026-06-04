@@ -45,6 +45,7 @@ class DiaryCardWidget(QWidget):
     """Daily DBT diary card entry form."""
 
     card_saved = pyqtSignal(dict)
+    crisis_requested = pyqtSignal()  # emitted when the notes trip risk-language detection
 
     def __init__(
         self,
@@ -373,7 +374,43 @@ class DiaryCardWidget(QWidget):
                 return
 
         self.card_saved.emit(card.to_db_dict())
-        QMessageBox.information(self, "Saved", f"Diary card for {selected_date.isoformat()} saved.")
+
+        # Scan the free-text notes for explicit self-harm / ideation language
+        # BEFORE the routine "saved" toast. A diary card asks people to log their
+        # worst urges and emotions; if the words signal real danger, the card
+        # must respond with help, not a checkmark.
+        if self._check_risk(card.notes):
+            self._surface_crisis_resources()
+        else:
+            QMessageBox.information(
+                self, "Saved", f"Diary card for {selected_date.isoformat()} saved."
+            )
+
+    def _check_risk(self, text: str) -> bool:
+        """Return True if the notes contain explicit self-harm / ideation language."""
+        if not text:
+            return False
+        try:
+            from wellness.journal_analyzer import JournalAnalyzer
+
+            return JournalAnalyzer().analyze(text).risk_flagged
+        except Exception as exc:  # analysis must never block saving
+            logger.debug("Diary card risk analysis failed: %s", exc)
+            return False
+
+    def _surface_crisis_resources(self) -> None:
+        """Show a supportive crisis prompt with one-tap access to the crisis plan."""
+        from wellness.journal_analyzer import _RISK_RESOURCE_INSIGHT
+
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Icon.Warning)
+        box.setWindowTitle("You're not alone")
+        box.setText(_RISK_RESOURCE_INSIGHT)
+        open_crisis = box.addButton("Open crisis plan", QMessageBox.ButtonRole.AcceptRole)
+        box.addButton("Close", QMessageBox.ButtonRole.RejectRole)
+        box.exec()
+        if box.clickedButton() is open_crisis:
+            self.crisis_requested.emit()
 
     def _load_today(self) -> None:
         if not self._manager or not hasattr(self._manager, "get"):

@@ -78,8 +78,35 @@ def _crisis_card() -> QFrame:
     return frame
 
 
+def _real_entries(items: list[str]) -> list[str]:
+    """Keep only entries a person actually wrote.
+
+    The seed plan ships placeholder prompts ("Add your safe places here...").
+    Those are guidance for the Edit dialog, not content — they must never show
+    up as a half-finished card in the live crisis view.
+    """
+    real: list[str] = []
+    for raw in items:
+        text = str(raw).strip()
+        if not text or text.lower().startswith("add your"):
+            continue
+        real.append(text)
+    return real
+
+
+def _escape_mnemonic(text: str) -> str:
+    """Escape ``&`` so Qt renders it literally instead of as a mnemonic.
+
+    Crisis copy like "988 Suicide & Crisis Lifeline" must survive verbatim;
+    a swallowed ampersand and a stray underlined letter is the last thing a
+    distressed person should have to decode.
+    """
+    return text.replace("&", "&&")
+
+
 def _large_label(text: str, size: int = 16) -> QLabel:
     label = QLabel(text)
+    label.setTextFormat(Qt.TextFormat.PlainText)
     label.setFont(QFont("Segoe UI", size))
     label.setWordWrap(True)
     return label
@@ -87,12 +114,13 @@ def _large_label(text: str, size: int = 16) -> QLabel:
 
 def _header_label(text: str) -> QLabel:
     label = QLabel(text)
+    label.setTextFormat(Qt.TextFormat.PlainText)
     label.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
     return label
 
 
 def _contact_button(name: str, number: str) -> QPushButton:
-    btn = QPushButton(f"{name}\n{number}")
+    btn = QPushButton(_escape_mnemonic(f"{name}\n{number}"))
     btn.setFont(QFont("Segoe UI", 16, QFont.Weight.Bold))
     btn.setMinimumHeight(70)
     btn.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -425,10 +453,15 @@ class CrisisWidget(QWidget):
         header.setFont(QFont("Segoe UI", 26, QFont.Weight.DemiBold))
         self._root.addWidget(header)
 
+        # Live view is help-first: emergency resources and coping steps always
+        # show. Personal/professional contacts, reasons, and safe places appear
+        # only once the person has added their own — no empty cards, no "use
+        # Edit to add" nags. The deterioration checklist (warning signs) is kept
+        # out of the live view entirely; it belongs in Edit, not in front of
+        # someone who is already in crisis.
         self._build_emergency_contacts()
         self._build_personal_contacts()
         self._build_professional_contacts()
-        self._build_warning_signs()
         self._build_coping_strategies()
         self._build_reasons_for_living()
         self._build_safe_places()
@@ -459,7 +492,7 @@ class CrisisWidget(QWidget):
         text = theme.get("text", "#F2E8D9")
         secondary = theme.get("secondary", "#BCAE9C")
         accent = theme.get("accent", "#A8845F")
-        danger = theme.get("danger", "#C66860")
+        accent_hover = theme.get("accent_hover", accent)
         self.setStyleSheet(
             f"""
             QWidget {{ background-color: {background}; color: {text}; }}
@@ -485,7 +518,7 @@ class CrisisWidget(QWidget):
             QPushButton[class="crisisContact"] {{
                 background-color: transparent;
                 color: {text};
-                border: 1px solid {danger};
+                border: 1px solid {accent};
                 border-radius: 6px;
                 padding: 12px;
                 font-size: 14px;
@@ -493,7 +526,11 @@ class CrisisWidget(QWidget):
                 text-align: left;
             }}
             QPushButton[class="crisisContact"]:hover {{
-                background-color: {danger};
+                background-color: {accent};
+                color: {background};
+            }}
+            QPushButton[class="crisisContact"]:pressed {{
+                background-color: {accent_hover};
                 color: {background};
             }}
             QPushButton[class="outline"] {{
@@ -524,51 +561,32 @@ class CrisisWidget(QWidget):
 
     def _build_personal_contacts(self) -> None:
         contacts = self._plan.get("personal_contacts", [])
+        if not contacts:
+            return
         card = _crisis_card()
         layout = QVBoxLayout(card)
         layout.addWidget(_header_label("Personal Contacts"))
-
-        if not contacts:
-            layout.addWidget(_large_label("No personal contacts added yet. Use Edit to add.", 14))
-        else:
-            for c in contacts:
-                btn = _contact_button(
-                    f"{c.get('name', '')} ({c.get('relationship', '')})",
-                    c.get("phone", ""),
-                )
-                layout.addWidget(btn)
+        for c in contacts:
+            btn = _contact_button(
+                f"{c.get('name', '')} ({c.get('relationship', '')})",
+                c.get("phone", ""),
+            )
+            layout.addWidget(btn)
         self._root.addWidget(card)
 
     def _build_professional_contacts(self) -> None:
         contacts = self._plan.get("professional_contacts", [])
+        if not contacts:
+            return
         card = _crisis_card()
         layout = QVBoxLayout(card)
         layout.addWidget(_header_label("Professional Contacts"))
-
-        if not contacts:
-            layout.addWidget(
-                _large_label(
-                    "No professional contacts added yet. Add your therapist or psychiatrist.",
-                    14,
-                )
+        for c in contacts:
+            btn = _contact_button(
+                f"{c.get('name', '')} ({c.get('relationship', '')})",
+                c.get("phone", ""),
             )
-        else:
-            for c in contacts:
-                btn = _contact_button(
-                    f"{c.get('name', '')} ({c.get('relationship', '')})",
-                    c.get("phone", ""),
-                )
-                layout.addWidget(btn)
-        self._root.addWidget(card)
-
-    def _build_warning_signs(self) -> None:
-        card = _crisis_card()
-        layout = QVBoxLayout(card)
-        layout.addWidget(_header_label("Warning Signs Checklist"))
-
-        for sign in self._plan.get("warning_signs", []):
-            label = _large_label(f"  {sign}", 14)
-            layout.addWidget(label)
+            layout.addWidget(btn)
         self._root.addWidget(card)
 
     def _build_coping_strategies(self) -> None:
@@ -582,23 +600,25 @@ class CrisisWidget(QWidget):
         self._root.addWidget(card)
 
     def _build_reasons_for_living(self) -> None:
+        reasons = _real_entries(self._plan.get("reasons_for_living", []))
+        if not reasons:
+            return
         card = _crisis_card()
         layout = QVBoxLayout(card)
         layout.addWidget(_header_label("Reasons for Living"))
-
-        for reason in self._plan.get("reasons_for_living", []):
-            label = _large_label(f"  {reason}", 15)
-            layout.addWidget(label)
+        for reason in reasons:
+            layout.addWidget(_large_label(f"  {reason}", 15))
         self._root.addWidget(card)
 
     def _build_safe_places(self) -> None:
+        places = _real_entries(self._plan.get("safe_places", []))
+        if not places:
+            return
         card = _crisis_card()
         layout = QVBoxLayout(card)
         layout.addWidget(_header_label("Safe Places"))
-
-        for place in self._plan.get("safe_places", []):
-            label = _large_label(f"  {place}", 14)
-            layout.addWidget(label)
+        for place in places:
+            layout.addWidget(_large_label(f"  {place}", 14))
         self._root.addWidget(card)
 
     # ------------------------------------------------------------------

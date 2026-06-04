@@ -15,6 +15,7 @@ from typing import Any
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (
+    QApplication,
     QCheckBox,
     QComboBox,
     QDialog,
@@ -32,6 +33,21 @@ from PyQt6.QtWidgets import (
 logger = logging.getLogger(__name__)
 
 
+def _theme_font(size: int, *, bold: bool = False) -> QFont:
+    """A font at the given size that keeps the app/theme family.
+
+    We never pin a face like "Segoe UI" here: the family comes from whatever
+    the running application (and the themed stylesheet) resolves to, so the
+    wizard reads as part of Hearth rather than native chrome.
+    """
+    app = QApplication.instance()
+    family = app.font().family() if app is not None else ""
+    font = QFont(family, size)
+    if bold:
+        font.setWeight(QFont.Weight.Bold)
+    return font
+
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -39,14 +55,14 @@ logger = logging.getLogger(__name__)
 
 def _body_label(text: str, size: int = 12) -> QLabel:
     label = QLabel(text)
-    label.setFont(QFont("Segoe UI", size))
+    label.setFont(_theme_font(size))
     label.setWordWrap(True)
     return label
 
 
 def _title_label(text: str) -> QLabel:
     label = QLabel(text)
-    label.setFont(QFont("Segoe UI", 20, QFont.Weight.Bold))
+    label.setFont(_theme_font(20, bold=True))
     label.setAlignment(Qt.AlignmentFlag.AlignCenter)
     return label
 
@@ -143,6 +159,17 @@ class OnboardingWizard(QDialog):
         self._profile_manager = profile_manager
         self._data_dir = data_dir
 
+        # Theme tokens drive the dots and previews. Defaults match the app's
+        # warm dark "onyx" so the wizard is on-theme even before a parent
+        # window hands us live colors via apply_theme().
+        self._theme: dict[str, str] = {
+            "background": "#18181A",
+            "accent": "#D9A05B",
+            "success": "#5E9A68",
+            "text_muted": "#8E8E93",
+            "border": "#2C2C2E",
+        }
+
         # Collected data
         self._data: dict[str, Any] = {
             "name": "",
@@ -154,6 +181,22 @@ class OnboardingWizard(QDialog):
         self._current_page = 0
         self._build_ui()
         self._show_page(0)
+
+    # ------------------------------------------------------------------
+    # Theming
+    # ------------------------------------------------------------------
+
+    def apply_theme(self, colors: dict[str, str]) -> None:
+        """Adopt the app's live theme colors for dots and previews.
+
+        Call this after setting the themed stylesheet so the progress dots and
+        theme swatch use the real accent/muted tones instead of stock blue/green.
+        """
+        if not colors:
+            return
+        self._theme.update(colors)
+        # Repaint anything color-driven for the page we're currently on.
+        self._refresh_dots()
 
     # ------------------------------------------------------------------
     # UI skeleton
@@ -171,10 +214,10 @@ class OnboardingWizard(QDialog):
         for _i in range(self._TOTAL_PAGES):
             dot = QLabel()
             dot.setFixedSize(14, 14)
-            dot.setStyleSheet("background-color: #ccc; border-radius: 7px;")
             self._dots_layout.addWidget(dot)
             self._dots.append(dot)
         root.addLayout(self._dots_layout)
+        self._refresh_dots()
 
         # Stacked pages
         self._stack = QStackedWidget()
@@ -209,14 +252,7 @@ class OnboardingWizard(QDialog):
         self._current_page = max(0, min(index, self._TOTAL_PAGES - 1))
         self._stack.setCurrentIndex(self._current_page)
 
-        # Update dots
-        for i, dot in enumerate(self._dots):
-            if i == self._current_page:
-                dot.setStyleSheet("background-color: #4a90d9; border-radius: 7px;")
-            elif i < self._current_page:
-                dot.setStyleSheet("background-color: #27ae60; border-radius: 7px;")
-            else:
-                dot.setStyleSheet("background-color: #ccc; border-radius: 7px;")
+        self._refresh_dots()
 
         self._back_btn.setVisible(self._current_page > 0)
         is_last = self._current_page == self._TOTAL_PAGES - 1
@@ -226,6 +262,25 @@ class OnboardingWizard(QDialog):
         # Refresh summary on last page
         if self._current_page == self._TOTAL_PAGES - 1:
             self._refresh_summary()
+
+    def _refresh_dots(self) -> None:
+        """Color the progress dots from the live theme.
+
+        The current step glows in the theme accent, finished steps settle into
+        the calmer success tone, and steps ahead stay muted -- no stock blue
+        or green pinned in.
+        """
+        current = self._theme.get("accent", "#D9A05B")
+        done = self._theme.get("success", "#5E9A68")
+        ahead = self._theme.get("border", "#2C2C2E")
+        for i, dot in enumerate(self._dots):
+            if i == self._current_page:
+                color = current
+            elif i < self._current_page:
+                color = done
+            else:
+                color = ahead
+            dot.setStyleSheet(f"background-color: {color}; border-radius: 7px;")
 
     def _go_next(self) -> None:
         self._collect_page_data()
@@ -380,7 +435,7 @@ class OnboardingWizard(QDialog):
 
         self._name_input = QLineEdit()
         self._name_input.setPlaceholderText("Your name or nickname")
-        self._name_input.setFont(QFont("Segoe UI", 14))
+        self._name_input.setFont(_theme_font(14))
         self._name_input.setMinimumHeight(44)
         layout.addWidget(self._name_input)
 
@@ -404,7 +459,7 @@ class OnboardingWizard(QDialog):
             group = QGroupBox(name)
             group.setCheckable(True)
             group.setChecked(False)
-            group.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
+            group.setFont(_theme_font(12, bold=True))
             gl = QVBoxLayout(group)
             gl.addWidget(_body_label(description, 11))
             layout.addWidget(group)
@@ -433,7 +488,7 @@ class OnboardingWizard(QDialog):
             group = QGroupBox(name)
             group.setCheckable(True)
             group.setChecked(False)
-            group.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
+            group.setFont(_theme_font(12, bold=True))
             gl = QVBoxLayout(group)
             gl.addWidget(_body_label(description, 11))
             layout.addWidget(group)
@@ -456,7 +511,7 @@ class OnboardingWizard(QDialog):
         row = QHBoxLayout()
         row.addWidget(_body_label("Theme", 13))
         self._theme_combo = QComboBox()
-        self._theme_combo.setFont(QFont("Segoe UI", 13))
+        self._theme_combo.setFont(_theme_font(13))
 
         # Populate from ThemeManager if available
         try:
@@ -498,8 +553,11 @@ class OnboardingWizard(QDialog):
                 return
         except (ImportError, AttributeError) as exc:
             logger.debug(f"Theme preview error: {exc}")
+        # Fall back to our own live theme tokens rather than dead hex.
         self._theme_preview.setStyleSheet(
-            "QFrame { background-color: #18130F; border: 2px solid #A8845F; border-radius: 6px; }"
+            f"QFrame {{ background-color: {self._theme.get('background', '#18181A')}; "
+            f"border: 2px solid {self._theme.get('accent', '#D9A05B')}; "
+            "border-radius: 6px; }"
         )
 
     def _page_summary(self) -> QWidget:

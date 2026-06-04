@@ -20,7 +20,6 @@ from PyQt6.QtWidgets import (
     QGridLayout,
     QGroupBox,
     QHBoxLayout,
-    QLabel,
     QListWidget,
     QListWidgetItem,
     QMessageBox,
@@ -344,12 +343,21 @@ class MoodTrackerWidget(QWidget):
     def _build_analytics(self, parent_layout: QVBoxLayout) -> None:
         card = CardFrame(self._theme)
         layout = QVBoxLayout(card)
-        layout.addWidget(SectionTitle("Mood Analytics", self._theme))
+        layout.addWidget(SectionTitle("Patterns", self._theme))
 
-        self._avg_7_label = BodyLabel("7-day average: --", self._theme)
-        self._trend_30_label = BodyLabel("30-day trend: --", self._theme)
-        self._volatility_label = BodyLabel("Mood volatility: --", self._theme)
-        self._triggers_label = BodyLabel("Top triggers: --", self._theme)
+        # Shown until there are enough check-ins to say anything honest.
+        self._patterns_empty = BodyLabel(
+            "A couple more check-ins and I'll start noticing your patterns.",
+            self._theme,
+        )
+        self._patterns_empty.setWordWrap(True)
+        layout.addWidget(self._patterns_empty)
+
+        # Stat lines stay hidden until real numbers exist; no placeholder dashes.
+        self._avg_7_label = BodyLabel("", self._theme)
+        self._trend_30_label = BodyLabel("", self._theme)
+        self._volatility_label = BodyLabel("", self._theme)
+        self._triggers_label = BodyLabel("", self._theme)
 
         for w in (
             self._avg_7_label,
@@ -357,20 +365,8 @@ class MoodTrackerWidget(QWidget):
             self._volatility_label,
             self._triggers_label,
         ):
+            w.setVisible(False)
             layout.addWidget(w)
-
-        # Chart placeholder
-        self._chart_placeholder = QFrame()
-        self._chart_placeholder.setFixedHeight(180)
-        self._chart_placeholder.setStyleSheet(
-            f"background-color: {self._theme.get('background', '#eee')}; border-radius: 8px;"
-        )
-        chart_label = QLabel("Mood Chart (matplotlib integration)")
-        chart_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        chart_label.setStyleSheet(f"color: {self._theme.get('secondary', '#999')};")
-        cl = QVBoxLayout(self._chart_placeholder)
-        cl.addWidget(chart_label)
-        layout.addWidget(self._chart_placeholder)
 
         parent_layout.addWidget(card)
 
@@ -467,22 +463,40 @@ class MoodTrackerWidget(QWidget):
     def _refresh_analytics(self) -> None:
         if not self._mood_manager:
             return
+        revealed = False
         try:
             if hasattr(self._mood_manager, "mood_trend"):
                 trend = self._mood_manager.mood_trend()
                 if trend.moving_avg_7 is not None:
-                    self._avg_7_label.setText(f"7-day average: {trend.moving_avg_7:.1f}")
-                self._trend_30_label.setText(f"30-day trend: {trend.direction.value.capitalize()}")
+                    self._avg_7_label.setText(
+                        f"Lately you've been hovering around {trend.moving_avg_7:.1f} out of 10."
+                    )
+                    self._avg_7_label.setVisible(True)
+                    revealed = True
+                if trend.direction is not None:
+                    self._trend_30_label.setText(
+                        f"Over the last month, things have been trending {trend.direction.value.lower()}."
+                    )
+                    self._trend_30_label.setVisible(True)
+                    revealed = True
             if hasattr(self._mood_manager, "mood_volatility"):
                 vol = self._mood_manager.mood_volatility()
-                self._volatility_label.setText(f"Mood volatility: {vol:.2f}")
+                self._volatility_label.setText(
+                    f"Your mood has been swinging by about {vol:.1f} points day to day."
+                )
+                self._volatility_label.setVisible(True)
+                revealed = True
             if hasattr(self._mood_manager, "identify_triggers"):
                 triggers = self._mood_manager.identify_triggers()[:3]
                 if triggers:
                     names = [t.trigger for t in triggers]
-                    self._triggers_label.setText(f"Top triggers: {', '.join(names)}")
+                    self._triggers_label.setText(f"Showing up most around: {', '.join(names)}.")
+                    self._triggers_label.setVisible(True)
+                    revealed = True
         except (AttributeError, TypeError) as exc:
             logger.debug(f"Analytics refresh error: {exc}")
+        # Keep the warm invitation up until there's something real to show.
+        self._patterns_empty.setVisible(not revealed)
 
     def _export_data(self) -> None:
         path, _ = QFileDialog.getSaveFileName(

@@ -510,6 +510,10 @@ class AdaptiveMainWindow(QMainWindow):
             from gui.widgets.onboarding import OnboardingWizard
 
             wizard = OnboardingWizard(self.profile_manager, self.data_dir, parent=self)
+            # Greet new users in the same dark, warm theme as the app itself,
+            # not raw native chrome. Pass the live theme so dots/fonts match.
+            wizard.setStyleSheet(self.theme_manager.generate_stylesheet())
+            wizard.apply_theme(self.theme_manager.get_colors())
             if wizard.exec():
                 self._initialize_ui()
             else:
@@ -802,6 +806,9 @@ class AdaptiveMainWindow(QMainWindow):
                     diary_card_manager=self.diary_card_manager,
                     profile_manager=self.profile_manager,
                 )
+                # If the notes trip self-harm/ideation detection, let the user
+                # jump straight to crisis resources.
+                widget.crisis_requested.connect(lambda: self._switch_to_tab("crisis"))
             elif name == "journaling":
                 from gui.widgets.journaling_widget import JournalingWidget
 

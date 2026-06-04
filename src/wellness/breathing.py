@@ -213,9 +213,9 @@ def _build_exercise_library() -> dict[BreathingExerciseType, BreathingExercise]:
         exercise_type=BreathingExerciseType.BOX_BREATHING,
         name="Box Breathing",
         description=(
-            "Equal-duration inhale, hold, exhale, and hold pattern. "
-            "Used by Navy SEALs for calm focus under pressure. "
-            "Activates the parasympathetic nervous system."
+            "Inhale, hold, exhale, and hold for an equal count. "
+            "The steady, even rhythm gives a racing mind something simple "
+            "to hold onto and helps your body settle."
         ),
         phases=[
             BreathPhaseData(BreathPhase.INHALE, 4.0, "Breathe in slowly through your nose"),
