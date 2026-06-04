@@ -235,12 +235,15 @@ class HearthButton(QAbstractButton):
 
     # --- sizing ---------------------------------------------------------
     def sizeHint(self):  # noqa: N802
-        fm = self.fontMetrics()
-        w = fm.horizontalAdvance(self.text())
-        pad_x = 22 if self._role != "ghost" else 14
         from PyQt6.QtCore import QSize
+        from PyQt6.QtGui import QFontMetrics
 
-        return QSize(w + pad_x * 2, self.minimumHeight())
+        # Measure with the EXACT font the label is painted in (Bold 14), so the
+        # button is never narrower than its text (which would clip both ends).
+        fm = QFontMetrics(_sans(14, QFont.Weight.Bold))
+        w = fm.horizontalAdvance(self.text())
+        pad_x = 24 if self._role != "ghost" else 16
+        return QSize(w + pad_x * 2 + 6, self.minimumHeight())
 
     # --- interaction ----------------------------------------------------
     def enterEvent(self, event):  # noqa: N802

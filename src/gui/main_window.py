@@ -763,9 +763,9 @@ class AdaptiveMainWindow(QMainWindow):
         widget: QWidget | None = None
         try:
             if name == "dashboard":
-                from gui.widgets.dashboard import DashboardWidget
+                from gui.widgets.hearth_today import HearthToday
 
-                widget = DashboardWidget(
+                widget = HearthToday(
                     theme,
                     task_manager=self.task_manager,
                     profile_manager=self.profile_manager,
@@ -775,13 +775,8 @@ class AdaptiveMainWindow(QMainWindow):
                     wellness_orchestrator=self.wellness_orchestrator,
                     subscription_manager=self.subscription_manager,
                 )
-                # Wire the "Today" quick-action buttons to real navigation.
-                # (These signals previously had zero receivers — dead buttons.)
-                widget.mood_track_requested.connect(lambda: self._switch_to_tab("mood_tracker"))
-                widget.task_add_requested.connect(lambda: self._switch_to_tab("task_manager"))
-                widget.breathing_requested.connect(lambda: self._switch_to_tab("breathing"))
-                widget.journal_requested.connect(lambda: self._switch_to_tab("journaling"))
-                widget.stats_requested.connect(lambda: self._switch_to_tab("mood_tracker"))
+                # One signal carries any room name; the doors recompose to state.
+                widget.navigate_requested.connect(self._switch_to_tab)
             elif name == "task_manager":
                 from gui.widgets.task_manager_widget import TaskManagerWidget
 
