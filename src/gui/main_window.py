@@ -793,6 +793,9 @@ class AdaptiveMainWindow(QMainWindow):
                     mood_manager=self.mood_manager,
                     profile_manager=self.profile_manager,
                 )
+                # A "Bad" check-in, or naming a thought of self-harm, should
+                # carry the person straight to crisis resources (988 + plan).
+                widget.crisis_requested.connect(lambda: self._switch_to_tab("crisis"))
             elif name == "diary_card":
                 from gui.widgets.diary_card_widget import DiaryCardWidget
 
