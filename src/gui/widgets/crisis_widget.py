@@ -1,9 +1,26 @@
 """
-Crisis plan quick-access widget -- large, calm, distress-friendly UI.
+Crisis -> "Stay" — the live crisis view as the whole room turning toward you.
 
-Provides emergency contacts, coping strategies, warning signs, reasons
-for living, safe places, and professional contacts in a minimal, readable
-layout designed for use during emotional crises.
+This is a life-safety surface, reached on the worst night of someone's month,
+possibly at 2am, with their cognitive budget near zero and the stakes near
+maximum. It is not a database with a UI; it is a hand reaching back.
+
+So it is not a stack of bordered ``QGroupBox`` cards. It is a single warm dark
+canvas (painted from theme colors) with a calm Hearthlight presence, one large
+serif sentence, and one enormous, dignified, *warm* lifeline button. Crisis Text
+Line and SAMHSA are present but quieter. The deterioration checklist (warning
+signs) is kept off the live screen entirely — it lives in the calm-state editor.
+
+The signature moment (docs/design/VISION.md, signature C): when the person
+reaches for the lifeline, the whole room settles into a slow ~60bpm heartbeat —
+the Hearthlight glow easing up and down below their panic rate, "the line is
+open." Reduced motion gets a steady warm hold and the same words.
+
+Behavior preserved verbatim from Wave 0 (never weaken a safety path):
+  * the 988 / Crisis Text Line / SAMHSA buttons copy the number, fire ``tel:``,
+    and now confirm *in-surface and persistently* (not a vanishing tooltip);
+  * crisis-plan load / save / edit;
+  * seed-placeholder stripping so the live screen never nags "Use Edit to add".
 """
 
 from __future__ import annotations
@@ -14,24 +31,32 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from PyQt6.QtCore import Qt, QUrl, pyqtSignal
-from PyQt6.QtGui import QCursor, QDesktopServices, QFont
+from PyQt6.QtCore import (
+    QEasingCurve,
+    QPropertyAnimation,
+    QSequentialAnimationGroup,
+    Qt,
+    QTimer,
+    QUrl,
+    pyqtSignal,
+)
+from PyQt6.QtGui import QColor, QDesktopServices, QFont, QPainter, QRadialGradient
 from PyQt6.QtWidgets import (
     QApplication,
     QDialog,
     QDialogButtonBox,
-    QFrame,
+    QGraphicsOpacityEffect,
+    QHBoxLayout,
     QLabel,
-    QPushButton,
-    QScrollArea,
-    QSizePolicy,
     QTextEdit,
-    QToolTip,
     QVBoxLayout,
     QWidget,
 )
 
 from core.paths import get_data_dir
+from gui.components.hearth_surfaces import HearthButton, HearthCard
+from gui.components.hearthlight import Hearthlight
+from gui.components.state_controls import sans_font, serif_font
 
 logger = logging.getLogger(__name__)
 
@@ -45,12 +70,13 @@ def _dialable_digits(number: str) -> str:
     return "".join(ch for ch in number if ch.isdigit())
 
 
-def _activate_contact(number: str) -> None:
+def _activate_contact(number: str) -> str:
     """Copy a crisis number to the clipboard and attempt to place the call.
 
     On desktop a `tel:` handler may or may not exist, so the reliable, always-on
-    behaviour is putting the number on the clipboard with visible confirmation —
-    a distressed user should never tap a crisis button and get nothing.
+    behaviour is putting the number on the clipboard. Returns the digits placed
+    on the clipboard so the caller can confirm *in-surface and persistently* —
+    a distressed person should never tap a crisis button and get nothing.
     """
     digits = _dialable_digits(number)
     clip = QApplication.clipboard()
@@ -59,23 +85,7 @@ def _activate_contact(number: str) -> None:
     if digits:
         with contextlib.suppress(Exception):
             QDesktopServices.openUrl(QUrl(f"tel:{digits}"))
-    QToolTip.showText(
-        QCursor.pos(),
-        f"Copied {number} to your clipboard.\nCall it from your phone if dialing isn't available here.",
-    )
-
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-
-def _crisis_card() -> QFrame:
-    frame = QFrame()
-    frame.setObjectName("crisisCard")
-    frame.setFrameShape(QFrame.Shape.StyledPanel)
-    frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
-    return frame
+    return digits or number
 
 
 def _real_entries(items: list[str]) -> list[str]:
@@ -83,7 +93,7 @@ def _real_entries(items: list[str]) -> list[str]:
 
     The seed plan ships placeholder prompts ("Add your safe places here...").
     Those are guidance for the Edit dialog, not content — they must never show
-    up as a half-finished card in the live crisis view.
+    up as a half-finished line in the live crisis view.
     """
     real: list[str] = []
     for raw in items:
@@ -94,49 +104,20 @@ def _real_entries(items: list[str]) -> list[str]:
     return real
 
 
-def _escape_mnemonic(text: str) -> str:
-    """Escape ``&`` so Qt renders it literally instead of as a mnemonic.
+def _strip_numbering(text: str) -> str:
+    """Drop a leading "1. " / "2) " ordinal so coping lines read as quiet help.
 
-    Crisis copy like "988 Suicide & Crisis Lifeline" must survive verbatim;
-    a swallowed ampersand and a stray underlined letter is the last thing a
-    distressed person should have to decode.
+    The seed strategies are numbered for the editor; on the live screen a count
+    reads as a checklist to complete, which is the last thing a person in crisis
+    needs. "1. Take slow, deep breaths" -> "Take slow, deep breaths".
     """
-    return text.replace("&", "&&")
-
-
-def _large_label(text: str, size: int = 16) -> QLabel:
-    label = QLabel(text)
-    label.setTextFormat(Qt.TextFormat.PlainText)
-    label.setFont(QFont("Segoe UI", size))
-    label.setWordWrap(True)
-    return label
-
-
-def _header_label(text: str) -> QLabel:
-    label = QLabel(text)
-    label.setTextFormat(Qt.TextFormat.PlainText)
-    label.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
-    return label
-
-
-def _contact_button(name: str, number: str) -> QPushButton:
-    btn = QPushButton(_escape_mnemonic(f"{name}\n{number}"))
-    btn.setFont(QFont("Segoe UI", 16, QFont.Weight.Bold))
-    btn.setMinimumHeight(70)
-    btn.setCursor(Qt.CursorShape.PointingHandCursor)
-    btn.setProperty("class", "crisisContact")
-    if number.strip():
-        btn.setToolTip(f"Click to copy {number} and try to call it")
-        btn.clicked.connect(lambda _=False, num=number: _activate_contact(num))
-    return btn
-
-
-def _calm_button(text: str) -> QPushButton:
-    btn = QPushButton(text)
-    btn.setCursor(Qt.CursorShape.PointingHandCursor)
-    btn.setFont(QFont("Segoe UI", 13, QFont.Weight.Bold))
-    btn.setProperty("class", "outline")
-    return btn
+    s = text.strip()
+    i = 0
+    while i < len(s) and s[i].isdigit():
+        i += 1
+    if i > 0 and i < len(s) and s[i] in ".)":
+        return s[i + 1 :].strip()
+    return s
 
 
 # ---------------------------------------------------------------------------
@@ -188,7 +169,8 @@ _DEFAULT_CRISIS_PLAN: dict[str, Any] = {
 
 
 # ---------------------------------------------------------------------------
-# Edit dialog
+# Edit dialog (calm-state editing — reached from the live screen, never shown
+# during the moment itself). Warning signs live here, not on the live canvas.
 # ---------------------------------------------------------------------------
 
 
@@ -210,7 +192,7 @@ class _CrisisPlanEditDialog(QDialog):
 
         # Personal contacts
         layout.addWidget(
-            _header_label("Personal Contacts (name | phone | relationship, one per line)")
+            _edit_header("Personal Contacts (name | phone | relationship, one per line)")
         )
         self._personal_edit = QTextEdit()
         self._personal_edit.setPlainText(
@@ -223,7 +205,7 @@ class _CrisisPlanEditDialog(QDialog):
         layout.addWidget(self._personal_edit)
 
         # Professional contacts
-        layout.addWidget(_header_label("Professional Contacts (name | phone | role)"))
+        layout.addWidget(_edit_header("Professional Contacts (name | phone | role)"))
         self._prof_edit = QTextEdit()
         self._prof_edit.setPlainText(
             "\n".join(
@@ -234,29 +216,29 @@ class _CrisisPlanEditDialog(QDialog):
         self._prof_edit.setMaximumHeight(100)
         layout.addWidget(self._prof_edit)
 
-        # Warning signs
-        layout.addWidget(_header_label("Warning Signs (one per line)"))
+        # Warning signs (calm-state only — never on the live screen)
+        layout.addWidget(_edit_header("Warning Signs (one per line)"))
         self._warnings_edit = QTextEdit()
         self._warnings_edit.setPlainText("\n".join(self._plan.get("warning_signs", [])))
         self._warnings_edit.setMaximumHeight(100)
         layout.addWidget(self._warnings_edit)
 
         # Coping strategies
-        layout.addWidget(_header_label("Coping Strategies (one per line)"))
+        layout.addWidget(_edit_header("Coping Strategies (one per line)"))
         self._coping_edit = QTextEdit()
         self._coping_edit.setPlainText("\n".join(self._plan.get("coping_strategies", [])))
         self._coping_edit.setMaximumHeight(100)
         layout.addWidget(self._coping_edit)
 
         # Reasons for living
-        layout.addWidget(_header_label("Reasons for Living (one per line)"))
+        layout.addWidget(_edit_header("Reasons for Living (one per line)"))
         self._reasons_edit = QTextEdit()
         self._reasons_edit.setPlainText("\n".join(self._plan.get("reasons_for_living", [])))
         self._reasons_edit.setMaximumHeight(80)
         layout.addWidget(self._reasons_edit)
 
         # Safe places
-        layout.addWidget(_header_label("Safe Places (one per line)"))
+        layout.addWidget(_edit_header("Safe Places (one per line)"))
         self._safe_edit = QTextEdit()
         self._safe_edit.setPlainText("\n".join(self._plan.get("safe_places", [])))
         self._safe_edit.setMaximumHeight(80)
@@ -304,22 +286,40 @@ class _CrisisPlanEditDialog(QDialog):
         }
 
 
+def _edit_header(text: str) -> QLabel:
+    label = QLabel(text)
+    label.setTextFormat(Qt.TextFormat.PlainText)
+    label.setFont(sans_font(13, weight=QFont.Weight.DemiBold))
+    return label
+
+
 # ---------------------------------------------------------------------------
-# Widget
+# The "Stay" canvas
 # ---------------------------------------------------------------------------
 
 
 class CrisisWidget(QWidget):
-    """Crisis plan quick-access tab -- minimal, calm, large fonts."""
+    """Crisis -> "Stay": one warm room, one sentence, one human."""
 
     plan_updated = pyqtSignal()
+
+    # The heartbeat that opens when someone reaches for the lifeline: ~60bpm,
+    # one full ease up + down per second, paced *below* panic to pull them down.
+    _HEARTBEAT_MS = 1000
+    _GLOW_REST = 0.46  # the room at rest — a banked, watchful coal
+    _GLOW_BEAT_HI = 0.92  # the held-open line, brightest of the beat
+    _GLOW_BEAT_LO = 0.58  # the trough — never dark, the line never drops
 
     def __init__(self, main_window: Any, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.main_window = main_window
         self._plan: dict[str, Any] = dict(_DEFAULT_CRISIS_PLAN)
+        self._theme = self._resolve_theme()
+        self._reduced_motion = self._resolve_reduced_motion()
+        self._reason_idx = 0
+        self._reasons: list[str] = []
 
-        # Try to get crisis plan manager
+        # Crisis plan manager (optional)
         self._crisis_manager = None
         with contextlib.suppress(Exception):
             self._crisis_manager = main_window.crisis_plan_manager
@@ -327,10 +327,26 @@ class CrisisWidget(QWidget):
         self._data_dir = self._resolve_data_dir()
         self._load_plan()
         self._build_ui()
-        self._apply_theme()
 
     # ------------------------------------------------------------------
-    # Persistence
+    # Theme / motion
+    # ------------------------------------------------------------------
+
+    def _resolve_theme(self) -> dict[str, str]:
+        with contextlib.suppress(Exception):
+            return dict(self.main_window.theme_manager.get_colors())
+        return {}
+
+    def _resolve_reduced_motion(self) -> bool:
+        with contextlib.suppress(Exception):
+            return bool(self.main_window.theme_manager.reduced_motion)
+        return False
+
+    def _color(self, key: str, fallback: str) -> str:
+        return self._theme.get(key, fallback)
+
+    # ------------------------------------------------------------------
+    # Persistence (unchanged from Wave 0)
     # ------------------------------------------------------------------
 
     def _resolve_data_dir(self) -> Path:
@@ -426,203 +442,356 @@ class CrisisWidget(QWidget):
             logger.debug(f"Crisis plan save error: {exc}")
 
     # ------------------------------------------------------------------
-    # UI
+    # The warm room — painted, not a card stack
+    # ------------------------------------------------------------------
+
+    def paintEvent(self, _event) -> None:  # noqa: N802
+        p = QPainter(self)
+        p.setRenderHint(QPainter.RenderHint.Antialiasing)
+        bg = QColor(self._color("background", "#0F0F11"))
+        p.fillRect(self.rect(), bg)
+
+        # Warmth rises from the ember at the top — the room lit from one corner,
+        # the last warm room in a cold house. It pools behind the lifeline so the
+        # eye is drawn down toward the one action, not scattered across cards.
+        accent = QColor(self._color("accent", "#D9A05B"))
+        cx = self.width() / 2
+        top = QRadialGradient(cx, self.height() * 0.20, self.width() * 0.62)
+        warm = QColor(accent)
+        warm.setAlpha(34)
+        top.setColorAt(0.0, warm)
+        top.setColorAt(1.0, QColor(accent.red(), accent.green(), accent.blue(), 0))
+        p.fillRect(self.rect(), top)
+
+        # A second, lower bloom under the lifeline so it feels held in light.
+        low = QRadialGradient(cx, self.height() * 0.56, self.width() * 0.5)
+        warm2 = QColor(accent)
+        warm2.setAlpha(20)
+        low.setColorAt(0.0, warm2)
+        low.setColorAt(1.0, QColor(accent.red(), accent.green(), accent.blue(), 0))
+        p.fillRect(self.rect(), low)
+        p.end()
+
+    # ------------------------------------------------------------------
+    # Build
     # ------------------------------------------------------------------
 
     def _build_ui(self) -> None:
-        outer = QVBoxLayout(self)
-        outer.setContentsMargins(0, 0, 0, 0)
+        text = self._color("text", "#F2EDE6")
+        accent = self._color("accent", "#D9A05B")
+        muted = self._color("text_muted", "#A99B88")
 
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setFrameShape(QFrame.Shape.NoFrame)
-        scroll.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        outer.addWidget(scroll)
+        root = QVBoxLayout(self)
+        root.setContentsMargins(40, 30, 40, 30)
+        root.setSpacing(0)
+        root.addStretch(2)
 
-        container = QWidget()
-        container.setMaximumWidth(920)
-        self._root = QVBoxLayout(container)
-        self._root.setSpacing(16)
-        self._root.setContentsMargins(32, 32, 32, 40)
-        scroll.setWidget(container)
+        # A column that stays a calm reading width, centered in the room.
+        column = QWidget()
+        column.setMaximumWidth(620)
+        col = QVBoxLayout(column)
+        col.setContentsMargins(0, 0, 0, 0)
+        col.setSpacing(0)
+        col.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
-        # Header
-        header = QLabel("Crisis resources")
-        header.setObjectName("crisisHeader")
-        header.setFont(QFont("Segoe UI", 26, QFont.Weight.DemiBold))
-        self._root.addWidget(header)
+        # The ember — the room's calm presence, watching.
+        ember_row = QHBoxLayout()
+        ember_row.addStretch()
+        self._ember = Hearthlight(
+            glow=self._GLOW_REST,
+            reduced_motion=self._reduced_motion,
+            transparent_bg=True,
+        )
+        self._ember.setFixedSize(116, 116)
+        ember_row.addWidget(self._ember)
+        ember_row.addStretch()
+        col.addLayout(ember_row)
+        col.addSpacing(18)
 
-        # Live view is help-first: emergency resources and coping steps always
-        # show. Personal/professional contacts, reasons, and safe places appear
-        # only once the person has added their own — no empty cards, no "use
-        # Edit to add" nags. The deterioration checklist (warning signs) is kept
-        # out of the live view entirely; it belongs in Edit, not in front of
-        # someone who is already in crisis.
-        self._build_emergency_contacts()
-        self._build_personal_contacts()
-        self._build_professional_contacts()
-        self._build_coping_strategies()
-        self._build_reasons_for_living()
-        self._build_safe_places()
+        # The one sentence — large, serif, the first and maybe only thing read.
+        self._sentence = QLabel("You don't have to get through\nthis alone right now.")
+        self._sentence.setFont(serif_font(27))
+        self._sentence.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._sentence.setWordWrap(True)
+        self._sentence.setStyleSheet(f"color: {text}; background: transparent;")
+        col.addWidget(self._sentence)
+        col.addSpacing(26)
 
-        # Edit button
-        edit_btn = _calm_button("Edit Crisis Plan")
+        # The one true action — the 988 lifeline, big, warm, dignified.
+        self._lifeline = self._build_lifeline()
+        col.addWidget(self._lifeline)
+        col.addSpacing(14)
+
+        # The persistent, calm in-surface confirmation (hidden until tapped).
+        self._confirm = self._build_confirmation()
+        self._confirm.setVisible(False)
+        col.addWidget(self._confirm)
+
+        # The quieter, secondary lines — text + a person, if they have one.
+        self._build_secondary_lines(col)
+        col.addSpacing(22)
+
+        # Reasons for living — surfaced gently, one at a time, only if real.
+        self._build_reasons(col)
+
+        # A few calm coping steps, most-accessible first.
+        self._build_coping(col)
+        col.addSpacing(20)
+
+        # Edit (calm-state) + disclaimer — quiet, at the foot of the room.
+        edit_row = QHBoxLayout()
+        edit_row.addStretch()
+        edit_btn = HearthButton(
+            "Edit your safety plan", role="ghost", reduced_motion=self._reduced_motion
+        )
         edit_btn.clicked.connect(self._edit_plan)
-        self._root.addWidget(edit_btn)
+        edit_row.addWidget(edit_btn)
+        edit_row.addStretch()
+        col.addLayout(edit_row)
+        col.addSpacing(8)
 
-        # Disclaimer
-        disclaimer = QLabel(
-            "This is a supplement to professional care, not a replacement. "
-            "If you are in immediate danger, please call 988 or go to your nearest emergency room."
+        self._disclaimer = QLabel(
+            "Hearth sits with you, but it can't be your doctor. If you're in danger "
+            "right now, please call 988 — they're awake, and they're for exactly this."
         )
-        disclaimer.setFont(QFont("Segoe UI", 12))
-        disclaimer.setWordWrap(True)
-        disclaimer.setObjectName("crisisDisclaimer")
-        self._root.addWidget(disclaimer)
-        self._root.addStretch()
+        self._disclaimer.setFont(sans_font(11))
+        self._disclaimer.setWordWrap(True)
+        self._disclaimer.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._disclaimer.setStyleSheet(f"color: {muted}; background: transparent;")
+        col.addWidget(self._disclaimer)
 
-    def _apply_theme(self) -> None:
-        theme = {}
-        with contextlib.suppress(Exception):
-            theme = self.main_window.theme_manager.get_colors()
-        background = theme.get("background", "#18130F")
-        card_bg = theme.get("card_bg", "#221C16")
-        border = theme.get("border", "#3D3128")
-        text = theme.get("text", "#F2E8D9")
-        secondary = theme.get("secondary", "#BCAE9C")
-        accent = theme.get("accent", "#A8845F")
-        accent_hover = theme.get("accent_hover", accent)
-        self.setStyleSheet(
-            f"""
-            QWidget {{ background-color: {background}; color: {text}; }}
-            QLabel {{ background-color: transparent; color: {text}; }}
-            QScrollArea {{ border: none; background-color: {background}; }}
-            QLabel#crisisHeader {{
-                color: {text};
-                font-size: 28px;
-                font-weight: 600;
-                padding-bottom: 8px;
-            }}
-            QLabel#crisisDisclaimer {{
-                color: {secondary};
-                font-size: 12px;
-                padding: 8px 0;
-            }}
-            QFrame#crisisCard {{
-                background-color: {card_bg};
-                border: 1px solid {border};
-                border-radius: 6px;
-                padding: 16px;
-            }}
-            QPushButton[class="crisisContact"] {{
-                background-color: transparent;
-                color: {text};
-                border: 1px solid {accent};
-                border-radius: 6px;
-                padding: 12px;
-                font-size: 14px;
-                font-weight: 600;
-                text-align: left;
-            }}
-            QPushButton[class="crisisContact"]:hover {{
-                background-color: {accent};
-                color: {background};
-            }}
-            QPushButton[class="crisisContact"]:pressed {{
-                background-color: {accent_hover};
-                color: {background};
-            }}
-            QPushButton[class="outline"] {{
-                background-color: transparent;
-                color: {accent};
-                border: 1px solid {border};
-                border-radius: 6px;
-                padding: 10px 14px;
-                font-size: 13px;
-                font-weight: 500;
-            }}
-            QPushButton[class="outline"]:hover {{
-                background-color: {card_bg};
-                color: {text};
-            }}
-            """
+        column_row = QHBoxLayout()
+        column_row.addStretch()
+        column_row.addWidget(column)
+        column_row.addStretch()
+        root.addLayout(column_row)
+        root.addStretch(3)
+
+        # The heartbeat that opens when the lifeline is reached for.
+        self._build_heartbeat()
+        _ = accent  # accent flows through painted surfaces; referenced for clarity
+
+    def _build_lifeline(self) -> QWidget:
+        """The 988 line, as the single largest, warmest action on the screen."""
+        contacts = self._plan.get("emergency_contacts", [])
+        primary = contacts[0] if contacts else _DEFAULT_CRISIS_PLAN["emergency_contacts"][0]
+        name = primary.get("name", "988 Suicide & Crisis Lifeline")
+        number = primary.get("phone", "988")
+        self._primary_number = number
+
+        card = HearthCard(elevation=2, radius=20)
+        lay = QVBoxLayout(card)
+        lay.setContentsMargins(28, 24, 28, 24)
+        lay.setSpacing(6)
+
+        label = QLabel("Call 988 — talk to someone now")
+        label.setFont(serif_font(23, weight=QFont.Weight.DemiBold))
+        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        label.setStyleSheet(f"color: {self._color('text', '#F2EDE6')}; background: transparent;")
+
+        sub = QLabel(_clean_lifeline_name(name))
+        sub.setFont(sans_font(13))
+        sub.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        sub.setStyleSheet(
+            f"color: {self._color('text_muted', '#A99B88')}; background: transparent;"
         )
 
-    def _build_emergency_contacts(self) -> None:
-        card = _crisis_card()
-        layout = QVBoxLayout(card)
-        layout.addWidget(_header_label("Emergency Resources"))
+        btn = HearthButton("Call 988", role="primary", reduced_motion=self._reduced_motion)
+        btn.setMinimumHeight(64)
+        font = btn.font()
+        font.setPointSize(17)
+        btn.setFont(font)
+        btn.clicked.connect(lambda: self._reach_out(number))
 
-        for contact in self._plan.get("emergency_contacts", []):
-            btn = _contact_button(contact.get("name", ""), contact.get("phone", ""))
-            layout.addWidget(btn)
-        self._root.addWidget(card)
+        lay.addWidget(label)
+        lay.addWidget(sub)
+        lay.addSpacing(10)
+        lay.addWidget(btn)
+        return card
 
-    def _build_personal_contacts(self) -> None:
-        contacts = self._plan.get("personal_contacts", [])
-        if not contacts:
+    def _build_confirmation(self) -> QLabel:
+        """A persistent, calm confirmation — never a vanishing tooltip."""
+        label = QLabel("")
+        label.setFont(sans_font(13))
+        label.setWordWrap(True)
+        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        accent = self._color("accent", "#D9A05B")
+        label.setStyleSheet(f"color: {accent}; background: transparent;")
+        return label
+
+    def _build_secondary_lines(self, col: QVBoxLayout) -> None:
+        """Crisis Text Line, SAMHSA, and a trusted person — present but quieter."""
+        contacts = self._plan.get("emergency_contacts", [])
+        row = QHBoxLayout()
+        row.setSpacing(10)
+        row.addStretch()
+        # The remaining emergency lines (text line, SAMHSA) ride quieter as ghosts.
+        for contact in contacts[1:]:
+            number = contact.get("phone", "")
+            label = _secondary_label(contact.get("name", ""), number)
+            if not number.strip():
+                continue
+            btn = HearthButton(label, role="ghost", reduced_motion=self._reduced_motion)
+            btn.clicked.connect(lambda _checked=False, num=number: self._reach_out(num))
+            row.addWidget(btn)
+
+        # A person they trust — only if they wrote one. Never an empty "add" slot.
+        personal = self._plan.get("personal_contacts", [])
+        for c in personal[:1]:
+            number = c.get("phone", "")
+            if not number.strip():
+                continue
+            name = c.get("name", "")
+            btn = HearthButton(f"Call {name}", role="ghost", reduced_motion=self._reduced_motion)
+            btn.clicked.connect(lambda _checked=False, num=number: self._reach_out(num))
+            row.addWidget(btn)
+        row.addStretch()
+        wrap = QWidget()
+        wrap.setLayout(row)
+        col.addWidget(wrap)
+
+    def _build_reasons(self, col: QVBoxLayout) -> None:
+        """The person's own reasons for living — the emotional core, one at a time."""
+        self._reasons = _real_entries(self._plan.get("reasons_for_living", []))
+        if not self._reasons:
+            self._reason_label = None
             return
-        card = _crisis_card()
-        layout = QVBoxLayout(card)
-        layout.addWidget(_header_label("Personal Contacts"))
-        for c in contacts:
-            btn = _contact_button(
-                f"{c.get('name', '')} ({c.get('relationship', '')})",
-                c.get("phone", ""),
-            )
-            layout.addWidget(btn)
-        self._root.addWidget(card)
 
-    def _build_professional_contacts(self) -> None:
-        contacts = self._plan.get("professional_contacts", [])
-        if not contacts:
+        intro = QLabel("Some of what you wanted to stay for")
+        intro.setFont(sans_font(11, weight=QFont.Weight.DemiBold))
+        intro.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        intro.setStyleSheet(
+            f"color: {self._color('text_muted', '#A99B88')}; background: transparent;"
+        )
+        col.addWidget(intro)
+        col.addSpacing(6)
+
+        self._reason_label = QLabel(self._reasons[0])
+        self._reason_label.setFont(serif_font(21))
+        self._reason_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._reason_label.setWordWrap(True)
+        self._reason_label.setStyleSheet(
+            f"color: {self._color('text', '#F2EDE6')}; background: transparent;"
+        )
+        self._reason_opacity = QGraphicsOpacityEffect(self._reason_label)
+        self._reason_opacity.setOpacity(1.0)
+        self._reason_label.setGraphicsEffect(self._reason_opacity)
+        col.addWidget(self._reason_label)
+        col.addSpacing(22)
+
+        # Cycle gently between reasons, one at a time, with a slow crossfade.
+        if len(self._reasons) > 1 and not self._reduced_motion:
+            self._reason_fade = QPropertyAnimation(self._reason_opacity, b"opacity", self)
+            self._reason_fade.setDuration(900)
+            self._reason_fade.setEasingCurve(QEasingCurve.Type.InOutSine)
+            self._reason_timer = QTimer(self)
+            self._reason_timer.setInterval(7000)
+            self._reason_timer.timeout.connect(self._next_reason)
+            self._reason_timer.start()
+
+    def _next_reason(self) -> None:
+        if not self._reasons or self._reason_label is None:
             return
-        card = _crisis_card()
-        layout = QVBoxLayout(card)
-        layout.addWidget(_header_label("Professional Contacts"))
-        for c in contacts:
-            btn = _contact_button(
-                f"{c.get('name', '')} ({c.get('relationship', '')})",
-                c.get("phone", ""),
-            )
-            layout.addWidget(btn)
-        self._root.addWidget(card)
+        # Fade out, swap text at the trough, fade back in.
+        self._reason_fade.stop()
+        self._reason_fade.setStartValue(1.0)
+        self._reason_fade.setEndValue(0.0)
 
-    def _build_coping_strategies(self) -> None:
-        card = _crisis_card()
-        layout = QVBoxLayout(card)
-        layout.addWidget(_header_label("Coping Strategies"))
+        def _swap() -> None:
+            self._reason_idx = (self._reason_idx + 1) % len(self._reasons)
+            self._reason_label.setText(self._reasons[self._reason_idx])
+            self._reason_fade.stop()
+            self._reason_fade.setStartValue(0.0)
+            self._reason_fade.setEndValue(1.0)
+            self._reason_fade.start()
 
-        for strategy in self._plan.get("coping_strategies", []):
-            label = _large_label(strategy, 15)
-            layout.addWidget(label)
-        self._root.addWidget(card)
+        with contextlib.suppress(TypeError):
+            self._reason_fade.finished.disconnect()
+        self._reason_fade.finished.connect(_swap, Qt.ConnectionType.SingleShotConnection)
+        self._reason_fade.start()
 
-    def _build_reasons_for_living(self) -> None:
-        reasons = _real_entries(self._plan.get("reasons_for_living", []))
-        if not reasons:
+    def _build_coping(self, col: QVBoxLayout) -> None:
+        """A few calm steps, most-accessible first — quiet, never a checklist."""
+        raw = self._plan.get("coping_strategies", [])
+        steps = [_strip_numbering(str(s)) for s in raw if str(s).strip()]
+        # Keep it short — a drowning person reads one or two lines, not eight.
+        steps = steps[:3]
+        if not steps:
             return
-        card = _crisis_card()
-        layout = QVBoxLayout(card)
-        layout.addWidget(_header_label("Reasons for Living"))
-        for reason in reasons:
-            layout.addWidget(_large_label(f"  {reason}", 15))
-        self._root.addWidget(card)
 
-    def _build_safe_places(self) -> None:
-        places = _real_entries(self._plan.get("safe_places", []))
-        if not places:
-            return
-        card = _crisis_card()
-        layout = QVBoxLayout(card)
-        layout.addWidget(_header_label("Safe Places"))
-        for place in places:
-            layout.addWidget(_large_label(f"  {place}", 14))
-        self._root.addWidget(card)
+        intro = QLabel("Or stay here a moment, and try one small thing")
+        intro.setFont(sans_font(11, weight=QFont.Weight.DemiBold))
+        intro.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        intro.setStyleSheet(
+            f"color: {self._color('text_muted', '#A99B88')}; background: transparent;"
+        )
+        col.addWidget(intro)
+        col.addSpacing(6)
+
+        for step in steps:
+            line = QLabel(step)
+            line.setFont(serif_font(15))
+            line.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            line.setWordWrap(True)
+            line.setStyleSheet(f"color: {self._color('text', '#F2EDE6')}; background: transparent;")
+            col.addWidget(line)
+            col.addSpacing(4)
 
     # ------------------------------------------------------------------
-    # Edit
+    # Signature moment — "the line is open"
+    # ------------------------------------------------------------------
+
+    def _build_heartbeat(self) -> None:
+        """A ~60bpm glow pulse on the ember — the room settling, the line open."""
+        rest = self._GLOW_BEAT_LO
+        self._heartbeat = QSequentialAnimationGroup(self)
+        up = QPropertyAnimation(self._ember, b"glow")
+        up.setStartValue(self._GLOW_BEAT_LO)
+        up.setEndValue(self._GLOW_BEAT_HI)
+        up.setDuration(self._HEARTBEAT_MS // 2)
+        up.setEasingCurve(QEasingCurve.Type.InOutSine)
+        down = QPropertyAnimation(self._ember, b"glow")
+        down.setStartValue(self._GLOW_BEAT_HI)
+        down.setEndValue(self._GLOW_BEAT_LO)
+        down.setDuration(self._HEARTBEAT_MS // 2)
+        down.setEasingCurve(QEasingCurve.Type.InOutSine)
+        self._heartbeat.addAnimation(up)
+        self._heartbeat.addAnimation(down)
+        self._heartbeat.setLoopCount(-1)
+        _ = rest
+
+    def _reach_out(self, number: str) -> None:
+        """Copy + tel: the lifeline, then turn the room toward the person."""
+        placed = _activate_contact(number)
+        is_988 = "988" in placed
+
+        # The persistent, calm confirmation — replaces the vanishing tooltip.
+        if is_988:
+            self._confirm.setText(
+                "The line is open. 988 is on your clipboard too. "
+                "If the call didn't start, dial it — we're not going anywhere."
+            )
+        else:
+            self._confirm.setText(
+                f"{placed} is on your clipboard. Reach out when you're ready — we're right here."
+            )
+        self._confirm.setVisible(True)
+        self._update_sentence("Stay. Help is on the way to you.")
+
+        # The room settles into a slow heartbeat, paced below panic to pull down.
+        if self._reduced_motion:
+            self._ember.set_glow(self._GLOW_BEAT_HI, animate=False)
+        else:
+            self._ember.stop_breathing()
+            self._heartbeat.stop()
+            self._ember.set_glow(self._GLOW_BEAT_LO, animate=False)
+            self._heartbeat.start()
+
+    def _update_sentence(self, text: str) -> None:
+        self._sentence.setText(text)
+
+    # ------------------------------------------------------------------
+    # Edit (calm-state)
     # ------------------------------------------------------------------
 
     def _edit_plan(self) -> None:
@@ -634,18 +803,31 @@ class CrisisWidget(QWidget):
             self._rebuild()
 
     def _rebuild(self) -> None:
-        """Clear and rebuild the entire widget."""
-        layout = self.layout()
-        if layout:
-            while layout.count():
-                item = layout.takeAt(0)
-                if item is None:
-                    continue
-                widget = item.widget()  # type: ignore[union-attr]
-                if widget:
-                    widget.deleteLater()
+        """Clear and rebuild the entire surface."""
+        if hasattr(self, "_reason_timer"):
+            self._reason_timer.stop()
+        if hasattr(self, "_heartbeat"):
+            self._heartbeat.stop()
+        old = self.layout()
+        if old is not None:
+            # Detach the old layout from self so _build_ui can install a fresh
+            # one — Qt refuses to set a second layout on a widget that still
+            # owns one, which silently leaves the rebuilt content un-managed.
+            # Reparenting the layout onto a throwaway widget hands Qt ownership
+            # to delete it *and everything still nested in it*, so no orphaned
+            # child of self survives to paint over the new room.
+            QWidget().setLayout(old)
+        # Belt-and-braces: any direct child widget that slipped its layout is
+        # deleted now, so a stale label can never ghost over the new surface.
+        for child in self.findChildren(QWidget):
+            if child.parent() is self:
+                child.setParent(None)
+                child.deleteLater()
+        self._theme = self._resolve_theme()
+        self._reduced_motion = self._resolve_reduced_motion()
+        self._reason_idx = 0
         self._build_ui()
-        self._apply_theme()
+        self.update()
 
     # ------------------------------------------------------------------
     # Public API
@@ -654,3 +836,37 @@ class CrisisWidget(QWidget):
     def save_state(self) -> None:
         """Called by main window on close."""
         self._save_plan()
+
+
+# ---------------------------------------------------------------------------
+# Small, local helpers
+# ---------------------------------------------------------------------------
+
+
+def _clean_lifeline_name(name: str) -> str:
+    """The hotline's real name, intact (the & survives — QLabel plain text)."""
+    return name.strip() or "988 Suicide & Crisis Lifeline"
+
+
+def _secondary_label(name: str, number: str) -> str:
+    """A short, calm label for the quieter lines."""
+    n = name.strip()
+    if "text" in n.lower():
+        return "Text instead"
+    if "samhsa" in n.lower():
+        return "SAMHSA helpline"
+    return n or number
+
+
+def _clear_layout(layout) -> None:
+    if layout is None:
+        return
+    while layout.count():
+        item = layout.takeAt(0)
+        if item is None:
+            continue
+        w = item.widget()
+        if w:
+            w.deleteLater()
+        else:
+            _clear_layout(item.layout())

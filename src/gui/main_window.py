@@ -842,6 +842,9 @@ class AdaptiveMainWindow(QMainWindow):
                 from gui.widgets.panic_tracker_widget import PanicTrackerWidget
 
                 widget = PanicTrackerWidget(self)
+                # If the "later" reflection's words name self-harm, carry the
+                # person straight to crisis resources (988 + the crisis plan).
+                widget.crisis_requested.connect(lambda: self._switch_to_tab("crisis"))
             elif name == "sleep":
                 from gui.widgets.sleep_widget import SleepWidget
 
