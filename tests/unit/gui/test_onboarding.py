@@ -5,7 +5,7 @@ from __future__ import annotations
 from unittest.mock import MagicMock
 
 import pytest
-from PyQt6.QtWidgets import QAbstractButton, QLineEdit, QStackedWidget
+from PyQt6.QtWidgets import QAbstractButton
 
 from gui.widgets.onboarding import OnboardingWizard
 

@@ -6,7 +6,7 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
-from PyQt6.QtWidgets import QComboBox, QGroupBox, QLabel, QSlider
+from PyQt6.QtWidgets import QComboBox, QGroupBox, QSlider
 
 from gui.widgets.settings_widget import SettingsWidget
 
@@ -99,6 +99,8 @@ def test_save_settings_emits_signal(qtbot, fake_main_window):
     qtbot.addWidget(widget)
 
     # Prevent QMessageBox from blocking the test
-    with patch("gui.widgets.settings_widget.QMessageBox"):
-        with qtbot.waitSignal(widget.settings_changed, timeout=1000):
-            widget._save_settings()
+    with (
+        patch("gui.widgets.settings_widget.QMessageBox"),
+        qtbot.waitSignal(widget.settings_changed, timeout=1000),
+    ):
+        widget._save_settings()

@@ -5,7 +5,7 @@ from __future__ import annotations
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
-from PyQt6.QtWidgets import QAbstractButton, QLineEdit, QWidget
+from PyQt6.QtWidgets import QAbstractButton, QWidget
 
 from gui.widgets.search_widget import SearchWidget
 
