@@ -11,7 +11,7 @@ from core.auto_updater import AutoUpdater
 
 @pytest.fixture
 def updater(tmp_path: Path) -> AutoUpdater:
-    return AutoUpdater("1.0.0", owner="test", repo="test", data_dir=tmp_path)
+    return AutoUpdater("1.0.0", data_dir=tmp_path)
 
 
 class TestVersionComparison:

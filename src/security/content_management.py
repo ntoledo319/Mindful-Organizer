@@ -40,13 +40,28 @@ class SecurityLevel(Enum):
 
 
 class ContentManager:
-    """Manages secure content storage and access."""
+    """Manages secure content storage and access.
 
-    def __init__(self, root_path: Path):
+    By default the Fernet key is stored in the OS keyring. If the keyring is
+    unavailable, the manager falls back to an on-disk ``key.bin`` file with
+    0600 permissions **only when** ``force_keyring`` is ``False`` (the default).
+    When a fallback occurs, the ``keyring_fallback_used`` flag is set to
+    ``True`` and a prominent WARNING is logged so callers can surface the
+    reduced-protection state to the user.
+
+    Args:
+        root_path: Base directory for content and secure-vault storage.
+        force_keyring: If ``True``, raises :exc:`RuntimeError` when the OS
+            keyring is unavailable instead of falling back to disk.
+    """
+
+    def __init__(self, root_path: Path, force_keyring: bool = False):
         """Initialize the content manager with the given root storage path."""
         self.root_path = root_path
         self.config_path = root_path / ".content_config"
         self.vault_path = root_path / ".secure_vault"
+        self.force_keyring = force_keyring
+        self.keyring_fallback_used = False
         self._initialize_secure_storage()
 
     def _initialize_secure_storage(self):
@@ -69,6 +84,15 @@ class ContentManager:
 
         Migrates legacy on-disk key.bin into the keyring on first launch and
         deletes the old file afterward.
+
+        Fallback behaviour:
+            * If ``force_keyring`` is ``True`` and the keyring is unavailable,
+              a :exc:`RuntimeError` is raised.
+            * Otherwise, when the keyring is genuinely unavailable, the manager
+              falls back to an on-disk ``key.bin`` with 0600 permissions, sets
+              ``self.keyring_fallback_used = True``, and logs a prominent
+              WARNING. Callers should inspect ``keyring_fallback_used`` and
+              warn the user that encryption strength is reduced.
         """
         legacy_key_file = self.config_path / "key.bin"
 
@@ -92,14 +116,20 @@ class ContentManager:
             keyring.set_password(_KEYRING_SERVICE, _KEYRING_USERNAME, key.decode())
             return key
         except Exception as exc:  # keyring missing, no backend, locked, etc.
+            if self.force_keyring:
+                raise RuntimeError(
+                    "OS keyring is unavailable but force_keyring=True. "
+                    "Cannot create or load the content-vault encryption key."
+                ) from exc
             logger.warning(
-                "OS keyring unavailable (%s). Falling back to on-disk key "
-                "with restricted permissions. Encryption strength is reduced.",
+                "OS keyring unavailable (%s). "
+                "Falling back to on-disk key with restricted permissions. "
+                "Encryption strength is reduced — consider enabling a keyring backend.",
                 exc,
             )
+            self.keyring_fallback_used = True
             if legacy_key_file.exists():
                 return legacy_key_file.read_bytes()
-            import contextlib
 
             key = Fernet.generate_key()
             legacy_key_file.write_bytes(key)

@@ -43,7 +43,7 @@ def _maybe_data(pkg):
 hidden_imports = []
 hidden_imports += collect_submodules("PyQt6")
 hidden_imports += collect_submodules("cryptography")
-hidden_imports += ["sqlite3", "json", "csv"]
+hidden_imports += ["sqlite3", "json", "csv", "keyring", "certifi", "psutil"]
 # Optional, only if installed:
 for _pkg in ("numpy", "sklearn", "pandas", "matplotlib", "hdbscan", "umap"):
     hidden_imports += _maybe(_pkg)

@@ -1,16 +1,16 @@
 @echo off
 REM =========================================================================
-REM Mindful Organizer - Windows Build Script
+REM Hearth - Windows Build Script
 REM =========================================================================
-REM This script builds the Mindful Organizer application for Windows.
-REM It creates a virtual environment, installs dependencies, runs PyInstaller,
-REM and prepares the distribution folder.
+REM This script builds the Hearth application for Windows.
+REM It creates a virtual environment, installs dependencies from pyproject.toml,
+REM runs PyInstaller, and prepares the distribution folder.
 REM
 REM Usage:
 REM   build_windows.bat
 REM
 REM Prerequisites:
-REM   - Python 3.9 or later installed and available on PATH
+REM   - Python 3.11 or later installed and available on PATH
 REM   - Internet connection (for downloading dependencies)
 REM =========================================================================
 
@@ -21,11 +21,11 @@ set "VENV_DIR=%PROJECT_ROOT%venv_build"
 set "DIST_DIR=%PROJECT_ROOT%dist"
 set "SPEC_FILE=%PROJECT_ROOT%mindful_organizer.spec"
 set "REQUIRED_PYTHON_MAJOR=3"
-set "REQUIRED_PYTHON_MINOR=9"
+set "REQUIRED_PYTHON_MINOR=11"
 
 echo.
 echo ================================================================
-echo   Mindful Organizer - Windows Build
+echo   Hearth - Windows Build
 echo ================================================================
 echo.
 
@@ -73,6 +73,10 @@ echo [Step 2/6] Setting up virtual environment...
 if exist "%VENV_DIR%" (
     echo Removing existing build virtual environment...
     rmdir /s /q "%VENV_DIR%"
+    if %ERRORLEVEL% neq 0 (
+        echo ERROR: Failed to remove existing virtual environment.
+        exit /b 1
+    )
 )
 
 python -m venv "%VENV_DIR%"
@@ -98,29 +102,24 @@ echo [Step 3/6] Installing dependencies...
 
 REM Upgrade pip first
 python -m pip install --upgrade pip >nul 2>&1
+if %ERRORLEVEL% neq 0 (
+    echo WARNING: Failed to upgrade pip. Continuing with existing version.
+)
 
-REM Install project dependencies
-echo Installing project requirements...
-pip install -r "%PROJECT_ROOT%requirements.txt"
+REM Install project with dev extras from pyproject.toml
+echo Installing project dependencies from pyproject.toml...
+pip install -e "%PROJECT_ROOT%[dev]"
 if %ERRORLEVEL% neq 0 (
     echo ERROR: Failed to install project dependencies.
-    echo Check requirements.txt and your internet connection.
+    echo Check pyproject.toml and your internet connection.
     exit /b 1
 )
 
-REM Install PyQt6 (may not be in requirements.txt if it is a desktop-only dep)
-echo Installing PyQt6...
-pip install PyQt6
+REM Install PyInstaller and Pillow (build tools not in [dev] extras)
+echo Installing PyInstaller and Pillow...
+pip install pyinstaller Pillow
 if %ERRORLEVEL% neq 0 (
-    echo ERROR: Failed to install PyQt6.
-    exit /b 1
-)
-
-REM Install PyInstaller
-echo Installing PyInstaller...
-pip install pyinstaller
-if %ERRORLEVEL% neq 0 (
-    echo ERROR: Failed to install PyInstaller.
+    echo ERROR: Failed to install PyInstaller or Pillow.
     exit /b 1
 )
 
@@ -141,10 +140,18 @@ REM Clean previous builds
 if exist "%PROJECT_ROOT%build" (
     echo Cleaning previous build directory...
     rmdir /s /q "%PROJECT_ROOT%build"
+    if %ERRORLEVEL% neq 0 (
+        echo ERROR: Failed to clean build directory.
+        exit /b 1
+    )
 )
-if exist "%DIST_DIR%\MindfulOrganizer" (
+if exist "%DIST_DIR%\Hearth" (
     echo Cleaning previous dist output...
-    rmdir /s /q "%DIST_DIR%\MindfulOrganizer"
+    rmdir /s /q "%DIST_DIR%\Hearth"
+    if %ERRORLEVEL% neq 0 (
+        echo ERROR: Failed to clean dist directory.
+        exit /b 1
+    )
 )
 
 pyinstaller --clean --noconfirm "%SPEC_FILE%"
@@ -162,24 +169,43 @@ REM Step 5: Create distribution folder
 REM -----------------------------------------------------------------------
 echo [Step 5/6] Preparing distribution folder...
 
-set "RELEASE_DIR=%DIST_DIR%\MindfulOrganizer-Release"
+set "RELEASE_DIR=%DIST_DIR%\Hearth-Release"
 
 if exist "%RELEASE_DIR%" (
     rmdir /s /q "%RELEASE_DIR%"
+    if %ERRORLEVEL% neq 0 (
+        echo ERROR: Failed to clean previous release directory.
+        exit /b 1
+    )
 )
+
 mkdir "%RELEASE_DIR%"
+if %ERRORLEVEL% neq 0 (
+    echo ERROR: Failed to create release directory.
+    exit /b 1
+)
 
 REM Copy the built application
-xcopy /e /i /q "%DIST_DIR%\MindfulOrganizer" "%RELEASE_DIR%\MindfulOrganizer"
+xcopy /e /i /q "%DIST_DIR%\Hearth" "%RELEASE_DIR%\Hearth"
+if %ERRORLEVEL% neq 0 (
+    echo ERROR: Failed to copy built application to release directory.
+    exit /b 1
+)
 
 REM Copy the privacy policy
 if exist "%PROJECT_ROOT%windows_store\privacy_policy.html" (
     copy /y "%PROJECT_ROOT%windows_store\privacy_policy.html" "%RELEASE_DIR%\" >nul
+    if %ERRORLEVEL% neq 0 (
+        echo WARNING: Failed to copy privacy policy.
+    )
 )
 
 REM Copy the license
 if exist "%PROJECT_ROOT%LICENSE" (
     copy /y "%PROJECT_ROOT%LICENSE" "%RELEASE_DIR%\" >nul
+    if %ERRORLEVEL% neq 0 (
+        echo WARNING: Failed to copy license.
+    )
 )
 
 echo Distribution folder prepared at: %RELEASE_DIR%
@@ -194,7 +220,7 @@ echo ================================================================
 echo   BUILD SUMMARY
 echo ================================================================
 echo.
-echo   Application:   %DIST_DIR%\MindfulOrganizer\mindful-organizer.exe
+echo   Application:   %DIST_DIR%\Hearth\hearth.exe
 echo   Distribution:  %RELEASE_DIR%
 echo.
 echo ================================================================

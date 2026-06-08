@@ -211,3 +211,265 @@ class CommunityInsightsEngine:
 
         insights = self.get_insights(conditions)
         return random.choice(insights) if insights else None
+
+
+# ---------------------------------------------------------------------------
+# Local-data insights (renamed from "Community" for the offline app)
+# ---------------------------------------------------------------------------
+
+
+class CommunityInsights:
+    """Generate personal insights from the user's own local data.
+
+    Since Hearth is an offline-first app, there is no actual community
+    dataset.  This class analyses the user's task completion, mood,
+    sleep, and energy records to surface meaningful, private patterns.
+    """
+
+    def __init__(self, db: Any | None = None) -> None:
+        self._db = db
+
+    def _fetch(self, table: str, columns: list[str]) -> list[dict[str, Any]]:
+        """Safely fetch rows from the database."""
+        if self._db is None:
+            return []
+        try:
+            from core.database import TableName
+
+            result = self._db.query(TableName(table))
+            return result.rows
+        except Exception:
+            logger.debug("Could not fetch %s for insights", table)
+            return []
+
+    def generate_insights(self) -> list[CommunityInsight]:
+        """Analyse local data and return a list of personal insights."""
+        insights: list[CommunityInsight] = []
+        insights.extend(self._task_insights())
+        insights.extend(self._mood_insights())
+        insights.extend(self._sleep_insights())
+        insights.extend(self._energy_insights())
+        insights.extend(self._correlation_insights())
+        return insights
+
+    # -- task insights -----------------------------------------------------
+
+    def _task_insights(self) -> list[CommunityInsight]:
+        rows = self._fetch("tasks", ["completed", "completed_at", "energy_required"])
+        if not rows:
+            return []
+        total = len(rows)
+        completed = sum(1 for r in rows if r.get("completed"))
+        rate = (completed / total) * 100 if total else 0
+        msgs: list[CommunityInsight] = []
+        if total:
+            msgs.append(
+                CommunityInsight(
+                    condition="Personal",
+                    insight_type="task_completion",
+                    message=(
+                        f"You have completed {completed} out of {total} tasks "
+                        f"({rate:.0f}% completion rate)."
+                    ),
+                    sample_size=total,
+                    confidence="high" if total >= 10 else "moderate",
+                )
+            )
+        if rate < 50 and total >= 5:
+            msgs.append(
+                CommunityInsight(
+                    condition="Personal",
+                    insight_type="task_completion",
+                    message=(
+                        "Your completion rate is below 50%. Consider breaking "
+                        "tasks into smaller pieces or lowering the energy required."
+                    ),
+                    sample_size=total,
+                    confidence="moderate",
+                )
+            )
+        return msgs
+
+    # -- mood insights -----------------------------------------------------
+
+    def _mood_insights(self) -> list[CommunityInsight]:
+        rows = self._fetch("mood_entries", ["mood_score", "timestamp"])
+        if not rows:
+            return []
+        scores = [r["mood_score"] for r in rows if r.get("mood_score") is not None]
+        if not scores:
+            return []
+        avg = sum(scores) / len(scores)
+        trend = "stable"
+        if len(scores) >= 3:
+            first_half = sum(scores[: len(scores) // 2]) / (len(scores) // 2 or 1)
+            second_half = sum(scores[len(scores) // 2 :]) / (len(scores) // 2 or 1)
+            if second_half > first_half + 0.5:
+                trend = "improving"
+            elif second_half < first_half - 0.5:
+                trend = "declining"
+        msgs: list[CommunityInsight] = [
+            CommunityInsight(
+                condition="Personal",
+                insight_type="mood_trend",
+                message=(
+                    f"Your average mood over {len(scores)} entries is {avg:.1f}/10, "
+                    f"and the trend is {trend}."
+                ),
+                sample_size=len(scores),
+                confidence="high" if len(scores) >= 10 else "moderate",
+            )
+        ]
+        if avg < 4 and len(scores) >= 3:
+            msgs.append(
+                CommunityInsight(
+                    condition="Personal",
+                    insight_type="mood_trend",
+                    message=(
+                        "Your mood has been consistently low. This is a signal to "
+                        "reach out to someone you trust or a professional."
+                    ),
+                    sample_size=len(scores),
+                    confidence="high",
+                )
+            )
+        return msgs
+
+    # -- sleep insights ----------------------------------------------------
+
+    def _sleep_insights(self) -> list[CommunityInsight]:
+        rows = self._fetch("sleep_logs", ["duration_hours", "quality"])
+        if not rows:
+            return []
+        durations = [r["duration_hours"] for r in rows if r.get("duration_hours") is not None]
+        qualities = [r["quality"] for r in rows if r.get("quality") is not None]
+        msgs: list[CommunityInsight] = []
+        if durations:
+            avg_dur = sum(durations) / len(durations)
+            msgs.append(
+                CommunityInsight(
+                    condition="Personal",
+                    insight_type="sleep_trend",
+                    message=(
+                        f"You average {avg_dur:.1f} hours of sleep per night "
+                        f"over {len(durations)} logged nights."
+                    ),
+                    sample_size=len(durations),
+                    confidence="high" if len(durations) >= 7 else "moderate",
+                )
+            )
+            if avg_dur < 6:
+                msgs.append(
+                    CommunityInsight(
+                        condition="Personal",
+                        insight_type="sleep_trend",
+                        message=(
+                            "You are averaging less than 6 hours of sleep. "
+                            "Prioritising rest often improves mood and focus."
+                        ),
+                        sample_size=len(durations),
+                        confidence="high",
+                    )
+                )
+        if qualities:
+            avg_qual = sum(qualities) / len(qualities)
+            if avg_qual < 5:
+                msgs.append(
+                    CommunityInsight(
+                        condition="Personal",
+                        insight_type="sleep_trend",
+                        message=(
+                            "Your sleep quality ratings are low. A consistent "
+                            "wind-down routine may help."
+                        ),
+                        sample_size=len(qualities),
+                        confidence="moderate",
+                    )
+                )
+        return msgs
+
+    # -- energy insights ---------------------------------------------------
+
+    def _energy_insights(self) -> list[CommunityInsight]:
+        rows = self._fetch("energy_readings", ["energy_level", "timestamp"])
+        if not rows:
+            return []
+        levels = [r["energy_level"] for r in rows if r.get("energy_level") is not None]
+        if not levels:
+            return []
+        avg = sum(levels) / len(levels)
+        msgs: list[CommunityInsight] = [
+            CommunityInsight(
+                condition="Personal",
+                insight_type="energy_pattern",
+                message=(
+                    f"Your average energy level is {avg:.1f}/10 across {len(levels)} readings."
+                ),
+                sample_size=len(levels),
+                confidence="high" if len(levels) >= 10 else "moderate",
+            )
+        ]
+        if avg < 4 and len(levels) >= 3:
+            msgs.append(
+                CommunityInsight(
+                    condition="Personal",
+                    insight_type="energy_pattern",
+                    message=(
+                        "Your energy has been consistently low. Consider reviewing "
+                        "sleep, medication timing, or recent stressors."
+                    ),
+                    sample_size=len(levels),
+                    confidence="moderate",
+                )
+            )
+        return msgs
+
+    # -- correlations ------------------------------------------------------
+
+    def _correlation_insights(self) -> list[CommunityInsight]:
+        """Surface simple correlations between sleep and mood."""
+        mood_rows = self._fetch("mood_entries", ["mood_score", "timestamp"])
+        sleep_rows = self._fetch("sleep_logs", ["duration_hours", "quality", "date"])
+        if not mood_rows or not sleep_rows:
+            return []
+
+        # Pair by date (simple isoformat prefix match)
+        mood_by_date: dict[str, list[int]] = {}
+        for r in mood_rows:
+            ts = r.get("timestamp", "")[:10]
+            if ts and r.get("mood_score") is not None:
+                mood_by_date.setdefault(ts, []).append(r["mood_score"])
+
+        sleep_by_date: dict[str, tuple[float, int]] = {}
+        for r in sleep_rows:
+            d = r.get("date", "")
+            if d and r.get("duration_hours") is not None:
+                sleep_by_date[d] = (r["duration_hours"], r.get("quality", 0))
+
+        paired: list[tuple[float, float]] = []
+        for d, moods in mood_by_date.items():
+            if d in sleep_by_date:
+                paired.append((sum(moods) / len(moods), sleep_by_date[d][0]))
+
+        if len(paired) < 3:
+            return []
+
+        high_sleep = [m for m, s in paired if s >= 7]
+        low_sleep = [m for m, s in paired if s < 6]
+        msgs: list[CommunityInsight] = []
+        if high_sleep and low_sleep:
+            diff = (sum(high_sleep) / len(high_sleep)) - (sum(low_sleep) / len(low_sleep))
+            if diff > 0.5:
+                msgs.append(
+                    CommunityInsight(
+                        condition="Personal",
+                        insight_type="sleep_mood_correlation",
+                        message=(
+                            f"On nights you sleep 7+ hours, your mood is {diff:.1f} "
+                            f"points higher on average than on nights under 6 hours."
+                        ),
+                        sample_size=len(paired),
+                        confidence="moderate",
+                    )
+                )
+        return msgs

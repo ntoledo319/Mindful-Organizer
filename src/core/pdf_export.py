@@ -50,6 +50,13 @@ try:
 except ImportError:
     _HAS_MATPLOTLIB = False
 
+try:
+    import weasyprint
+
+    _HAS_WEASYPRINT = True
+except ImportError:
+    _HAS_WEASYPRINT = False
+
 
 # ---------------------------------------------------------------------------
 # WellnessPDFExporter
@@ -76,8 +83,54 @@ class WellnessPDFExporter:
     ) -> Path:
         if _HAS_REPORTLAB and output_path.suffix.lower() == ".pdf":
             return self._export_pdf(summary, output_path, user_name)
+        if _HAS_WEASYPRINT and output_path.suffix.lower() == ".pdf":
+            return self._export_weasyprint(summary, output_path, user_name)
         html_path = output_path.with_suffix(".html")
         return self._export_html(summary, html_path, user_name)
+
+    def export_with_browser_fallback(
+        self,
+        summary: dict[str, Any],
+        output_path: Path,
+        user_name: str = "You",
+    ) -> Path:
+        """Export to PDF if possible, otherwise open HTML in the browser.
+
+        Returns the path to the generated file (PDF or HTML).  When an HTML
+        fallback is used, the user's default browser is opened with a note
+        that they can use the browser's Print → Save as PDF feature.
+        """
+        result = self.export(summary, output_path, user_name)
+        if result.suffix.lower() == ".pdf":
+            return result
+
+        # Open the HTML report in the default browser so the user can
+        # print-to-PDF.
+        import platform
+        import subprocess
+
+        try:
+            url = str(result.resolve())
+            if platform.system() == "Darwin":
+                subprocess.run(["open", url], check=False)
+            elif platform.system() == "Windows":
+                subprocess.run(["start", url], shell=True, check=False)
+            else:
+                subprocess.run(["xdg-open", url], check=False)
+        except Exception as exc:
+            logger.warning("Could not open browser for HTML fallback: %s", exc)
+        return result
+
+    def _export_weasyprint(
+        self,
+        summary: dict[str, Any],
+        output_path: Path,
+        user_name: str,
+    ) -> Path:
+        html_path = output_path.with_suffix(".html")
+        self._export_html(summary, html_path, user_name)
+        weasyprint.HTML(str(html_path)).write_pdf(str(output_path))
+        return output_path
 
     # -- PDF generation ----------------------------------------------------
 
@@ -652,3 +705,7 @@ class WellnessPDFExporter:
 """
         output_path.write_text(html, encoding="utf-8")
         return output_path
+
+
+# Backwards-compatible alias used by validation and legacy imports.
+PDFExporter = WellnessPDFExporter

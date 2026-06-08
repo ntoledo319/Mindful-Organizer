@@ -202,7 +202,7 @@ TRIAL_FEATURES = FEATURES_BY_TIER[SubscriptionTier.PREMIUM]
 
 # User-friendly feature names for upsell dialogs
 FEATURE_DISPLAY_NAMES: dict[str, str] = {
-    "all_themes": "All 8 Condition-Aware Themes",
+    "all_themes": "All 4 Condition-Aware Themes",
     "unlimited_history": "Unlimited History & Trends",
     "mood_analytics": "Mood Trend Analytics",
     "energy_predictor": "Energy Forecasting",

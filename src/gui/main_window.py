@@ -714,6 +714,9 @@ class AdaptiveMainWindow(QMainWindow):
         # System Automation (available to all, gated internally)
         self._add_tab("automation", "Focus")
 
+        # Focus Sessions — Pomodoro-style deep-work timer
+        self._add_tab("focus_session", "Focus Sessions")
+
         # Secondary but still available in the tabbed PyQt shell.
         self._add_tab("file_organizer", "Library")
         self._add_tab("crisis", "Crisis")
@@ -872,6 +875,13 @@ class AdaptiveMainWindow(QMainWindow):
                     theme,
                     automation_engine=self.system_automation,
                     subscription_manager=self.subscription_manager,
+                )
+            elif name == "focus_session":
+                from gui.widgets.focus_session_widget import FocusSessionWidget
+
+                widget = FocusSessionWidget(
+                    theme,
+                    focus_manager=self.system_automation.focus,
                 )
             elif name == "search":
                 from gui.widgets.search_widget import SearchWidget
@@ -1167,21 +1177,38 @@ class AdaptiveMainWindow(QMainWindow):
             return
         try:
             release = updater.check()
-            if release and not updater.is_skipped(release.version):
+            if (
+                release
+                and not updater.is_skipped(release.version)
+                and not updater.is_snoozed(release.version)
+            ):
                 from PyQt6.QtWidgets import QMessageBox
 
-                reply = QMessageBox.question(
-                    self,
-                    "Update Available",
+                changelog = updater.format_changelog(release.release_notes)
+                body = (
                     f"Hearth {release.version} is available.\n\n"
                     f"Released: {release.published_at.strftime('%B %d, %Y')}\n\n"
-                    "Would you like to open the download page?",
+                    f"What's new:\n{changelog}\n\n"
+                    "Would you like to download it now?"
+                )
+
+                msg = QMessageBox(self)
+                msg.setWindowTitle("Update Available")
+                msg.setText(body)
+                msg.setStandardButtons(
                     QMessageBox.StandardButton.Yes
                     | QMessageBox.StandardButton.No
-                    | QMessageBox.StandardButton.Ignore,
+                    | QMessageBox.StandardButton.Ignore
                 )
+                msg.setButtonText(QMessageBox.StandardButton.Yes, "Download")
+                msg.setButtonText(QMessageBox.StandardButton.No, "Remind me later")
+                msg.setButtonText(QMessageBox.StandardButton.Ignore, "Skip this version")
+                reply = msg.exec()
+
                 if reply == QMessageBox.StandardButton.Yes:
                     updater.open_download_page()
+                elif reply == QMessageBox.StandardButton.No:
+                    updater.snooze_version(release.version, hours=24)
                 elif reply == QMessageBox.StandardButton.Ignore:
                     updater.skip_version(release.version)
         except Exception:

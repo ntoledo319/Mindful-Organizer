@@ -59,7 +59,6 @@ from gui.components.state_controls import (
     Pill,
     StateDial,
     StateSlider,
-    sans_font,
     serif_font,
     word_for,
 )
@@ -1055,12 +1054,10 @@ class DiaryCardWidget(QWidget):
         self._on_mood_changed(self._mood_dial.value())
         for pill in self._emotion_pills:
             self._set_pill(pill, False)
-        for name, slider in self._urge_sliders.items():
+        for pill in self._urge_pills.values():
+            self._set_pill(pill, False)
+        for slider in self._care_sliders.values():
             slider.setValue(0.0, animate=False)
-            self._urge_words[name].setText(_urge_word(0))
-        for name, slider in self._care_sliders.items():
-            slider.setValue(0.0, animate=False)
-            self._care_words[name].setText(_urge_word(0))
         self._on_care_changed(0.0)
         for pill in self._skill_pills:
             self._set_pill(pill, False)

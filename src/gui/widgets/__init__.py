@@ -9,6 +9,7 @@ from gui.widgets.breathing_widget import BreathingWidget
 from gui.widgets.crisis_widget import CrisisWidget
 from gui.widgets.dashboard import DashboardWidget
 from gui.widgets.erp_widget import ERPWidget
+from gui.widgets.focus_session_widget import FocusSessionWidget
 from gui.widgets.journaling_widget import JournalingWidget
 from gui.widgets.medication_widget import MedicationWidget
 from gui.widgets.meditation_widget import MeditationWidget
@@ -24,6 +25,7 @@ __all__ = [
     "MoodTrackerWidget",
     "TaskManagerWidget",
     "BreathingWidget",
+    "FocusSessionWidget",
     "JournalingWidget",
     "CrisisWidget",
     "ERPWidget",

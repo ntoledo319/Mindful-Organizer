@@ -433,6 +433,18 @@ class TaskManagerWidget(QWidget):
         self._build_header()
         self._build_add_line()
 
+        # Undo / redo — kept for behavior parity
+        undo_row = QHBoxLayout()
+        undo_row.addStretch()
+        self._undo_btn = HearthButton("Undo", role="ghost", reduced_motion=self._reduced_motion)
+        self._undo_btn.clicked.connect(self._undo)
+        undo_row.addWidget(self._undo_btn)
+        self._redo_btn = HearthButton("Redo", role="ghost", reduced_motion=self._reduced_motion)
+        self._redo_btn.clicked.connect(self._redo)
+        undo_row.addWidget(self._redo_btn)
+        undo_row.addStretch()
+        self._root.addLayout(undo_row)
+
         # The list itself lives in a column we rebuild on refresh.
         self._list_box = QVBoxLayout()
         self._list_box.setSpacing(10)
