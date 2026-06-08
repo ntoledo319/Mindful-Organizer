@@ -31,6 +31,7 @@ from PyQt6.QtCore import (
 from PyQt6.QtGui import (
     QColor,
     QFont,
+    QFontDatabase,
     QPainter,
     QPainterPath,
     QRadialGradient,
@@ -58,20 +59,26 @@ ONYX: dict[str, str] = {
 # --- Fonts ------------------------------------------------------------------
 # Two-font voice (DESIGN_SYSTEM §1). macOS faces for the prototype; the real
 # bundled fonts (Source Serif 4 / IBM Plex) arrive in Wave 1.
-_SERIF = "Charter"  # reading voice — what you read as language
-_SANS = "SF Pro Text"  # control voice — buttons, labels, numbers
-_SANS_FALLBACK = "Helvetica Neue"
+_SERIF_STACK = ["Charter", "Georgia", "Times New Roman", "Arial"]
+_SANS_STACK = ["SF Pro Text", "Helvetica Neue", "Helvetica", "Arial"]
+
+
+def _pick(stack: list[str]) -> str:
+    available = set(QFontDatabase.families())
+    for fam in stack:
+        if fam in available:
+            return fam
+    return stack[-1]
 
 
 def _serif(size: int, weight: int = QFont.Weight.Normal) -> QFont:
-    f = QFont(_SERIF, size, weight)
+    f = QFont(_pick(_SERIF_STACK), size, weight)
     f.setStyleStrategy(QFont.StyleStrategy.PreferAntialias)
     return f
 
 
 def _sans(size: int, weight: int = QFont.Weight.Medium) -> QFont:
-    f = QFont(_SANS, size, weight)
-    f.insertSubstitution(_SANS, _SANS_FALLBACK)
+    f = QFont(_pick(_SANS_STACK), size, weight)
     f.setStyleStrategy(QFont.StyleStrategy.PreferAntialias)
     return f
 

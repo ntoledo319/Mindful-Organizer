@@ -33,6 +33,7 @@ from PyQt6.QtWidgets import (
 )
 
 from app_metadata import APP_VERSION
+from gui.components.state_controls import sans_font
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +45,7 @@ logger = logging.getLogger(__name__)
 
 def _section_title(text: str) -> QLabel:
     label = QLabel(text)
-    label.setFont(QFont("Segoe UI", 18, QFont.Weight.DemiBold))
+    label.setFont(sans_font(18, QFont.Weight.DemiBold))
     return label
 
 
@@ -109,7 +110,7 @@ class SettingsWidget(QWidget):
 
         # Save button
         save_btn = _accent_button("Save")
-        save_btn.setFont(QFont("Segoe UI", 13, QFont.Weight.Medium))
+        save_btn.setFont(sans_font(13, QFont.Weight.Medium))
         save_btn.clicked.connect(self._save_settings)
         self._root.addWidget(save_btn)
 
@@ -125,7 +126,7 @@ class SettingsWidget(QWidget):
         name_row = QHBoxLayout()
         name_row.addWidget(_body_label("Name"))
         self._name_label = QLabel("User")
-        self._name_label.setFont(QFont("Segoe UI", 12, QFont.Weight.DemiBold))
+        self._name_label.setFont(sans_font(12, QFont.Weight.DemiBold))
         name_row.addWidget(self._name_label)
         name_row.addStretch()
         layout.addLayout(name_row)
@@ -168,7 +169,7 @@ class SettingsWidget(QWidget):
         tier_row = QHBoxLayout()
         tier_row.addWidget(_body_label("Current plan"))
         self._tier_label = QLabel(f"<b>{tier}</b>")
-        self._tier_label.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
+        self._tier_label.setFont(sans_font(12, QFont.Weight.Bold))
         tier_row.addWidget(self._tier_label)
         if trial:
             trial_lbl = QLabel(f"<span style='color:#27AE60;'>{trial}</span>")

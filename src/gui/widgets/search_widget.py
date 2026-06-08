@@ -13,7 +13,7 @@ import logging
 from typing import Any
 
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal
-from PyQt6.QtGui import QFont, QKeyEvent
+from PyQt6.QtGui import QKeyEvent
 from PyQt6.QtWidgets import (
     QCheckBox,
     QDialog,
@@ -26,6 +26,8 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+
+from gui.components.state_controls import sans_font
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +87,7 @@ class SearchWidget(QDialog):
         # Search input
         self._search_input = QLineEdit()
         self._search_input.setPlaceholderText("Search tasks, journal entries, mood logs...")
-        self._search_input.setFont(QFont("Segoe UI", 14))
+        self._search_input.setFont(sans_font(14))
         self._search_input.setMinimumHeight(44)
         self._search_input.textChanged.connect(self._on_text_changed)
         root.addWidget(self._search_input)

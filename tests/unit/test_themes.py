@@ -194,8 +194,14 @@ class TestStylesheetGeneration:
     def test_stylesheet_default_font(self, tm):
         tm.dyslexia_font = False
         stylesheet = tm.generate_stylesheet()
-        assert "SF Pro Text" in stylesheet
-        assert "Segoe UI" in stylesheet
+        # Font stack is platform-specific; verify a sensible fallback is present
+        assert "sans-serif" in stylesheet
+        assert (
+            "Arial" in stylesheet
+            or "SF Pro Text" in stylesheet
+            or "Segoe UI" in stylesheet
+            or "Inter" in stylesheet
+        )
 
     def test_get_card_style(self, tm):
         style = tm.get_card_style()

@@ -412,6 +412,7 @@ class DatabaseManager:
     def __init__(self, db_path: Path | None = None) -> None:
         self._db_path = db_path or DB_FILE
         self._db_path.parent.mkdir(parents=True, exist_ok=True)
+        self._initialized = False
         self._local = threading.local()
         self._lock = threading.Lock()
 
@@ -469,10 +470,15 @@ class DatabaseManager:
 
     def initialize(self) -> None:
         """Create schema and run any pending migrations."""
+        if self._initialized:
+            return
         conn = self._get_connection()
         with self._lock:
+            if self._initialized:
+                return
             conn.executescript(_SCHEMA_SQL)
             self._apply_migrations(conn)
+            self._initialized = True
         logger.info("Database initialized at %s", self._db_path)
 
     def _current_version(self, conn: sqlite3.Connection) -> int:

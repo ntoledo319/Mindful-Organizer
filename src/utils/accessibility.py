@@ -10,6 +10,7 @@ import logging
 import os
 import platform
 import subprocess
+import sys
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -441,7 +442,29 @@ def apply_font_scale(app: Any, scale: FontScale) -> None:
 def _get_font_family(dyslexia_friendly: bool) -> str:
     if dyslexia_friendly and is_opendyslexic_available():
         return "'OpenDyslexic', sans-serif"
-    return "'Segoe UI', 'Helvetica Neue', 'Ubuntu', sans-serif"
+    try:
+        from PyQt6.QtGui import QFontDatabase
+        from PyQt6.QtWidgets import QApplication
+
+        if QApplication.instance() is not None:
+            if sys.platform == "darwin":
+                stack = [".AppleSystemUIFont", "Helvetica Neue", "Arial"]
+            elif sys.platform == "win32":
+                stack = ["Segoe UI", "Helvetica Neue", "Arial"]
+            else:
+                stack = ["DejaVu Sans", "Liberation Sans", "Ubuntu", "Helvetica Neue", "Arial"]
+            available = set(QFontDatabase.families())
+            found = [f"'{f}'" for f in stack if f in available]
+            if not found:
+                found = [f"'{stack[-1]}'"]
+            return ", ".join(found + ["sans-serif"])
+    except ImportError:
+        pass
+    if sys.platform == "darwin":
+        return "'Helvetica Neue', 'Arial', sans-serif"
+    if sys.platform == "win32":
+        return "'Segoe UI', 'Helvetica Neue', sans-serif"
+    return "'DejaVu Sans', 'Liberation Sans', 'Ubuntu', 'Helvetica Neue', sans-serif"
 
 
 def is_opendyslexic_available() -> bool:

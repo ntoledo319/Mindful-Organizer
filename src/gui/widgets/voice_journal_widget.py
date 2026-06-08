@@ -9,6 +9,7 @@ from PyQt6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
 from gui.components.hearth_surfaces import HearthButton
 from gui.components.state_controls import PALETTE, sans_font, serif_font
+from wellness.voice_journal import VoiceJournal
 
 
 class VoiceJournalWidget(QWidget):
@@ -21,8 +22,11 @@ class VoiceJournalWidget(QWidget):
 
     navigate_to_text_journal = pyqtSignal()
 
-    def __init__(self, parent: QWidget | None = None) -> None:
+    def __init__(
+        self, parent: QWidget | None = None, voice_journal: VoiceJournal | None = None
+    ) -> None:
         super().__init__(parent)
+        self.voice_journal = voice_journal or VoiceJournal()
         self._build_ui()
 
     def _build_ui(self) -> None:
@@ -37,19 +41,46 @@ class VoiceJournalWidget(QWidget):
         title.setStyleSheet(f"color: {PALETTE['text']}; background: transparent;")
         layout.addWidget(title)
 
-        msg = QLabel("Voice journaling is coming soon. For now, try text journaling.")
-        msg.setFont(sans_font(14))
-        msg.setWordWrap(True)
-        msg.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        msg.setStyleSheet(f"color: {PALETTE['text_muted']}; background: transparent;")
-        layout.addWidget(msg)
+        if not self.voice_journal.is_available:
+            msg = QLabel("Voice journaling is coming soon. For now, try text journaling.")
+            msg.setFont(sans_font(14))
+            msg.setWordWrap(True)
+            msg.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            msg.setStyleSheet(f"color: {PALETTE['text_muted']}; background: transparent;")
+            layout.addWidget(msg)
 
-        btn = HearthButton("Go to Text Journal", role="primary")
-        btn.clicked.connect(self.navigate_to_text_journal.emit)
-        btn_row = QHBoxLayout()
-        btn_row.addStretch()
-        btn_row.addWidget(btn)
-        btn_row.addStretch()
-        layout.addLayout(btn_row)
+            btn = HearthButton("Go to Text Journal", role="primary")
+            btn.clicked.connect(self.navigate_to_text_journal.emit)
+            btn_row = QHBoxLayout()
+            btn_row.addStretch()
+            btn_row.addWidget(btn)
+            btn_row.addStretch()
+            layout.addLayout(btn_row)
+        else:
+            self._record_btn = HearthButton("Record", role="primary")
+            self._record_btn.clicked.connect(self._toggle_recording)
+            btn_row = QHBoxLayout()
+            btn_row.addStretch()
+            btn_row.addWidget(self._record_btn)
+            btn_row.addStretch()
+            layout.addLayout(btn_row)
+
+            self._status_label = QLabel("Ready to record")
+            self._status_label.setFont(sans_font(12))
+            self._status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self._status_label.setStyleSheet(
+                f"color: {PALETTE['text_muted']}; background: transparent;"
+            )
+            layout.addWidget(self._status_label)
 
         layout.addStretch()
+
+    def _toggle_recording(self) -> None:
+        if self.voice_journal.get_status()["recording"]:
+            self.voice_journal.stop_recording()
+            self._record_btn.setText("Record")
+            self._status_label.setText("Recording saved")
+        else:
+            self.voice_journal.start_recording()
+            self._record_btn.setText("Stop")
+            self._status_label.setText("Recording...")

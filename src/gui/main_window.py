@@ -33,6 +33,7 @@ from core.file_organizer import FileOrganizer
 from core.system_automation import SystemAutomationEngine
 from core.system_optimizer import SystemOptimizer
 from core.task_manager import TaskManager
+from gui.components.state_controls import sans_font
 from gui.state_bus import StateBus, set_state_bus
 from gui.system_tray import SystemTrayController
 from gui.themes import ThemeManager
@@ -541,7 +542,7 @@ class AdaptiveMainWindow(QMainWindow):
         layout = QVBoxLayout(dialog)
 
         welcome = QLabel("Let's set up your profile")
-        welcome.setFont(QFont("Segoe UI", 16, QFont.Weight.Bold))
+        welcome.setFont(sans_font(16, QFont.Weight.Bold))
         layout.addWidget(welcome)
 
         name_label = QLabel("Your Name:")
@@ -985,7 +986,7 @@ class AdaptiveMainWindow(QMainWindow):
         layout = QVBoxLayout(widget)
 
         title = QLabel("File Organizer")
-        title.setFont(QFont("Segoe UI", 16, QFont.Weight.Bold))
+        title.setFont(sans_font(16, QFont.Weight.Bold))
         layout.addWidget(title)
 
         btn_layout = QHBoxLayout()

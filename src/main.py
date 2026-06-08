@@ -201,7 +201,7 @@ def main() -> int:
     try:
         configure_high_dpi()
 
-        from PyQt6.QtGui import QFont
+        from PyQt6.QtGui import QFont, QFontDatabase
         from PyQt6.QtWidgets import QApplication
 
         from app_metadata import APP_NAME, APP_VERSION, ORGANIZATION_NAME
@@ -211,13 +211,25 @@ def main() -> int:
         app.setApplicationVersion(APP_VERSION)
         app.setOrganizationName(ORGANIZATION_NAME)
 
-        # Set default font
+        # Set default font — probe availability to avoid Qt font-alias penalty.
+        def _first_available(stack: list[str], size: int) -> QFont:
+            available = set(QFontDatabase.families())
+            for fam in stack:
+                if fam in available:
+                    return QFont(fam, size)
+            return QFont(stack[-1], size)
+
         if sys.platform == "win32":
-            app.setFont(QFont("Segoe UI", 10))
+            app.setFont(_first_available(["Segoe UI", "Helvetica Neue", "Arial"], 10))
         elif sys.platform == "darwin":
-            app.setFont(QFont("SF Pro Text", 12))
+            app.setFont(
+                _first_available(
+                    ["SF Pro Text", "SF Pro", ".AppleSystemUIFont", "Helvetica Neue", "Arial"],
+                    12,
+                )
+            )
         else:
-            app.setFont(QFont("Sans", 10))
+            app.setFont(_first_available(["Sans", "DejaVu Sans", "Liberation Sans", "Arial"], 10))
 
         # Set app icon if available
         icon_path = src_dir.parent / "windows_store" / "assets" / "app_icon.png"

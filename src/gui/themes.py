@@ -3,6 +3,7 @@ Theme management system for Hearth.
 Provides highly polished, distinctive, condition-aware themes with accessibility support.
 """
 
+import sys
 from dataclasses import dataclass, field
 
 
@@ -241,11 +242,26 @@ class ThemeManager:
         xlarge_font = int(20 * self.font_scale)
         header_font = int(26 * self.font_scale)
 
-        font_family = (
-            "OpenDyslexic, Arial, sans-serif"
-            if self.dyslexia_font
-            else '"SF Pro Text", "Inter", "Segoe UI", "Helvetica Neue", sans-serif'
-        )
+        if self.dyslexia_font:
+            font_family = "OpenDyslexic, Arial, sans-serif"
+        else:
+            from PyQt6.QtGui import QFontDatabase
+            from PyQt6.QtWidgets import QApplication
+
+            if sys.platform == "darwin":
+                stack = ["SF Pro Text", ".AppleSystemUIFont", "Helvetica Neue", "Arial"]
+            elif sys.platform == "win32":
+                stack = ["Segoe UI", "Helvetica Neue", "Arial"]
+            else:
+                stack = ["Inter", "DejaVu Sans", "Liberation Sans", "Helvetica Neue", "Arial"]
+            if QApplication.instance() is not None:
+                available = set(QFontDatabase.families())
+                found = [f'"{f}"' for f in stack if f in available]
+            else:
+                found = []
+            if not found:
+                found = [f'"{stack[-1]}"']
+            font_family = ", ".join(found + ["sans-serif"])
         density = theme.layout_density
         radius = theme.border_radius
         accent_text = "#FFFFFF" if theme.name != "alabaster" else "#FFFFFF"
