@@ -4,20 +4,22 @@
 **Intended audience:** Engineers, QA.  
 **Also see:** [`docs/development.md`](development.md) for local setup and commands.  
 **Confidence:** Confirmed from test files and CI workflow. Test counts are approximate.  
-**Last updated:** 2026-05-02
+**Last updated:** 2026-06-08
 
 ## Test Framework
 
 - **pytest** with `pytest-cov` for coverage
-- **pytest-qt** for GUI widget tests (optional; skipped in CI)
+- **pytest-qt** for GUI widget tests (optional; skipped in headless CI)
 - **conftest.py** provides shared fixtures: `tmp_data_dir`, `sample_profile`, `sample_tasks`, `sample_mood_entries`
 
 ## Test Locations
 
-| Type | Location | Notes |
-|------|----------|-------|
-| Unit | `tests/unit/` | Isolated, fast, no GUI required |
-| Integration | `tests/integration/` | Cross-module workflows |
+| Type        | Location                | Notes                                                                               |
+| ----------- | ----------------------- | ----------------------------------------------------------------------------------- |
+| Unit        | `tests/unit/`           | Isolated, fast, no GUI required                                                     |
+| GUI widgets | `tests/unit/gui/`       | 29 tests across 10 widget files; require display                                    |
+| Integration | `tests/integration/`    | Cross-module workflows                                                              |
+| Smoke       | `scripts/smoke_test.py` | Headless validation (imports, deps, resources, accessibility, widget instantiation) |
 
 ## Commands
 
@@ -36,6 +38,9 @@ pytest tests/integration/ -v
 
 # GUI tests (local only, requires display)
 pytest -m gui
+
+# Smoke test (headless)
+python scripts/smoke_test.py
 ```
 
 ## Conventions
@@ -58,12 +63,14 @@ pytest -m gui
 - Content manager: encryption, passcode verification, path traversal (`test_content_management.py`)
 - Wellness orchestrator: crisis signals (`test_wellness_orchestrator.py`)
 - Breathing, coping, ERP, journaling, sleep, medication trackers
+- GUI widgets (29 tests): dashboard, task manager, mood tracker, diary card, crisis,
+  breathing, meditation, sleep, file organizer (`tests/unit/gui/`)
 
 ## What Is Not Covered
 
-- **GUI widgets** — 0% automated coverage in CI. All `src/gui/widgets/*.py` lack tests.
+- **GUI interaction flows** — Widgets instantiate and render, but complex interactions
+  (drag-and-drop, multi-step wizard flows, live theme switching) are not automated.
 - **Theme stylesheet generation** — No automated rendering tests.
-- **Voice journal** — Module is a stub; no real audio I/O to test.
 - **Calendar sync** — Stub implementation.
 - **Shareable report Chart.js rendering** — HTML structure is not validated in tests.
 - **Database migration v1→v2** — No test verifies migration correctness with real data.
@@ -85,9 +92,9 @@ pytest -m gui
 
 ## Known Gaps and Recommended Next Tests
 
-| Gap | Risk | Recommended Test |
-|-----|------|------------------|
-| GUI widgets untested | Visual regressions, interaction bugs | Add `pytest-qt` widget tests for critical paths (task creation, crisis widget, diary card). |
-| Shareable report rendering | Browser compatibility | Test that generated HTML contains all expected sections and valid JSON for Chart.js. |
-| Multi-threaded DB access | Race conditions | Stress-test concurrent reads/writes via `threading`. |
-| Diary card migration | Schema upgrade failure | Test v1→v2 migration creates `diary_cards` table and preserves existing data. |
+| Gap                            | Risk                                 | Recommended Test                                                                                            |
+| ------------------------------ | ------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| GUI interaction flows untested | Visual regressions, interaction bugs | Add `pytest-qt` interaction tests for task creation wizard, diary card save/load, crisis-widget 988 wiring. |
+| Shareable report rendering     | Browser compatibility                | Test that generated HTML contains all expected sections and valid JSON for Chart.js.                        |
+| Multi-threaded DB access       | Race conditions                      | Stress-test concurrent reads/writes via `threading`.                                                        |
+| Diary card migration           | Schema upgrade failure               | Test v1→v2 migration creates `diary_cards` table and preserves existing data.                               |

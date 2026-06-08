@@ -8,11 +8,11 @@ operate, so "operations" here means the release pipeline and the user's local da
 
 One canonical, platform-appropriate directory (resolved by `src/core/paths.py`):
 
-| Platform | Data directory |
-|----------|----------------|
+| Platform | Data directory                                     |
+| -------- | -------------------------------------------------- |
 | macOS    | `~/Library/Application Support/.mindful_organizer` |
-| Linux    | `~/.mindful_organizer` |
-| Windows  | `%APPDATA%\.mindful_organizer` |
+| Linux    | `~/.mindful_organizer`                             |
+| Windows  | `%APPDATA%\.mindful_organizer`                     |
 
 Contents: `mindful_organizer.db` (SQLite, schema v4, WAL), `logs/`, `license.json`,
 `current_profile.json`, `update_state.json`, JSON config/templates, and the
@@ -75,8 +75,9 @@ ML stack only if it is installed, so a lean build still succeeds.
   without a user Shortcut, and on Windows/Linux (live OS actuation is macOS-only for now).
   The app reports this honestly instead of pretending; tracking/therapeutic features are
   unaffected.
-- **Update check fails silently**: the in-app updater is check-only and tolerant of
-  network/SSL failures; it never blocks startup.
+- **Update check fails silently**: the in-app updater is tolerant of network/SSL
+  failures and never blocks startup. It presents the changelog and download links
+  when an update is found, but does not self-install.
 
 ## 7. Known limitations / external gate
 
@@ -88,4 +89,5 @@ ML stack only if it is installed, so a lean build still succeeds.
 - **Database is plaintext SQLite** protected by filesystem permissions + the user's
   OS account + full-disk encryption. App-level DB encryption (SQLCipher) is a roadmap
   decision, not implemented.
-- **Auto-updater is check-only** (notifies; does not self-install).
+- **Auto-updater does not self-install** (notifies + provides download links; user
+  must run the installer manually).

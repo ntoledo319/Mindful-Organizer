@@ -26,7 +26,20 @@ class TestGenerateNotifications:
         snapshot = _FakeSnapshot(energy_score=8, tasks_pending=2)
         # Patch snapshot method
         engine.orchestrator = type(
-            "FakeOrchestrator", (), {"snapshot": lambda self, now: snapshot}
+            "FakeOrchestrator",
+            (),
+            {
+                "snapshot": lambda self, now: snapshot,
+                "daily_briefing": lambda self, **kwargs: type(
+                    "FakeBriefing",
+                    (),
+                    {
+                        "crisis_signals": [],
+                        "suggested_skill": None,
+                        "energy_forecast": None,
+                    },
+                )(),
+            },
         )()
         notes = engine.generate_notifications(conditions=[])
         assert any(n.id == "energy_peak_task" for n in notes)
@@ -35,7 +48,20 @@ class TestGenerateNotifications:
         engine = SmartNotificationEngine(db=None, orchestrator=None)  # type: ignore[arg-type]
         snapshot = _FakeSnapshot(energy_score=2, tasks_pending=5)
         engine.orchestrator = type(
-            "FakeOrchestrator", (), {"snapshot": lambda self, now: snapshot}
+            "FakeOrchestrator",
+            (),
+            {
+                "snapshot": lambda self, now: snapshot,
+                "daily_briefing": lambda self, **kwargs: type(
+                    "FakeBriefing",
+                    (),
+                    {
+                        "crisis_signals": [],
+                        "suggested_skill": None,
+                        "energy_forecast": None,
+                    },
+                )(),
+            },
         )()
         notes = engine.generate_notifications(conditions=[])
         assert any(n.id == "energy_low_trim" for n in notes)
@@ -44,7 +70,20 @@ class TestGenerateNotifications:
         engine = SmartNotificationEngine(db=None, orchestrator=None)  # type: ignore[arg-type]
         snapshot = _FakeSnapshot(sleep_hours=4.0)
         engine.orchestrator = type(
-            "FakeOrchestrator", (), {"snapshot": lambda self, now: snapshot}
+            "FakeOrchestrator",
+            (),
+            {
+                "snapshot": lambda self, now: snapshot,
+                "daily_briefing": lambda self, **kwargs: type(
+                    "FakeBriefing",
+                    (),
+                    {
+                        "crisis_signals": [],
+                        "suggested_skill": None,
+                        "energy_forecast": None,
+                    },
+                )(),
+            },
         )()
         notes = engine.generate_notifications(conditions=[])
         assert any(n.id == "sleep_debt" for n in notes)
@@ -53,7 +92,20 @@ class TestGenerateNotifications:
         engine = SmartNotificationEngine(db=None, orchestrator=None)  # type: ignore[arg-type]
         snapshot = _FakeSnapshot(energy_score=None, sleep_hours=None)
         engine.orchestrator = type(
-            "FakeOrchestrator", (), {"snapshot": lambda self, now: snapshot}
+            "FakeOrchestrator",
+            (),
+            {
+                "snapshot": lambda self, now: snapshot,
+                "daily_briefing": lambda self, **kwargs: type(
+                    "FakeBriefing",
+                    (),
+                    {
+                        "crisis_signals": [],
+                        "suggested_skill": None,
+                        "energy_forecast": None,
+                    },
+                )(),
+            },
         )()
         notes = engine.generate_notifications(conditions=[])
         # With no energy or sleep data, only general notifications might appear
@@ -64,7 +116,20 @@ class TestGenerateNotifications:
         engine = SmartNotificationEngine(db=None, orchestrator=None)  # type: ignore[arg-type]
         snapshot = _FakeSnapshot(energy_score=9, tasks_pending=1)
         engine.orchestrator = type(
-            "FakeOrchestrator", (), {"snapshot": lambda self, now: snapshot}
+            "FakeOrchestrator",
+            (),
+            {
+                "snapshot": lambda self, now: snapshot,
+                "daily_briefing": lambda self, **kwargs: type(
+                    "FakeBriefing",
+                    (),
+                    {
+                        "crisis_signals": [],
+                        "suggested_skill": None,
+                        "energy_forecast": None,
+                    },
+                )(),
+            },
         )()
         notes = engine.generate_notifications(conditions=[])
         assert len(notes) > 0

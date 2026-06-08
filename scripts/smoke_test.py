@@ -7,12 +7,10 @@ code 1 on failure.
 
 from __future__ import annotations
 
-import os
 import sys
 import tempfile
 import traceback
 from pathlib import Path
-from types import MethodType
 from typing import Any
 
 # Ensure src/ is on path when script is run directly
@@ -42,7 +40,7 @@ def test_imports() -> bool:
     errors: list[str] = []
 
     try:
-        from main import main
+        __import__("main")
 
         _ok("main import OK")
     except Exception as exc:
@@ -199,7 +197,7 @@ def test_accessibility() -> bool:
     )
     _ok("AccessibilitySettings constructs")
 
-    palette = get_palette(settings)
+    _ = get_palette(settings)
     _ok("get_palette() returns palette")
 
     # Round-trip dict serialization

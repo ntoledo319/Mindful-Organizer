@@ -25,7 +25,7 @@ release gate.
 ## Verified strengths (preserve — do not regress)
 
 - Real offline Ed25519 license validation (only the **public** key ships).
-- Solid SQLite layer: schema v3, WAL, parameterized CRUD, idempotent ALTER migrations,
+- Solid SQLite layer: schema v4, WAL, parameterized CRUD, idempotent ALTER migrations,
   thread-safe under load, online-backup + integrity-checked restore.
 - Responsible clinical posture: "supplement not a replacement" disclaimers everywhere;
   988 / Crisis Text Line / SAMHSA hard-coded as always-available defaults; heuristics
@@ -34,7 +34,9 @@ release gate.
   onboarding wizard; reactive StateBus refresh; partial real accessibility (font scale,
   color-blind overrides).
 - Genuinely strong tests for subscription/licensing, database CRUD (97%), themes (100%),
-  and the system-automation engine.
+  and the system-automation engine. **GUI widget coverage: 29 tests** across dashboard,
+  task manager, mood tracker, diary card, crisis, breathing, meditation, sleep, and file
+  organizer widgets. Full suite: ~822 tests.
 - Network surface is a single benign GitHub version check — the zero-telemetry claim holds.
 
 ## Decisive calls made this pass
@@ -54,11 +56,39 @@ release gate.
 
 ## Blocker remediation index (22)
 
-Data: guid backfill migration (v4). Clinical: un-paywall crisis; wire medication adherence
-to SQLite; functional 988 buttons; risk-language detection; magnitude-scaled thresholds.
-GUI: live dashboard quick-actions; fixed mood search; MoodManager `conditions=` crash.
-OS: honest DND/brightness (real path or honest fallback, never fake success); honest
-Win/Linux; AppleScript arg sanitization. Security: vault content encryption; fs perms.
-Build: macOS `.app` BUNDLE + `.icns`; exe name = `hearth` (MSIX match); optional-dep-robust
-spec. API: removed. Tests: kill phantom-module + silent-skip theater; add regression cover
-for every safety fix. Hygiene: untrack `backup/`; remove tool cruft; brand drift → Hearth.
+| #   | Blocker                                                                      | Status    |
+| --- | ---------------------------------------------------------------------------- | --------- |
+| 1   | Data: guid backfill migration (v4)                                           | **Fixed** |
+| 2   | Clinical: un-paywall crisis                                                  | **Fixed** |
+| 3   | Clinical: wire medication adherence to SQLite                                | **Fixed** |
+| 4   | Clinical: functional 988 buttons                                             | **Fixed** |
+| 5   | Clinical: risk-language detection                                            | **Fixed** |
+| 6   | Clinical: magnitude-scaled thresholds                                        | **Fixed** |
+| 7   | GUI: live dashboard quick-actions                                            | **Fixed** |
+| 8   | GUI: fixed mood search                                                       | **Fixed** |
+| 9   | GUI: MoodManager `conditions=` crash                                         | **Fixed** |
+| 10  | OS: honest DND/brightness (real path or honest fallback, never fake success) | **Fixed** |
+| 11  | OS: honest Win/Linux                                                         | **Fixed** |
+| 12  | OS: AppleScript arg sanitization                                             | **Fixed** |
+| 13  | Security: vault content encryption                                           | **Fixed** |
+| 14  | Security: fs perms                                                           | **Fixed** |
+| 15  | Build: macOS `.app` BUNDLE + `.icns`                                         | **Fixed** |
+| 16  | Build: exe name = `hearth` (MSIX match)                                      | **Fixed** |
+| 17  | Build: optional-dep-robust spec                                              | **Fixed** |
+| 18  | Build: Windows build script (`build_windows.bat`) uses `pyproject.toml`      | **Fixed** |
+| 19  | API: removed orphaned FastAPI layer                                          | **Fixed** |
+| 20  | Tests: kill phantom-module + silent-skip theater                             | **Fixed** |
+| 21  | Tests: add regression cover for every safety fix                             | **Fixed** |
+| 22  | Tests: 29 GUI widget tests added                                             | **Fixed** |
+
+**Additional items completed outside the original 22:**
+
+- Store listing accuracy audit — false claims removed, feature descriptions updated.
+- QFontDatabase crash fix for headless/CI environments.
+- Smoke test harness (`scripts/smoke_test.py`) for headless validation.
+
+## Known issues that surfaced this pass
+
+- **QFontDatabase headless crash** — Fixed: `QFontDatabase` can return an empty family list in headless/CI environments, causing a `IndexError` on startup. Defensive checks added.
+- **Auto-updater is enhanced but still check-only for installation** — Users receive changelog and download links, but must run the installer manually. Self-installation is deferred to a future release.
+- **Medication widget keeps a JSON display model** — Adherence is mirrored into SQLite, but the widget still maintains a parallel JSON display model. Full unification is follow-up.

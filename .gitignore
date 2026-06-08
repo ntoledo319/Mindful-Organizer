@@ -24,7 +24,6 @@ ENV/
 *.swp
 *.swo
 *~
-.aider*
 
 # Testing / Coverage
 .coverage
@@ -51,7 +50,11 @@ backup/
 .continue/
 .qodo/
 .aider*
+.claude/scheduled_tasks.lock
 tmp_design_screenshots/
+
+# Type checking
+.mypy_cache/
 
 # Node (if any frontend assets)
 node_modules/

@@ -89,7 +89,8 @@ class AutoUpdater:
     def _load_state(self) -> dict[str, Any]:
         if self._state_file.exists():
             try:
-                return json.loads(self._state_file.read_text(encoding="utf-8"))
+                data: dict[str, Any] = json.loads(self._state_file.read_text(encoding="utf-8"))
+                return data
             except (json.JSONDecodeError, OSError):
                 pass
         return {"last_check": None, "skipped_version": None, "snoozed_until": None}

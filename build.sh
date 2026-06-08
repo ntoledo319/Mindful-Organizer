@@ -36,7 +36,7 @@ fi
 
 # Clean previous builds
 echo -e "${BLUE}Cleaning previous builds...${NC}"
-rm -rf build/ dist/*.app dist/*.exe dist/*.dmg
+rm -rf build/ dist/Hearth dist/*.app dist/*.exe dist/*.dmg
 
 # Install / verify dependencies
 echo -e "${BLUE}Installing dependencies...${NC}"
@@ -48,7 +48,7 @@ python3 -m pytest -m "not gui and not slow" --tb=short
 
 # Build with PyInstaller
 echo -e "${BLUE}Building executable with PyInstaller...${NC}"
-python3 -m PyInstaller mindful_organizer.spec --clean
+python3 -m PyInstaller mindful_organizer.spec --clean --noconfirm
 
 echo -e "${GREEN}Build complete!${NC}"
 echo -e "${GREEN}Artifacts are in the dist/ directory.${NC}"

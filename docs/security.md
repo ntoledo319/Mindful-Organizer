@@ -4,13 +4,13 @@
 **Intended audience:** Security reviewers, auditors, buyers.  
 **Confidence:** Confirmed from source code. Inferred concerns are labeled.  
 **Source references:** `src/security/content_management.py`, `src/core/subscription_manager.py`, `src/core/database.py`, `src/main.py`  
-**Last updated:** 2026-05-02
+**Last updated:** 2026-06-08
 
 ## Executive Summary
 
 Hearth is a **single-user offline desktop app**. The security model assumes the attacker has access to the user's OS account. Defenses are focused on **opportunistic protection** (passcode-protected folders, local encryption) rather than **high-assurance security**.
 
-**Confirmed risk:** The encryption key for secure folders is stored alongside the encrypted data. A compromised user account yields both key and ciphertext.
+**Confirmed risk (residual):** When the OS keyring is unavailable, the vault encryption key falls back to an on-disk `key.bin` with restricted (`0600`) permissions. Fallback is now opt-in (`force_keyring=True` to fail closed) and logs a prominent warning, but systems without a working keyring backend receive reduced encryption value. See [`docs/SECURITY_HARDENING.md`](SECURITY_HARDENING.md) for detailed controls.
 
 ## Authentication
 
@@ -23,12 +23,12 @@ Hearth is a **single-user offline desktop app**. The security model assumes the 
 
 ## Secrets Handling
 
-| Secret | Location | Risk |
-|--------|----------|------|
-| License public key | Embedded in `src/core/subscription_manager.py` | **Low** — public verification key by design; private signing key must remain out of repo |
-| Fernet key for secure folders | OS keyring, with `~/.mindful_organizer/.content_config/key.bin` fallback | **Medium** — fallback stores key near ciphertext when keyring is unavailable |
-| Folder passcode hashes | `~/.mindful_organizer/.content_config/*_meta` (encrypted with Fernet) | **Medium** — protected by Fernet, but local key fallback is possible |
-| User's SQLite DB | `~/.mindful_organizer/mindful_organizer.db` | **Low** — unencrypted; assumes OS account security |
+| Secret                        | Location                                                                                    | Risk                                                                                                |
+| ----------------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| License public key            | Embedded in `src/core/subscription_manager.py`                                              | **Low** — public verification key by design; private signing key must remain out of repo            |
+| Fernet key for secure folders | OS keyring primary; `~/.mindful_organizer/.content_config/key.bin` fallback with 0600 perms | **Medium** — fallback stores key near ciphertext when keyring is unavailable; now opt-in and warned |
+| Folder passcode hashes        | `~/.mindful_organizer/.content_config/*_meta` (encrypted with Fernet)                       | **Medium** — protected by Fernet, but local key fallback is possible                                |
+| User's SQLite DB              | `~/.mindful_organizer/mindful_organizer.db`                                                 | **Low** — unencrypted; assumes OS account security + full-disk encryption                           |
 
 ## Access Control
 
@@ -37,12 +37,12 @@ Hearth is a **single-user offline desktop app**. The security model assumes the 
 
 ## Input Validation
 
-| Surface | Validation | Risk |
-|---------|-----------|------|
-| Task title/notes | No length limits or sanitization | Low — local only, no XSS vector |
-| Folder name in `ContentManager` | Path traversal rejected (`len(Path(name).parts) != 1`) | **Medium fixed** — previously allowed traversal |
-| Database `where` clauses | Parameterized SQL required by convention | **Medium** — no runtime guard against interpolation |
-| License key | Ed25519 signature validated | Low — invalid keys rejected |
+| Surface                         | Validation                                             | Risk                                                |
+| ------------------------------- | ------------------------------------------------------ | --------------------------------------------------- |
+| Task title/notes                | No length limits or sanitization                       | Low — local only, no XSS vector                     |
+| Folder name in `ContentManager` | Path traversal rejected (`len(Path(name).parts) != 1`) | **Medium fixed** — previously allowed traversal     |
+| Database `where` clauses        | Parameterized SQL required by convention               | **Medium** — no runtime guard against interpolation |
+| License key                     | Ed25519 signature validated                            | Low — invalid keys rejected                         |
 
 ## Data Exposure Risk
 
@@ -52,20 +52,20 @@ Hearth is a **single-user offline desktop app**. The security model assumes the 
 
 ## Insecure Defaults
 
-| Default | Issue | Recommended Fix |
-|---------|-------|-----------------|
-| Private license key ops | Issuance controls are not documented | Store private key only in release secrets and document rotation |
-| Fernet key fallback file | Encryption provides limited value without keyring | Make fallback opt-in and warn in app |
-| No passcode on app launch | Anyone with OS access can open the app | Document as accepted risk for single-user desktop software |
+| Default                   | Issue                                                           | Recommended Fix                                                 |
+| ------------------------- | --------------------------------------------------------------- | --------------------------------------------------------------- |
+| Private license key ops   | Issuance controls are now documented in `SECURITY_HARDENING.md` | Store private key only in release secrets and document rotation |
+| Fernet key fallback file  | Fallback is opt-in and warned, but still possible               | Surface `keyring_fallback_used` in Settings UI                  |
+| No passcode on app launch | Anyone with OS access can open the app                          | Document as accepted risk for single-user desktop software      |
 
 ## Dependency Risk Points
 
-| Package | Risk | Mitigation |
-|---------|------|------------|
-| PyQt6 | Large C++ surface, potential memory safety issues | Keep updated, no custom C++ extensions |
-| cryptography | Security-critical; must stay current | Pin to `>=38.0.0`, monitor CVEs |
-| numpy | C extensions, potential memory issues | Standard package, well-maintained |
-| scikit-learn | Optional; same risks as numpy | Graceful degradation if absent |
+| Package      | Risk                                              | Mitigation                             |
+| ------------ | ------------------------------------------------- | -------------------------------------- |
+| PyQt6        | Large C++ surface, potential memory safety issues | Keep updated, no custom C++ extensions |
+| cryptography | Security-critical; must stay current              | Pin to `>=38.0.0`, monitor CVEs        |
+| numpy        | C extensions, potential memory issues             | Standard package, well-maintained      |
+| scikit-learn | Optional; same risks as numpy                     | Graceful degradation if absent         |
 
 ## Client/Server Trust Boundaries
 
@@ -84,18 +84,18 @@ Hearth is a **single-user offline desktop app**. The security model assumes the 
 
 For a system handling sensitive mental health data, the following protections are **not implemented**:
 
-| Protection | Status | Impact |
-|------------|--------|--------|
-| Database encryption at rest | **Missing** | SQLite DB is plaintext |
-| Automatic screen lock / timeout | **Missing** | App stays open indefinitely |
-| Audit log of access | **Missing** | No record of who viewed what |
-| Secure deletion (shredding) | **Missing** | Deleted files may be recoverable from filesystem |
-| Backup encryption | **Missing** | `.db` backups are plaintext copies |
+| Protection                      | Status      | Impact                                           |
+| ------------------------------- | ----------- | ------------------------------------------------ |
+| Database encryption at rest     | **Missing** | SQLite DB is plaintext                           |
+| Automatic screen lock / timeout | **Missing** | App stays open indefinitely                      |
+| Audit log of access             | **Missing** | No record of who viewed what                     |
+| Secure deletion (shredding)     | **Missing** | Deleted files may be recoverable from filesystem |
+| Backup encryption               | **Missing** | `.db` backups are plaintext copies               |
 
 ## Recommendations
 
-1. **P1:** Document and lock down Ed25519 private-key handling before commercial distribution.
-2. **P1:** Make secure-folder keyring fallback explicit to the user.
+1. **P1:** Document and lock down Ed25519 private-key handling before commercial distribution (`SECURITY_HARDENING.md` §3 now covers this).
+2. **P1:** Make secure-folder keyring fallback visible to the user in Settings (surface `keyring_fallback_used`).
 3. **P2:** Add optional database encryption (SQLCipher or similar).
 4. **P2:** Add an optional app-level passcode for launch.
 5. **P3:** Encrypt shareable report HTML with a user-provided password if they contain sensitive data.
