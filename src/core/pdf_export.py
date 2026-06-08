@@ -54,7 +54,7 @@ try:
     import weasyprint
 
     _HAS_WEASYPRINT = True
-except ImportError:
+except (ImportError, OSError):
     _HAS_WEASYPRINT = False
 
 
@@ -324,7 +324,7 @@ class WellnessPDFExporter:
             ["Metric", "Value"],
             ["Total scheduled", str(med.get("total_scheduled", 0))],
             ["Taken on time", str(med.get("taken_on_time", 0))],
-            ["Adherence rate", f"{med.get('adherence_rate', 0) * 100:.0f}%"],
+            ["Adherence rate", f"{(med.get('adherence_rate') or 0) * 100:.0f}%"],
         ]
         story.append(self._make_table(data))
         return story
@@ -343,7 +343,7 @@ class WellnessPDFExporter:
             ["Metric", "Value"],
             ["Total tasks", str(tasks.get("total", 0))],
             ["Completed", str(tasks.get("completed", 0))],
-            ["Completion rate", f"{tasks.get('completion_rate', 0) * 100:.0f}%"],
+            ["Completion rate", f"{(tasks.get('completion_rate') or 0) * 100:.0f}%"],
             ["Avg energy per task", f"{tasks.get('avg_energy_required', 'N/A')}"],
         ]
         story.append(self._make_table(data))
@@ -678,7 +678,7 @@ class WellnessPDFExporter:
   <tr><th>Metric</th><th>Value</th></tr>
   <tr><td>Total scheduled</td><td>{med.get("total_scheduled", 0)}</td></tr>
   <tr><td>Taken on time</td><td>{med.get("taken_on_time", 0)}</td></tr>
-  <tr><td>Adherence rate</td><td>{med.get("adherence_rate", 0) * 100:.0f}%</td></tr>
+  <tr><td>Adherence rate</td><td>{(med.get("adherence_rate") or 0) * 100:.0f}%</td></tr>
 </table>
 
 <h2>Task Completion</h2>
@@ -686,7 +686,7 @@ class WellnessPDFExporter:
   <tr><th>Metric</th><th>Value</th></tr>
   <tr><td>Total tasks</td><td>{tasks.get("total", 0)}</td></tr>
   <tr><td>Completed</td><td>{tasks.get("completed", 0)}</td></tr>
-  <tr><td>Completion rate</td><td>{tasks.get("completion_rate", 0) * 100:.0f}%</td></tr>
+  <tr><td>Completion rate</td><td>{(tasks.get("completion_rate") or 0) * 100:.0f}%</td></tr>
 </table>
 
 <h2>Values Alignment</h2>
