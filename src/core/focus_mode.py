@@ -295,7 +295,7 @@ class FocusModeManager:
             for app in s.closed_apps:
                 app_counts[app] = app_counts.get(app, 0) + 1
 
-        most_closed = max(app_counts, key=app_counts.get) if app_counts else None
+        most_closed = max(app_counts, key=lambda k: app_counts[k]) if app_counts else None
 
         return {
             "total_sessions": len(sessions),

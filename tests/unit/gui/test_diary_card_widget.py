@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from datetime import date
 
-import pytest
 from PyQt6.QtWidgets import QAbstractButton
 
 from gui.widgets.diary_card_widget import DiaryCardWidget

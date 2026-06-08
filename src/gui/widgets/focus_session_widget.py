@@ -12,7 +12,7 @@ import logging
 from datetime import datetime, timedelta
 from typing import Any
 
-from PyQt6.QtCore import (
+from PyQt6.QtCore import (  # type: ignore[attr-defined]
     QEasingCurve,
     QPropertyAnimation,
     QRectF,
@@ -310,7 +310,9 @@ class FocusSessionWidget(QWidget):
         scroll.setFrameShape(QScrollArea.Shape.NoFrame)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         scroll.setStyleSheet("QScrollArea { background: transparent; border: none; }")
-        scroll.viewport().setStyleSheet("background: transparent;")
+        viewport = scroll.viewport()
+        if viewport is not None:
+            viewport.setStyleSheet("background: transparent;")
         outer.addWidget(scroll)
 
         container = QWidget()
@@ -588,10 +590,11 @@ class FocusSessionWidget(QWidget):
     def _refresh_history(self) -> None:
         while self._history_box.count():
             item = self._history_box.takeAt(0)
-            w = item.widget()
-            if w is not None:
-                w.setParent(None)
-                w.deleteLater()
+            if item is not None:
+                w = item.widget()
+                if w is not None:
+                    w.setParent(None)
+                    w.deleteLater()
 
         sessions = self._history()
         if not sessions:
@@ -723,7 +726,7 @@ class FocusSessionWidget(QWidget):
         try:
             from utils.accessibility import detect_reduced_motion
 
-            return detect_reduced_motion()
+            return bool(detect_reduced_motion())
         except Exception:
             return False
 

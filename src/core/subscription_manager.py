@@ -143,6 +143,10 @@ FEATURES_BY_TIER: dict[SubscriptionTier, set[str]] = {
         "system_tray",
         "global_hotkeys",
         "autonomous_mode",
+        # New v1.1.0 productivity & insight features
+        "focus_sessions",
+        "voice_journal",
+        "pdf_export",
     },
     SubscriptionTier.PREMIUM: {
         # Everything from PRO (and by extension FREE)
@@ -179,6 +183,11 @@ FEATURES_BY_TIER: dict[SubscriptionTier, set[str]] = {
         "system_tray",
         "global_hotkeys",
         "autonomous_mode",
+        # New v1.1.0 productivity & insight features
+        "focus_sessions",
+        "voice_journal",
+        "pdf_export",
+        "personal_insights",
         # Automation Premium
         "custom_rules",
         "automation_analytics",
@@ -236,6 +245,10 @@ FEATURE_DISPLAY_NAMES: dict[str, str] = {
     "scheduled_focus_blocks": "Scheduled Focus Blocks",
     "multiple_automation_profiles": "Multiple Automation Profiles",
     "advanced_system_integration": "Advanced System Integration",
+    "focus_sessions": "Focus Sessions & Pomodoro Timer",
+    "voice_journal": "Voice Journaling with Recording",
+    "pdf_export": "PDF Export",
+    "personal_insights": "Personal Insights Engine",
 }
 
 

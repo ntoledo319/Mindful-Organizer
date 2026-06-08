@@ -15,8 +15,8 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 try:
-    import sounddevice as sd
     import numpy as np
+    import sounddevice as sd
 
     _HAS_SOUNDDEVICE = True
 except ImportError:

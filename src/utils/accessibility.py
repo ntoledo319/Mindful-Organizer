@@ -448,7 +448,10 @@ def is_opendyslexic_available() -> bool:
     """Check whether the OpenDyslexic font is installed on the system."""
     try:
         from PyQt6.QtGui import QFontDatabase
+        from PyQt6.QtWidgets import QApplication
 
+        if QApplication.instance() is None:
+            return False
         families = QFontDatabase.families()
         return any("opendyslexic" in f.lower() for f in families)
     except ImportError:

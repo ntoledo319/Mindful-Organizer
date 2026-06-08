@@ -6,7 +6,6 @@ from datetime import datetime
 from types import SimpleNamespace
 from unittest.mock import patch
 
-import pytest
 from PyQt6.QtWidgets import QAbstractButton
 
 from gui.widgets.task_manager_widget import TaskManagerWidget

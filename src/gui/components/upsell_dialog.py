@@ -141,8 +141,8 @@ class UpsellDialog(QDialog):
 
     def _pricing_text(self, tier: str) -> str:
         if tier.lower() == "premium":
-            return "<b>Premium</b> — $9.99/month or $79.99/year (save 33%)"
-        return "<b>Pro</b> — $4.99/month or $39.99/year (save 33%)"
+            return "<b>Premium</b> — $15.00/month or $149.99/year (save 17%)"
+        return "<b>Pro</b> — $8.00/month or $79.99/year (save 17%)"
 
     def _on_trial(self) -> None:
         self._result = "trial"

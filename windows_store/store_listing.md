@@ -96,8 +96,8 @@ A browser view of a generated wellness report showing mood timeline charts, diar
 
 Free with in-app subscription upgrades:
 
-- **Pro**: $4.99/month or $39.99/year
-- **Premium**: $9.99/month or $79.99/year
+- **Pro**: $8.00/month or $79.99/year
+- **Premium**: $15.00/month or $149.99/year
 - 14-day free trial of Premium features. No credit card required.
 
 ## Age Rating

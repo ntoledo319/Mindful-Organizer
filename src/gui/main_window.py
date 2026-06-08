@@ -692,6 +692,7 @@ class AdaptiveMainWindow(QMainWindow):
         self._add_tab("dashboard", "Today")
         self._add_tab("task_manager", "Tasks")
         self._add_tab("journaling", "Journal")
+        self._add_tab("voice_journal", "Voice")
         self._add_tab("mood_tracker", "Mood")
         self._add_tab("diary_card", "Diary")
         self._add_tab("breathing", "Breathe")
@@ -883,6 +884,11 @@ class AdaptiveMainWindow(QMainWindow):
                     theme,
                     focus_manager=self.system_automation.focus,
                 )
+            elif name == "voice_journal":
+                from gui.widgets.voice_journal_widget import VoiceJournalWidget
+
+                widget = VoiceJournalWidget()
+                widget.navigate_to_text_journal.connect(lambda: self._switch_to_tab("journaling"))
             elif name == "search":
                 from gui.widgets.search_widget import SearchWidget
 

@@ -13,6 +13,7 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
+from typing import Any, cast
 
 logger = logging.getLogger(__name__)
 
@@ -237,7 +238,7 @@ class CommunityInsights:
             from core.database import TableName
 
             result = self._db.query(TableName(table))
-            return result.rows
+            return cast(list[dict[str, Any]], result.rows)
         except Exception:
             logger.debug("Could not fetch %s for insights", table)
             return []
