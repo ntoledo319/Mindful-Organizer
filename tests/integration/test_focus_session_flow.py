@@ -7,10 +7,7 @@ analytics layers can read the recorded data. OS-level actions are fully mocked.
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta
-from pathlib import Path
 from typing import Any
-from unittest.mock import MagicMock
 
 import pytest
 

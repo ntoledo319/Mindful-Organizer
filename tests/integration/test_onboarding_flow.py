@@ -8,11 +8,10 @@ dashboard widget surfaces that profile data to the user.
 from __future__ import annotations
 
 import pytest
-from unittest.mock import MagicMock
 
 from core.constants import Condition, TherapyType
-from profiles.mental_health_profile_builder import ProfileManager
 from gui.widgets.dashboard import DashboardWidget
+from profiles.mental_health_profile_builder import ProfileManager
 
 
 @pytest.fixture

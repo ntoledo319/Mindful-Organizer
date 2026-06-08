@@ -8,7 +8,6 @@ and exported to PDF (or HTML fallback) with non-empty output files.
 from __future__ import annotations
 
 from datetime import date, datetime, timedelta
-from pathlib import Path
 
 import pytest
 

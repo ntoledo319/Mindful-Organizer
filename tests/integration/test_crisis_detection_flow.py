@@ -9,7 +9,6 @@ GUI components are mocked; only the backend flow is exercised.
 from __future__ import annotations
 
 from datetime import datetime, timedelta
-from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 import pytest
