@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fraunces (display) + Inter (body), self-hosted via woff2 the build copies in.
+   We register variable axes so headings can carry real optical weight. */
+@font-face {
+  font-family: 'Fraunces';
+  src: local('Fraunces');
+  font-weight: 300 900;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: theme('fontFamily.body');
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Drag region for the frameless title bar; interactive children opt back out. */
+.app-drag {
+  -webkit-app-region: drag;
+}
+.app-no-drag {
+  -webkit-app-region: no-drag;
+}
+
+@layer components {
+  .glass-card {
+    @apply rounded-glass border border-white/50 bg-white/70 shadow-hearth backdrop-blur-xl;
+  }
+  .dark .glass-card {
+    @apply border-white/5 bg-night-card/80;
+  }
+
+  .field {
+    @apply w-full rounded-xl border border-charcoal/10 bg-white/80 px-3.5 py-2.5 text-sm text-charcoal
+      outline-none transition placeholder:text-charcoal-mute/70
+      focus:border-sage/50 focus:ring-2 focus:ring-sage/15;
+  }
+  .dark .field {
+    @apply border-white/10 bg-night/60 text-cream placeholder:text-cream/30;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-sage px-5 py-2.5 text-sm
+      font-medium text-cream shadow-hearth transition hover:bg-sage-light active:scale-[0.98]
+      disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-charcoal/10 px-4 py-2
+      text-sm font-medium text-charcoal-soft transition hover:bg-white/60 active:scale-[0.98];
+  }
+  .dark .btn-ghost {
+    @apply border-white/10 text-cream/80 hover:bg-white/5;
+  }
+
+  .nav-item {
+    @apply flex items-center gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-medium text-charcoal-soft
+      transition hover:bg-white/60;
+  }
+  .dark .nav-item {
+    @apply text-cream/70 hover:bg-white/5;
+  }
+  .nav-item.active {
+    @apply bg-sage text-cream shadow-hearth hover:bg-sage;
+  }
+}
+
+/* Quiet, warm scrollbar that doesn't shout. */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(62, 92, 80, 0.22);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}

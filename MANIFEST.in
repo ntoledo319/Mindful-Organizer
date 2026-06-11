@@ -1,4 +1,0 @@
-include README.md
-include LICENSE
-recursive-include mindful_organizer/resources *
-recursive-include mindful_organizer/data *
