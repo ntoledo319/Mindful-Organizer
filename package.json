@@ -81,13 +81,6 @@
       "icon": "build/icon.icns",
       "target": [
         {
-          "target": "dmg",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
-        },
-        {
           "target": "zip",
           "arch": [
             "x64",
@@ -97,9 +90,6 @@
       ],
       "hardenedRuntime": false,
       "gatekeeperAssess": false
-    },
-    "dmg": {
-      "title": "Hearth ${version}"
     },
     "win": {
       "icon": "build/icon.ico",

@@ -51,19 +51,12 @@ jobs:
 
       - name: Package (macOS)
         if: matrix.os == 'macos-latest'
-        shell: bash
-        # The macOS runner intermittently fails DMG creation with
-        # "hdiutil detach ... Command failed" — a known race where the
-        # mounted build volume can't be detached. Retry the whole pack
-        # once, force-detaching any leftover Hearth volume first.
-        run: |
-          pack() { npx electron-builder --mac --publish never; }
-          if ! pack; then
-            echo "electron-builder failed; clearing stale volume and retrying once"
-            hdiutil detach -force "/Volumes/Hearth 1.0.0" 2>/dev/null || true
-            rm -rf release/*.dmg release/.dmg* || true
-            pack
-          fi
+        # Ships the .app as a zip (x64 + arm64). DMG creation is omitted:
+        # the hosted macOS runners can't reliably mkdir/symlink/detach the
+        # DMG build volume under /Volumes (hdiutil "permission denied" /
+        # "detach failed"), which is unrelated to the app itself. The zip
+        # carries the full unsigned .app and is a standard mac distribution.
+        run: npx electron-builder --mac --publish never
         env:
           # Unsigned builds — no certs needed. Disable code signing explicitly.
           CSC_IDENTITY_AUTO_DISCOVERY: false

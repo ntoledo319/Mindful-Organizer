@@ -38,7 +38,7 @@ Most wellness software tracks. Hearth _acts_:
 | Motion       | Framer Motion                                                       |
 | Persistence  | SQLite via `better-sqlite3` (WAL mode), in the main process         |
 | Intelligence | Wellness orchestrator + crisis heuristics ported to TypeScript      |
-| Packaging    | electron-builder → macOS `.dmg`/`.zip`, Windows NSIS + portable     |
+| Packaging    | electron-builder → macOS `.zip` (.app), Windows NSIS + portable     |
 | CI           | GitHub Actions matrix on `macos-latest` + `windows-latest`          |
 
 Type display is **Fraunces** (serif), body is **Inter**.
@@ -66,7 +66,7 @@ npm test            # Vitest unit tests
 ```bash
 npm run icons       # once, to generate the packaging icons
 npm run build:linux # AppImage (unpacked) — proves the packaging config
-npm run build:mac   # .dmg + .zip (x64 + arm64), unsigned
+npm run build:mac   # .zip of the .app (x64 + arm64), unsigned
 npm run build:win   # NSIS installer + portable .exe
 ```
 
