@@ -119,7 +119,7 @@ def _primary_condition(conditions: set[Any]) -> str:
     """Pick the dominant condition for file organizer behavior."""
     order = ["ADHD", "OCD", "Depression", "Anxiety"]
     for cond in order:
-        if any(str(c).upper() == cond.upper() for c in conditions):
+        if any(getattr(c, "name", str(c)).upper() == cond.upper() for c in conditions):
             return cond
     return "Generic"
 

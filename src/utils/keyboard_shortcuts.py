@@ -150,6 +150,13 @@ _DEFAULT_SHORTCUTS: list[ShortcutAction] = [
         context=ShortcutContext.GLOBAL,
     ),
     ShortcutAction(
+        action_id="focus_session",
+        label="Focus Session",
+        description="Open the Focus Sessions tab",
+        default_key="Ctrl+Shift+F",
+        context=ShortcutContext.GLOBAL,
+    ),
+    ShortcutAction(
         action_id="help",
         label="Help",
         description="Open help documentation",

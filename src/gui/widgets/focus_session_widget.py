@@ -472,6 +472,11 @@ class FocusSessionWidget(QWidget):
         self._root.addSpacing(10)
 
     def _build_history(self) -> None:
+        self._stats_label = QLabel("")
+        self._stats_label.setFont(serif_font(15))
+        self._stats_label.setStyleSheet(f"color: {ONYX['text']}; background: transparent;")
+        self._root.addWidget(self._stats_label)
+
         cap = QLabel("Recent sessions")
         cap.setFont(sans_font(11, QFont.Weight.DemiBold))
         cap.setStyleSheet(
@@ -587,6 +592,16 @@ class FocusSessionWidget(QWidget):
             self._stop_btn.setVisible(False)
             self._lede.setText("One block at a time. Choose what feels possible.")
 
+    def _weekly_stats(self) -> tuple[int, int]:
+        if self._focus_manager is None:
+            return 0, 0
+        try:
+            sessions = list(self._focus_manager.get_sessions(days=7))
+            total_minutes = sum(getattr(s, "duration_minutes", 0) or 0 for s in sessions)
+            return len(sessions), total_minutes
+        except Exception:
+            return 0, 0
+
     def _refresh_history(self) -> None:
         while self._history_box.count():
             item = self._history_box.takeAt(0)
@@ -597,6 +612,14 @@ class FocusSessionWidget(QWidget):
                     w.deleteLater()
 
         sessions = self._history()
+        total, minutes = self._weekly_stats()
+        if total:
+            self._stats_label.setText(
+                f"This week: {total} session{'s' if total != 1 else ''} · {minutes} minute{'s' if minutes != 1 else ''} of focus"
+            )
+        else:
+            self._stats_label.setText("This week: no sessions yet")
+
         if not sessions:
             empty = QLabel("No sessions yet. The first one is always the hardest.")
             empty.setFont(serif_font(15))

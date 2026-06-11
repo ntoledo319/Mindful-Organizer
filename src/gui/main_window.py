@@ -885,6 +885,16 @@ class AdaptiveMainWindow(QMainWindow):
                     theme,
                     focus_manager=self.system_automation.focus,
                 )
+                widget.session_ended.connect(
+                    lambda: (
+                        self._system_tray.show_notification(
+                            "Focus Complete",
+                            "Your session is done. Take a breath.",
+                        )
+                        if self._system_tray
+                        else None
+                    )
+                )
             elif name == "voice_journal":
                 from gui.widgets.voice_journal_widget import VoiceJournalWidget
 
@@ -1078,6 +1088,9 @@ class AdaptiveMainWindow(QMainWindow):
             "journal_entry", lambda: self._switch_to_tab("journaling")
         )
         self.shortcut_manager.set_callback("global_search", self._show_search)
+        self.shortcut_manager.set_callback(
+            "focus_session", lambda: self._switch_to_tab("focus_session")
+        )
         self.shortcut_manager.set_callback("help", self._show_help)
 
     def _setup_shortcuts(self):
@@ -1127,6 +1140,7 @@ class AdaptiveMainWindow(QMainWindow):
             "Ctrl+B - Breathing Exercises\n"
             "Ctrl+J - Journal\n"
             "Ctrl+F - Search\n"
+            "Ctrl+Shift+F - Focus Sessions\n"
             "Ctrl+E - Settings\n"
             "F1 - This Help\n\n"
             "All your data is stored locally on your device.\n"
