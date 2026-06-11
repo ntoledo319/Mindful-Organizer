@@ -13,6 +13,9 @@ build/icon.ico
 build/icon.icns
 build/.icontmp/
 
+# Generated Windows Store assets (produced by `npm run winstore-assets`)
+build/appx/
+
 # Local data / runtime
 *.db
 *.log

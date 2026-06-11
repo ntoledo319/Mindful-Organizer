@@ -17,6 +17,8 @@
     "build:dir": "npm run typecheck && vite build && electron-builder --dir",
     "build:linux": "npm run typecheck && vite build && electron-builder --linux --dir",
     "build:win": "npm run typecheck && vite build && electron-builder --win",
+    "build:winstore": "npm run icons && npm run winstore-assets && npm run typecheck && vite build && electron-builder --win appx",
+    "winstore-assets": "node scripts/generate-windows-store-assets.mjs",
     "build:mac": "npm run typecheck && vite build && electron-builder --mac",
     "vite:build": "vite build",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.electron.json",
@@ -105,7 +107,25 @@
           "arch": [
             "x64"
           ]
+        },
+        {
+          "target": "appx",
+          "arch": [
+            "x64"
+          ]
         }
+      ]
+    },
+    "appx": {
+      "applicationId": "Hearth",
+      "identityName": "io.hearthproject.hearth",
+      "publisher": "CN=00000000-0000-0000-0000-000000000000",
+      "publisherDisplayName": "The Hearth Project",
+      "displayName": "Hearth",
+      "backgroundColor": "#F5F0E6",
+      "showNameOnTiles": true,
+      "languages": [
+        "en-US"
       ]
     },
     "nsis": {

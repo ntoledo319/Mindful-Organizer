@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 permissions:
   contents: write
@@ -36,6 +36,10 @@ jobs:
 
       - name: Generate icons
         run: npm run icons
+
+      - name: Generate Windows Store assets
+        if: matrix.os == 'windows-latest'
+        run: npm run winstore-assets
 
       - name: Lint
         run: npm run lint
@@ -70,7 +74,7 @@ jobs:
         run: |
           mkdir -p artifacts
           find release -maxdepth 1 -type f \
-            \( -name '*.dmg' -o -name '*.zip' -o -name '*.exe' \) \
+            \( -name '*.dmg' -o -name '*.zip' -o -name '*.exe' -o -name '*.appx' \) \
             -exec cp {} artifacts/ \;
           ls -la artifacts
 

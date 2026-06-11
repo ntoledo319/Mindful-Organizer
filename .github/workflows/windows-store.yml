@@ -1,0 +1,65 @@
+name: Windows Store (MSIX) Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "package.json"
+      - "electron/**"
+      - "src/**"
+      - "scripts/generate-windows-store-assets.mjs"
+      - "resources/**"
+
+permissions:
+  contents: read
+
+jobs:
+  build-msix:
+    name: Build MSIX for Windows Store
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate icons and Windows Store assets
+        run: |
+          npm run icons
+          npm run winstore-assets
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build renderer + main
+        run: npm run vite:build
+
+      - name: Package MSIX (appx)
+        run: npx electron-builder --win appx --x64 --publish never
+
+      - name: Collect MSIX artifact
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          find release -maxdepth 1 -type f -name '*.appx' -exec cp {} artifacts/ \;
+          ls -la artifacts
+
+      - name: Upload MSIX
+        uses: actions/upload-artifact@v4
+        with:
+          name: hearth-msix
+          path: artifacts/*
+          if-no-files-found: error
+          retention-days: 30
