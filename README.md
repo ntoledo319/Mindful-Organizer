@@ -2,166 +2,108 @@
 
 _A desktop that adapts to your psychology._
 
-The Hearth Project is a desktop-native psychological operating-system layer for people managing ADHD, anxiety, depression, OCD, PTSD, or bipolar disorder. It reconfigures your computing environment based on psychological state — closes distracting apps during anxiety spikes, enforces Do Not Disturb, dims the display, and organizes files. Built in Python and PyQt6. All data is stored locally — no cloud sync, no telemetry.
+Hearth is an offline-first desktop app for people managing ADHD, anxiety, depression, OCD, PTSD, or bipolar — built on one belief: **your computer should adapt to your psychology, not the other way around.** It's not a tracker you feed and forget. It reads your state — mood, sleep, energy — and reshapes the day around it: matching tasks to the energy you actually have, suggesting the steadying practice that fits how today feels, and keeping crisis help one click away.
 
-> **Platform support.** The full app — tracking, therapeutic tools, the adaptive
-> dashboard, crisis resources — runs on macOS, Linux, and Windows. **Live OS
-> actuation** (closing apps, Do Not Disturb, display dimming) is currently
-> implemented and verified on **macOS only**; on Windows and Linux those specific
-> actions are inert (the app says so rather than pretending to act) until their
-> backends land. Hearth never reports a system change that didn't happen.
+Everything lives in a single local database on your machine. **No account, no cloud, no telemetry, no network calls.** Your data is yours.
 
-![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)
-![PyQt6](https://img.shields.io/badge/PyQt6-6.4.0%2B-green.svg)
-![License](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-informational.svg)
+## Why Hearth is different
 
-## What It Is
+Most wellness software tracks. Hearth _acts_:
 
-Hearth is a single-user, offline-first desktop application that adapts the computing environment to the user's psychological state. It supports people managing ADHD, Anxiety, Depression, OCD, PTSD, and Bipolar Disorder — not by adding another tracking app, but by treating the desktop itself as the intervention surface.
+- **Energy-budgeted tasks** — every task carries a "spoon" cost, and your daily budget shifts with the conditions you carry. Hearth recommends only the work that fits the energy you have left, so a tired day never becomes an overcommitted one.
+- **A morning that reads you** — the Today view opens with a briefing drawn from your own recent data: an energy forecast, what Hearth noticed, and one gentle next step.
+- **Crisis-aware, not crisis-blind** — conservative heuristics watch for patterns (a mood crash on short sleep, a rapid drop, elevated energy with no rest) and surface the 988 lifeline and your own crisis plan _before_ you have to go looking.
+- **Practices chosen for the moment** — box breathing, 5-4-3-2-1 grounding, a body scan, or a protected focus block — picked to match a low-energy, low-mood, or short-sleep day.
 
-**Confirmed capabilities (from source):**
+> Hearth is a personal, mental-health-aware tool. It is **not** a medical device and not a substitute for professional care. Its signals are gentle observations, not a clinical instrument. If you are in crisis, call or text **988** (US) or your local emergency number.
 
-- **Task management** — CRUD, subtasks, dependencies, recurring tasks, templates, undo/redo, energy-based filtering and sorting. Persists task records to SQLite; legacy JSON task data is migrated on first launch.
-- **Mood tracker** — 1–10 mood scores with condition-specific symptoms. Persists to SQLite (`mood_entries` table).
-- **Sleep tracker** — Bedtime, wake time, quality (1–10), duration. Persists to SQLite (`sleep_logs` table).
-- **DBT Diary Card** — Daily structured tracking of emotions, urges, skills, effectiveness, target behaviors, substances, and medication adherence. Added in schema v2.
-- **Energy predictor** — Forecasts from sleep + mood + task history. Optional ML deps (`scikit-learn`) enable smarter ranking; graceful degradation without them.
-- **Wellness orchestrator** — Cross-module intelligence that produces `WellnessSnapshot`, detects crisis heuristics (mood crash + sleep deprivation, rapid mood drop, medication miss streak), and generates daily briefings.
-- **Therapeutic tools** — Breathing exercises, grounding techniques, guided meditation metadata, journaling with prompts, ERP exposure tracking, crisis plan with contacts.
-- **Focus Sessions** — Pomodoro-style deep-work timer with circular progress UI, customizable presets, and automatic DND activation to protect attention.
-- **Voice Journal** — Record journal entries directly in the app (gracefully degrades to text-only when no microphone is available).
-- **Personal Insights** — Local analytics generated from the user's own historical data; no generic templates.
-- **PDF Export** — One-click export of wellness reports, diary cards, and mood timelines for sharing with clinicians.
-- **File organizer** — Sorts files into a clean type-based structure, with an optional smart file system that uses ML clustering (`sentence-transformers`, `hdbscan`) when those extras are installed.
-- **Secure content vault** _(library/API; no GUI surface yet)_ — Passcode-gated folders whose file contents are Fernet-encrypted at rest, with scrypt passcode hashing. The Fernet key lives in the OS credential store (Keychain / Credential Manager / SecretService), not next to the ciphertext. Exposed as `security.content_management.ContentManager`; a dedicated UI is on the roadmap.
-- **Shareable reports** — Fully self-contained HTML reports with Chart.js vendored inline. They open offline and make **no network request**, so a report full of health data never phones home.
-- **Calendar sync** — Exports tasks as ICS and parses external busy blocks for focus scheduling.
-- **Wearable sync** — Imports Apple Health XML and Google Fit sleep CSV exports into local sleep logs.
-- **Subscription tiers** — Free / Pro / Premium. License keys are signed with Ed25519; only the public verification key ships in the binary. A 14-day Premium trial is available without a key. See [`docs/PRICING_JUSTIFICATION.md`](docs/PRICING_JUSTIFICATION.md) for current pricing.
+## Feature tour
 
-**Partial implementations:**
+| Area          | What it does                                                                                  |
+| ------------- | --------------------------------------------------------------------------------------------- |
+| **Today**     | Daily briefing, energy-budget meter, crisis banner, and an energy-matched next step.          |
+| **Tasks**     | Priority + area + energy, with an automatic spoon-cost estimate and energy-aware ordering.    |
+| **Reflect**   | Quick mood / energy / anxiety check-ins, sleep logs (auto-computes duration), and journaling. |
+| **Practices** | Guided breathing with a breath pacer, grounding, meditation, and focus blocks — pre/post SUDS.|
+| **Rhythm**    | Mood, energy, and sleep trends over 7 / 14 / 30 days. Patterns, not performance.              |
+| **Crisis plan** | Warning signs, what helps, trusted contacts, and a note to your future self — stored locally. |
 
-- `auto_updater.py` — Checks GitHub releases, presents changelog and download links, but does not auto-install updates.
+## Tech stack
 
-## Tech Stack
+| Layer        | Technology                                                          |
+| ------------ | ------------------------------------------------------------------- |
+| Shell        | Electron 33 (context-isolated, no node integration in the renderer) |
+| UI           | React 18 + TypeScript + Vite 6                                      |
+| Styling      | Tailwind CSS — warm cream, sage, eucalyptus, lavender; light + dark |
+| Motion       | Framer Motion                                                       |
+| Persistence  | SQLite via `better-sqlite3` (WAL mode), in the main process         |
+| Intelligence | Wellness orchestrator + crisis heuristics ported to TypeScript      |
+| Packaging    | electron-builder → macOS `.zip` (.app), Windows NSIS + portable     |
+| CI           | GitHub Actions matrix on `macos-latest` + `windows-latest`          |
 
-| Layer                     | Technology                                                                            |
-| ------------------------- | ------------------------------------------------------------------------------------- |
-| Language                  | Python 3.11+                                                                          |
-| GUI                       | PyQt6                                                                                 |
-| Persistence               | SQLite (WAL mode, schema v4) + JSON for lightweight local config/templates            |
-| Optional ML               | scikit-learn, pandas, matplotlib                                                      |
-| Optional NLP / clustering | sentence-transformers, hdbscan, umap-learn                                            |
-| Encryption                | cryptography (Fernet + scrypt for content vault; Ed25519 for license signing)         |
-| Key storage               | OS keyring (Keychain / Credential Manager / SecretService)                            |
-| Build                     | setuptools (`pyproject.toml`) + PyInstaller (`mindful_organizer.spec`)                |
-| CI                        | GitHub Actions (`pytest` across Linux/macOS/Windows × Py 3.9–3.12)                    |
-| Release                   | `.github/workflows/release.yml` builds MSIX (Windows) and `.app` (macOS) on `v*` tags |
+Type display is **Fraunces** (serif), body is **Inter**.
 
-## Prerequisites
+## Quickstart
 
-- Python 3.11, 3.12, or 3.13
-- pip
-- Git
-
-## Installation
+Prerequisites: **Node.js 20+** and npm.
 
 ```bash
-git clone https://github.com/ntoledo319/Mindful-Organizer.git
-cd Mindful-Organizer
-python3 -m venv venv312
-source venv312/bin/activate  # Windows: venv312\Scripts\activate
-pip install -e ".[dev]"
+npm install
+npm run icons   # derive build/icon.{png,ico,icns} from resources/app-icon.png
+npm run dev     # launches Vite + Electron with hot reload
 ```
 
-Optional ML features:
+## Quality checks
 
 ```bash
-pip install -e ".[ml,nlp]"
+npm run lint        # ESLint, zero-warning policy
+npm run typecheck   # tsc for both the renderer and the Electron main process
+npm test            # Vitest unit tests
 ```
 
-## Local Development
+## Building installers
 
 ```bash
-# Run the app
-python src/main.py
-
-# Run tests (excludes GUI tests)
-pytest -m "not gui and not slow"
-
-# Run with coverage
-pytest -m "not gui and not slow" --cov=src --cov-report=term-missing
-
-# Linting
-ruff check src/ tests/
-
-# Formatting
-ruff format src/ tests/
-
-# Type checking
-mypy src/
+npm run icons       # once, to generate the packaging icons
+npm run build:linux # AppImage (unpacked) — proves the packaging config
+npm run build:mac   # .zip of the .app (x64 + arm64), unsigned
+npm run build:win   # NSIS installer + portable .exe
 ```
 
-## Build
+Output lands in `release/`. Builds are **unsigned** — on first launch macOS Gatekeeper and Windows SmartScreen will ask you to confirm.
 
-### macOS / Linux (PyInstaller)
+### Automated releases
+
+`.github/workflows/release.yml` runs a matrix on `macos-latest` and `windows-latest`. On every run it lints, typechecks, tests, builds, and uploads the installers as workflow artifacts. Trigger it manually:
 
 ```bash
-bash build.sh
+gh workflow run release.yml --ref production-overhaul
 ```
 
-### Windows (PyInstaller)
+or by pushing a `v*` tag. Download the `hearth-macos` / `hearth-windows` artifacts from the run's summary page.
 
-```batch
-build_windows.bat
-```
-
-The canonical spec is `mindful_organizer.spec`. The `build.sh` script uses PyInstaller; the older manual `.app` bundle logic has been removed.
-
-## Repository Structure
+## Project layout
 
 ```
-├── src/
-│   ├── main.py                 # Application entry point
-│   ├── core/                   # Business logic & data access
-│   ├── gui/                    # PyQt6 UI layer
-│   ├── profiles/               # Mental health profile system
-│   ├── wellness/               # Therapeutic modules
-│   ├── security/               # Encryption & access control
-│   ├── utils/                  # Shared helpers
-│   └── windows/                # Platform-specific utilities
-├── tests/
-│   ├── unit/                   # Isolated tests
-│   └── integration/            # Cross-module workflow tests
-├── docs/                       # Documentation suite
-├── resources/                  # Meditations and assets
-├── scripts/                    # Utility scripts
-└── pyproject.toml              # Build, dependencies, tool config
+electron/            Main process — window, SQLite store, IPC, wellness engine
+  main.ts            App lifecycle + one IPC handler per API method
+  db.ts              SQLite schema + connection (WAL)
+  repo.ts            Data access (tasks, mood, sleep, journal, practices, plan)
+  wellness.ts        Snapshot, crisis heuristics, daily briefing, trends
+  preload.ts         Context-isolated bridge built from the shared contract
+src/shared/          Types + IPC contract + spoon logic (shared, testable)
+src/renderer/        React UI
+  screens/           Onboarding, Today, Tasks, Reflect, Practices, Rhythm, Crisis, Settings
+  components/         Icons, UI primitives, breath pacer
+resources/           Brand assets (app-icon, hero-illustration)
+scripts/             Icon generation
+build/               electron-builder resources (icons generated here)
 ```
 
-## Documentation
+## Privacy
 
-See [`docs/DOCS_INDEX.md`](docs/DOCS_INDEX.md) for the full documentation suite.
-
-Quick pointers:
-
-- [Architecture](docs/architecture.md)
-- [Security Review](docs/security.md)
-- [Security Hardening Guide](docs/SECURITY_HARDENING.md)
-- [Tech Debt & Gaps](docs/tech-debt-and-gaps.md)
-- [Onboarding](docs/onboarding.md)
-
-## Known Caveats
-
-1. **Auto-updater does not self-install** — It checks release metadata, presents the changelog, and provides download links, but the user must run the installer manually.
-2. **Live OS adaptation is macOS-only** — Windows and Linux report inert honestly; tracking and therapeutic features are fully cross-platform.
-3. **Database is plaintext SQLite** — Protected by filesystem permissions (`0700` data dir / `0600` DB) and assumes OS full-disk encryption (FileVault/BitLocker). App-level encryption (SQLCipher) is a documented roadmap decision.
+Hearth opens exactly one file — a local SQLite database in your OS app-data directory — and makes no network requests. The renderer runs with `contextIsolation` on and `nodeIntegration` off; it can only reach the data layer through a typed, allow-listed IPC bridge.
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
-
-## Disclaimer
-
-Hearth is a personal mental-health-aware desktop tool. It is **not** a medical device, does not provide medical advice, diagnosis, or treatment, and is **not** a substitute for professional healthcare. If you are in crisis, call 988 (US) or your local emergency number.
+MIT — see [LICENSE](LICENSE).
