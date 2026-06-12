@@ -97,15 +97,15 @@ export async function runScreenshots(): Promise<void> {
     loadApp(win);
     await ready; // app shell mounted (and read the current settings)
 
-    if (shot.route) {
-      const settled = waitForReady();
-      win.webContents.send('screenshot:goto', { route: shot.route, theme: shot.theme });
-      await settled;
-    } else {
-      // Onboarding: no route, but still honor the theme for completeness.
-      win.webContents.send('screenshot:goto', { theme: shot.theme });
-      await delay(900);
-    }
+    // Every shot waits for the renderer's settled signal. The onboarding shot
+    // carries no route but still loads the hero illustration — a multi-megabyte
+    // PNG that must finish decoding before the frame is clean — so it cannot
+    // rely on a fixed delay (the decode races the capture and the gradient
+    // fallback gets captured instead). The renderer signals only once the route
+    // has painted and any hero image has decoded.
+    const settled = waitForReady();
+    win.webContents.send('screenshot:goto', { route: shot.route, theme: shot.theme });
+    await settled;
 
     await delay(500); // a final beat for fonts/images
     // Capture an exact 1920x1080 rect — the xvfb backing buffer is one px short

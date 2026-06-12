@@ -92,13 +92,21 @@ jobs:
         id: package
         shell: bash
         run: |
-          pkg=$(find release -maxdepth 1 -type f -name '*.appx' | head -n1)
+          # electron-builder writes the appx to its configured output dir
+          # (directories.output = "release"), but depending on the target/version
+          # it can also land in "dist". Search both recursively and tolerate
+          # spaces in the artifact name (default is "Hearth 1.0.0.appx").
+          pkg=$(find release dist . -type f -name '*.appx' -not -path '*/node_modules/*' 2>/dev/null | head -n1)
           if [ -z "$pkg" ]; then
-            echo "::error::No .appx produced under release/ — cannot publish."
+            echo "::error::No .appx produced under release/, dist/, or the workspace — cannot publish."
+            echo "Workspace .appx search:"
+            find . -type f -name '*.appx' -not -path '*/node_modules/*' 2>/dev/null || true
             exit 1
           fi
-          echo "path=$pkg" >> "$GITHUB_OUTPUT"
-          echo "Found package: $pkg"
+          # Resolve to an absolute path so downstream steps are CWD-independent.
+          abs=$(cd "$(dirname "$pkg")" && pwd)/$(basename "$pkg")
+          echo "path=$abs" >> "$GITHUB_OUTPUT"
+          echo "Found package: $abs"
 
       - name: Install msstore-cli
         if: steps.secrets.outputs.present == 'true' && steps.identity.outputs.real == 'true'

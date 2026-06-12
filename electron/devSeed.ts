@@ -9,6 +9,12 @@ function isoDaysAgo(days: number, hour = 9, minute = 0): string {
   const d = new Date();
   d.setDate(d.getDate() - days);
   d.setHours(hour, minute, 0, 0);
+  // The newest entry pins to a fixed wall-clock hour today; if the seed runs
+  // before that hour the instant lands in the future and the UI reads "in N
+  // minutes". Clamp any timestamp to at least two hours before now so the most
+  // recent check-in always reads as past.
+  const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
+  if (d.getTime() > twoHoursAgo.getTime()) d.setTime(twoHoursAgo.getTime());
   // SQLite datetime() comparisons use 'YYYY-MM-DD HH:MM:SS'.
   return d.toISOString().slice(0, 19).replace('T', ' ');
 }
