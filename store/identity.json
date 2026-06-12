@@ -1,0 +1,6 @@
+{
+  "_comment": "Microsoft Store identity for the Hearth appx package. Fill these in from Partner Center (Product > Product identity). While any value below starts with PLACEHOLDER_, the appx target is skipped in CI and store-publish.yml no-ops. See README 'Microsoft Store' and store/README.md.",
+  "identityName": "PLACEHOLDER_FROM_PARTNER_CENTER",
+  "publisher": "PLACEHOLDER_FROM_PARTNER_CENTER",
+  "publisherDisplayName": "PLACEHOLDER_FROM_PARTNER_CENTER"
+}

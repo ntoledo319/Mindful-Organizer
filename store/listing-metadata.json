@@ -1,0 +1,22 @@
+{
+  "_comment": "Microsoft Store listing for Hearth, as code. store-publish.yml feeds this to `msstore submission updateMetadata`. Edit here, commit, and the next publish run picks it up. Character ceilings: shortDescription <= 200, description <= 10000 (Partner Center limits).",
+  "language": "en-us",
+  "name": "Hearth — Mindful Organizer",
+  "shortDescription": "A calm, offline-first organizer that budgets your energy, not just your time.",
+  "description": "Most organizers assume every hour is worth the same. Hearth doesn't. It's a calm desktop home for people living with ADHD, anxiety, depression, OCD, PTSD, or bipolar — built on one belief: your computer should adapt to your psychology, not the other way around.\n\nHearth reads how today actually feels and reshapes the day around it.\n\nToday — Open to a briefing drawn from your own recent data: an energy forecast, what Hearth noticed overnight, a quiet crisis banner when patterns warrant it, and one gentle next step instead of a wall of overdue.\n\nTasks — Every task carries an energy cost, not just a due date. Your daily budget shifts with your mood, sleep, and energy, and Hearth orders the work to fit the energy you actually have left — so a tired day never quietly becomes an overcommitted one.\n\nReflect — Quick mood, energy, and anxiety check-ins, sleep logs that compute their own duration, and a journal that asks nothing of you but a sentence.\n\nPractices — Box breathing with a visual pacer, 5-4-3-2-1 grounding, a body scan, and protected focus blocks, each with a before-and-after read on how you feel.\n\nRhythm — Mood, energy, and sleep trends across 7, 14, and 30 days. Patterns to notice, not a scoreboard to beat.\n\nCrisis plan — Your warning signs, what helps, trusted contacts, and a note to your future self — written once, kept close, surfaced the moment Hearth's conservative signals suggest you might need it.\n\nLight and dark themes, in warm cream and dark slate, so Hearth fits the room and the hour.\n\nYour data stays yours. Hearth is 100% offline: no account, no cloud, no telemetry, no network calls. Everything lives in a single SQLite database on your own machine and never leaves it unless you copy it yourself.\n\nHearth is a personal, mental-health-aware tool, not a medical device or a substitute for professional care. If you are in crisis, call or text 988 (US) or your local emergency number.",
+  "keywords": [
+    "mindfulness",
+    "mental health",
+    "task manager",
+    "spoon theory",
+    "energy",
+    "journal",
+    "mood tracker",
+    "ADHD",
+    "wellness",
+    "organizer"
+  ],
+  "copyrightAndTrademarkInfo": "Copyright © 2026 The Hearth Project",
+  "privacyPolicyUrl": "https://github.com/ntoledo319/Mindful-Organizer/blob/main/docs/PRIVACY.md",
+  "supportContact": "https://github.com/ntoledo319/Mindful-Organizer/issues"
+}

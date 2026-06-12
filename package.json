@@ -19,6 +19,7 @@
     "build:win": "npm run typecheck && vite build && electron-builder --win",
     "build:winstore": "npm run icons && npm run winstore-assets && npm run typecheck && vite build && electron-builder --win appx",
     "winstore-assets": "node scripts/generate-windows-store-assets.mjs",
+    "store:check": "node store/identity.cjs --check",
     "build:mac": "npm run typecheck && vite build && electron-builder --mac",
     "vite:build": "vite build",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.electron.json",
@@ -56,93 +57,5 @@
     "vite-plugin-electron": "^0.29.0",
     "vite-plugin-electron-renderer": "^0.14.6",
     "vitest": "^2.1.8"
-  },
-  "build": {
-    "appId": "io.hearthproject.hearth",
-    "productName": "Hearth",
-    "copyright": "Copyright © 2026 The Hearth Project",
-    "directories": {
-      "output": "release",
-      "buildResources": "build"
-    },
-    "files": [
-      "dist",
-      "dist-electron"
-    ],
-    "extraResources": [
-      {
-        "from": "resources/hero-illustration.png",
-        "to": "hero-illustration.png"
-      }
-    ],
-    "asarUnpack": [
-      "**/node_modules/better-sqlite3/**"
-    ],
-    "mac": {
-      "category": "public.app-category.healthcare-fitness",
-      "icon": "build/icon.icns",
-      "target": [
-        {
-          "target": "zip",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
-        }
-      ],
-      "hardenedRuntime": false,
-      "gatekeeperAssess": false
-    },
-    "win": {
-      "icon": "build/icon.ico",
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "portable",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "appx",
-          "arch": [
-            "x64"
-          ]
-        }
-      ]
-    },
-    "appx": {
-      "applicationId": "Hearth",
-      "identityName": "io.hearthproject.hearth",
-      "publisher": "CN=00000000-0000-0000-0000-000000000000",
-      "publisherDisplayName": "The Hearth Project",
-      "displayName": "Hearth",
-      "backgroundColor": "#F5F0E6",
-      "showNameOnTiles": true,
-      "languages": [
-        "en-US"
-      ]
-    },
-    "nsis": {
-      "oneClick": false,
-      "perMachine": false,
-      "allowToChangeInstallationDirectory": true,
-      "artifactName": "Hearth-Setup-${version}.${ext}"
-    },
-    "portable": {
-      "artifactName": "Hearth-Portable-${version}.${ext}"
-    },
-    "linux": {
-      "icon": "build/icon.png",
-      "category": "Utility",
-      "target": [
-        "AppImage"
-      ]
-    }
   }
 }

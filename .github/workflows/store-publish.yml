@@ -1,0 +1,144 @@
+name: Microsoft Store Publish
+
+# Submits the Hearth appx to the Microsoft Store via the official msstore-cli.
+# This workflow is intentionally a no-op until two preconditions are met:
+#   1. store/identity.json holds real Partner Center identity values (not PLACEHOLDER_*)
+#   2. the four MS_* secrets below are configured on the repo
+# Until then every step downstream of the gate is skipped with a clear log line,
+# so the workflow stays green and never blocks the release pipeline.
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Release Build"]
+    types:
+      - completed
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Publish to Microsoft Store
+    runs-on: windows-latest
+    # On workflow_run, only proceed for a successful run triggered by a v* tag.
+    # workflow_dispatch carries no workflow_run context, so allow it through.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       startsWith(github.event.workflow_run.head_branch, 'v'))
+
+    env:
+      MS_TENANT_ID: ${{ secrets.MS_TENANT_ID }}
+      MS_SELLER_ID: ${{ secrets.MS_SELLER_ID }}
+      MS_CLIENT_ID: ${{ secrets.MS_CLIENT_ID }}
+      MS_CLIENT_SECRET: ${{ secrets.MS_CLIENT_SECRET }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # --- Gate 1: are all four Store credentials present? -------------------
+      - name: Check Store secrets
+        id: secrets
+        shell: bash
+        run: |
+          if [ -n "$MS_TENANT_ID" ] && [ -n "$MS_SELLER_ID" ] && [ -n "$MS_CLIENT_ID" ] && [ -n "$MS_CLIENT_SECRET" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Microsoft Store secrets (MS_TENANT_ID/MS_SELLER_ID/MS_CLIENT_ID/MS_CLIENT_SECRET) are not all set — skipping Store publish."
+          fi
+
+      - name: Set up Node
+        if: steps.secrets.outputs.present == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # --- Gate 2: does store/identity.json hold real values? ----------------
+      - name: Check Store identity
+        if: steps.secrets.outputs.present == 'true'
+        id: identity
+        shell: bash
+        run: |
+          real=$(node store/identity.cjs --check)
+          echo "real=$real" >> "$GITHUB_OUTPUT"
+          if [ "$real" != "true" ]; then
+            echo "::notice::store/identity.json still contains PLACEHOLDER values — skipping Store publish. Fill identityName/publisher/publisherDisplayName from Partner Center."
+          fi
+
+      - name: Install dependencies
+        if: steps.secrets.outputs.present == 'true' && steps.identity.outputs.real == 'true'
+        run: npm ci
+
+      - name: Generate icons and Store tile assets
+        if: steps.secrets.outputs.present == 'true' && steps.identity.outputs.real == 'true'
+        run: |
+          npm run icons
+          npm run winstore-assets
+
+      - name: Build renderer + main
+        if: steps.secrets.outputs.present == 'true' && steps.identity.outputs.real == 'true'
+        run: npm run vite:build
+
+      - name: Package appx
+        if: steps.secrets.outputs.present == 'true' && steps.identity.outputs.real == 'true'
+        run: npx electron-builder --win appx --x64 --publish never
+
+      - name: Locate appx package
+        if: steps.secrets.outputs.present == 'true' && steps.identity.outputs.real == 'true'
+        id: package
+        shell: bash
+        run: |
+          pkg=$(find release -maxdepth 1 -type f -name '*.appx' | head -n1)
+          if [ -z "$pkg" ]; then
+            echo "::error::No .appx produced under release/ — cannot publish."
+            exit 1
+          fi
+          echo "path=$pkg" >> "$GITHUB_OUTPUT"
+          echo "Found package: $pkg"
+
+      - name: Install msstore-cli
+        if: steps.secrets.outputs.present == 'true' && steps.identity.outputs.real == 'true'
+        shell: pwsh
+        run: |
+          # Prefer winget on the hosted runner; fall back to the GitHub release binary.
+          $installed = $false
+          try {
+            winget install --id Microsoft.MSStoreCLI --accept-source-agreements --accept-package-agreements --disable-interactivity
+            if ($LASTEXITCODE -eq 0) { $installed = $true }
+          } catch {
+            Write-Host "winget unavailable, falling back to GitHub release download"
+          }
+          if (-not $installed) {
+            $asset = "https://github.com/microsoft/msstore-cli/releases/latest/download/MSStoreCLI-win-x64.zip"
+            Invoke-WebRequest -Uri $asset -OutFile msstore.zip
+            Expand-Archive -Path msstore.zip -DestinationPath "$env:RUNNER_TEMP\msstore" -Force
+            "$env:RUNNER_TEMP\msstore" | Out-File -FilePath $env:GITHUB_PATH -Append
+          }
+          msstore --version
+
+      - name: Configure msstore-cli
+        if: steps.secrets.outputs.present == 'true' && steps.identity.outputs.real == 'true'
+        shell: pwsh
+        run: |
+          msstore reconfigure `
+            --tenantId "$env:MS_TENANT_ID" `
+            --sellerId "$env:MS_SELLER_ID" `
+            --clientId "$env:MS_CLIENT_ID" `
+            --clientSecret "$env:MS_CLIENT_SECRET"
+
+      - name: Update listing metadata
+        if: steps.secrets.outputs.present == 'true' && steps.identity.outputs.real == 'true'
+        shell: pwsh
+        run: |
+          # Push the listing-as-code to the pending submission, then publish.
+          msstore submission updateMetadata io.hearthproject.hearth (Get-Content -Raw store/listing-metadata.json)
+
+      - name: Upload and publish package
+        if: steps.secrets.outputs.present == 'true' && steps.identity.outputs.real == 'true'
+        shell: pwsh
+        run: |
+          msstore submission update io.hearthproject.hearth --packages "${{ steps.package.outputs.path }}"
+          msstore submission publish io.hearthproject.hearth

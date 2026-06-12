@@ -100,9 +100,26 @@ scripts/             Icon generation
 build/               electron-builder resources (icons generated here)
 ```
 
+## Microsoft Store
+
+Hearth ships to the Microsoft Store as an MSIX/`appx` package, built and published from CI. Two things gate that path, and until both are in place the Store build and publish steps **skip themselves cleanly** rather than fail:
+
+1. **Identity** — `store/identity.json` holds the package identity (`identityName`, `publisher`, `publisherDisplayName`). It ships with `PLACEHOLDER_FROM_PARTNER_CENTER` values. While any value is still a placeholder, the `appx` target is dropped from the Windows build and `.github/workflows/store-publish.yml` no-ops. Fill these from Partner Center (Product → Product identity), commit, and the gate opens. Check the current state with `npm run store:check` (prints `true`/`false`).
+
+2. **Secrets** — `.github/workflows/store-publish.yml` authenticates `msstore-cli` from four repo secrets:
+
+   | Secret | Where it comes from |
+   | ------ | ------------------- |
+   | `MS_TENANT_ID` | Azure AD tenant backing your Partner Center account |
+   | `MS_SELLER_ID` | Partner Center → Account settings → Seller ID |
+   | `MS_CLIENT_ID` | Azure AD app registration tied to Partner Center |
+   | `MS_CLIENT_SECRET` | Client secret for that app registration |
+
+The publish workflow runs on `workflow_dispatch` and after a successful **Release Build** on a `v*` tag. It builds the `appx`, pushes the listing from `store/listing-metadata.json`, uploads the package, and publishes the submission. The Store listing copy and the privacy policy URL it points at live in [`store/listing-metadata.json`](store/listing-metadata.json) and [`docs/PRIVACY.md`](docs/PRIVACY.md). See [`store/README.md`](store/README.md) for the full submission checklist.
+
 ## Privacy
 
-Hearth opens exactly one file — a local SQLite database in your OS app-data directory — and makes no network requests. The renderer runs with `contextIsolation` on and `nodeIntegration` off; it can only reach the data layer through a typed, allow-listed IPC bridge.
+Hearth opens exactly one file — a local SQLite database in your OS app-data directory — and makes no network requests. The renderer runs with `contextIsolation` on and `nodeIntegration` off; it can only reach the data layer through a typed, allow-listed IPC bridge. The full policy is in [docs/PRIVACY.md](docs/PRIVACY.md).
 
 ## License
 

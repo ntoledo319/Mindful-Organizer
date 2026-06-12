@@ -38,11 +38,13 @@ async function renderSquare(size, pad = 0) {
 }
 
 async function renderWide(w, h) {
-  const canvas = new Jimp(w, h, BG);
+  // Transparent canvas with the squircle centered — the wide tile reads as the
+  // mark floating, not a logo pinned to a cream slab.
+  const canvas = new Jimp(w, h, 0x00000000);
   const logoH = Math.floor(h * 0.6);
   const logoW = logoH;
   const logoY = Math.floor((h - logoH) / 2);
-  const logoX = Math.floor(w * 0.12);
+  const logoX = Math.floor((w - logoW) / 2);
   const resized = master.clone().resize(logoW, logoH);
   canvas.composite(resized, logoX, logoY);
   return canvas.getBufferAsync(Jimp.MIME_PNG);
