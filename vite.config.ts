@@ -31,7 +31,18 @@ export default defineConfig({
           args.reload();
         },
         vite: {
-          build: { outDir: 'dist-electron' },
+          build: {
+            outDir: 'dist-electron',
+            // Electron loads preload scripts via CommonJS require(); with
+            // "type": "module" set, vite-plugin-electron would emit ESM and
+            // Electron throws ERR_REQUIRE_ESM. Force a CommonJS .cjs build so
+            // the preload loads under both packaged and screenshot runs.
+            lib: {
+              entry: 'electron/preload.ts',
+              formats: ['cjs'],
+              fileName: () => 'preload.cjs',
+            },
+          },
         },
       },
     ]),

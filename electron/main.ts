@@ -33,7 +33,7 @@ function createWindow(): void {
     titleBarStyle: 'hiddenInset',
     show: false,
     webPreferences: {
-      preload: join(__dirname, 'preload.js'),
+      preload: join(__dirname, 'preload.cjs'),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: false,
@@ -104,9 +104,35 @@ function registerIpc(): void {
   }
 }
 
-app.whenReady().then(() => {
+// Screenshot mode runs headless under xvfb where the GPU stack is unavailable;
+// software rendering keeps capturePage from stalling on GPU init. Must be set
+// before app is ready, so it lives outside whenReady.
+if (process.env.HEARTH_SCREENSHOT === '1') {
+  app.disableHardwareAcceleration();
+  app.commandLine.appendSwitch('disable-gpu');
+  app.commandLine.appendSwitch('disable-software-rasterizer');
+  app.commandLine.appendSwitch('no-sandbox');
+}
+
+app.whenReady().then(async () => {
   getDb(); // open + migrate before the window can call in
   registerIpc();
+
+  // Dev-only screenshot mode: seed demo data, capture the Store listing images,
+  // then quit. Gated behind HEARTH_SCREENSHOT so it can't fire in a real launch.
+  if (process.env.HEARTH_SCREENSHOT === '1') {
+    const { runScreenshots } = await import('./screenshot');
+    try {
+      await runScreenshots();
+    } catch (err) {
+      console.error('[screenshot] failed:', err);
+      app.exit(1);
+      return;
+    }
+    app.quit();
+    return;
+  }
+
   createWindow();
 
   app.on('activate', () => {

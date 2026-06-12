@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useStore } from './state/store';
+import { useScreenshotDriver } from './lib/screenshot';
 import { Onboarding } from './screens/Onboarding';
 import { Dashboard } from './screens/Dashboard';
 import { Tasks } from './screens/Tasks';
@@ -35,6 +36,9 @@ const NAV: { id: Route; label: string; icon: typeof HomeIcon }[] = [
 export function App() {
   const { settings, loading } = useStore();
   const [route, setRoute] = useState<Route>('dashboard');
+
+  // No-op unless main launched us in screenshot mode; then it steers route/theme.
+  useScreenshotDriver(setRoute, !loading && !!settings);
 
   if (loading || !settings) {
     return (
