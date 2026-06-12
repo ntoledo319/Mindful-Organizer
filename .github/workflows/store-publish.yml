@@ -92,15 +92,15 @@ jobs:
         id: package
         shell: bash
         run: |
-          # electron-builder writes the appx to its configured output dir
-          # (directories.output = "release"), but depending on the target/version
-          # it can also land in "dist". Search both recursively and tolerate
-          # spaces in the artifact name (default is "Hearth 1.0.0.appx").
-          pkg=$(find release dist . -type f -name '*.appx' -not -path '*/node_modules/*' 2>/dev/null | head -n1)
+          # electron-builder's appx target writes to "dist" (e.g.
+          # "dist/Hearth 1.0.0.appx") rather than the configured "release" output
+          # dir. Search the whole workspace from "." — which always exists, unlike
+          # "release" (a missing find arg would abort this step under
+          # pipefail+errexit before any output) — and tolerate spaces in the
+          # default artifact name. node_modules is pruned for speed.
+          pkg=$(find . -type d -name node_modules -prune -o -type f -name '*.appx' -print | head -n1)
           if [ -z "$pkg" ]; then
-            echo "::error::No .appx produced under release/, dist/, or the workspace — cannot publish."
-            echo "Workspace .appx search:"
-            find . -type f -name '*.appx' -not -path '*/node_modules/*' 2>/dev/null || true
+            echo "::error::No .appx found anywhere in the workspace — cannot publish."
             exit 1
           fi
           # Resolve to an absolute path so downstream steps are CWD-independent.
