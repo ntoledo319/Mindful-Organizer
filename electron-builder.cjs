@@ -3,6 +3,11 @@
 // The appx target is only emitted once real identity values are present, which
 // keeps `npm run build:win` working with placeholders while making the Store
 // build a no-op until Partner Center values land. See store/identity.cjs.
+//
+// The filename MUST be "electron-builder.cjs" (not "electron-builder.config.cjs"):
+// electron-builder only auto-discovers config named electron-builder.{yml,yaml,
+// json,json5,toml,js,cjs,ts}. A ".config.cjs" suffix is silently ignored, so the
+// build falls back to defaults and the appx ships with placeholder identity.
 const { readIdentity, hasRealIdentity } = require('./store/identity.cjs');
 
 const identity = readIdentity();

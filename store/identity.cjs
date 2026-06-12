@@ -1,6 +1,6 @@
 // Single source of truth for reading store/identity.json and deciding whether
 // the Microsoft Store appx package is publishable yet. Both the electron-builder
-// config (electron-builder.config.cjs) and CI (`node store/identity.cjs --check`)
+// config (electron-builder.cjs) and CI (`node store/identity.cjs --check`)
 // share this so the gate is defined in exactly one place.
 const { readFileSync } = require('node:fs');
 const { join } = require('node:path');
