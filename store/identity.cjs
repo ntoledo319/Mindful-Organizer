@@ -14,6 +14,7 @@ function readIdentity() {
     identityName: raw.identityName,
     publisher: raw.publisher,
     publisherDisplayName: raw.publisherDisplayName,
+    productId: raw.productId,
   };
 }
 
@@ -32,8 +33,14 @@ function hasRealIdentity(identity = readIdentity()) {
 
 module.exports = { IDENTITY_PATH, readIdentity, isPlaceholder, hasRealIdentity };
 
-// `node store/identity.cjs --check` → prints "true"/"false" and exits 0 so CI
-// can branch without parsing JSON in shell. Used by store-publish.yml + release.yml.
-if (require.main === module && process.argv.includes('--check')) {
-  process.stdout.write(hasRealIdentity() ? 'true' : 'false');
+// CLI helpers so CI can branch/read values without parsing JSON in shell:
+//   --check       → prints "true"/"false" (identity ready for an appx build)
+//   --product-id  → prints the Store product ID (empty if unset)
+// Used by store-publish.yml, windows-store.yml, and release.yml.
+if (require.main === module) {
+  if (process.argv.includes('--check')) {
+    process.stdout.write(hasRealIdentity() ? 'true' : 'false');
+  } else if (process.argv.includes('--product-id')) {
+    process.stdout.write(readIdentity().productId || '');
+  }
 }

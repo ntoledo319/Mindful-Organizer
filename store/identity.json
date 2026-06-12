@@ -1,6 +1,7 @@
 {
-  "_comment": "Microsoft Store identity for the Hearth appx package. Fill these in from Partner Center (Product > Product identity). While any value below starts with PLACEHOLDER_, the appx target is skipped in CI and store-publish.yml no-ops. See README 'Microsoft Store' and store/README.md.",
-  "identityName": "PLACEHOLDER_FROM_PARTNER_CENTER",
-  "publisher": "PLACEHOLDER_FROM_PARTNER_CENTER",
-  "publisherDisplayName": "PLACEHOLDER_FROM_PARTNER_CENTER"
+  "_comment": "Microsoft Store identity for the Hearth appx package, from Partner Center (Product > Product identity). While any of identityName/publisher/publisherDisplayName starts with PLACEHOLDER_, the appx target is skipped in CI and store-publish.yml no-ops. productId is the reserved app's Store ID, used by msstore submission commands. See README 'Microsoft Store' and store/README.md.",
+  "identityName": "ToledoTechnologies.Hearth",
+  "publisher": "CN=FBC80173-0C85-481E-BC5E-A3BE88BC2020",
+  "publisherDisplayName": "Toledo Technologies",
+  "productId": "9PLRSZZMFPJH"
 }

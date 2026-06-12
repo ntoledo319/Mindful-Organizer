@@ -5,7 +5,7 @@ kept as code so a submission is reproducible.
 
 | File | Purpose |
 | ---- | ------- |
-| `identity.json` | Package identity from Partner Center. Ships with `PLACEHOLDER_*` values; the `appx` build and the publish workflow stay no-ops until these are real. |
+| `identity.json` | Package identity from Partner Center (`identityName`, `publisher`, `publisherDisplayName`) plus `productId` (the reserved app's Store ID, e.g. `9PLRSZZMFPJH`, used by `msstore submission` commands). Ships with `PLACEHOLDER_*` values; the `appx` build and the publish workflow stay no-ops until these are real. |
 | `identity.cjs` | Single source of truth for reading `identity.json` and deciding whether identity is real. Used by `electron-builder.config.cjs` and CI (`node store/identity.cjs --check`). |
 | `listing-metadata.json` | The Store listing (name, descriptions, keywords, URLs) as code. Fed to `msstore submission updateMetadata`. |
 

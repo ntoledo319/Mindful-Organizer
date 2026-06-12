@@ -64,6 +64,7 @@ jobs:
         run: |
           real=$(node store/identity.cjs --check)
           echo "real=$real" >> "$GITHUB_OUTPUT"
+          echo "product_id=$(node store/identity.cjs --product-id)" >> "$GITHUB_OUTPUT"
           if [ "$real" != "true" ]; then
             echo "::notice::store/identity.json still contains PLACEHOLDER values — skipping Store publish. Fill identityName/publisher/publisherDisplayName from Partner Center."
           fi
@@ -134,11 +135,12 @@ jobs:
         shell: pwsh
         run: |
           # Push the listing-as-code to the pending submission, then publish.
-          msstore submission updateMetadata io.hearthproject.hearth (Get-Content -Raw store/listing-metadata.json)
+          # msstore keys submissions on the Store product ID (the 9P… ID).
+          msstore submission updateMetadata "${{ steps.identity.outputs.product_id }}" (Get-Content -Raw store/listing-metadata.json)
 
       - name: Upload and publish package
         if: steps.secrets.outputs.present == 'true' && steps.identity.outputs.real == 'true'
         shell: pwsh
         run: |
-          msstore submission update io.hearthproject.hearth --packages "${{ steps.package.outputs.path }}"
-          msstore submission publish io.hearthproject.hearth
+          msstore submission update "${{ steps.identity.outputs.product_id }}" --packages "${{ steps.package.outputs.path }}"
+          msstore submission publish "${{ steps.identity.outputs.product_id }}"
