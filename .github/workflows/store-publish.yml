@@ -112,20 +112,25 @@ jobs:
         if: steps.secrets.outputs.present == 'true' && steps.identity.outputs.real == 'true'
         shell: pwsh
         run: |
-          # Prefer winget on the hosted runner; fall back to the GitHub release binary.
-          $installed = $false
-          try {
-            winget install --id Microsoft.MSStoreCLI --accept-source-agreements --accept-package-agreements --disable-interactivity
-            if ($LASTEXITCODE -eq 0) { $installed = $true }
-          } catch {
-            Write-Host "winget unavailable, falling back to GitHub release download"
-          }
-          if (-not $installed) {
-            $asset = "https://github.com/microsoft/msstore-cli/releases/latest/download/MSStoreCLI-win-x64.zip"
-            Invoke-WebRequest -Uri $asset -OutFile msstore.zip
-            Expand-Archive -Path msstore.zip -DestinationPath "$env:RUNNER_TEMP\msstore" -Force
-            "$env:RUNNER_TEMP\msstore" | Out-File -FilePath $env:GITHUB_PATH -Append
-          }
+          # Install directly from the GitHub release. winget's msstore source no
+          # longer resolves Microsoft.MSStoreCLI ("No package found matching input
+          # criteria"), and even when the fallback ran, $GITHUB_PATH only affects
+          # *later* steps — so a same-step `msstore` invocation failed with "not
+          # recognized". Install to a known dir, expose it on $GITHUB_PATH for the
+          # downstream steps, prepend it to PATH for this step, and verify.
+          $ErrorActionPreference = "Stop"
+          $dest = "$env:RUNNER_TEMP\msstore"
+          $asset = "https://github.com/microsoft/msstore-cli/releases/latest/download/MSStoreCLI-win-x64.zip"
+          Invoke-WebRequest -Uri $asset -OutFile "$env:RUNNER_TEMP\msstore.zip"
+          Expand-Archive -Path "$env:RUNNER_TEMP\msstore.zip" -DestinationPath $dest -Force
+          # The CLI may sit in a nested folder inside the zip; find msstore.exe.
+          $exe = Get-ChildItem -Path $dest -Recurse -Filter "msstore.exe" | Select-Object -First 1
+          if (-not $exe) { throw "msstore.exe not found in $asset" }
+          $binDir = $exe.Directory.FullName
+          # For subsequent steps:
+          $binDir | Out-File -FilePath $env:GITHUB_PATH -Append
+          # For this step:
+          $env:PATH = "$binDir;$env:PATH"
           msstore --version
 
       - name: Configure msstore-cli
