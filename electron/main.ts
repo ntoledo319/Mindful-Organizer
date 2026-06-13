@@ -5,6 +5,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { getDb, closeDb } from './db';
 import * as repo from './repo';
 import * as wellness from './wellness';
+import * as presence from './presence';
 import type { HearthApi } from '../src/shared/ipc';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -66,9 +67,17 @@ function registerIpc(): void {
     deleteTask: async (id) => repo.deleteTask(id),
 
     listMoods: async (l) => repo.listMoods(l),
-    createMood: async (i) => repo.createMood(i),
+    createMood: async (i) => {
+      const m = repo.createMood(i);
+      presence.onReadingLogged(); // a fresh reading may ease the lights down
+      return m;
+    },
     listSleep: async (l) => repo.listSleep(l),
-    createSleep: async (i) => repo.createSleep(i),
+    createSleep: async (i) => {
+      const s = repo.createSleep(i);
+      presence.onReadingLogged();
+      return s;
+    },
 
     listJournal: async (l) => repo.listJournal(l),
     createJournal: async (i) => repo.createJournal(i),
@@ -85,7 +94,16 @@ function registerIpc(): void {
     getTrends: async (d) => wellness.trends(d),
 
     getSettings: async () => repo.getSettings(),
-    saveSettings: async (p) => repo.saveSettings(p),
+    saveSettings: async (p) => {
+      const next = repo.saveSettings(p);
+      presence.applySettings(next); // presence/quiet/focus/nudge toggles apply live
+      return next;
+    },
+
+    getPresence: async () => presence.state(),
+    setQuietActive: async (active) => presence.setQuietActive(active),
+    startFocus: async (input) => presence.startFocus(input.seconds, input.intention ?? null),
+    endFocus: async () => presence.endFocus(),
 
     heroDataUrl: async () => {
       try {
@@ -134,6 +152,7 @@ app.whenReady().then(async () => {
   }
 
   createWindow();
+  presence.init(() => win); // the acting layer: tray, the dim, the focus hold
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -141,8 +160,12 @@ app.whenReady().then(async () => {
 });
 
 app.on('window-all-closed', () => {
+  presence.dispose();
   closeDb();
   if (process.platform !== 'darwin') app.quit();
 });
 
-app.on('before-quit', closeDb);
+app.on('before-quit', () => {
+  presence.dispose();
+  closeDb();
+});

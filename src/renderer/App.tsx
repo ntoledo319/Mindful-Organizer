@@ -20,6 +20,7 @@ import {
   ChartIcon,
   ShieldIcon,
   GearIcon,
+  MoonIcon,
 } from './components/icons';
 
 export type Route = 'dashboard' | 'tasks' | 'reflect' | 'practices' | 'trends' | 'crisis' | 'settings';
@@ -34,7 +35,7 @@ const NAV: { id: Route; label: string; icon: typeof HomeIcon }[] = [
 ];
 
 export function App() {
-  const { settings, loading } = useStore();
+  const { settings, loading, presence, setQuiet } = useStore();
   const [route, setRoute] = useState<Route>('dashboard');
 
   // No-op unless main launched us in screenshot mode; then it steers route/theme.
@@ -74,6 +75,17 @@ export function App() {
             </button>
           ))}
         </nav>
+
+        {presence && (
+          <button
+            onClick={() => void setQuiet(!presence.quietActive)}
+            className={`nav-item app-no-drag ${presence.quietActive ? 'active' : ''}`}
+            title="Lower the lights over everything"
+          >
+            <MoonIcon width={18} height={18} />
+            {presence.quietActive ? 'Brighten' : 'Quiet'}
+          </button>
+        )}
 
         <button
           onClick={() => setRoute('settings')}

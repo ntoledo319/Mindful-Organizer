@@ -158,12 +158,32 @@ export interface DailyBriefing {
   signals: CrisisSignal[];
 }
 
+export type QuietMode = 'off' | 'auto' | 'on';
+
 export interface Settings {
   conditions: Condition[];
   displayName: string;
   onboarded: boolean;
   theme: 'light' | 'dark' | 'system';
   dailySpoons: number;
+  // --- presence: how Hearth shows up beyond its own window ---
+  presence: boolean; // live in the tray / menu bar
+  quietMode: QuietMode; // dim the screen when you're drained
+  quietDim: number; // 0.1–0.8: how deep the dim goes when quiet is active
+  focusGuard: boolean; // raise a calm full-screen hold during focus blocks
+  nudges: boolean; // gentle notifications (focus finished, an urgent signal)
+}
+
+// Live state of the acting layer, mirrored from the main process to the UI.
+export interface PresenceState {
+  quietActive: boolean; // the dimming overlay is up right now
+  quietMode: QuietMode;
+  focus: { endsAt: string; intention: string | null; seconds: number } | null;
+}
+
+export interface PresenceUpdate {
+  state: PresenceState;
+  settings: Settings;
 }
 
 export interface TrendPoint {

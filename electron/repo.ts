@@ -25,6 +25,11 @@ const DEFAULT_SETTINGS: Settings = {
   onboarded: false,
   theme: 'system',
   dailySpoons: 12,
+  presence: true,
+  quietMode: 'auto',
+  quietDim: 0.4,
+  focusGuard: true,
+  nudges: true,
 };
 
 // --- row mappers -----------------------------------------------------------

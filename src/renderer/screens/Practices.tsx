@@ -23,16 +23,44 @@ const PRACTICES: Practice[] = [
 ];
 
 export function Practices() {
-  const { bumpData } = useStore();
+  const { bumpData, settings, presence, dataVersion } = useStore();
   const [active, setActive] = useState<Practice | null>(null);
   const [history, setHistory] = useState<PracticeSession[]>([]);
 
   const load = () => void api.listPractices(8).then(setHistory);
-  useEffect(load, []);
+  useEffect(load, [dataVersion]); // refresh after a guarded focus block ends in main
+
+  // A focus block with the guard on hands the whole thing to the acting layer:
+  // Hearth dims everything else and holds the door. Otherwise it runs in-window.
+  const start = (p: Practice) => {
+    if (p.kind === 'focus' && settings?.focusGuard) {
+      void api.startFocus({ seconds: p.durationSeconds, intention: null });
+      return;
+    }
+    setActive(p);
+  };
+
+  const focusHold = presence?.focus ?? null;
 
   return (
     <div>
       <PageHeader title="Practices" subtitle="Small steadying acts, chosen for how today feels." />
+
+      {focusHold && !active && (
+        <div className="glass-card mb-4 flex items-center justify-between gap-4 px-5 py-4">
+          <div>
+            <p className="font-display text-base font-semibold text-charcoal dark:text-cream">
+              A focus block is running
+            </p>
+            <p className="text-sm text-charcoal-mute dark:text-cream/55">
+              Hearth is holding the door. The hold lives over your screen — end it there, with Esc, or here.
+            </p>
+          </div>
+          <button className="btn-ghost shrink-0" onClick={() => void api.endFocus()}>
+            End now
+          </button>
+        </div>
+      )}
 
       {active ? (
         <PracticeRunner
@@ -50,7 +78,7 @@ export function Practices() {
             {PRACTICES.map((p) => (
               <button
                 key={p.technique}
-                onClick={() => setActive(p)}
+                onClick={() => start(p)}
                 className="glass-card group flex flex-col items-start gap-1 p-5 text-left transition hover:-translate-y-0.5 hover:shadow-glow"
               >
                 <span className="font-display text-lg font-semibold text-charcoal dark:text-cream">{p.technique}</span>

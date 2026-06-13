@@ -14,6 +14,7 @@ import type {
   DailyBriefing,
   Settings,
   Trends,
+  PresenceState,
 } from './types';
 
 // The full surface the renderer can call. Each method maps 1:1 to an IPC
@@ -54,6 +55,12 @@ export interface HearthApi {
   getSettings(): Promise<Settings>;
   saveSettings(patch: Partial<Settings>): Promise<Settings>;
 
+  // presence — the acting layer that reaches past Hearth's own window
+  getPresence(): Promise<PresenceState>;
+  setQuietActive(active: boolean): Promise<PresenceState>;
+  startFocus(input: { seconds: number; intention?: string | null }): Promise<PresenceState>;
+  endFocus(): Promise<PresenceState>;
+
   // misc
   heroDataUrl(): Promise<string | null>;
 }
@@ -80,5 +87,9 @@ export const IPC_CHANNELS: (keyof HearthApi)[] = [
   'getTrends',
   'getSettings',
   'saveSettings',
+  'getPresence',
+  'setQuietActive',
+  'startFocus',
+  'endFocus',
   'heroDataUrl',
 ];

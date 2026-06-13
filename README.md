@@ -8,12 +8,17 @@ Everything lives in a single local database on your machine. **No account, no cl
 
 ## Why Hearth is different
 
-Most wellness software tracks. Hearth _acts_:
+Most wellness software tracks. Hearth _acts_ — and it acts past its own window:
 
+- **Lowers the lights when you're drained** — when your own mood/energy readings say you're running low, Hearth eases a warm dim over the whole screen so a tired hour stops shouting at you. Off, automatic, or always-on; depth is yours to set. Toggle it in one click.
+- **Holds the door during a focus block** — start a focus block and Hearth raises a calm full-screen hold over everything else until the time is up. Three always-there exits: the on-screen link, the Escape key, or the tray. It guards focus; it never traps you.
+- **Lives in the tray** — quiet controls and a way back to Hearth from the menu bar, plus gentle, conservative notifications (a focus block finished; an urgent signal in your own data). Never a diagnosis.
 - **Energy-budgeted tasks** — every task carries a "spoon" cost, and your daily budget shifts with the conditions you carry. Hearth recommends only the work that fits the energy you have left, so a tired day never becomes an overcommitted one.
 - **A morning that reads you** — the Today view opens with a briefing drawn from your own recent data: an energy forecast, what Hearth noticed, and one gentle next step.
 - **Crisis-aware, not crisis-blind** — conservative heuristics watch for patterns (a mood crash on short sleep, a rapid drop, elevated energy with no rest) and surface the 988 lifeline and your own crisis plan _before_ you have to go looking.
 - **Practices chosen for the moment** — box breathing, 5-4-3-2-1 grounding, a body scan, or a protected focus block — picked to match a low-energy, low-mood, or short-sleep day.
+
+Every one of these runs locally. The dim and the focus hold are plain Electron windows on your own machine; the "signals" are heuristics over the same local SQLite. Nothing about how Hearth acts requires — or makes — a network call.
 
 > Hearth is a personal, mental-health-aware tool. It is **not** a medical device and not a substitute for professional care. Its signals are gentle observations, not a clinical instrument. If you are in crisis, call or text **988** (US) or your local emergency number.
 
@@ -27,6 +32,7 @@ Most wellness software tracks. Hearth _acts_:
 | **Practices** | Guided breathing with a breath pacer, grounding, meditation, and focus blocks — pre/post SUDS.|
 | **Rhythm**    | Mood, energy, and sleep trends over 7 / 14 / 30 days. Patterns, not performance.              |
 | **Crisis plan** | Warning signs, what helps, trusted contacts, and a note to your future self — stored locally. |
+| **Presence**  | The acting layer: a screen-wide dim when you're drained, a calm hold over a focus block, and a tray you can steer Hearth from. Set it all under Settings → _How Hearth shows up_. |
 
 ## Tech stack
 
