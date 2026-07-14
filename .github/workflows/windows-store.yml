@@ -184,11 +184,13 @@ jobs:
           }
 
           $executable = $manifest.Package.Applications.Application.Executable
-          if (-not (Test-Path (Join-Path $expanded $executable))) {
+          $executablePath = Join-Path $expanded $executable
+          if (-not (Test-Path $executablePath)) {
             throw "Packaged executable is missing: $executable"
           }
+          $applicationRoot = Split-Path $executablePath
           foreach ($required in @('resources\LICENSE', 'resources\THIRD_PARTY_NOTICES.md', 'resources\BRAND_PROVENANCE.md')) {
-            if (-not (Test-Path (Join-Path $expanded $required))) {
+            if (-not (Test-Path (Join-Path $applicationRoot $required))) {
               throw "Required packaged disclosure is missing: $required"
             }
           }
@@ -198,7 +200,6 @@ jobs:
           New-Item -ItemType File -Force (Join-Path $validationData '.hearth-release-validation') | Out-Null
           $env:HEARTH_RELEASE_VALIDATION = '1'
           $env:HEARTH_DATA_DIR = $validationData
-          $executablePath = Join-Path $expanded $executable
           $validationProcess = Start-Process -FilePath $executablePath -WorkingDirectory (Split-Path $executablePath) -PassThru
           if (-not $validationProcess.WaitForExit(120000)) {
             Stop-Process -Id $validationProcess.Id -Force -ErrorAction SilentlyContinue
