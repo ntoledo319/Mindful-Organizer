@@ -3,7 +3,7 @@
 // 1920x1080. It seeds demo data, drives the renderer's route/theme through the
 // __hearthShot bridge, and writes PNGs via webContents.capturePage. Dev-only —
 // nothing here is reachable in a normal or packaged launch.
-import { BrowserWindow, ipcMain, nativeImage, nativeTheme } from 'electron';
+import { BrowserWindow, ipcMain, nativeTheme } from 'electron';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -152,6 +152,10 @@ export async function runScreenshots(): Promise<void> {
       // The window is never shown (show:false); without this, Chromium throttles
       // timers/rAF on the hidden window and the route paint can lag the capture.
       backgroundThrottling: false,
+      // GitHub's interactive Windows desktop is smaller than a 1920x1080 Store
+      // frame. Offscreen rendering gives Chromium its own unconstrained surface
+      // instead of letting Windows clip the hidden window to the work area.
+      offscreen: true,
       additionalArguments: ['--hearth-screenshot'],
     },
   });
@@ -163,25 +167,6 @@ export async function runScreenshots(): Promise<void> {
   win.webContents.on('render-process-gone', (_e, details) =>
     console.error('[screenshot] render-process-gone', details.reason),
   );
-
-  // GitHub's hosted Windows desktop can be smaller than a Store screenshot.
-  // Drive Chromium's own viewport and capture protocol so the renderer lays out
-  // at 1920x1080 and the bitmap is not clipped to the runner's physical screen.
-  const debuggerSession = win.webContents.debugger;
-  debuggerSession.attach('1.3');
-  await withTimeout(
-    debuggerSession.sendCommand('Emulation.setDeviceMetricsOverride', {
-      width: WIDTH,
-      height: HEIGHT,
-      deviceScaleFactor: 1,
-      mobile: false,
-      screenWidth: WIDTH,
-      screenHeight: HEIGHT,
-      scale: 1,
-    }),
-    'Configuring the screenshot viewport',
-  );
-  await withTimeout(debuggerSession.sendCommand('Page.enable'), 'Enabling page capture');
 
   try {
     for (const shot of SHOTS) {
@@ -220,20 +205,14 @@ export async function runScreenshots(): Promise<void> {
       await settled;
 
       await delay(500); // a final beat for fonts/images
-      const capture = (await withTimeout(
-        debuggerSession.sendCommand('Page.captureScreenshot', {
-          format: 'png',
-          fromSurface: true,
-          captureBeyondViewport: true,
-          clip: { x: 0, y: 0, width: WIDTH, height: HEIGHT, scale: 1 },
-        }),
+      const image = await withTimeout(
+        win.webContents.capturePage(
+          { x: 0, y: 0, width: WIDTH, height: HEIGHT },
+          { stayHidden: true, stayAwake: true },
+        ),
         `Capturing ${shot.file}`,
-      )) as { data?: unknown };
-      if (typeof capture.data !== 'string') {
-        throw new Error(`Chromium did not return PNG data for ${shot.file}.`);
-      }
-      const png = Buffer.from(capture.data, 'base64');
-      const image = nativeImage.createFromBuffer(png);
+      );
+      const png = image.toPNG();
       const dest = join(outDir, shot.file);
       const size = image.getSize();
       if (size.width !== WIDTH || size.height !== HEIGHT) {
@@ -258,7 +237,6 @@ export async function runScreenshots(): Promise<void> {
 
     writeFileSync(join(outDir, 'manifest.json'), JSON.stringify(manifest, null, 2));
   } finally {
-    if (debuggerSession.isAttached()) debuggerSession.detach();
     if (!win.isDestroyed()) win.destroy();
   }
 }
