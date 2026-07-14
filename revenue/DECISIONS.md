@@ -94,3 +94,91 @@ this as package-build evidence only. Do not call it released, distribute it to
 customers, or submit it until exact-artifact install smoke, encryption,
 provenance, support, screenshots, certification preparation, and the owner-only
 Partner Center gates are complete.
+
+## 2026-07-14 — Cycle 1
+
+### D014 — Replace plaintext persistence with authenticated protected snapshots
+
+The earlier Store policy blocker is resolved in the release candidate. SQLite
+now operates in memory, and versioned snapshots use AES-256-GCM with fresh IVs
+and a random 256-bit key protected by Windows DPAPI through Electron
+safeStorage. Primary/backup recovery, legacy migration, missing-key failure,
+export disclosure, and key-first erase behavior are verified by Windows CI.
+Decision: retain explicit limitations in every privacy and listing claim; do not
+call local encryption an absolute security guarantee.
+
+### D015 — Make capacity explicitly user-controlled
+
+Capacity is a 4–24 value chosen by the user. Hearth never infers or changes it
+from diagnosis labels, mood, sleep, anxiety, or check-ins. Today recommends only
+open tasks whose exact recorded cost fits the remaining budget. Decision:
+remove all copy and behavior suggesting adaptive diagnosis-driven capacity.
+
+### D016 — Narrow the launch without destroying capabilities
+
+Today, Tasks, Check in, Practices, Rhythm, Crisis, and Settings are the launch
+surface. Diary cards, ERP notes, medication reference, and legacy condition
+metadata are preserved in schema, types, IPC/repository code, renderers, and
+exports but removed from default collection/navigation. Earlier undocumented
+art is preserved under resources/vault/unverified-2026-07-14/ and excluded from
+shipping. docs/CAPABILITY_VAULT.md is the restoration contract. No permanent
+deletion is authorized without a separately reviewed migration.
+
+### D017 — Treat premium usability and accessibility as release behavior
+
+Decision: replace the inconsistent prototype surface with one warm editorial
+system, coherent hierarchy, purposeful states, deterministic art, modal focus
+traps/restoration, reduced-motion handling, accessible chart descriptions, and
+tested contrast tokens. Do not make a Store accessibility declaration until the
+installed Windows/Narrator/high-contrast/text-scaling matrix is complete.
+
+### D018 — Accept one exact 1.1.0 candidate
+
+Candidate 8172603b62c2457696608c145511bd3fe92429d4 passed the hosted Quality and
+Windows Store workflows. Its AppX SHA-256 is
+4900f3823febace53f86f69ee2567b50208aec8f6677741c3c4dcf3667facdb1.
+Five exact-candidate screenshots were hash-recorded and visually inspected.
+Decision: no changed package or screenshot may inherit this evidence; any
+candidate change restarts the affected gates.
+
+### D019 — Configure the Partner Center draft completely but hold publication
+
+The exact AppX, $14.99 US one-time price, public/discoverable audience, truthful
+copy, categories, properties, five screenshots, runFullTrust explanation, and
+testing notes are saved in Submission 1. The old 1.0.0 package was removed from
+the draft; its source and removed capabilities remain preserved in the
+workspace. Decision: set release control to Do not publish until I select
+Publish now so certification cannot silently make the product public.
+
+### D020 — Do not guess the IARC legal classification
+
+The existing Partner Center result is IARC 3+ / ESRB Everyone. The packaged
+source includes crisis language and a vaulted self-harm urge field. An
+exploratory questionnaire edit was canceled without saving. Decision: require
+the owner to review and affirm every answer before certification, including
+whether those references change the violence-content answer.
+
+### D021 — Hold certification on installed-Windows and owner gates
+
+Partner Center enables Submit for certification, but button availability is not
+release readiness. Decision: do not click it until the exact installed AppX,
+WACK, manual accessibility, IARC, payout/account-role, and support checks are
+complete. The saved runFullTrust request must be reviewed during certification;
+Hearth uses no service, driver, elevation, system-policy change, background
+monitoring, account, cloud sync, ads, or telemetry.
+
+### D022 — Keep distribution claims evidence-based
+
+There is no owned audience, live Store page, page-view count, acquisition, sale,
+or payout. Decision: use Store discovery as the only autonomous channel and
+keep all prepared launch posts in store/LAUNCH_KIT.md until the owner approves
+and manually sends them after publication. No autonomous email, DM, post,
+review solicitation, or customer promise is authorized.
+
+### D023 — Keep the $14.99 model, not a revenue promise
+
+The saved one-time price is a market test. At the documented 15% non-game app
+fee, 314 sales would model $4,000.83 before refunds and tax adjustments. No
+demand evidence supports that quantity yet. Decision: start the five-day signal
+gate only after the listing is actually visible and purchasable, then reposition
+once and replace promptly if external signal remains zero.

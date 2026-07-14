@@ -1,8 +1,10 @@
 # Microsoft Store release path
 
 This directory is the manual submission source for Hearth's reserved Microsoft
-Store product. The identity is real. The product page, price, support channel,
-and paid package are not verified live, so nothing here is permission to submit.
+Store product. Submission 1 now contains the exact validated 1.1.0 AppX, saved
+$14.99 US pricing, reviewed copy, categories, properties, certification notes,
+and five hash-matched screenshots. It is deliberately held in draft and has not
+been submitted, certified, published, or verified purchasable.
 
 ## Launch position
 
@@ -21,6 +23,22 @@ The proposed offer is a one-time **$14.99** x64 Microsoft Store package. The
 source remains MIT licensed. A purchase pays for an official packaged binary and
 Store delivery, not exclusive source code, clinical capability, or guaranteed
 future features.
+
+## Current Partner Center state
+
+- Product ID: 9PLRSZZMFPJH
+- Submission ID: 1152921505701225649
+- Pricing and availability: Complete
+- Properties: Complete
+- Age ratings: Complete, with the existing IARC 3+ / ESRB Everyone result still
+  requiring owner affirmation against packaged crisis/self-harm references
+- Packages: Complete; only Hearth 1.1.0.appx, marked Validated
+- Store listings: Complete
+- Submission options: Partner Center displays Incomplete even though the
+  runFullTrust explanation and Additional Testing Information are saved;
+  restricted-capability review is expected during certification
+- Submit for certification: enabled, intentionally not clicked
+- Release control: Do not publish until I select Publish now
 
 ## Submission sources
 
@@ -110,14 +128,14 @@ all visual and content checks pass.
 
 ### Product and data protection
 
-- [ ] Confirm every first-run consent and privacy disclosure against the exact
+- [x] Confirm every first-run consent and privacy disclosure against the exact
       release behavior.
-- [ ] Run the full quality gate, including `npm run store:validate`, against the
+- [x] Run the full quality gate, including `npm run store:validate`, against the
       exact release commit.
-- [ ] On supported Windows, test a representative legacy migration through two
+- [x] On supported Windows CI, test a representative legacy migration through two
       verified encrypted generations and confirm the temporary migration backup
       and all legacy plaintext files are retired as designed.
-- [ ] On supported Windows, verify fail-closed behavior for missing or unusable
+- [x] On supported Windows CI, verify fail-closed behavior for missing or unusable
       protected key material without destroying recoverable encrypted data.
 - [ ] Install and smoke-test the exact hash-recorded x64 MSIX on supported
       Windows.
@@ -128,40 +146,42 @@ all visual and content checks pass.
 - [x] Document ownership, provenance, redistribution rights, and AI-assistance
       status for the deterministically generated shipping brand assets; keep
       vaulted unverified assets excluded.
-- [ ] Reconfirm the generated assets and provenance file are unchanged in the
+- [x] Reconfirm the generated assets and provenance file are unchanged in the
       exact package and screenshot candidate.
 - [ ] Enable the planned GitHub Issues support channel and verify the new-issue
       flow in a private browser.
 - [ ] Review the IARC questionnaire disclosures in listing-metadata.json and
       complete the rating honestly in Partner Center.
-- [ ] Recheck all medical, emergency, privacy, security, and medication language
+- [x] Recheck all medical, emergency, privacy, security, and medication language
       against the exact app.
 
 ### Listing and conversion
 
-- [ ] Confirm Productivity as the primary category and Health + fitness as the
+- [x] Confirm Productivity as the primary category and Health + fitness as the
       secondary category.
-- [ ] Confirm a United States / en-US first release or complete additional
+- [x] Confirm a United States / en-US first release or complete additional
       localization and emergency-resource review before adding markets.
-- [ ] Generate at least four accepted desktop screenshots from the exact release
+- [x] Generate at least four accepted desktop screenshots from the exact release
       commit, add captions, and confirm no private data or unshipped behavior is
       shown.
-- [ ] Verify the minimum OS, x64 architecture, package size, installed footprint,
-      input, and accessibility fields from the exact package.
-- [ ] Merge the final privacy, terms, and refund documents to main and verify
+- [x] Verify the minimum OS, x64 architecture, AppX size, and supported input
+      fields from the exact package.
+- [ ] Measure the installed footprint and finish installed-Windows
+      accessibility fields.
+- [x] Merge the final privacy, terms, and refund documents to main and verify
       their public URLs.
-- [ ] Keep the support URL blank until issue creation works.
-- [ ] Enter the proposed $14.99 one-time price only after seller, tax, and payout
-      readiness is confirmed.
+- [x] Keep the support URL blank until issue creation works.
+- [ ] Confirm seller, tax, and payout readiness before certification; the
+      proposed $14.99 one-time price is saved in the held draft but is not live.
 
 ### Partner Center
 
-- [ ] Select Public audience and Make this product available and discoverable in
+- [x] Select Public audience and Make this product available and discoverable in
       the Store.
-- [ ] Enter the reviewed description, product features, seven keywords,
+- [x] Enter the reviewed description, product features, seven keywords,
       categories, markets, system requirements, declarations, and screenshots.
-- [ ] Upload only the exact package whose hash, smoke result, and WACK result are
-      recorded.
+- [ ] Before certification, confirm the uploaded package is still the exact
+      hash-recorded AppX that passes installed smoke and WACK.
 - [ ] Review every legal declaration and final URL as the signed-in owner.
 - [ ] Submit manually and record the submission ID and time in the evidence
       ledger.

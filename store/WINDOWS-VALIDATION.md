@@ -5,6 +5,32 @@ package, SHA-256 file, screenshots, Windows App Certification Kit report, and
 this completed checklist together. A source build or extracted-package smoke
 test does not replace an installed-package test.
 
+## Accepted candidate and automated evidence
+
+- Candidate: 8172603b62c2457696608c145511bd3fe92429d4
+- Package: Hearth 1.1.0.appx
+- Package size: 175,488,515 bytes
+- SHA-256:
+  4900f3823febace53f86f69ee2567b50208aec8f6677741c3c4dcf3667facdb1
+- Quality run:
+  <https://github.com/ntoledo319/Mindful-Organizer/actions/runs/29322423682>
+- Windows Store run:
+  <https://github.com/ntoledo319/Mindful-Organizer/actions/runs/29322423622>
+- GitHub package artifact ID: 8306541856
+- Local jailed evidence copy:
+  tmp/artifacts/final-msix/Hearth 1.1.0.appx
+
+The Windows workflow passed a sentinel-guarded real safeStorage/DPAPI lifecycle
+matrix for fresh encrypted persistence, corrupt-primary recovery, plaintext
+export warnings, key-first erase, interrupted erase, representative legacy
+migration and retirement, consent gating, and missing-key fail-closed behavior.
+Partner Center also marked this exact 1.1.0 AppX Validated.
+
+Still required before certification: install this exact AppX through the
+supported Windows package flow, complete the first-run smoke below, run WACK,
+and perform the manual accessibility/presentation matrix. Do not treat the
+automated lifecycle proof as those missing observations.
+
 ## 1. Establish candidate identity
 
 On a supported Windows 11 system, copy the AppX and its CI-produced checksum

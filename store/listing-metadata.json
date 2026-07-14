@@ -1,5 +1,5 @@
 {
-  "_comment": "Manual Microsoft Store submission source. Draft only: no field in this file proves that a listing, price, support channel, package, or URL is live.",
+  "_comment": "Manual Microsoft Store submission source. The fields are saved in Partner Center Submission 1, but no field here proves certification, publication, support availability, traffic, or revenue.",
   "schemaVersion": 2,
   "releaseState": "draft-not-publishable",
   "positioning": "A privacy-first Windows energy planner for ADHD and other variable-capacity days.",
@@ -29,7 +29,7 @@
   "category": {
     "primary": "Productivity",
     "secondary": "Health + fitness",
-    "status": "recommended-for-owner-review"
+    "status": "saved-in-partner-center-draft"
   },
   "markets": {
     "launch": [
@@ -41,12 +41,12 @@
     "model": "one-time",
     "currency": "USD",
     "amount": 14.99,
-    "status": "hypothesis-not-live",
+    "status": "saved-in-partner-center-draft-not-live",
     "customerValue": "Official x64 MSIX packaging and Microsoft Store delivery; the source remains MIT licensed."
   },
   "ageRating": {
-    "status": "owner-must-complete-IARC-questionnaire",
-    "claimedRating": null,
+    "status": "saved-IARC-result-owner-must-review-before-certification",
+    "claimedRating": "IARC 3+ / ESRB Everyone (current Partner Center draft; not yet owner-affirmed for certification)",
     "contentToDisclose": [
       "Personal wellness and mental-health language",
       "US 988 crisis-resource links",
@@ -87,8 +87,8 @@
       "x64"
     ],
     "package": "MSIX/AppX",
-    "minimumOperatingSystem": null,
-    "minimumOperatingSystemStatus": "Copy from the exact release package and verify it on supported Windows before submission.",
+    "minimumOperatingSystem": "Windows 10.0.14316.0",
+    "minimumOperatingSystemStatus": "Read from the exact validated Hearth 1.1.0 AppX in Partner Center; installed-Windows verification remains open.",
     "networkRequiredForCoreUse": false,
     "externalLinkExceptions": "Store, privacy, support, 988 web, tel, and sms links are handed to Windows when the user activates them.",
     "input": [
@@ -109,7 +109,7 @@
     "storeListing": null,
     "storeListingPattern": "https://apps.microsoft.com/detail/9PLRSZZMFPJH"
   },
-  "urlPublicationGate": "Merge the final policies to main, enable and test GitHub Issues, and verify every URL in a private browser before entering it in Partner Center.",
+  "urlPublicationGate": "Final policies are on main. Enable and test the selected support channel, verify every URL in a private browser before certification, and keep storeListing null until the public page is observed.",
   "screenshotPlan": "store/SCREENSHOTS.md",
   "campaignPlan": "store/CAMPAIGNS.md",
   "experimentPlan": "store/PRODUCT-PAGE-EXPERIMENTS.md",

@@ -30,6 +30,19 @@ Earlier PNG artwork with incomplete provenance is preserved byte-for-byte under
 art is generated deterministically by `scripts/generate-brand-assets.mjs`; see
 `resources/BRAND_PROVENANCE.md`.
 
+## Preservation evidence
+
+Release candidate 8172603b62c2457696608c145511bd3fe92429d4 retains the vaulted
+schema, contracts, renderers, exports, and archived artwork while omitting the
+specialist routes from default navigation. The capability-registry tests in the
+green Quality run verify both sides of that boundary:
+<https://github.com/ntoledo319/Mindful-Organizer/actions/runs/29322423682>.
+
+This vault is deliberately source-level safe keeping, not a promise that the
+features are appropriate to re-enable. Restoration means satisfying the gate in
+the table, adding the route back explicitly, rerunning privacy/security and
+accessibility review, and generating a new release candidate.
+
 ## Non-destructive rule
 
 Do not delete a vaulted schema table, type, renderer, or archived asset in a

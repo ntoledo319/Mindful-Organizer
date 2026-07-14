@@ -1,101 +1,148 @@
 # Human Queue
 
-_Owner labor ceiling: 60 minutes for the full run. Current queued total: **44
-minutes**. Do not batch in extra outreach or content work._
+_Owner labor ceiling: 60 minutes for the full run. Current queued total:
+**56 minutes**. Machine wait and Microsoft review time are excluded. Do not add
+extra outreach or content work._
 
-## HQ-01 — Verify Microsoft seller, tax, and payout readiness — 12 minutes
+The product, exact package, screenshots, copy, pricing, and Partner Center draft
+are prepared. These are the remaining human-controlled release gates.
 
-- **What:** Confirm the existing Toledo Technologies Partner Center account can
-  receive paid app proceeds and that product `9PLRSZZMFPJH` is still reserved.
-- **Why human-only:** Sign-in, identity/KYC, tax attestations, and banking details
-  are owner-controlled credentials and legal representations.
+## HQ-01 — Exact AppX install, WACK, and manual accessibility pass — 25 minutes
+
+- **What:** Verify the exact 1.1.0 AppX in an installed Windows session.
+- **Why human-only:** WACK can require an interactive/elevated Windows session,
+  and Narrator, high contrast, text scaling, keyboard behavior, and visual fit
+  require human observation.
+- **Direct evidence:**
+  <https://github.com/ntoledo319/Mindful-Organizer/actions/runs/29322423622>
 - **Steps:**
-  1. Open <https://partner.microsoft.com/dashboard> and sign in.
-  2. Open **Settings → Account settings**; confirm the publisher is the real
-     Toledo Technologies entity represented in `store/identity.json`.
-  3. Open **Payout and tax**; complete or confirm every required profile without
-     sharing credentials in the repo.
-  4. Open **Apps and games**, search product ID `9PLRSZZMFPJH`, and confirm the
-     reservation is active. Do not submit a package yet.
-  5. Record only status/date—never account numbers or tax identifiers—in this
-     queue item.
+  1. Download artifact 8306541856 from the run above on a supported x64 Windows
+     11 machine.
+  2. In PowerShell run Get-FileHash on Hearth 1.1.0.appx and require SHA-256
+     4900f3823febace53f86f69ee2567b50208aec8f6677741c3c4dcf3667facdb1.
+     Stop if it differs.
+  3. Follow store/WINDOWS-VALIDATION.md with fictional data: install from the
+     AppX, launch from Start, exercise consent, capacity persistence, task,
+     check-in, practice, crisis-plan edit, JSON/PDF export, erase, quit, and
+     relaunch.
+  4. Run WACK against that AppX and preserve the passing XML beside the package.
+  5. Complete the keyboard-only, Narrator, high-contrast, 200% text,
+     reduced-motion, minimum-window, light/dark, and modal-focus matrix in
+     docs/ACCESSIBILITY.md.
+  6. Record only Windows build, pass/fail, WACK report name, and date in
+     revenue/METRICS.md. Never commit personal test records or key material.
 
-## HQ-02 — Enable the advertised GitHub support channel — 2 minutes
+## HQ-02 — Review and affirm the IARC answers — 6 minutes
 
-- **What:** Allow users to create GitHub Issues in the public repository.
-- **Why human-only:** This changes public repository interaction settings and
-  opens a human-contact channel the owner must monitor.
+- **What:** Decide whether the saved 3+/Everyone rating accurately reflects
+  everything packaged, including vaulted code and text.
+- **Why human-only:** IARC answers are a publisher legal/content
+  representation. The app contains crisis language and a preserved optional
+  self-harm urge field, so the classification should not be guessed by an
+  agent.
+- **Direct link:**
+  <https://partner.microsoft.com/en-us/dashboard/products/9PLRSZZMFPJH/submissions/1152921505701225649/ageratings>
 - **Steps:**
-  1. Open <https://github.com/ntoledo319/Mindful-Organizer/settings>.
-  2. Under **General → Features**, check **Issues**.
-  3. Open <https://github.com/ntoledo319/Mindful-Organizer/issues/new> in a
-     private window and confirm a new issue form is available. Do not submit one.
+  1. Open the link and review the current IARC 10.3 result.
+  2. Click Edit and compare each answer with the disclosures in
+     store/listing-metadata.json, especially the question about inferences of or
+     references to violence, blood, or gory images.
+  3. Answer based on the packaged crisis/self-harm references, not merely the
+     default navigation. Do not optimize for a lower rating.
+  4. Save only when every answer is accurate, then record the resulting rating
+     and date in revenue/METRICS.md.
 
-## HQ-03 — Confirm or reject brand-asset provenance — 5 minutes
+## HQ-03 — Confirm seller, tax, payout, and account-role readiness — 10 minutes
 
-- **What:** Provide the origin, creator, rights, and AI-assistance status for
-  `resources/app-icon.png` and `resources/hero-illustration.png`.
-- **Why human-only:** Git history identifies only an agent-authored commit; the
-  owner must know whether source material was owned, commissioned, licensed, or
-  AI-generated.
+- **What:** Confirm Toledo Technologies can receive paid Microsoft Store
+  proceeds.
+- **Why human-only:** Identity, tax attestations, banking, account roles, and KYC
+  are owner-controlled legal and financial actions. No payout/tax navigation
+  was visible in the current app-submission view, which may indicate a role or
+  profile prerequisite.
+- **Direct links:**
+  <https://partner.microsoft.com/dashboard> and
+  <https://partner.microsoft.com/en-us/dashboard/apps-and-games/overview>
 - **Steps:**
-  1. Review the [app icon](https://github.com/ntoledo319/Mindful-Organizer/blob/main/resources/app-icon.png)
-     and [hero](https://github.com/ntoledo319/Mindful-Organizer/blob/main/resources/hero-illustration.png).
-  2. For each, state one of: `original-owned`, `AI-generated with tool/model`,
-     `licensed with source URL/license`, or `unknown`.
-  3. If either is unknown, mark it `replace`; do not guess. The agent will build
-     rights-clean replacements inside the workspace in the next cycle.
+  1. In Partner Center, open Settings → Account settings and verify the publisher
+     entity matches the real Toledo Technologies account.
+  2. Locate Payout and tax profiles. Complete or confirm every required profile
+     and payment method; if the section is missing, verify the signed-in role or
+     open Partner Center support.
+  3. Confirm product 9PLRSZZMFPJH can be sold at the saved one-time price.
+  4. Record only ready/not-ready, date, and any role blocker. Never put bank,
+     tax, identity, or support-contact details in the repository.
 
-## HQ-04 — Front-load itch.io seller verification — 10 minutes
+## HQ-04 — Enable and verify the public support route — 3 minutes
 
-- **What:** Create/inspect the zero-upfront seller account for Bet B and confirm
-  its payout method can be configured.
-- **Why human-only:** Account acceptance, tax interview, and payout identity are
-  owner legal/financial actions.
+- **What:** Enable the GitHub Issues support path already named by the release
+  docs, or replace it with another channel the owner will monitor.
+- **Why human-only:** Opening an inbound customer-contact channel creates an
+  ongoing human support obligation.
+- **Direct links:**
+  <https://github.com/ntoledo319/Mindful-Organizer/settings> and
+  <https://github.com/ntoledo319/Mindful-Organizer/issues/new/choose>
 - **Steps:**
-  1. Open <https://itch.io/register> or sign into the existing account.
-  2. Read/accept the current Terms and seller terms shown by the platform.
-  3. Open <https://itch.io/user/settings/seller>, choose itch.io Payouts, and
-     complete the tax/payout setup if it requires **no upfront payment**.
-  4. itch.io documents a one-time $3 tax-identity adjustment deducted from the
-     seller balance; do not pay a separate setup charge. If any upfront charge
-     appears, stop and mark this bet blocked.
-  5. Do not create a public product page until the new kit passes its own
-     license/provenance gate.
+  1. Under repository Settings → General → Features, enable Issues.
+  2. Open the new-issue link in a private window and verify that a customer can
+     begin an issue. Do not submit a test issue.
+  3. Put the verified URL into store/listing-metadata.json and record the check
+     date. If Issues will not be monitored, choose and verify a different real
+     support channel instead.
 
-## HQ-05 — Manual paid Store submission, only when unblocked — 15 minutes
+## HQ-05 — Submit for certification, then release from the manual hold — 7 minutes
 
-- **What:** Enter the final $14.99 price/listing and submit the exact verified
-  MSIX from the green commit.
-- **Why human-only:** Paid pricing, legal declarations, age rating, package
-  submission, and the final public publish click are owner commitments.
-- **Blocked until:** Encryption/migration implemented, asset provenance cleared,
-  support works, fresh Windows smoke passes, screenshots match, and the agent
-  marks all `store/README.md` gates complete.
-- **Steps after unblock:**
-  1. Open <https://partner.microsoft.com/dashboard>, then product
-     `9PLRSZZMFPJH`.
-  2. Create a new submission; set the base one-time price to **$14.99**.
-  3. Manually enter the reviewed copy from `store/listing-metadata.json`, the
-     live privacy/terms/support URLs, age rating, screenshots, and certification
-     notes disclosing local wellness data and protection.
-  4. Upload the hash-matched MSIX recorded in `METRICS.md`.
-  5. Review every declaration, click **Submit to the Store**, and record the
-     submission ID/time in `METRICS.md`.
+- **What:** Make the final publisher declarations and start certification; after
+  a pass, perform the separate Publish now action.
+- **Why human-only:** Certification submission, content declarations,
+  restricted-capability representation, paid pricing, and publication are
+  legal/commercial commitments.
+- **Blocked until:** HQ-01 through HQ-04 are complete.
+- **Direct link:**
+  <https://partner.microsoft.com/en-us/dashboard/products/9PLRSZZMFPJH/overview>
+- **Steps:**
+  1. Confirm Submission 1 still shows Pricing, Properties, Age ratings,
+     Packages, and Store listings as Complete; the package must be Hearth
+     1.1.0.appx and Validated.
+  2. Review the saved runFullTrust explanation and Additional Testing
+     Information. Confirm that no service, driver, elevation, background
+     monitoring, cloud account, ads, sync, or telemetry claim has appeared.
+  3. Review all URLs, $14.99 US price, screenshots, categories, IARC result, and
+     the exact AppX hash.
+  4. Click Submit for certification and record the timestamp/status in
+     revenue/METRICS.md. If Microsoft requests a restricted-capability
+     clarification, answer truthfully; do not broaden the capability claim.
+  5. After certification passes, inspect the report and private product page.
+     Because the draft is set to Do not publish until I select Publish now,
+     click Publish now only when the page, price, support, and package are
+     correct.
+  6. In a private browser, verify the public page is visible and purchasable,
+     then record the exact Store URL and time.
+
+## HQ-06 — Approve and execute the first audience batch — 5 minutes
+
+- **What:** Approve the prepared launch copy and make the minimum manual launch
+  posts only after the Store page is purchasable.
+- **Why human-only:** Posting as the owner or contacting real people is forbidden
+  without explicit human review and action.
+- **Source:** store/LAUNCH_KIT.md and store/CAMPAIGNS.md.
+- **Steps:**
+  1. Replace every draft link with the verified public Store URL and its
+     source-specific campaign ID.
+  2. Re-read each claim against the live listing and remove anything not
+     demonstrable that day.
+  3. Approve and manually post the smallest prepared batch to channels where the
+     owner already has a legitimate account and the platform permits it. Do not
+     cold-DM, scrape, automate, or manufacture engagement.
+  4. Record links and timestamps in revenue/METRICS.md, then inspect Store
+     acquisition data daily enough to enforce the five-day signal gate.
 
 ## Running owner-time ledger
 
-No owner minutes are recorded as spent in this cycle. Queue estimates total
-12 + 2 + 5 + 10 + 15 = **44 minutes**, leaving 16 minutes of reserve.
+Queued estimates: 25 + 6 + 10 + 3 + 7 + 5 = **56 minutes**, leaving 4 minutes
+of reserve. No owner minutes are recorded as spent in the repository yet.
 
-## Cycle 0 close — 2026-07-14 01:40 EDT
-
-The public review branch and green hosted code gate required **0 owner minutes**.
-No queue item was guessed complete. HQ-01 through HQ-04 are ready to batch;
-HQ-05 remains explicitly blocked. The total stays **44 minutes**.
-
-Hosted MSIX Build #9 also completed without owner labor. Its artifact is a review
-build only; it does **not** unblock HQ-05 because Windows install smoke,
-cryptography, provenance, support, and certification preparation remain open.
-Queue contents, spent minutes, and the **44-minute** estimate are unchanged at
-final cycle close.
+Cycle 1 used the signed-in Partner Center session to prepare the draft but did
+not make the owner-only IARC change, certification declaration, publish action,
+support commitment, payout attestation, or outreach. Those remain exactly the
+items above.

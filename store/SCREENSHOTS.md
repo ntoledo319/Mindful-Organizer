@@ -1,6 +1,7 @@
 # Microsoft Store screenshot plan
 
-Status: **planned, not captured from an accepted release candidate**
+Status: **captured, accepted, hash-recorded, and uploaded to the held Partner
+Center draft; not public**
 
 The source driver in electron/screenshot.ts creates five desktop PNG files at
 1920 × 1080. The data is a deterministic fictional demo owned by the screenshot
@@ -30,6 +31,25 @@ Official requirements:
 The filenames follow the driver output; the Store upload order intentionally
 puts Rhythm before Reflect.
 
+## Accepted candidate evidence
+
+- Candidate: 8172603b62c2457696608c145511bd3fe92429d4
+- Capture time: 2026-07-14T09:40:09.782Z
+- GitHub artifact ID: 8306519500
+- Artifact digest:
+  sha256:b03e6e42b771da7f693575d79473275e90723adbeea23801d08f8de380e7c905
+- Manifest: tmp/artifacts/final-screenshots/manifest.json
+- Partner Center verification: all five uploaded image hashes matched the local
+  accepted files byte-for-byte, and the final captions/order were saved.
+
+| File | SHA-256 |
+|---|---|
+| 01-today.png | e1294c9c6bf869cc13e903932feac540da9122f46af40aa2d776a24ce2d64979 |
+| 02-tasks.png | 67708bf4165b4cc9e8be027dfdc3342b33b3b76b84dcd3a983b6573cfdd153af |
+| 03-reflect.png | 76e3888e666f2a9f3ed9effc7cc15072621551259274b98ac31723bfb3db93cc |
+| 04-rhythm.png | 208e9cca284fec8bf284706f670f698a5e5cd64dc497bea7cbbbc16afb40c483 |
+| 05-onboarding.png | 6f49b190a72913d32a83c3e8f2f4f6bb4812a1938a2cf1c051b0372abbbffe99 |
+
 ## Capture contract
 
 1. Start from the exact release commit and record that commit as
@@ -57,24 +77,24 @@ reference rejects the set for release use.
 
 ## Visual acceptance checklist
 
-- [ ] Every file is exactly 1920 × 1080 PNG and under 50 MB.
-- [ ] Every frame comes from the same accepted candidate commit.
-- [ ] The displayed data matches the fictional seed and contains no customer
+- [x] Every file is exactly 1920 × 1080 PNG and under 50 MB.
+- [x] Every frame comes from the same accepted candidate commit.
+- [x] The displayed data matches the fictional seed and contains no customer
       identifiers.
-- [ ] Today communicates the primary energy-planning job without relying on the
+- [x] Today communicates the primary energy-planning job without relying on the
       caption.
-- [ ] No frame claims that all tasks are energy-sorted; only the Today
+- [x] No frame claims that all tasks are energy-sorted; only the Today
       recommendations are filtered to tasks that fit.
-- [ ] No clipped content, unexpected onboarding gate, broken utility class,
+- [x] No clipped content, unexpected onboarding gate, broken utility class,
       missing icon, blank chart, hidden focus state, or scrollbar collision is
       visible.
-- [ ] Light and dark frames both pass a manual readability and contrast check.
-- [ ] The top two-thirds contains the important UI.
-- [ ] Captions describe only behavior visible in the accepted release.
+- [x] Light and dark frames both pass a manual readability and contrast check.
+- [x] The top two-thirds contains the important UI.
+- [x] Captions describe only behavior visible in the accepted release.
 - [x] Shipping asset provenance is documented through the deterministic brand
       generator and `resources/BRAND_PROVENANCE.md`; vaulted unverified assets
       are excluded.
-- [ ] The exact candidate reproduces the documented assets without an
+- [x] The exact candidate reproduces the documented assets without an
       unexpected diff before any image is uploaded.
 
 ## Rejection conditions
