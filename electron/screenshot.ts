@@ -3,7 +3,7 @@
 // 1920x1080. It seeds demo data, drives the renderer's route/theme through the
 // __hearthShot bridge, and writes PNGs via webContents.capturePage. Dev-only —
 // nothing here is reachable in a normal or packaged launch.
-import { BrowserWindow, ipcMain, nativeTheme } from 'electron';
+import { BrowserWindow, ipcMain, nativeImage, nativeTheme } from 'electron';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -164,6 +164,25 @@ export async function runScreenshots(): Promise<void> {
     console.error('[screenshot] render-process-gone', details.reason),
   );
 
+  // GitHub's hosted Windows desktop can be smaller than a Store screenshot.
+  // Drive Chromium's own viewport and capture protocol so the renderer lays out
+  // at 1920x1080 and the bitmap is not clipped to the runner's physical screen.
+  const debuggerSession = win.webContents.debugger;
+  debuggerSession.attach('1.3');
+  await withTimeout(
+    debuggerSession.sendCommand('Emulation.setDeviceMetricsOverride', {
+      width: WIDTH,
+      height: HEIGHT,
+      deviceScaleFactor: 1,
+      mobile: false,
+      screenWidth: WIDTH,
+      screenHeight: HEIGHT,
+      scale: 1,
+    }),
+    'Configuring the screenshot viewport',
+  );
+  await withTimeout(debuggerSession.sendCommand('Page.enable'), 'Enabling page capture');
+
   try {
     for (const shot of SHOTS) {
       // The onboarding shot needs settings.onboarded=false; the rest need it true.
@@ -178,6 +197,17 @@ export async function runScreenshots(): Promise<void> {
         withTimeout(loadApp(win), `Loading ${shot.file}`),
         ready, // app shell mounted (and read the current settings)
       ]);
+      const viewport = (await withTimeout(
+        win.webContents.executeJavaScript(
+          '({ width: window.innerWidth, height: window.innerHeight, scale: window.devicePixelRatio })',
+        ),
+        `Inspecting ${shot.file} viewport`,
+      )) as { width?: unknown; height?: unknown; scale?: unknown };
+      if (viewport.width !== WIDTH || viewport.height !== HEIGHT || viewport.scale !== 1) {
+        throw new Error(
+          `Renderer viewport is ${String(viewport.width)}x${String(viewport.height)} at ${String(viewport.scale)}x; expected ${WIDTH}x${HEIGHT} at 1x.`,
+        );
+      }
 
       // Every shot waits for the renderer's settled signal. The onboarding shot
       // carries no route but still loads the hero illustration — a multi-megabyte
@@ -190,12 +220,20 @@ export async function runScreenshots(): Promise<void> {
       await settled;
 
       await delay(500); // a final beat for fonts/images
-      // Capture an exact 1920x1080 rect — the xvfb backing buffer is one px short
-      // of the requested content size, so pin the rect rather than trust the size.
-      const image = await withTimeout(
-        win.webContents.capturePage({ x: 0, y: 0, width: WIDTH, height: HEIGHT }),
+      const capture = (await withTimeout(
+        debuggerSession.sendCommand('Page.captureScreenshot', {
+          format: 'png',
+          fromSurface: true,
+          captureBeyondViewport: true,
+          clip: { x: 0, y: 0, width: WIDTH, height: HEIGHT, scale: 1 },
+        }),
         `Capturing ${shot.file}`,
-      );
+      )) as { data?: unknown };
+      if (typeof capture.data !== 'string') {
+        throw new Error(`Chromium did not return PNG data for ${shot.file}.`);
+      }
+      const png = Buffer.from(capture.data, 'base64');
+      const image = nativeImage.createFromBuffer(png);
       const dest = join(outDir, shot.file);
       const size = image.getSize();
       if (size.width !== WIDTH || size.height !== HEIGHT) {
@@ -203,7 +241,6 @@ export async function runScreenshots(): Promise<void> {
           `Screenshot capture produced ${size.width}x${size.height}; expected ${WIDTH}x${HEIGHT}.`,
         );
       }
-      const png = image.toPNG();
       writeFileSync(dest, png);
       manifest.images.push({
         file: shot.file,
@@ -221,6 +258,7 @@ export async function runScreenshots(): Promise<void> {
 
     writeFileSync(join(outDir, 'manifest.json'), JSON.stringify(manifest, null, 2));
   } finally {
+    if (debuggerSession.isAttached()) debuggerSession.detach();
     if (!win.isDestroyed()) win.destroy();
   }
 }
