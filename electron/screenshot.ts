@@ -138,10 +138,10 @@ export async function runScreenshots(): Promise<void> {
   const win = new BrowserWindow({
     width: WIDTH,
     height: HEIGHT,
-    // Windows hosted runners can stop painting a permanently hidden surface.
-    // Showing the frameless content window keeps capturePage deterministic; it
-    // never changes the captured content rectangle.
-    show: process.platform === 'win32',
+    // Keep the proof surface hidden so Windows does not constrain it to the
+    // taskbar-reduced desktop work area. backgroundThrottling:false below keeps
+    // the renderer painting while preserving an exact 1920x1080 content size.
+    show: false,
     useContentSize: true, // 1920x1080 of actual web content, no chrome inset
     backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C201D' : '#F5F0E6',
     webPreferences: {
@@ -199,7 +199,9 @@ export async function runScreenshots(): Promise<void> {
       const dest = join(outDir, shot.file);
       const size = image.getSize();
       if (size.width !== WIDTH || size.height !== HEIGHT) {
-        throw new Error('Screenshot capture did not produce the required 1920x1080 frame.');
+        throw new Error(
+          `Screenshot capture produced ${size.width}x${size.height}; expected ${WIDTH}x${HEIGHT}.`,
+        );
       }
       const png = image.toPNG();
       writeFileSync(dest, png);
