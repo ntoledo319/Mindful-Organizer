@@ -3,7 +3,7 @@
 // build/icon.icns (macOS dmg/zip). Pure JS (jimp + png-to-ico) plus a hand-rolled
 // ICNS writer, so it runs identically on Linux, macOS, and Windows CI runners —
 // no ImageMagick, no `iconutil`, no native toolchain.
-import Jimp from 'jimp';
+import { Jimp, JimpMime } from 'jimp';
 import pngToIco from 'png-to-ico';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -16,7 +16,8 @@ mkdirSync(BUILD, { recursive: true });
 
 const master = await Jimp.read(SRC);
 
-const pngAt = async (size) => master.clone().resize(size, size).getBufferAsync(Jimp.MIME_PNG);
+const pngAt = async (size) =>
+  master.clone().resize({ w: size, h: size }).getBuffer(JimpMime.png);
 
 // 1) Linux / generic PNG
 writeFileSync(join(BUILD, 'icon.png'), await pngAt(512));

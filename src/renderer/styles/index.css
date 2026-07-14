@@ -2,15 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Fraunces (display) + Inter (body), self-hosted via woff2 the build copies in.
-   We register variable axes so headings can carry real optical weight. */
-@font-face {
-  font-family: 'Fraunces';
-  src: local('Fraunces');
-  font-weight: 300 900;
-  font-display: swap;
-}
-
 :root {
   color-scheme: light dark;
 }
@@ -26,6 +17,7 @@ body {
   font-family: theme('fontFamily.body');
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  @apply bg-base-bg text-text-primary dark:bg-night-bg dark:text-night-text;
 }
 
 /* Drag region for the frameless title bar; interactive children opt back out. */
@@ -36,45 +28,66 @@ body {
   -webkit-app-region: no-drag;
 }
 
+/* Accessibility: Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 @layer components {
-  .glass-card {
-    @apply rounded-glass border border-white/50 bg-white/70 shadow-hearth backdrop-blur-xl;
+  /* Surface Cards: Earthenware & Vellum. No glassmorphism. */
+  .surface-card {
+    @apply rounded-soft border border-base-border bg-base-surface shadow-hearth;
   }
-  .dark .glass-card {
-    @apply border-white/5 bg-night-card/80;
+  .dark .surface-card {
+    @apply border-night-border bg-night-surface shadow-night-hearth;
   }
 
   .field {
-    @apply w-full rounded-xl border border-charcoal/10 bg-white/80 px-3.5 py-2.5 text-sm text-charcoal
-      outline-none transition placeholder:text-charcoal-mute/70
-      focus:border-sage/50 focus:ring-2 focus:ring-sage/15;
+    @apply w-full rounded-soft border border-base-border bg-white px-3.5 py-2.5 text-sm text-text-primary
+      outline-none transition placeholder:text-text-muted
+      focus:border-brand focus:ring-2 focus:ring-brand/15;
   }
   .dark .field {
-    @apply border-white/10 bg-night/60 text-cream placeholder:text-cream/30;
+    @apply border-night-border bg-black/20 text-night-text placeholder:text-night-muted focus:border-night-brand focus:ring-night-brand/15;
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-sage px-5 py-2.5 text-sm
-      font-medium text-cream shadow-hearth transition hover:bg-sage-light active:scale-[0.98]
+    @apply inline-flex items-center justify-center gap-2 rounded-soft bg-brand px-5 py-2.5 text-sm
+      font-medium text-white shadow-hearth transition hover:bg-brand/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2
       disabled:cursor-not-allowed disabled:opacity-40;
   }
+  .dark .btn-primary {
+    @apply bg-night-brand text-night-bg focus-visible:ring-night-brand focus-visible:ring-offset-night-bg;
+  }
+
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-charcoal/10 px-4 py-2
-      text-sm font-medium text-charcoal-soft transition hover:bg-white/60 active:scale-[0.98];
+    @apply inline-flex items-center justify-center gap-2 rounded-soft border border-transparent px-4 py-2
+      text-sm font-medium text-text-muted transition hover:bg-black/5 hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2;
   }
   .dark .btn-ghost {
-    @apply border-white/10 text-cream/80 hover:bg-white/5;
+    @apply text-night-muted hover:bg-white/5 hover:text-night-text focus-visible:ring-night-brand focus-visible:ring-offset-night-bg;
   }
 
   .nav-item {
-    @apply flex items-center gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-medium text-charcoal-soft
-      transition hover:bg-white/60;
+    @apply flex items-center gap-3 rounded-soft px-3.5 py-2.5 text-sm font-medium text-text-muted
+      transition hover:bg-black/5 hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2;
   }
   .dark .nav-item {
-    @apply text-cream/70 hover:bg-white/5;
+    @apply text-night-muted hover:bg-white/5 hover:text-night-text;
   }
   .nav-item.active {
-    @apply bg-sage text-cream shadow-hearth hover:bg-sage;
+    @apply bg-brand text-white shadow-hearth;
+  }
+  .dark .nav-item.active {
+    @apply bg-night-brand text-night-bg;
   }
 }
 
@@ -84,8 +97,11 @@ body {
   height: 10px;
 }
 *::-webkit-scrollbar-thumb {
-  background: rgba(62, 92, 80, 0.22);
+  background: rgba(44, 39, 37, 0.15);
   border-radius: 999px;
   border: 3px solid transparent;
   background-clip: content-box;
+}
+.dark *::-webkit-scrollbar-thumb {
+  background: rgba(234, 230, 224, 0.15);
 }

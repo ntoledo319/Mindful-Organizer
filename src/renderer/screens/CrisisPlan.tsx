@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import type { CrisisPlan, CrisisContact } from '@shared/types';
 import { PageHeader, Spinner } from '../components/ui';
@@ -7,29 +8,44 @@ import { PageHeader, Spinner } from '../components/ui';
 // with the lifeline already visible — help first, editing second.
 
 export function CrisisPlanScreen() {
-  const [plan, setPlan] = useState<CrisisPlan | null>(null);
+  const queryClient = useQueryClient();
+  const [localPlan, setLocalPlan] = useState<CrisisPlan | null>(null);
   const [saved, setSaved] = useState(false);
 
+  const { data: serverPlan, isLoading } = useQuery({
+    queryKey: ['crisisPlan'],
+    queryFn: () => api.getCrisisPlan(),
+  });
+
+  // Sync server data to local state for editing
   useEffect(() => {
-    void api.getCrisisPlan().then(setPlan);
-  }, []);
+    if (serverPlan && !localPlan) {
+      setLocalPlan(serverPlan);
+    }
+  }, [serverPlan, localPlan]);
 
-  if (!plan) return <Spinner />;
-
-  const update = (patch: Partial<CrisisPlan>) => setPlan({ ...plan, ...patch });
-
-  const save = () => {
-    void api.saveCrisisPlan(plan).then(() => {
+  const updateMutation = useMutation({
+    mutationFn: api.saveCrisisPlan,
+    onSuccess: (newPlan) => {
+      queryClient.setQueryData(['crisisPlan'], newPlan);
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
-    });
+    },
+  });
+
+  if (isLoading || !localPlan) return <Spinner />;
+
+  const update = (patch: Partial<CrisisPlan>) => setLocalPlan({ ...localPlan, ...patch });
+
+  const save = () => {
+    updateMutation.mutate(localPlan);
   };
 
   const setList = (key: 'warningSigns' | 'copingStrategies', text: string) =>
     update({ [key]: text.split('\n').map((s) => s.trim()).filter(Boolean) } as Partial<CrisisPlan>);
 
   const updateContact = (i: number, patch: Partial<CrisisContact>) => {
-    const contacts = plan.contacts.map((c, idx) => (idx === i ? { ...c, ...patch } : c));
+    const contacts = localPlan.contacts.map((c, idx) => (idx === i ? { ...c, ...patch } : c));
     update({ contacts });
   };
 
@@ -37,107 +53,118 @@ export function CrisisPlanScreen() {
     <div>
       <PageHeader title="Crisis plan" subtitle="Built in the calm, for the storm. Yours alone, stored only here." />
 
-      <div className="mb-6 rounded-glass border border-ember/30 bg-ember/10 px-5 py-4">
-        <p className="text-sm font-semibold text-ember">If you're in danger right now</p>
-        <p className="mt-1 text-sm text-charcoal-soft dark:text-cream/70">
+      <div className="mb-8 rounded-soft border border-semantic-error/30 bg-semantic-error/10 px-6 py-5 shadow-sm">
+        <p className="text-base font-semibold text-semantic-error">If you're in danger right now</p>
+        <p className="mt-1 text-base text-text-primary dark:text-night-text">
           Call or text <span className="font-semibold">988</span> (Suicide & Crisis Lifeline, US), or your local
           emergency number. You don't have to carry this alone.
         </p>
-        <a
-          href="tel:988"
-          className="mt-3 inline-flex rounded-full bg-ember px-4 py-1.5 text-xs font-medium text-cream"
-        >
-          Call 988
-        </a>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <a
+            href="tel:988"
+            className="inline-flex rounded-full bg-semantic-error px-5 py-2 text-sm font-medium text-white transition hover:bg-semantic-error/90 focus-visible:ring-2 focus-visible:ring-semantic-error focus-visible:ring-offset-2 focus:outline-none"
+          >
+            Call 988
+          </a>
+          <a
+            href="sms:988"
+            className="inline-flex rounded-full border border-semantic-error/40 px-5 py-2 text-sm font-medium text-semantic-error transition hover:bg-semantic-error/10 focus-visible:ring-2 focus-visible:ring-semantic-error focus-visible:ring-offset-2 focus:outline-none"
+          >
+            Text 988
+          </a>
+        </div>
       </div>
 
-      <div className="space-y-4">
-        <div className="glass-card p-5">
+      <div className="space-y-6">
+        <div className="surface-card p-6">
           <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-charcoal-soft dark:text-cream/70">
-              My early warning signs <span className="font-normal text-charcoal-mute">(one per line)</span>
+            <span className="mb-2 block text-sm font-medium text-text-primary dark:text-night-text">
+              My early warning signs <span className="font-normal text-text-muted">(one per line)</span>
             </span>
             <textarea
-              className="field min-h-[90px] resize-none"
+              className="field min-h-[100px] resize-none"
               placeholder={'Skipping meals\nCanceling plans\nNot sleeping'}
-              value={plan.warningSigns.join('\n')}
+              value={localPlan.warningSigns.join('\n')}
               onChange={(e) => setList('warningSigns', e.target.value)}
             />
           </label>
         </div>
 
-        <div className="glass-card p-5">
+        <div className="surface-card p-6">
           <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-charcoal-soft dark:text-cream/70">
-              What helps me <span className="font-normal text-charcoal-mute">(one per line)</span>
+            <span className="mb-2 block text-sm font-medium text-text-primary dark:text-night-text">
+              What helps me <span className="font-normal text-text-muted">(one per line)</span>
             </span>
             <textarea
-              className="field min-h-[90px] resize-none"
+              className="field min-h-[100px] resize-none"
               placeholder={'Step outside\nText my sister\nCold water on my face'}
-              value={plan.copingStrategies.join('\n')}
+              value={localPlan.copingStrategies.join('\n')}
               onChange={(e) => setList('copingStrategies', e.target.value)}
             />
           </label>
         </div>
 
-        <div className="glass-card p-5">
-          <div className="mb-3 flex items-center justify-between">
-            <span className="text-sm font-medium text-charcoal-soft dark:text-cream/70">People I can reach</span>
+        <div className="surface-card p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <span className="text-sm font-medium text-text-primary dark:text-night-text">People I can reach</span>
             <button
               className="btn-ghost"
-              onClick={() => update({ contacts: [...plan.contacts, { name: '', relationship: '', phone: '' }] })}
+              onClick={() => update({ contacts: [...localPlan.contacts, { name: '', relationship: '', phone: '' }] })}
             >
               Add person
             </button>
           </div>
-          <div className="space-y-2">
-            {plan.contacts.length === 0 && (
-              <p className="text-sm text-charcoal-mute dark:text-cream/50">No one added yet.</p>
+          <div className="space-y-3">
+            {localPlan.contacts.length === 0 && (
+              <p className="text-sm text-text-muted dark:text-night-muted/80">No one added yet.</p>
             )}
-            {plan.contacts.map((c, i) => (
-              <div key={i} className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+            {localPlan.contacts.map((c, i) => (
+              <div key={i} className="grid grid-cols-1 gap-3 sm:grid-cols-3 bg-black/5 dark:bg-white/5 p-3 rounded-soft border border-base-border dark:border-night-border">
                 <input
-                  className="field"
+                  className="field bg-base-bg dark:bg-night-bg"
                   placeholder="Name"
                   value={c.name}
                   onChange={(e) => updateContact(i, { name: e.target.value })}
+                  aria-label={`Contact ${i + 1} Name`}
                 />
                 <input
-                  className="field"
+                  className="field bg-base-bg dark:bg-night-bg"
                   placeholder="Relationship"
                   value={c.relationship}
                   onChange={(e) => updateContact(i, { relationship: e.target.value })}
+                  aria-label={`Contact ${i + 1} Relationship`}
                 />
                 <input
-                  className="field"
+                  className="field bg-base-bg dark:bg-night-bg"
                   placeholder="Phone"
                   value={c.phone}
                   onChange={(e) => updateContact(i, { phone: e.target.value })}
+                  aria-label={`Contact ${i + 1} Phone`}
                 />
               </div>
             ))}
           </div>
         </div>
 
-        <div className="glass-card p-5">
+        <div className="surface-card p-6">
           <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-charcoal-soft dark:text-cream/70">
+            <span className="mb-2 block text-sm font-medium text-text-primary dark:text-night-text">
               A note to my future self
             </span>
             <textarea
-              className="field min-h-[80px] resize-none"
+              className="field min-h-[100px] resize-none"
               placeholder="Something you'd want to hear on a hard day."
-              value={plan.safeNote}
+              value={localPlan.safeNote}
               onChange={(e) => update({ safeNote: e.target.value })}
             />
           </label>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button className="btn-primary" onClick={save}>
-            Save plan
+        <div className="flex items-center gap-4 pt-2">
+          <button className="btn-primary" onClick={save} disabled={updateMutation.isPending}>
+            {updateMutation.isPending ? 'Saving...' : 'Save plan'}
           </button>
-          {saved && <span className="text-sm text-sage dark:text-eucalyptus">Saved.</span>}
+          {saved && <span className="text-sm font-medium text-semantic-success dark:text-night-brand" role="status">Saved.</span>}
         </div>
       </div>
     </div>

@@ -7,7 +7,7 @@
 //   Wide310x150Logo, SplashScreen — each at 100%, 125%, 150%, 200%, 400%.
 //   Square44x44Logo also needs targetsize variants (16, 24, 32, 48, 256).
 
-import Jimp from 'jimp';
+import { Jimp, JimpMime } from 'jimp';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -22,42 +22,42 @@ const BG = 0xF5F0E6FF; // warm cream opaque — matches the Hearth light theme
 const master = await Jimp.read(SRC);
 
 async function renderSquare(size, pad = 0) {
-  const canvas = new Jimp(size, size, 0x00000000);
+  const canvas = new Jimp({ width: size, height: size, color: 0x00000000 });
   if (pad <= 0) {
-    const resized = master.clone().resize(size, size);
+    const resized = master.clone().resize({ w: size, h: size });
     canvas.composite(resized, 0, 0);
   } else {
     const avail = size;
     const iconSize = Math.floor(avail * (1 - pad));
-    const resized = master.clone().resize(iconSize, iconSize);
+    const resized = master.clone().resize({ w: iconSize, h: iconSize });
     const x = Math.floor((size - iconSize) / 2);
     const y = Math.floor((size - iconSize) / 2);
     canvas.composite(resized, x, y);
   }
-  return canvas.getBufferAsync(Jimp.MIME_PNG);
+  return canvas.getBuffer(JimpMime.png);
 }
 
 async function renderWide(w, h) {
   // Transparent canvas with the squircle centered — the wide tile reads as the
   // mark floating, not a logo pinned to a cream slab.
-  const canvas = new Jimp(w, h, 0x00000000);
+  const canvas = new Jimp({ width: w, height: h, color: 0x00000000 });
   const logoH = Math.floor(h * 0.6);
   const logoW = logoH;
   const logoY = Math.floor((h - logoH) / 2);
   const logoX = Math.floor((w - logoW) / 2);
-  const resized = master.clone().resize(logoW, logoH);
+  const resized = master.clone().resize({ w: logoW, h: logoH });
   canvas.composite(resized, logoX, logoY);
-  return canvas.getBufferAsync(Jimp.MIME_PNG);
+  return canvas.getBuffer(JimpMime.png);
 }
 
 async function renderSplash(w, h) {
-  const canvas = new Jimp(w, h, BG);
+  const canvas = new Jimp({ width: w, height: h, color: BG });
   const logoSize = Math.floor(Math.min(w, h) * 0.35);
   const x = Math.floor((w - logoSize) / 2);
   const y = Math.floor((h - logoSize) / 2);
-  const resized = master.clone().resize(logoSize, logoSize);
+  const resized = master.clone().resize({ w: logoSize, h: logoSize });
   canvas.composite(resized, x, y);
-  return canvas.getBufferAsync(Jimp.MIME_PNG);
+  return canvas.getBuffer(JimpMime.png);
 }
 
 const SCALES = [100, 125, 150, 200, 400];

@@ -11,11 +11,12 @@ import { HearthMark, CheckIcon } from '../components/icons';
 // adapt to the person, not the other way around.
 
 export function Onboarding() {
-  const { saveSettings } = useStore();
-  const [step, setStep] = useState(0);
+  const { settings, saveSettings } = useStore();
+  const [step, setStep] = useState(() => (settings?.onboarded ? 3 : 0));
   const [hero, setHero] = useState<string | null>(null);
-  const [name, setName] = useState('');
-  const [conditions, setConditions] = useState<Condition[]>([]);
+  const [name, setName] = useState(() => settings?.displayName ?? '');
+  const [conditions, setConditions] = useState<Condition[]>(() => settings?.conditions ?? []);
+  const [privacyAcknowledged, setPrivacyAcknowledged] = useState(false);
 
   useEffect(() => {
     void api.heroDataUrl().then(setHero);
@@ -30,6 +31,7 @@ export function Onboarding() {
       conditions,
       onboarded: true,
       dailySpoons: dailySpoonsFor(conditions),
+      privacyConsentAt: new Date().toISOString(),
     });
 
   return (
@@ -120,7 +122,7 @@ export function Onboarding() {
                     <button
                       key={c.id}
                       onClick={() => toggle(c.id)}
-                      className={`flex items-center justify-between rounded-2xl border px-4 py-3 text-left transition ${
+                      className={`flex items-center justify-between rounded-2xl border px-4 py-3 text-left transition focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2 focus:outline-none ${
                         on
                           ? 'border-sage bg-sage/10 dark:bg-sage/20'
                           : 'border-charcoal/10 hover:bg-white/60 dark:border-white/10 dark:hover:bg-white/5'
@@ -143,8 +145,48 @@ export function Onboarding() {
                 <button className="btn-ghost" onClick={() => setStep(1)}>
                   Back
                 </button>
-                <button className="btn-primary" onClick={finish}>
-                  Light the hearth
+                <button className="btn-primary" onClick={() => setStep(3)}>
+                  Continue
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {step === 3 && (
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-sage">Before Hearth stores anything</p>
+                <h1 className="font-display text-2xl font-semibold text-charcoal dark:text-cream">
+                  Your entries stay on this device.
+                </h1>
+                <p className="mt-2 text-sm leading-relaxed text-charcoal-mute dark:text-cream/55">
+                  Hearth stores the name, conditions, tasks, mood, sleep, journal, medication, and crisis-plan
+                  details you choose to enter in one local SQLite database. It does not create an account, upload
+                  those entries, or send telemetry. You can erase the data by deleting Hearth's local database.
+                </p>
+              </div>
+              <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-charcoal/10 p-4 dark:border-white/10">
+                <input
+                  type="checkbox"
+                  className="mt-1 h-4 w-4 accent-sage"
+                  checked={privacyAcknowledged}
+                  onChange={(event) => setPrivacyAcknowledged(event.target.checked)}
+                />
+                <span className="text-sm leading-relaxed text-charcoal dark:text-cream">
+                  I understand and consent to Hearth storing the information I enter locally on this device.
+                </span>
+              </label>
+              <p className="text-xs leading-relaxed text-charcoal-mute dark:text-cream/45">
+                Hearth is a personal reflection tool, not a medical device or a substitute for professional care.
+              </p>
+              <div className="flex gap-2">
+                {!settings?.onboarded && (
+                  <button className="btn-ghost" onClick={() => setStep(2)}>
+                    Back
+                  </button>
+                )}
+                <button className="btn-primary" onClick={finish} disabled={!privacyAcknowledged}>
+                  {settings?.onboarded ? 'Continue to Hearth' : 'Light the hearth'}
                 </button>
               </div>
             </motion.div>

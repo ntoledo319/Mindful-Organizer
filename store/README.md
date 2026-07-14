@@ -1,70 +1,47 @@
-# Microsoft Store packaging
+# Microsoft Store release path
 
-Everything needed to ship Hearth to the Microsoft Store as an MSIX/`appx`,
-kept as code so a submission is reproducible.
+This directory holds Hearth's reserved Partner Center identity and draft listing
+copy. The identity is real; the listing is not verified live and no current
+package is purchasable.
 
-| File | Purpose |
-| ---- | ------- |
-| `identity.json` | Package identity from Partner Center (`identityName`, `publisher`, `publisherDisplayName`) plus `productId` (the reserved app's Store ID, e.g. `9PLRSZZMFPJH`, used by `msstore submission` commands). Ships with `PLACEHOLDER_*` values; the `appx` build and the publish workflow stay no-ops until these are real. |
-| `identity.cjs` | Single source of truth for reading `identity.json` and deciding whether identity is real. Used by `electron-builder.cjs` and CI (`node store/identity.cjs --check`). |
-| `listing-metadata.json` | The Store listing (name, descriptions, keywords, URLs) as code. Fed to `msstore submission updateMetadata`. |
+## Commercial model
 
-## The build host
+The current hypothesis is a one-time **$14.99** official Windows package. The
+source remains MIT-licensed. A purchase pays for a built package and Store
+delivery, not exclusive code or a clinical capability.
 
-The `appx` target **must be built on Windows** — `electron-builder` shells out to
-Windows-only packaging tools. Use a Windows 10/11 machine or the `windows-latest`
-CI runner. Both the **Windows Store (MSIX) Build** and **Microsoft Store Publish**
-workflows already run there.
+The previous automated publisher failed while mutating metadata and downloaded
+an unpinned Store CLI. It was removed. Price, metadata, package upload, and final
+submission belong in Partner Center. `.github/workflows/windows-store.yml`
+produces a review artifact only; it does not publish.
 
-## One-time setup
+## Build
 
-1. **Reserve the app name** in [Partner Center](https://partner.microsoft.com/dashboard).
-2. Open **Product → Product identity** and copy the three values into
-   `store/identity.json`:
-
-   ```json
-   {
-     "identityName": "1234 The-Hearth-Project.Hearth",
-     "publisher": "CN=ABCD1234-5678-90AB-CDEF-1234567890AB",
-     "publisherDisplayName": "The Hearth Project"
-   }
-   ```
-
-3. Confirm the gate is open:
-
-   ```bash
-   npm run store:check   # prints "true" once no placeholders remain
-   ```
-
-4. Add the four publish secrets to the repo (Settings → Secrets and variables →
-   Actions): `MS_TENANT_ID`, `MS_SELLER_ID`, `MS_CLIENT_ID`, `MS_CLIENT_SECRET`.
-
-## Building locally
+The `appx` target must run on Windows:
 
 ```powershell
-npm install
-npm run build:winstore   # icons + tiles + typecheck + vite build + appx
+npm ci
+npm run licenses
+npm run build:winstore
 ```
 
-Output: `release/Hearth-1.0.0.appx`. With placeholder identity the `appx` target
-is dropped, so this produces nothing until step 2 above is done.
+`npm run store:check` must print `true`. A fresh package must pass the full Node
+quality gate and Microsoft certification; expired historical artifacts are not
+release evidence.
 
-## Generated assets
+## Pre-submission blockers
 
-`npm run winstore-assets` derives every required tile, splash, and icon PNG into
-`build/appx/` from `resources/app-icon.png`. They are generated, not committed.
+- [ ] Decide and document protection for sensitive local SQLite data; the
+      current database is not application-level encrypted.
+- [ ] Confirm ownership/provenance and redistribution rights for both PNG brand
+      assets, including any AI assistance.
+- [ ] Enable the working support channel referenced by the listing.
+- [ ] Run a fresh Windows package build and smoke test on supported Windows.
+- [ ] Capture screenshots from that exact build.
+- [ ] Confirm Partner Center account, tax, payout, age rating, privacy, terms,
+      and the one-time $14.99 price.
+- [ ] Manually enter/review the listing copy in Partner Center.
+- [ ] Upload and submit only after every item above is complete.
 
-## Submission checklist
-
-- [ ] App name reserved in Partner Center
-- [ ] `store/identity.json` filled with real values (`npm run store:check` → `true`)
-- [ ] `MS_*` secrets configured on the repo
-- [ ] `store/listing-metadata.json` reviewed
-- [ ] Screenshots uploaded in Partner Center (1366×768 or larger)
-- [ ] Age rating completed
-- [ ] Privacy policy URL points at `docs/PRIVACY.md` (already set in the listing)
-
-## Privacy policy
-
-See [`../docs/PRIVACY.md`](../docs/PRIVACY.md). In short: all data is stored
-locally in SQLite on your device; nothing is collected or transmitted.
+The owner-only steps are maintained in `revenue/HUMAN_QUEUE.md`; technical work
+must not silently turn those unchecked items into claims of readiness.

@@ -1,11 +1,20 @@
-import { app, BrowserWindow, ipcMain, shell, nativeTheme } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  shell,
+  nativeTheme,
+  globalShortcut,
+  type IpcMainInvokeEvent,
+} from 'electron';
 import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { readFileSync, existsSync } from 'node:fs';
 import { getDb, closeDb } from './db';
 import * as repo from './repo';
 import * as wellness from './wellness';
 import * as presence from './presence';
+import * as sessionSummary from './sessionSummary';
 import type { HearthApi } from '../src/shared/ipc';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -16,6 +25,35 @@ process.env.PUBLIC = app.isPackaged ? process.env.DIST : join(__dirname, '../pub
 const DEV_SERVER = process.env.VITE_DEV_SERVER_URL;
 
 let win: BrowserWindow | null = null;
+let quitting = false;
+
+function openExternal(url: string): void {
+  try {
+    const protocol = new URL(url).protocol;
+    if (['https:', 'http:', 'mailto:', 'tel:', 'sms:'].includes(protocol)) {
+      void shell.openExternal(url);
+    }
+  } catch {
+    // Ignore malformed or unsupported links instead of navigating the app away.
+  }
+}
+
+function isTrustedIpcSender(event: IpcMainInvokeEvent): boolean {
+  const frame = event.senderFrame;
+  if (!frame || frame !== event.sender.mainFrame) return false;
+
+  try {
+    const senderUrl = new URL(frame.url);
+    if (DEV_SERVER) {
+      return senderUrl.origin === new URL(DEV_SERVER).origin;
+    }
+
+    const expected = pathToFileURL(join(process.env.DIST!, 'index.html'));
+    return senderUrl.protocol === 'file:' && senderUrl.pathname === expected.pathname;
+  } catch {
+    return false;
+  }
+}
 
 function heroPath(): string {
   // Packaged: extraResources copies it next to the app. Dev: read from repo.
@@ -37,7 +75,7 @@ function createWindow(): void {
       preload: join(__dirname, 'preload.cjs'),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: false,
+      sandbox: true,
     },
   });
 
@@ -45,8 +83,24 @@ function createWindow(): void {
 
   // Open external links in the real browser, never in-app.
   win.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith('http')) void shell.openExternal(url);
+    openExternal(url);
     return { action: 'deny' };
+  });
+
+  // Keep every external scheme out of the renderer while allowing explicit
+  // crisis-call/text links to reach the operating system.
+  win.webContents.on('will-navigate', (event, url) => {
+    event.preventDefault();
+    openExternal(url);
+  });
+
+  // With tray presence enabled, closing the window tucks Hearth away instead
+  // of silently killing the acting layer. The tray's Quit action still exits.
+  win.on('close', (event) => {
+    if (!quitting && repo.getSettings().presence) {
+      event.preventDefault();
+      win?.hide();
+    }
   });
 
   if (DEV_SERVER) {
@@ -62,6 +116,7 @@ function registerIpc(): void {
   const handlers: HearthApi = {
     listTasks: async (inc) => repo.listTasks(inc),
     createTask: async (i) => repo.createTask(i),
+    replaceTaskWithSubtasks: async (id, subtasks) => repo.replaceTaskWithSubtasks(id, subtasks),
     updateTask: async (id, p) => repo.updateTask(id, p),
     toggleTask: async (id) => repo.toggleTask(id),
     deleteTask: async (id) => repo.deleteTask(id),
@@ -92,6 +147,7 @@ function registerIpc(): void {
     getSnapshot: async () => wellness.snapshot(),
     getBriefing: async () => wellness.dailyBriefing(),
     getTrends: async (d) => wellness.trends(d),
+    exportSessionSummary: async (d) => sessionSummary.exportSessionSummary(d, win),
 
     getSettings: async () => repo.getSettings(),
     saveSettings: async (p) => {
@@ -105,6 +161,19 @@ function registerIpc(): void {
     startFocus: async (input) => presence.startFocus(input.seconds, input.intention ?? null),
     endFocus: async () => presence.endFocus(),
 
+    listErpSessions: async (l) => repo.listErpSessions(l),
+    createErpSession: async (i) => repo.createErpSession(i),
+    
+    listDiaryCards: async (l) => repo.listDiaryCards(l),
+    createDiaryCard: async (i) => repo.createDiaryCard(i),
+    
+    listMedications: async () => repo.listMedications(),
+    createMedication: async (i) => repo.createMedication(i),
+    updateMedication: async (id, p) => repo.updateMedication(id, p),
+    deleteMedication: async (id) => repo.deleteMedication(id),
+    
+    getGamification: async () => repo.getGamification(),
+
     heroDataUrl: async () => {
       try {
         const buf = readFileSync(heroPath());
@@ -116,9 +185,12 @@ function registerIpc(): void {
   };
 
   for (const [channel, fn] of Object.entries(handlers)) {
-    ipcMain.handle(channel, (_e, ...args: unknown[]) =>
-      (fn as (...a: unknown[]) => unknown)(...args),
-    );
+    ipcMain.handle(channel, (event, ...args: unknown[]) => {
+      if (!isTrustedIpcSender(event)) {
+        throw new Error('Rejected IPC request from an untrusted renderer.');
+      }
+      return (fn as (...a: unknown[]) => unknown)(...args);
+    });
   }
 }
 
@@ -155,17 +227,42 @@ app.whenReady().then(async () => {
   presence.init(() => win); // the acting layer: tray, the dim, the focus hold
 
   app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if (win && !win.isDestroyed()) {
+      win.show();
+      win.focus();
+    } else {
+      createWindow();
+    }
+  });
+  
+  // Register global hotkey to toggle window visibility
+  globalShortcut.register('CommandOrControl+Shift+H', () => {
+    if (win) {
+      if (win.isVisible()) {
+        if (win.isFocused()) {
+          win.hide();
+        } else {
+          win.show();
+          win.focus();
+        }
+      } else {
+        win.show();
+        win.focus();
+      }
+    }
   });
 });
 
+app.on('will-quit', () => {
+  globalShortcut.unregisterAll();
+});
+
 app.on('window-all-closed', () => {
-  presence.dispose();
-  closeDb();
   if (process.platform !== 'darwin') app.quit();
 });
 
 app.on('before-quit', () => {
+  quitting = true;
   presence.dispose();
   closeDb();
 });

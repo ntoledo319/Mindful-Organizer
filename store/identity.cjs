@@ -36,7 +36,7 @@ module.exports = { IDENTITY_PATH, readIdentity, isPlaceholder, hasRealIdentity }
 // CLI helpers so CI can branch/read values without parsing JSON in shell:
 //   --check       → prints "true"/"false" (identity ready for an appx build)
 //   --product-id  → prints the Store product ID (empty if unset)
-// Used by store-publish.yml, windows-store.yml, and release.yml.
+// Used by windows-store.yml, release.yml, and local Store package checks.
 if (require.main === module) {
   if (process.argv.includes('--check')) {
     process.stdout.write(hasRealIdentity() ? 'true' : 'false');

@@ -4,7 +4,7 @@ _A desktop that adapts to your psychology._
 
 Hearth is an offline-first desktop app for people managing ADHD, anxiety, depression, OCD, PTSD, or bipolar — built on one belief: **your computer should adapt to your psychology, not the other way around.** It's not a tracker you feed and forget. It reads your state — mood, sleep, energy — and reshapes the day around it: matching tasks to the energy you actually have, suggesting the steadying practice that fits how today feels, and keeping crisis help one click away.
 
-Everything lives in a single local database on your machine. **No account, no cloud, no telemetry, no network calls.** Your data is yours.
+Your records live in a local database on your machine. **No account, no cloud, no telemetry, and no record sync.** A session summary leaves the app only when you choose a PDF destination. Your data is yours.
 
 ## Why Hearth is different
 
@@ -31,6 +31,9 @@ Every one of these runs locally. The dim and the focus hold are plain Electron w
 | **Reflect**   | Quick mood / energy / anxiety check-ins, sleep logs (auto-computes duration), and journaling. |
 | **Practices** | Guided breathing with a breath pacer, grounding, meditation, and focus blocks — pre/post SUDS.|
 | **Rhythm**    | Mood, energy, and sleep trends over 7 / 14 / 30 days. Patterns, not performance.              |
+| **Session summary** | A user-requested 7 / 14 / 30 day PDF of those trends, saved only to the location you choose. |
+| **ERP & diary** | Exposure-session notes and structured diary cards, stored locally for personal reflection. |
+| **Medications** | A reference list for names, doses, and usual times; Hearth does not issue medication reminders. |
 | **Crisis plan** | Warning signs, what helps, trusted contacts, and a note to your future self — stored locally. |
 | **Presence**  | The acting layer: a screen-wide dim when you're drained, a calm hold over a focus block, and a tray you can steer Hearth from. Set it all under Settings → _How Hearth shows up_. |
 
@@ -38,20 +41,27 @@ Every one of these runs locally. The dim and the focus hold are plain Electron w
 
 | Layer        | Technology                                                          |
 | ------------ | ------------------------------------------------------------------- |
-| Shell        | Electron 33 (context-isolated, no node integration in the renderer) |
+| Shell        | Electron 43 (sandboxed, context-isolated, no Node integration in the renderer) |
 | UI           | React 18 + TypeScript + Vite 6                                      |
-| Styling      | Tailwind CSS — warm cream, sage, eucalyptus, lavender; light + dark |
-| Motion       | Framer Motion                                                       |
+| State (Sync) | Zustand (Global App State & Settings)                               |
+| State (Async)| TanStack Query / React Query (Data Fetching & Caching)              |
+| Styling      | Tailwind CSS — "Earthenware & Vellum" semantic design system        |
+| Motion       | Framer Motion (Critically damped springs for accessibility)         |
 | Persistence  | SQLite via `better-sqlite3` (WAL mode), in the main process         |
 | Intelligence | Wellness orchestrator + crisis heuristics ported to TypeScript      |
 | Packaging    | electron-builder → macOS `.zip` (.app), Windows NSIS + portable     |
 | CI           | GitHub Actions matrix on `macos-latest` + `windows-latest`          |
 
-Type display is **Fraunces** (serif), body is **Inter**.
+Type display is **Fraunces** (serif), body is **Atkinson Hyperlegible**. 
+
+For detailed technical and design guidelines, refer to:
+- [Architecture Documentation](docs/ARCHITECTURE.md)
+- [Design System & Typography](docs/DESIGN_SYSTEM.md)
+- [Privacy Policy](docs/PRIVACY.md)
 
 ## Quickstart
 
-Prerequisites: **Node.js 20+** and npm.
+Prerequisites: **Node.js 22.12+** and npm.
 
 ```bash
 npm install
@@ -83,7 +93,7 @@ Output lands in `release/`. Builds are **unsigned** — on first launch macOS Ga
 `.github/workflows/release.yml` runs a matrix on `macos-latest` and `windows-latest`. On every run it lints, typechecks, tests, builds, and uploads the installers as workflow artifacts. Trigger it manually:
 
 ```bash
-gh workflow run release.yml --ref production-overhaul
+gh workflow run release.yml --ref main
 ```
 
 or by pushing a `v*` tag. Download the `hearth-macos` / `hearth-windows` artifacts from the run's summary page.
@@ -106,27 +116,16 @@ scripts/             Icon generation
 build/               electron-builder resources (icons generated here)
 ```
 
-## Microsoft Store
+## Microsoft Store status
 
-Hearth ships to the Microsoft Store as an MSIX/`appx` package, built and published from CI. Two things gate that path, and until both are in place the Store build and publish steps **skip themselves cleanly** rather than fail:
+The Partner Center identity in `store/identity.json` is real and `npm run store:check` returns `true`, but the current build is **not submitted or purchasable**. The proposed commercial model is a one-time paid official Windows package while the source remains MIT-licensed. A Store purchase would pay for the packaged binary and distribution convenience, not exclusive access to the source.
 
-1. **Identity** — `store/identity.json` holds the package identity (`identityName`, `publisher`, `publisherDisplayName`). It ships with `PLACEHOLDER_FROM_PARTNER_CENTER` values. While any value is still a placeholder, the `appx` target is dropped from the Windows build and `.github/workflows/store-publish.yml` no-ops. Fill these from Partner Center (Product → Product identity), commit, and the gate opens. Check the current state with `npm run store:check` (prints `true`/`false`).
-
-2. **Secrets** — `.github/workflows/store-publish.yml` authenticates `msstore-cli` from four repo secrets:
-
-   | Secret | Where it comes from |
-   | ------ | ------------------- |
-   | `MS_TENANT_ID` | Azure AD tenant backing your Partner Center account |
-   | `MS_SELLER_ID` | Partner Center → Account settings → Seller ID |
-   | `MS_CLIENT_ID` | Azure AD app registration tied to Partner Center |
-   | `MS_CLIENT_SECRET` | Client secret for that app registration |
-
-The publish workflow runs on `workflow_dispatch` and after a successful **Release Build** on a `v*` tag. It builds the `appx`, pushes the listing from `store/listing-metadata.json`, uploads the package, and publishes the submission. The Store listing copy and the privacy policy URL it points at live in [`store/listing-metadata.json`](store/listing-metadata.json) and [`docs/PRIVACY.md`](docs/PRIVACY.md). See [`store/README.md`](store/README.md) for the full submission checklist.
+Paid-product price, listing metadata, package upload, and submission must be completed manually in Partner Center. The old automated publisher was removed after its metadata mutation failed and because downloading an unpinned Store CLI is not an acceptable release path. `windows-store.yml` builds a review artifact; it does not publish. See [`store/README.md`](store/README.md) for verified blockers and the release checklist.
 
 ## Privacy
 
-Hearth opens exactly one file — a local SQLite database in your OS app-data directory — and makes no network requests. The renderer runs with `contextIsolation` on and `nodeIntegration` off; it can only reach the data layer through a typed, allow-listed IPC bridge. The full policy is in [docs/PRIVACY.md](docs/PRIVACY.md).
+Hearth stores records in local SQLite files in your OS app-data directory and does not transmit them. A session summary PDF is written only after you choose its destination. The renderer is sandboxed, context-isolated, and limited to a typed IPC bridge whose calls are accepted only from Hearth's own main frame. The local database is **not application-level encrypted**; read [docs/PRIVACY.md](docs/PRIVACY.md) before using it for sensitive information.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE). Packaged builds also include the project license and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

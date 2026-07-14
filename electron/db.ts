@@ -71,11 +71,67 @@ CREATE TABLE IF NOT EXISTS settings (
   value TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS erp_sessions (
+  id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+  target_obsession   TEXT    NOT NULL,
+  exposure_activity  TEXT    NOT NULL,
+  pre_anxiety        INTEGER NOT NULL CHECK (pre_anxiety BETWEEN 0 AND 10),
+  post_anxiety       INTEGER NOT NULL CHECK (post_anxiety BETWEEN 0 AND 10),
+  duration_minutes   INTEGER NOT NULL,
+  notes              TEXT,
+  timestamp          TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS diary_cards (
+  id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+  date               TEXT    NOT NULL,
+  urges_self_harm    INTEGER CHECK (urges_self_harm BETWEEN 0 AND 5),
+  urges_quit_therapy INTEGER CHECK (urges_quit_therapy BETWEEN 0 AND 5),
+  emotions_sadness   INTEGER CHECK (emotions_sadness BETWEEN 0 AND 5),
+  emotions_fear      INTEGER CHECK (emotions_fear BETWEEN 0 AND 5),
+  skills_used        TEXT,
+  notes              TEXT,
+  timestamp          TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS medications (
+  id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+  name               TEXT    NOT NULL,
+  dosage             TEXT    NOT NULL,
+  frequency          TEXT    NOT NULL,
+  reminder_time      TEXT,
+  active             INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS medication_logs (
+  id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+  medication_id      INTEGER NOT NULL,
+  taken_at           TEXT    NOT NULL DEFAULT (datetime('now')),
+  status             TEXT    NOT NULL DEFAULT 'taken',
+  FOREIGN KEY(medication_id) REFERENCES medications(id)
+);
+
+CREATE TABLE IF NOT EXISTS gamification (
+  id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+  current_level      INTEGER NOT NULL DEFAULT 1,
+  current_xp         INTEGER NOT NULL DEFAULT 0,
+  total_xp           INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS clinical_profiles (
+  id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+  profile_type       TEXT    NOT NULL,
+  active             INTEGER NOT NULL DEFAULT 1,
+  settings_json      TEXT    NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_tasks_completed ON tasks(completed);
 CREATE INDEX IF NOT EXISTS idx_mood_ts ON mood_entries(timestamp);
 CREATE INDEX IF NOT EXISTS idx_sleep_date ON sleep_logs(date);
 CREATE INDEX IF NOT EXISTS idx_journal_ts ON journal_entries(timestamp);
 CREATE INDEX IF NOT EXISTS idx_practice_ts ON practice_sessions(timestamp);
+CREATE INDEX IF NOT EXISTS idx_erp_ts ON erp_sessions(timestamp);
+CREATE INDEX IF NOT EXISTS idx_diary_date ON diary_cards(date);
 `;
 
 export function getDb(): Database.Database {
@@ -85,6 +141,7 @@ export function getDb(): Database.Database {
   const file = join(dir, 'hearth.db');
   db = new Database(file);
   db.pragma('journal_mode = WAL');
+  db.pragma('synchronous = NORMAL');
   db.pragma('foreign_keys = ON');
   db.exec(SCHEMA);
   return db;

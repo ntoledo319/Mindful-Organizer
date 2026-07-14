@@ -1,55 +1,63 @@
-# Hearth — Privacy Policy
+# Hearth Privacy Policy
 
-_Last updated: 2026-06-12_
+_Last updated: 2026-07-14_
 
-Hearth is built on one belief: your psychological data should stay where it
-belongs — on your own machine. This policy says, in plain language, exactly what
-that means.
+Hearth is a local-first personal organizer. This policy separates what the app
+stores on your device from what the developer receives.
 
-## What Hearth collects
+## Data you enter
 
-Nothing. There is no account to create, no sign-in, no profile. Hearth does not
-ask who you are, and it has no way to find out.
+Hearth can store your display name, settings, tasks, mood/energy/anxiety and
+sleep check-ins, journal entries, practice and focus records, crisis-plan text,
+ERP session notes, diary cards, and medication-reference entries. Onboarding
+asks for explicit consent before these categories are stored.
 
-## Where your data lives
+## Where it is stored
 
-Everything you put into Hearth — tasks and their energy costs, mood, energy, and
-anxiety check-ins, sleep logs, journal entries, practice sessions, your settings,
-and your crisis plan — is written to a single **SQLite database file in your
-operating system's app-data directory**, on your device.
+Records are stored in SQLite in Hearth's operating-system app-data directory.
+Because SQLite uses write-ahead logging, the database can consist of
+`hearth.db`, `hearth.db-wal`, and `hearth.db-shm` while the app is running.
+These files are not protected by application-level encryption. Anyone with
+access to your operating-system account or storage may be able to read them.
+Use your device's account security and full-disk encryption, and do not enter
+information you are not comfortable storing locally.
 
-That file never leaves your machine unless you copy it somewhere yourself. Hearth
-does not back it up, sync it, or upload it.
+Hearth does not provide cloud backup or sync. Your normal device backup system
+may copy the files according to that system's settings.
 
-## What Hearth transmits
+## Session-summary exports
 
-Nothing. Hearth makes **no network requests**. There is no cloud, no server, no
-analytics endpoint, no crash reporter, and no telemetry of any kind. The app runs
-fully offline.
+When you request a 7, 14, or 30 day session summary, Hearth shows a system Save
+dialog and writes a PDF only to the location you select. The PDF is a personal
+reflection aid, not a clinical record or diagnosis. Hearth does not upload it.
+After export, the destination and any sharing are under your control.
 
-Any external link Hearth shows you (for example, the 988 crisis line) opens in
-your default web browser — those sites are governed by their own privacy
-policies, not this one.
+## What the developer receives
 
-## Third parties
+The app has no account system, advertising identifiers, analytics, telemetry,
+crash reporter, cloud API, or record-sync service. Hearth does not transmit the
+records listed above to the developer or sell them. Links such as `tel:988`,
+`sms:988`, and web links open through your operating system; your carrier,
+browser, and destination service apply their own policies.
 
-Hearth shares no data with third parties, because Hearth has no access to your
-data to share. There are no advertising identifiers, cookies, or device
-fingerprints.
+## Deleting or moving data
 
-## Your control
+Quit Hearth completely before copying or deleting its database files so pending
+WAL data is closed safely. To erase local Hearth records, remove Hearth's app-data
+folder using your operating system's application-data controls. Delete exported
+PDFs separately from wherever you saved them. There is no developer-held remote
+copy to delete.
 
-Because your data is a single local file, you are fully in control of it. To
-export it, copy the database. To erase everything, delete it. There is no remote
-copy to chase down.
+## Scope
 
-## A note on what Hearth is
-
-Hearth is a personal, mental-health-aware tool — not a medical device, and not a
-substitute for professional care. Its signals are gentle observations, not a
-clinical instrument.
+Hearth is a personal wellness and organization tool, not a medical device,
+healthcare provider, diagnosis, or substitute for professional or emergency
+care. If you are in crisis in the United States, call or text 988; elsewhere,
+use your local emergency number.
 
 ## Contact
 
-Privacy questions, or anything else, are welcome as a
-[GitHub issue](https://github.com/ntoledo319/Mindful-Organizer/issues).
+The intended support channel is the repository's
+[GitHub Issues](https://github.com/ntoledo319/Mindful-Organizer/issues). Issue
+creation is not yet enabled, so this channel is a release blocker rather than a
+currently available contact method.

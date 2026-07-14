@@ -35,3 +35,14 @@ Thumbs.db
 .continue/
 .qodo/
 .aider*
+.claude/
+venv*/
+.npm-cache/
+.electron-cache/
+.electron-gyp/
+.npmrc-local
+.gitconfig-none
+tmp/
+
+# Local verification evidence (summaries are kept in revenue/METRICS.md)
+revenue/npm-audit-*.json
