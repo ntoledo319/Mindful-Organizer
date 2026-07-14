@@ -297,6 +297,11 @@ app.whenReady().then(async () => {
     getDb(); // open + migrate before the window can call in
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
+    if (SCREENSHOT_MODE || SMOKE_MODE) {
+      console.error(`[startup] secure storage initialization failed: ${message}`);
+      app.exit(1);
+      return;
+    }
     dialog.showErrorBox('Hearth could not open secure storage', message);
     app.exit(1);
     return;
