@@ -2,7 +2,7 @@
 
 # Revenue Plan
 
-_Updated 2026-07-14 01:40 EDT — Cycle 0 closing._
+_Updated 2026-07-14 01:44 EDT — Cycle 0 closed._
 
 ## Containment
 
@@ -65,16 +65,21 @@ inspect.
 4. Attempted an unpacked local package. It failed honestly at native SQLite
    rebuild because the jailed Apple Clang 14 / SDK 13.3 toolchain does not
    provide C++20 `<source_location>`. The code was not weakened and the jail was
-   not escaped to replace system tooling. A hosted Windows MSIX review build is
-   the next packaging proof.
+   not escaped to replace system tooling.
+5. Hosted Windows Store (MSIX) Build #9 then passed identity, assets, license
+   generation, typecheck, tests, bundles, APPX packaging, artifact collection,
+   and upload:
+   <https://github.com/ntoledo319/Mindful-Organizer/actions/runs/29309185258>.
+   The review artifact is 179,750,864 bytes with digest
+   `sha256:aecc37c1f8bc18bb8e0f27fb4b7b7d23e6e6a688240c99870288ed4c55c81afe`.
+   It is not a release and has not been installed or certified.
 
 ## Next technical actions
 
 1. Design and implement a supported local-data encryption/migration path without
    introducing account recovery, cloud escrow, or data-loss traps.
-2. Complete the hosted Windows MSIX build from the public branch, then smoke-test
-   the exact artifact on supported Windows; a successful build alone is not a
-   usability test.
+2. Smoke-test the exact hash-recorded MSIX on supported Windows; the green hosted
+   build alone is not an installation or usability test.
 3. If the Store protection path stalls for 30 minutes, park it and build the
    smallest genuinely new Electron-kit unit for Bet B inside this workspace.
 4. After the Human Queue checks, create—not merely draft—the appropriate
@@ -86,3 +91,7 @@ The active bets' target arithmetic can cross $4,000, but current realistic
 evidence does not support that outcome. No sales rate is assumed. At Day 7, 14,
 and 21, recompute the gap from `METRICS.md`; a live bet with five days of zero
 external signal gets one reposition, then replacement after four more zero days.
+
+Cycle 0 closed with collected profit **$0.00** and gap **$4,000.00**. Neither bet
+meets the seven-part definition of shipped; only the review branch and build
+evidence shipped externally.

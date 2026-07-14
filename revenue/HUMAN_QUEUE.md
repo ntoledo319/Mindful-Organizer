@@ -93,3 +93,9 @@ No owner minutes are recorded as spent in this cycle. Queue estimates total
 The public review branch and green hosted code gate required **0 owner minutes**.
 No queue item was guessed complete. HQ-01 through HQ-04 are ready to batch;
 HQ-05 remains explicitly blocked. The total stays **44 minutes**.
+
+Hosted MSIX Build #9 also completed without owner labor. Its artifact is a review
+build only; it does **not** unblock HQ-05 because Windows install smoke,
+cryptography, provenance, support, and certification preparation remain open.
+Queue contents, spent minutes, and the **44-minute** estimate are unchanged at
+final cycle close.

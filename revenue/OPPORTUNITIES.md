@@ -129,4 +129,8 @@ but adding it before either active bet reaches a falsifier would dilute work.
 The public source/docs branch and green hosted code gate improve execution
 confidence but do **not** alter any `U`, conversion, or revenue assumption above.
 No listing view, signup, checkout, or dollar was observed. Bet A remains blocked
-before submission; Bet B remains conditional and unbuilt.
+before submission; Bet B remains conditional and unbuilt. A hosted Windows MSIX
+was generated successfully after this note, reducing build-system risk for Bet A
+without changing its revenue estimate or clearing its install, policy,
+provenance, support, certification, or listing gates:
+<https://github.com/ntoledo319/Mindful-Organizer/actions/runs/29309185258>.

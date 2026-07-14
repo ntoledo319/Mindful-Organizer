@@ -86,5 +86,12 @@ but requires genuinely new value beyond the public MIT repository.
   because this jailed machine's Apple Clang 14 / SDK 13.3 lacks the C++20
   `<source_location>` header. No outside-jail toolchain change was attempted.
 - Therefore the codebase is source-gate green, but its distributable status
-  remains **not release-ready** pending hosted Windows package proof and the
+  remained **not release-ready** pending hosted Windows package proof and the
   policy/provenance gates above.
+- Hosted **Windows Store (MSIX) Build #9** subsequently passed every step and
+  uploaded a 179,750,864-byte `hearth-msix` artifact from commit `6fb4d88`:
+  <https://github.com/ntoledo319/Mindful-Organizer/actions/runs/29309185258>.
+  Artifact digest: `sha256:aecc37c1f8bc18bb8e0f27fb4b7b7d23e6e6a688240c99870288ed4c55c81afe`.
+- This proves package generation, not install behavior, certification, data
+  protection, asset rights, support readiness, or a live/purchasable listing.
+  Release status therefore remains **not release-ready**.

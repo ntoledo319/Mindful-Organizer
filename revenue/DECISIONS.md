@@ -85,3 +85,12 @@ Published `feature/revenue-cycle-0` at
 Quality Gate #41 passed. A branch and CI evidence satisfy the external-change
 law while avoiding an unauthorized PR/post and avoiding a false product-release
 claim.
+
+### D013 — Classify the successful MSIX as a review artifact
+
+Hosted Windows Store Build #9 generated and uploaded `hearth-msix` successfully
+from commit `6fb4d88`, with the digest recorded in `METRICS.md`. Decision: count
+this as package-build evidence only. Do not call it released, distribute it to
+customers, or submit it until exact-artifact install smoke, encryption,
+provenance, support, screenshots, certification preparation, and the owner-only
+Partner Center gates are complete.

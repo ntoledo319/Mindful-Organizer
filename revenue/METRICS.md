@@ -51,6 +51,21 @@ Only observed evidence belongs here. Forecasts and target arithmetic live in
   recorded packaging failure, not a passing build.
 - No sale, signup, visit, or listing-impression number was observed.
 
-The Windows MSIX review run is pending. It cannot clear the encryption,
-provenance, support, certification, installation-smoke, or paid-listing gates by
-itself.
+### Hosted package evidence — 2026-07-14 01:44 EDT
+
+- **Windows Store (MSIX) Build #9: passed** all steps:
+  <https://github.com/ntoledo319/Mindful-Organizer/actions/runs/29309185258>.
+- Head commit: `6fb4d884933cab41cae65f6bbaf4e0fb624dfb9d`.
+- Artifact: `hearth-msix`, ID `8301428016`, 179,750,864 bytes, expires
+  2026-08-13.
+- GitHub artifact digest:
+  `sha256:aecc37c1f8bc18bb8e0f27fb4b7b7d23e6e6a688240c99870288ed4c55c81afe`.
+- Fresh Quality Gate for the same commit also passed:
+  <https://github.com/ntoledo319/Mindful-Organizer/actions/runs/29309185278>.
+- **Not observed:** installation success, launch behavior, Windows App
+  Certification Kit result, Store certification, listing visibility, page views,
+  purchases, refunds, or payout.
+
+The artifact does not clear encryption, provenance, support, install-smoke,
+certification, or paid-listing gates. Collected profit remains **$0.00** and the
+gap remains **$4,000.00**.
