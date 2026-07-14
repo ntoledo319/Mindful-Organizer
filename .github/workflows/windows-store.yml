@@ -164,14 +164,14 @@ jobs:
             Sort-Object FullName -Descending |
             Select-Object -First 1
           if (-not $makeAppx) { throw 'makeappx.exe was not found on the hosted Windows image.' }
-          & $makeAppx.FullName validate /p $package.FullName
-          if ($LASTEXITCODE -ne 0) { throw "makeappx validation failed with exit code $LASTEXITCODE." }
 
           New-Item -ItemType Directory -Force artifacts | Out-Null
-          $zip = Join-Path $PWD 'artifacts\hearth-appx.zip'
           $expanded = Join-Path $PWD 'artifacts\appx-expanded'
-          Copy-Item $package.FullName $zip
-          Expand-Archive -Path $zip -DestinationPath $expanded -Force
+          # MakeAppx has no standalone `validate` command. `unpack` performs
+          # full semantic validation unless /nv is supplied, and gives the
+          # remaining checks the exact package payload to inspect.
+          & $makeAppx.FullName unpack /p $package.FullName /d $expanded /o
+          if ($LASTEXITCODE -ne 0) { throw "makeappx unpack/validation failed with exit code $LASTEXITCODE." }
 
           [xml]$manifest = Get-Content (Join-Path $expanded 'AppxManifest.xml')
           $expected = Get-Content store/identity.json | ConvertFrom-Json
@@ -240,7 +240,6 @@ jobs:
 
           $hash = (Get-FileHash $package.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
           "$hash  $($package.Name)" | Set-Content 'artifacts\hearth-appx.sha256.txt'
-          Remove-Item $zip -Force
           Remove-Item $expanded -Recurse -Force
 
       - name: Collect MSIX artifact
