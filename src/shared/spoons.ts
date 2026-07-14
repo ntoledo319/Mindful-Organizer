@@ -1,27 +1,23 @@
-// Spoon Theory — a way to budget finite daily energy. Ported from the
-// original profiles/spoon_theory.py defaults. A "spoon" is one unit of the
-// limited energy a person living with chronic illness or mental-health
-// conditions has to spend across a day.
+// A small, user-controlled way to budget finite daily energy. Hearth never
+// infers someone's capacity from a diagnosis, condition label, or check-in.
+// Legacy condition labels remain only as backward-compatible metadata.
 
 import type { Condition } from './types';
 
 export const DEFAULT_DAILY_SPOONS = 12;
+export const MIN_DAILY_SPOONS = 4;
+export const MAX_DAILY_SPOONS = 24;
 
-// Conditions shift the baseline budget. Depression and PTSD tend to compress
-// available energy; this is a gentle default the user can override.
-const CONDITION_SPOON_DELTA: Record<Condition, number> = {
-  adhd: 0,
-  anxiety: -1,
-  depression: -3,
-  ocd: -1,
-  ptsd: -2,
-  bipolar: 0,
-};
+export function normalizeDailySpoons(value: number): number {
+  if (!Number.isFinite(value)) return DEFAULT_DAILY_SPOONS;
+  return Math.min(MAX_DAILY_SPOONS, Math.max(MIN_DAILY_SPOONS, Math.round(value)));
+}
 
-export function dailySpoonsFor(conditions: Condition[]): number {
-  const delta = conditions.reduce((sum, c) => sum + (CONDITION_SPOON_DELTA[c] ?? 0), 0);
-  // Never drop below a floor of 6 — the budget should still feel livable.
-  return Math.max(6, DEFAULT_DAILY_SPOONS + delta);
+// Kept as a compatibility seam for existing onboarding/settings callers. The
+// parameter is intentionally ignored so selecting a condition can never lower
+// a person's capacity behind their back.
+export function dailySpoonsFor(_conditions: Condition[]): number {
+  return DEFAULT_DAILY_SPOONS;
 }
 
 // Estimate the spoon cost of a task from its energy requirement (1-10) and

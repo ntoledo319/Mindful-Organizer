@@ -28,11 +28,22 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.12
           cache: npm
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Scan repository for committed secrets
+        run: npm run secrets
+
+      - name: Validate Store and landing content
+        run: npm run store:validate
+
+      - name: Reproduce rights-clean brand assets
+        run: |
+          npm run brand-assets
+          git diff --exit-code -- resources/app-icon.png resources/hero-illustration.png
 
       - name: Generate icons
         run: npm run icons
@@ -43,6 +54,12 @@ jobs:
 
       - name: Lint
         run: npm run lint
+
+      - name: Verify redistributed licenses
+        run: npm run licenses
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
 
       - name: Typecheck
         run: npm run typecheck

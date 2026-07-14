@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss';
+import { THEME_COLORS } from './src/shared/theme';
 
 export default {
   content: ['./index.html', './src/renderer/**/*.{ts,tsx}'],
@@ -6,43 +7,49 @@ export default {
   theme: {
     extend: {
       colors: {
-        cream: {
-          DEFAULT: '#F5F0E6',
-          deep: '#EDE6D6',
+        // Earthenware & Vellum
+        base: {
+          bg: THEME_COLORS.base.bg,    // Unbleached Linen
+          surface: THEME_COLORS.base.surface, // Clean Vellum
+          border: THEME_COLORS.base.border,  // Dry Clay
         },
-        sage: {
-          DEFAULT: '#3E5C50',
-          light: '#5A7C6E',
-          dim: '#6E8C7E',
+        text: {
+          primary: THEME_COLORS.text.primary, // Charred Wood
+          muted: THEME_COLORS.text.muted,   // River Stone (AAA on the base canvas)
         },
-        eucalyptus: '#A6BFA6',
-        lavender: {
-          DEFAULT: '#C9C3E3',
-          deep: '#A79FD0',
+        brand: {
+          DEFAULT: THEME_COLORS.brand, // Fired Terracotta (AA with white and on the base canvas)
         },
-        charcoal: {
-          DEFAULT: '#2C2C2A',
-          soft: '#4A4A46',
-          mute: '#7A7A72',
+        semantic: {
+          error: THEME_COLORS.semantic.error,
+          warning: THEME_COLORS.semantic.warning,
+          success: THEME_COLORS.semantic.success,
         },
-        ember: '#C97B5A',
-        // dark mode hearth tones
+        // Dark Mode Embers
         night: {
-          DEFAULT: '#1C201D',
-          card: '#252A26',
-          edge: '#333A34',
+          bg: THEME_COLORS.night.bg,      // Cold Ash
+          surface: THEME_COLORS.night.surface, // Smoldering Loam
+          border: THEME_COLORS.night.border,  // Charcoal Seam
+          text: THEME_COLORS.night.text,    // Pale Bone
+          muted: THEME_COLORS.night.muted,   // Pumice (AAA on the night surface)
+          brand: THEME_COLORS.night.brand,   // Glowing Ember
+          error: THEME_COLORS.night.error,
+          warning: THEME_COLORS.night.warning,
+          success: THEME_COLORS.night.success,
         },
       },
       fontFamily: {
         display: ['Fraunces', 'Georgia', 'serif'],
-        body: ['Inter', 'system-ui', 'sans-serif'],
+        body: ['"Atkinson Hyperlegible"', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
-        glass: '1.5rem',
+        soft: '0.5rem',
       },
       boxShadow: {
-        hearth: '0 10px 40px -12px rgba(62, 92, 80, 0.22)',
-        glow: '0 0 0 1px rgba(255,255,255,0.4), 0 18px 50px -20px rgba(62,92,80,0.35)',
+        // Physical shadow for earthenware
+        hearth: '0 4px 12px -2px rgba(44, 39, 37, 0.08), 0 2px 4px -2px rgba(44, 39, 37, 0.04)',
+        glow: '0 4px 20px -2px rgba(196, 85, 54, 0.15)',
+        'night-hearth': '0 4px 12px -2px rgba(0, 0, 0, 0.4)',
       },
       keyframes: {
         breathe: {

@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f3eee2">
+    <meta
+      name="description"
+      content="Hearth is a privacy-first Windows energy planner for ADHD and other variable-capacity days. Plan around the capacity you have, without an account or cloud sync."
+    >
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Hearth — plan the day you have">
+    <meta
+      property="og:description"
+      content="A privacy-first Windows energy planner for ADHD and other variable-capacity days."
+    >
+    <title>Hearth — plan the day you have</title>
+    <link rel="stylesheet" href="styles.css">
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%234f6857'/%3E%3Cpath d='M19 45V27l13-10 13 10v18H19Zm8 0V33h10v12' fill='none' stroke='%23fffaf0' stroke-width='4' stroke-linejoin='round'/%3E%3C/svg%3E"
+    >
+  </head>
+  <body data-release-state="prelaunch">
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <a class="wordmark" href="#top" aria-label="Hearth home">
+        <svg aria-hidden="true" viewBox="0 0 48 48">
+          <rect width="48" height="48" rx="14"></rect>
+          <path d="M13 35V21l11-8 11 8v14H13Zm7 0v-9h8v9"></path>
+        </svg>
+        <span>Hearth</span>
+      </a>
+      <nav aria-label="Primary">
+        <a href="#how-it-works">How it works</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#questions">Questions</a>
+      </nav>
+      <a
+        class="header-link"
+        href="https://github.com/ntoledo319/Mindful-Organizer"
+      >View source</a>
+    </header>
+
+    <main id="main">
+      <section class="hero" id="top" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> Windows release in preparation</p>
+          <h1 id="hero-title">Plan the day you have.</h1>
+          <p class="hero-deck">
+            Hearth is a privacy-first energy planner for ADHD and other
+            variable-capacity days. It helps you decide what fits before a tired
+            day becomes an impossible list.
+          </p>
+          <div class="hero-actions">
+            <span class="button button-pending" aria-label="Microsoft Store release pending">
+              Store release pending
+            </span>
+            <a
+              class="text-link"
+              href="https://github.com/ntoledo319/Mindful-Organizer/blob/main/store/README.md"
+            >See the release gate <span aria-hidden="true">↗</span></a>
+          </div>
+          <ul class="hero-facts" aria-label="Product facts">
+            <li>Windows x64 package planned</li>
+            <li>No account or cloud sync</li>
+            <li>AES-256-GCM encrypted at rest</li>
+          </ul>
+        </div>
+
+        <div class="capacity-study" aria-label="Illustration of a finite energy budget">
+          <p class="study-label">A day with edges</p>
+          <div class="budget-line">
+            <span>Energy left</span>
+            <strong>7 / 12</strong>
+          </div>
+          <div class="budget-track" aria-hidden="true">
+            <span></span>
+          </div>
+          <div class="task-note task-note-one">
+            <span class="task-cost">2 sp</span>
+            <p>Reply to one important message</p>
+          </div>
+          <div class="task-note task-note-two">
+            <span class="task-cost">3 sp</span>
+            <p>Prepare the smallest useful draft</p>
+          </div>
+          <div class="task-note task-note-rest">
+            <span class="task-cost">—</span>
+            <p>Leave room. Rest is part of the plan.</p>
+          </div>
+          <p class="study-note">Concept illustration, not a product screenshot.</p>
+        </div>
+      </section>
+
+      <section class="proof-strip" aria-label="Hearth principles">
+        <p><strong>Finite by design.</strong> Work receives an energy cost.</p>
+        <p><strong>Local and encrypted at rest.</strong> SQLite runs in memory while open.</p>
+        <p><strong>No performance theater.</strong> No streaks, ads, or public scores.</p>
+      </section>
+
+      <section class="workflow section" id="how-it-works" aria-labelledby="workflow-title">
+        <div class="section-intro">
+          <p class="kicker">The core loop</p>
+          <h2 id="workflow-title">Three decisions, then less noise.</h2>
+          <p>
+            Hearth does not promise to optimize a person. It makes the cost of a
+            day visible and keeps the next step small enough to choose.
+          </p>
+        </div>
+
+        <ol class="workflow-list">
+          <li>
+            <span class="step-number">01</span>
+            <div>
+              <h3>Name today's capacity</h3>
+              <p>
+                Choose a daily budget from 4 to 24. Optional mood, energy, and
+                sleep check-ins shape a plain-language briefing, but Hearth
+                never infers or changes the budget from a diagnosis or check-in.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span class="step-number">02</span>
+            <div>
+              <h3>Give work a cost</h3>
+              <p>
+                Add priority, expected duration, and energy demand. Hearth
+                estimates a spoon cost and subtracts completed work from the
+                day's budget.
+              </p>
+            </div>
+          </li>
+          <li>
+            <span class="step-number">03</span>
+            <div>
+              <h3>Choose what still fits</h3>
+              <p>
+                Today can show up to three open tasks whose recorded cost fits
+                the remaining budget. Smart Decompose can turn one task into
+                smaller starter steps.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="editorial-break">
+        <blockquote>
+          “A realistic plan is not a smaller ambition. It is a kinder contract
+          with the energy that is actually here.”
+        </blockquote>
+      </section>
+
+      <section class="privacy section" id="privacy" aria-labelledby="privacy-title">
+        <div class="privacy-heading">
+          <p class="kicker">Private in the ways we can prove</p>
+          <h2 id="privacy-title">No account. No cloud API. No record sync.</h2>
+        </div>
+        <div class="privacy-copy">
+          <p>
+            Hearth stores tasks, check-ins, journal text, and optional wellness
+            records in an in-memory SQLite database while open. At rest, it
+            writes versioned, authenticated AES-256-GCM snapshots with a fresh
+            random IV. A random 256-bit key is protected by Windows DPAPI through
+            Electron safeStorage. A temporary encrypted migration backup for
+            older installs is retired after two verified encrypted generations.
+            Hearth has no advertising, remote AI service, or app telemetry.
+          </p>
+          <aside class="candor-note">
+            <strong>Limits, stated plainly</strong>
+            <p>
+              Records and the key are decrypted in memory while Hearth is open,
+              and Windows may copy memory into swap, hibernation, crash, or
+              diagnostic storage. Someone controlling the signed-in OS session
+              may be able to use the same credential facility. JSON and PDF
+              exports you request are plaintext. Deleting old files cannot
+              guarantee removal from SSD recovery, snapshots, or backups.
+            </p>
+          </aside>
+          <a
+            class="text-link"
+            href="https://github.com/ntoledo319/Mindful-Organizer/blob/main/docs/PRIVACY.md"
+          >Read the full privacy policy <span aria-hidden="true">↗</span></a>
+        </div>
+      </section>
+
+      <section class="secondary section" aria-labelledby="secondary-title">
+        <div class="section-intro">
+          <p class="kicker">When useful, not all at once</p>
+          <h2 id="secondary-title">A broader toolkit stays nearby.</h2>
+          <p>
+            Energy planning leads. Check-ins, rhythm, practices, and the crisis
+            plan remain optional local support, not a bundle of medical
+            promises.
+          </p>
+        </div>
+        <div class="ledger" role="list">
+          <div role="listitem">
+            <span>Reflect</span>
+            <p>Mood, energy, anxiety, sleep, and typed journal entries.</p>
+          </div>
+          <div role="listitem">
+            <span>Rhythm</span>
+            <p>Local 7, 14, and 30 day trends with a requested PDF summary.</p>
+          </div>
+          <div role="listitem">
+            <span>Practices</span>
+            <p>Breathing, grounding, body scan, and a protected focus block.</p>
+          </div>
+          <div role="listitem">
+            <span>Preserved modules</span>
+            <p>
+              ERP notes, diary cards, and medication references remain outside
+              default navigation pending dedicated opt-in and safety review.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="release-band" aria-labelledby="release-title">
+        <div>
+          <p class="kicker">Built in public, released carefully</p>
+          <h2 id="release-title">The source is open. The paid package is convenience.</h2>
+        </div>
+        <div>
+          <p>
+            Hearth's source remains MIT licensed. The proposed one-time Store
+            price would cover an official x64 package and Microsoft Store
+            delivery—not exclusive code, clinical capability, or guaranteed
+            future features.
+          </p>
+          <a
+            class="button button-light"
+            href="https://github.com/ntoledo319/Mindful-Organizer"
+          >Inspect the repository</a>
+        </div>
+      </section>
+
+      <section class="questions section" id="questions" aria-labelledby="questions-title">
+        <div class="section-intro">
+          <p class="kicker">Straight answers</p>
+          <h2 id="questions-title">Before you trust it with a day.</h2>
+        </div>
+        <div class="faq">
+          <details>
+            <summary>Is Hearth available to buy now?</summary>
+            <p>
+              No. The Store identity and package-build path exist, but
+              exact-package migration and install testing, support, Windows
+              accessibility checks, screenshots, WACK, and Store certification
+              remain release gates. Shipping brand provenance and the source
+              encryption mechanism are documented; neither replaces candidate
+              verification.
+            </p>
+          </details>
+          <details>
+            <summary>Does Hearth diagnose or treat ADHD?</summary>
+            <p>
+              No. Hearth is personal organization and reflection software. It
+              does not diagnose, treat, monitor, or replace professional care.
+            </p>
+          </details>
+          <details>
+            <summary>Why pay when the source is public?</summary>
+            <p>
+              The proposed Store purchase covers official packaging and Store
+              delivery. The source remains available under the MIT license.
+            </p>
+          </details>
+          <details>
+            <summary>Does it send medication reminders?</summary>
+            <p>
+              No. Medication names, doses, and usual times can be kept as local
+              references, but Hearth does not issue medication reminders.
+            </p>
+          </details>
+          <details>
+            <summary>What happens in a crisis?</summary>
+            <p>
+              Hearth can display a user-written crisis plan and US 988 links,
+              but it does not monitor a person or guarantee detection. In a US
+              crisis, call or text 988; in immediate danger, call the local
+              emergency number.
+            </p>
+          </details>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wordmark footer-mark">
+        <svg aria-hidden="true" viewBox="0 0 48 48">
+          <rect width="48" height="48" rx="14"></rect>
+          <path d="M13 35V21l11-8 11 8v14H13Zm7 0v-9h8v9"></path>
+        </svg>
+        <span>Hearth</span>
+      </div>
+      <p>Personal organization software. Not medical or emergency care.</p>
+      <nav aria-label="Legal and project links">
+        <a href="https://github.com/ntoledo319/Mindful-Organizer/blob/main/docs/PRIVACY.md">Privacy</a>
+        <a href="https://github.com/ntoledo319/Mindful-Organizer/blob/main/docs/TERMS.md">Terms</a>
+        <a href="https://github.com/ntoledo319/Mindful-Organizer/blob/main/docs/REFUNDS.md">Refunds</a>
+        <a href="https://github.com/ntoledo319/Mindful-Organizer/blob/main/docs/ACCESSIBILITY.md">Accessibility</a>
+        <a href="https://github.com/ntoledo319/Mindful-Organizer/blob/main/docs/SUPPORT.md">Support</a>
+      </nav>
+    </footer>
+  </body>
+</html>

@@ -24,13 +24,18 @@ if (storeReady) {
 module.exports = {
   appId: 'io.hearthproject.hearth',
   productName: 'Hearth',
-  copyright: 'Copyright © 2026 The Hearth Project',
+  copyright: 'Copyright © 2026 Nicholas Toledo',
   directories: {
     output: 'release',
     buildResources: 'build',
   },
   files: ['dist', 'dist-electron'],
-  extraResources: [{ from: 'resources/hero-illustration.png', to: 'hero-illustration.png' }],
+  extraResources: [
+    { from: 'resources/hero-illustration.png', to: 'hero-illustration.png' },
+    { from: 'resources/BRAND_PROVENANCE.md', to: 'BRAND_PROVENANCE.md' },
+    { from: 'LICENSE', to: 'LICENSE' },
+    { from: 'THIRD_PARTY_NOTICES.md', to: 'THIRD_PARTY_NOTICES.md' },
+  ],
   asarUnpack: ['**/node_modules/better-sqlite3/**'],
   mac: {
     category: 'public.app-category.healthcare-fitness',

@@ -44,15 +44,30 @@ let lastUrgentNudge = 0;
 
 export function init(mainWindow: () => BrowserWindow | null): void {
   getMainWindow = mainWindow;
-  settings = repo.getSettings();
-  applySettings(settings);
-  // Re-read the room every few minutes so a quiet evening eases in on its own.
-  autoTimer = setInterval(() => evaluateQuiet(), 3 * 60 * 1000);
+  applySettings(repo.getSettings());
 }
 
 export function applySettings(next: Settings): void {
   const prevMode = settings?.quietMode;
   settings = next;
+
+  // A migrated profile is encrypted before the renderer opens, then gated at
+  // onboarding until the user explicitly consents. Do not let records from
+  // that profile affect a dim window, tray action, notification, or timer
+  // before consent is recorded.
+  if (!next.privacyConsentAt) {
+    manualOverride = null;
+    if (autoTimer) clearInterval(autoTimer);
+    autoTimer = null;
+    showDim(false);
+    destroyTray();
+    return;
+  }
+
+  if (!autoTimer) {
+    // Re-read the room every few minutes so a quiet evening eases in on its own.
+    autoTimer = setInterval(() => evaluateQuiet(), 3 * 60 * 1000);
+  }
   if (next.quietMode !== prevMode) manualOverride = null; // a mode change is a fresh intent
   if (next.presence) ensureTray();
   else destroyTray();
@@ -110,6 +125,8 @@ export function dispose(): void {
   closeWindow(focusWin);
   dimWin = focusWin = null;
   destroyTray();
+  settings = null;
+  getMainWindow = null;
 }
 
 // --- quiet / dim -----------------------------------------------------------

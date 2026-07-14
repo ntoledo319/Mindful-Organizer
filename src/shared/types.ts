@@ -172,6 +172,7 @@ export interface Settings {
   quietDim: number; // 0.1–0.8: how deep the dim goes when quiet is active
   focusGuard: boolean; // raise a calm full-screen hold during focus blocks
   nudges: boolean; // gentle notifications (focus finished, an urgent signal)
+  privacyConsentAt: string | null; // express local-data consent captured during onboarding
 }
 
 // Live state of the acting layer, mirrored from the main process to the UI.
@@ -195,4 +196,82 @@ export interface Trends {
   mood: TrendPoint[];
   sleep: TrendPoint[];
   energy: TrendPoint[];
+}
+
+export interface SessionSummaryExportResult {
+  status: 'saved' | 'cancelled' | 'empty';
+  filePath?: string;
+}
+
+export interface PersonalDataExportResult {
+  status: 'saved' | 'cancelled';
+  filePath?: string;
+}
+
+// --- Structured reflection and local system features ---
+
+export interface ErpSession {
+  id: number;
+  targetObsession: string;
+  exposureActivity: string;
+  preAnxiety: number; // 0-10
+  postAnxiety: number; // 0-10
+  durationMinutes: number;
+  notes: string | null;
+  timestamp: string;
+}
+
+export interface ErpInput {
+  targetObsession: string;
+  exposureActivity: string;
+  preAnxiety: number;
+  postAnxiety: number;
+  durationMinutes: number;
+  notes?: string | null;
+}
+
+export interface DiaryCard {
+  id: number;
+  date: string;
+  urgesSelfHarm: number | null; // 0-5
+  urgesQuitTherapy: number | null; // 0-5
+  emotionsSadness: number | null; // 0-5
+  emotionsFear: number | null; // 0-5
+  skillsUsed: string | null;
+  notes: string | null;
+  timestamp: string;
+}
+
+export interface DiaryCardInput {
+  date: string;
+  urgesSelfHarm?: number | null;
+  urgesQuitTherapy?: number | null;
+  emotionsSadness?: number | null;
+  emotionsFear?: number | null;
+  skillsUsed?: string | null;
+  notes?: string | null;
+}
+
+export interface Medication {
+  id: number;
+  name: string;
+  dosage: string;
+  frequency: string;
+  reminderTime: string | null;
+  active: boolean;
+}
+
+export interface MedicationInput {
+  name: string;
+  dosage: string;
+  frequency: string;
+  reminderTime?: string | null;
+  active?: boolean;
+}
+
+export interface Gamification {
+  id: number;
+  currentLevel: number;
+  currentXp: number;
+  totalXp: number;
 }

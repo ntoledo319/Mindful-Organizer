@@ -36,16 +36,22 @@ const SLEEP_QUALITY = [6, 7, 5, 6, 4, 6, 8, 8, 7, 6, 8, 9, 8, 9];
 
 export function seedDemoData(): void {
   const db = getDb();
-  const already = (db.prepare('SELECT COUNT(*) n FROM tasks').get() as { n: number }).n;
-  if (already > 0) return; // idempotent — a seeded DB is left alone
 
+  // Keep screenshot-mode settings valid even when an older seeded database
+  // already exists. Product screenshots must clear the same explicit-consent
+  // gate as a normal user; the onboarding frame still forces onboarded=false in
+  // the capture orchestrator.
   repo.saveSettings({
     displayName: 'Maya',
-    conditions: ['adhd', 'anxiety'],
+    conditions: [],
     onboarded: true,
     theme: 'light',
     dailySpoons: 12,
+    privacyConsentAt: '2026-07-14T00:00:00.000Z',
   });
+
+  const already = (db.prepare('SELECT COUNT(*) n FROM tasks').get() as { n: number }).n;
+  if (already > 0) return; // idempotent — a seeded DB is left alone
 
   // Tasks — a believable mix of areas, priorities, and energy costs. A couple
   // already done today so the dashboard shows progress and spent spoons.

@@ -1,6 +1,6 @@
 import { getDb } from './db';
 import * as repo from './repo';
-import { dailySpoonsFor, spoonWarning } from '../src/shared/spoons';
+import { normalizeDailySpoons, spoonWarning } from '../src/shared/spoons';
 import type {
   CrisisSignal,
   WellnessSnapshot,
@@ -45,7 +45,7 @@ export function snapshot(): WellnessSnapshot {
     db.prepare(`SELECT COUNT(*) n FROM tasks WHERE completed = 0`).get() as { n: number }
   ).n;
 
-  const total = dailySpoonsFor(repo.userConditions());
+  const total = normalizeDailySpoons(repo.getSettings().dailySpoons);
   const spentToday = (
     db
       .prepare(`SELECT COALESCE(SUM(spoon_cost),0) s FROM tasks WHERE completed = 1 AND date(completed_at) = ?`)
@@ -70,8 +70,6 @@ export function snapshot(): WellnessSnapshot {
 export function detectCrisisSignals(): CrisisSignal[] {
   const db = getDb();
   const signals: CrisisSignal[] = [];
-  const conditions = repo.userConditions();
-
   const recentMoods = db
     .prepare(`SELECT mood_score FROM mood_entries WHERE timestamp >= datetime('now','-3 days') ORDER BY timestamp DESC`)
     .all() as { mood_score: number }[];
@@ -134,22 +132,22 @@ export function detectCrisisSignals(): CrisisSignal[] {
   // Medication-style adherence is out of scope for this build; we instead flag
   // a sustained skipped-practice + low-mood pattern below via insights.
 
-  // Bipolar: elevated energy without sleep
-  if (conditions.includes('bipolar')) {
-    const energies = db
-      .prepare(`SELECT energy_level FROM mood_entries WHERE timestamp >= datetime('now','-7 days') AND energy_level IS NOT NULL`)
-      .all() as { energy_level: number }[];
-    const energyVals = energies.map((r) => r.energy_level);
-    const avgEnergy = mean(energyVals);
-    if (avgEnergy != null && avgEnergy >= 8 && avgSleep != null && avgSleep < 5) {
-      signals.push({
-        severity: 'info',
-        sources: ['energy', 'sleep'],
-        description:
-          'High energy combined with low sleep over the past week. If this feels unusual, note it for your clinician.',
-        recommendation: 'Maintain consistent sleep timing and avoid overstimulation.',
-      });
-    }
+  // Surface a neutral observation for anyone who records sustained high energy
+  // alongside short sleep. This is never conditioned on, or framed as, a
+  // diagnosis.
+  const energies = db
+    .prepare(`SELECT energy_level FROM mood_entries WHERE timestamp >= datetime('now','-7 days') AND energy_level IS NOT NULL`)
+    .all() as { energy_level: number }[];
+  const energyVals = energies.map((r) => r.energy_level);
+  const avgEnergy = mean(energyVals);
+  if (avgEnergy != null && avgEnergy >= 8 && avgSleep != null && avgSleep < 5) {
+    signals.push({
+      severity: 'info',
+      sources: ['energy', 'sleep'],
+      description: 'Your recent entries combine high energy with short sleep.',
+      recommendation:
+        'Consider protecting a regular sleep window and sharing the pattern with someone you trust if it feels unusual or concerning.',
+    });
   }
 
   const rank: Record<CrisisSignal['severity'], number> = { urgent: 0, moderate: 1, mild: 2, info: 3 };
@@ -181,11 +179,11 @@ function greetingFor(name: string): string {
 function energyForecast(snap: WellnessSnapshot): string {
   const e = snap.energyScore;
   const s = snap.sleepHours;
-  if (e == null && s == null) return 'Log a mood or a night of sleep and Hearth will start reading your rhythm.';
-  if (s != null && s < 5) return 'Running on little sleep. Treat today as a half-capacity day.';
-  if (e != null && e >= 7) return 'Energy looks high. A good day to start something that needs momentum.';
-  if (e != null && e <= 3) return 'Energy is low. Match tasks to that — small, kind, finishable.';
-  return 'A steady middle. Protect one block of focus and let the rest be flexible.';
+  if (e == null && s == null) return 'Add a check-in or a night of sleep to give Today more context.';
+  if (s != null && s < 5) return 'Short sleep is in your recent log. Choose a lighter plan if that matches how you feel.';
+  if (e != null && e >= 7) return 'Your recent energy entry is high. You still choose what belongs in today.';
+  if (e != null && e <= 3) return 'Your recent energy entry is low. A smaller next step may fit better.';
+  return 'Your recent entry sits in the middle. Use the budget you chose to decide what fits.';
 }
 
 export function dailyBriefing(): DailyBriefing {
@@ -211,7 +209,7 @@ export function dailyBriefing(): DailyBriefing {
   // Recommend tasks that fit remaining energy: cheapest spoon-cost first.
   const open = repo
     .listTasks(false)
-    .filter((t) => t.spoonCost <= Math.max(snap.spoonsRemaining, 2))
+    .filter((t) => t.spoonCost <= snap.spoonsRemaining)
     .slice(0, 3);
 
   return {

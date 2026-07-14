@@ -1,0 +1,22 @@
+# Hearth Blind-Spots Ledger
+
+_Reconciled with the working tree on 2026-07-14._
+
+1. **Distribution is not demand.** A Store identity and package do not prove a
+   live listing, traffic, or willingness to pay. Public evidence is still zero
+   revenue, zero releases, zero stars, and zero forks.
+2. **MIT changes the value proposition.** The official paid build can sell
+   packaging and convenience, not scarcity or exclusive access to the code.
+3. **Local-only is not the same as secure.** The database is not
+   application-level encrypted. Sensitive mental-health-adjacent text raises the
+   release bar even when it is never uploaded.
+4. **Personal summaries are not clinical reports.** The PDF is a reflection aid;
+   no clinician workflow, validation, HIPAA claim, or clinical outcome is proven.
+5. **The owner-contact constraint removes outbound.** Cold email, DMs, promises,
+   and posts cannot be automated. Built-in marketplace discovery is the only
+   currently approved stranger funnel.
+6. **A $4,000 target is not a forecast.** At $14.99 and a 15% Store fee, 314
+   sales are required to exceed $4,000 net. There is no evidence for that volume.
+7. **Policy and provenance remain gates.** Database protection, brand-asset
+   rights, support availability, and a fresh certified build must be resolved
+   before a paid binary is truthful to publish.

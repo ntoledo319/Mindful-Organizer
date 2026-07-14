@@ -15,6 +15,15 @@ import type {
   Settings,
   Trends,
   PresenceState,
+  ErpSession,
+  ErpInput,
+  DiaryCard,
+  DiaryCardInput,
+  Medication,
+  MedicationInput,
+  Gamification,
+  SessionSummaryExportResult,
+  PersonalDataExportResult,
 } from './types';
 
 // The full surface the renderer can call. Each method maps 1:1 to an IPC
@@ -23,6 +32,7 @@ export interface HearthApi {
   // tasks
   listTasks(includeCompleted: boolean): Promise<Task[]>;
   createTask(input: TaskInput): Promise<Task>;
+  replaceTaskWithSubtasks(id: number, subtasks: TaskInput[]): Promise<Task[]>;
   updateTask(id: number, patch: Partial<TaskInput>): Promise<Task>;
   toggleTask(id: number): Promise<Task>;
   deleteTask(id: number): Promise<void>;
@@ -50,16 +60,33 @@ export interface HearthApi {
   getSnapshot(): Promise<WellnessSnapshot>;
   getBriefing(): Promise<DailyBriefing>;
   getTrends(days: number): Promise<Trends>;
+  exportSessionSummary(days: number): Promise<SessionSummaryExportResult>;
 
   // settings
   getSettings(): Promise<Settings>;
   saveSettings(patch: Partial<Settings>): Promise<Settings>;
+  exportAllData(): Promise<PersonalDataExportResult>;
+  deleteAllData(): Promise<void>;
 
   // presence — the acting layer that reaches past Hearth's own window
   getPresence(): Promise<PresenceState>;
   setQuietActive(active: boolean): Promise<PresenceState>;
   startFocus(input: { seconds: number; intention?: string | null }): Promise<PresenceState>;
   endFocus(): Promise<PresenceState>;
+
+  // restored features
+  listErpSessions(limit: number): Promise<ErpSession[]>;
+  createErpSession(input: ErpInput): Promise<ErpSession>;
+  
+  listDiaryCards(limit: number): Promise<DiaryCard[]>;
+  createDiaryCard(input: DiaryCardInput): Promise<DiaryCard>;
+  
+  listMedications(): Promise<Medication[]>;
+  createMedication(input: MedicationInput): Promise<Medication>;
+  updateMedication(id: number, patch: Partial<MedicationInput>): Promise<Medication>;
+  deleteMedication(id: number): Promise<void>;
+  
+  getGamification(): Promise<Gamification>;
 
   // misc
   heroDataUrl(): Promise<string | null>;
@@ -68,6 +95,7 @@ export interface HearthApi {
 export const IPC_CHANNELS: (keyof HearthApi)[] = [
   'listTasks',
   'createTask',
+  'replaceTaskWithSubtasks',
   'updateTask',
   'toggleTask',
   'deleteTask',
@@ -85,11 +113,23 @@ export const IPC_CHANNELS: (keyof HearthApi)[] = [
   'getSnapshot',
   'getBriefing',
   'getTrends',
+  'exportSessionSummary',
   'getSettings',
   'saveSettings',
+  'exportAllData',
+  'deleteAllData',
   'getPresence',
   'setQuietActive',
   'startFocus',
   'endFocus',
+  'listErpSessions',
+  'createErpSession',
+  'listDiaryCards',
+  'createDiaryCard',
+  'listMedications',
+  'createMedication',
+  'updateMedication',
+  'deleteMedication',
+  'getGamification',
   'heroDataUrl',
 ];

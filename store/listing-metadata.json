@@ -1,22 +1,117 @@
 {
-  "_comment": "Microsoft Store listing for Hearth, as code. store-publish.yml feeds this to `msstore submission updateMetadata`. Edit here, commit, and the next publish run picks it up. Character ceilings: shortDescription <= 200, description <= 10000 (Partner Center limits).",
+  "_comment": "Manual Microsoft Store submission source. Draft only: no field in this file proves that a listing, price, support channel, package, or URL is live.",
+  "schemaVersion": 2,
+  "releaseState": "draft-not-publishable",
+  "positioning": "A privacy-first Windows energy planner for ADHD and other variable-capacity days.",
   "language": "en-us",
-  "name": "Hearth — Mindful Organizer",
-  "shortDescription": "A calm, offline-first organizer that budgets your energy, not just your time.",
-  "description": "Most organizers assume every hour is worth the same. Hearth doesn't. It's a calm desktop home for people living with ADHD, anxiety, depression, OCD, PTSD, or bipolar — built on one belief: your computer should adapt to your psychology, not the other way around.\n\nHearth reads how today actually feels and reshapes the day around it.\n\nToday — Open to a briefing drawn from your own recent data: an energy forecast, what Hearth noticed overnight, a quiet crisis banner when patterns warrant it, and one gentle next step instead of a wall of overdue.\n\nTasks — Every task carries an energy cost, not just a due date. Your daily budget shifts with your mood, sleep, and energy, and Hearth orders the work to fit the energy you actually have left — so a tired day never quietly becomes an overcommitted one.\n\nReflect — Quick mood, energy, and anxiety check-ins, sleep logs that compute their own duration, and a journal that asks nothing of you but a sentence.\n\nPractices — Box breathing with a visual pacer, 5-4-3-2-1 grounding, a body scan, and protected focus blocks, each with a before-and-after read on how you feel.\n\nRhythm — Mood, energy, and sleep trends across 7, 14, and 30 days. Patterns to notice, not a scoreboard to beat.\n\nCrisis plan — Your warning signs, what helps, trusted contacts, and a note to your future self — written once, kept close, surfaced the moment Hearth's conservative signals suggest you might need it.\n\nLight and dark themes, in warm cream and dark slate, so Hearth fits the room and the hour.\n\nYour data stays yours. Hearth is 100% offline: no account, no cloud, no telemetry, no network calls. Everything lives in a single SQLite database on your own machine and never leaves it unless you copy it yourself.\n\nHearth is a personal, mental-health-aware tool, not a medical device or a substitute for professional care. If you are in crisis, call or text 988 (US) or your local emergency number.",
-  "keywords": [
-    "mindfulness",
-    "mental health",
-    "task manager",
-    "spoon theory",
-    "energy",
-    "journal",
-    "mood tracker",
-    "ADHD",
-    "wellness",
-    "organizer"
+  "name": "Hearth",
+  "shortDescription": "Plan a realistic day around the energy you have, with no account, cloud, ads, or record sync.",
+  "description": "Hearth is a privacy-first Windows energy planner for ADHD and other variable-capacity days. It helps you make a realistic plan from the capacity you have, not the capacity a calendar assumes.\n\nCHOOSE YOUR CAPACITY\nSet a daily energy budget from 4 to 24. Hearth never infers or changes that budget from a diagnosis or check-in.\n\nPLAN BY ENERGY\nGive each task a priority, expected duration, and energy demand. Hearth estimates a spoon cost, subtracts completed work from the day's budget, and can show up to three open tasks whose recorded cost fits the energy left.\n\nSTART WITH TODAY\nRecent mood, energy, and sleep check-ins shape a plain-language daily briefing and one suggested practice. These are conservative local rules, not AI, diagnosis, treatment, or clinical monitoring.\n\nMAKE THE NEXT STEP SMALLER\nSmart Decompose can replace one task with a short set of starter steps in a single local transaction. Nothing is sent to a remote service.\n\nREVIEW YOUR OWN RHYTHM\nSee mood, energy, and sleep across 7, 14, or 30 days. When you request it, Hearth can save a personal session-summary PDF to a location you choose. The summary is a reflection aid, not a clinical record.\n\nLOCAL AND ENCRYPTED AT REST\nHearth has no account, advertising, record sync, cloud API, or app telemetry. SQLite runs in memory while Hearth is open. At rest, records are stored as authenticated AES-256-GCM snapshots with a random 256-bit key protected by Windows DPAPI through Electron safeStorage. Hearth fails closed if protected key storage is unavailable. During upgrades from older versions, a temporary encrypted migration backup is retired after two verified encrypted generations.\n\nThese protections are not an absolute security guarantee. Records and the key are decrypted in memory while the app is open, and Windows may copy memory into swap, hibernation, crash, or diagnostic storage. Someone controlling the signed-in Windows session may be able to access the same credential facility. User-requested JSON and PDF exports are plaintext, and deleting old files cannot guarantee removal from SSD recovery, snapshots, or backups. Read the privacy policy before entering sensitive information.\n\nSECONDARY TOOLS\nHearth also includes local check-ins, guided breathing, grounding, a body scan, focus blocks, and a user-written crisis plan. ERP, diary-card, and medication-reference modules are preserved outside the default navigation pending dedicated opt-in and safety review. Hearth does not issue medication reminders, monitor you, or guarantee crisis detection.\n\nHearth is personal organization and wellness software. It is not a medical device, healthcare or emergency service, diagnosis, treatment, or substitute for professional care. In a US crisis, call or text 988; in immediate danger, call the local emergency number.",
+  "productFeatures": [
+    "User-chosen 4–24 daily energy budget with estimated task costs",
+    "Up to three open tasks shown when their recorded cost fits the remaining budget",
+    "Local mood, energy, anxiety, and sleep check-ins",
+    "7, 14, and 30 day trends with user-requested PDF export",
+    "Transactional Smart Decompose for smaller starter steps",
+    "Guided breathing, grounding, body scan, and protected focus blocks",
+    "Authenticated AES-256-GCM snapshots with an OS-protected random key",
+    "No account, cloud API, ads, record sync, or app telemetry"
   ],
-  "copyrightAndTrademarkInfo": "Copyright © 2026 The Hearth Project",
-  "privacyPolicyUrl": "https://github.com/ntoledo319/Mindful-Organizer/blob/main/docs/PRIVACY.md",
-  "supportContact": "https://github.com/ntoledo319/Mindful-Organizer/issues"
+  "keywords": [
+    "ADHD planner",
+    "energy planner",
+    "spoon theory",
+    "offline task manager",
+    "focus planner",
+    "mood journal",
+    "variable capacity"
+  ],
+  "category": {
+    "primary": "Productivity",
+    "secondary": "Health + fitness",
+    "status": "recommended-for-owner-review"
+  },
+  "markets": {
+    "launch": [
+      "United States"
+    ],
+    "reason": "The first listing is en-US and its crisis-resource copy is written for the US. Expand only after localized emergency-resource and policy review."
+  },
+  "price": {
+    "model": "one-time",
+    "currency": "USD",
+    "amount": 14.99,
+    "status": "hypothesis-not-live",
+    "customerValue": "Official x64 MSIX packaging and Microsoft Store delivery; the source remains MIT licensed."
+  },
+  "ageRating": {
+    "status": "owner-must-complete-IARC-questionnaire",
+    "claimedRating": null,
+    "contentToDisclose": [
+      "Personal wellness and mental-health language",
+      "US 988 crisis-resource links",
+      "A user-authored crisis plan",
+      "An optional self-harm urge scale in a private diary card",
+      "Optional ERP-session notes",
+      "Medication names, doses, and usual times stored for reference only"
+    ],
+    "notPresent": [
+      "Advertising",
+      "Public user-generated content",
+      "Social interaction",
+      "Purchases inside the app",
+      "Clinical or emergency monitoring"
+    ]
+  },
+  "accessibility": {
+    "verifiedInSource": [
+      "Native keyboard-operable buttons, inputs, and sliders",
+      "Visible focus styling on primary controls",
+      "Semantic dialog, tab, switch, status, and alert markup in core flows",
+      "Light, dark, and match-system themes",
+      "Reduced-motion styles for the operating-system preference",
+      "Automated contrast checks for reviewed theme-token pairs"
+    ],
+    "storeDeclarations": [],
+    "blockedUntilVerified": [
+      "End-to-end Windows keyboard and screen-reader pass",
+      "High-contrast and color-contrast audit",
+      "Text scaling and minimum-window audit",
+      "Manual reduced-motion pass across release flows",
+      "Windows App Certification Kit result"
+    ]
+  },
+  "systemRequirements": {
+    "deviceFamily": "Windows Desktop",
+    "architecture": [
+      "x64"
+    ],
+    "package": "MSIX/AppX",
+    "minimumOperatingSystem": null,
+    "minimumOperatingSystemStatus": "Copy from the exact release package and verify it on supported Windows before submission.",
+    "networkRequiredForCoreUse": false,
+    "externalLinkExceptions": "Store, privacy, support, 988 web, tel, and sms links are handed to Windows when the user activates them.",
+    "input": [
+      "Keyboard",
+      "Mouse or trackpad"
+    ],
+    "storageRequirement": null,
+    "storageRequirementStatus": "Measure the exact release package plus a representative local database before submission."
+  },
+  "copyrightAndTrademarkInfo": "Copyright © 2026 Nicholas Toledo. Published by Toledo Technologies.",
+  "urls": {
+    "privacyPolicy": "https://github.com/ntoledo319/Mindful-Organizer/blob/main/docs/PRIVACY.md",
+    "terms": "https://github.com/ntoledo319/Mindful-Organizer/blob/main/docs/TERMS.md",
+    "refundPolicy": "https://github.com/ntoledo319/Mindful-Organizer/blob/main/docs/REFUNDS.md",
+    "source": "https://github.com/ntoledo319/Mindful-Organizer",
+    "support": null,
+    "plannedSupport": "https://github.com/ntoledo319/Mindful-Organizer/issues/new/choose",
+    "storeListing": null,
+    "storeListingPattern": "https://apps.microsoft.com/detail/9PLRSZZMFPJH"
+  },
+  "urlPublicationGate": "Merge the final policies to main, enable and test GitHub Issues, and verify every URL in a private browser before entering it in Partner Center.",
+  "screenshotPlan": "store/SCREENSHOTS.md",
+  "campaignPlan": "store/CAMPAIGNS.md",
+  "experimentPlan": "store/PRODUCT-PAGE-EXPERIMENTS.md",
+  "launchKit": "store/LAUNCH_KIT.md"
 }

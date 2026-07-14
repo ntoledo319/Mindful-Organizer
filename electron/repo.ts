@@ -1,6 +1,6 @@
 import type Database from 'better-sqlite3';
 import { getDb } from './db';
-import { estimateSpoonCost } from '../src/shared/spoons';
+import { estimateSpoonCost, normalizeDailySpoons } from '../src/shared/spoons';
 import type {
   Task,
   TaskInput,
@@ -30,6 +30,7 @@ const DEFAULT_SETTINGS: Settings = {
   quietDim: 0.4,
   focusGuard: true,
   nudges: true,
+  privacyConsentAt: null,
 };
 
 // --- row mappers -----------------------------------------------------------
@@ -119,8 +120,7 @@ function getTask(db: Database.Database, id: number): Task {
   return mapTask(row);
 }
 
-export function createTask(input: TaskInput): Task {
-  const db = getDb();
+function insertTask(db: Database.Database, input: TaskInput): Task {
   const energy = input.energyRequired ?? 5;
   const spoonCost = input.spoonCost ?? estimateSpoonCost(energy, input.estimatedDuration ?? null);
   const info = db
@@ -139,6 +139,22 @@ export function createTask(input: TaskInput): Task {
       spoon_cost: spoonCost,
     });
   return getTask(db, info.lastInsertRowid as number);
+}
+
+export function createTask(input: TaskInput): Task {
+  return insertTask(getDb(), input);
+}
+
+export function replaceTaskWithSubtasks(id: number, subtasks: TaskInput[]): Task[] {
+  if (!subtasks.length) throw new Error('At least one subtask is required');
+  const db = getDb();
+  const replace = db.transaction(() => {
+    getTask(db, id); // fail before writing if the source task no longer exists
+    const created = subtasks.map((subtask) => insertTask(db, subtask));
+    db.prepare('DELETE FROM tasks WHERE id = ?').run(id);
+    return created;
+  });
+  return replace();
 }
 
 export function updateTask(id: number, patch: Partial<TaskInput>): Task {
@@ -168,9 +184,46 @@ export function toggleTask(id: number): Task {
   const db = getDb();
   const cur = getTask(db, id);
   const completed = cur.completed ? 0 : 1;
+  
   db.prepare(
     `UPDATE tasks SET completed=?, completed_at=?, updated_at=datetime('now') WHERE id=?`,
   ).run(completed, completed ? new Date().toISOString() : null, id);
+  
+  // Gamification: Award XP when completed
+  if (completed) {
+    const xpGain = Math.round((cur.spoonCost || 1) * 10);
+    const g = getGamification();
+    const newXp = g.currentXp + xpGain;
+    let newLevel = g.currentLevel;
+    let remainingXp = newXp;
+    
+    // Level up logic (e.g. 100 XP per level)
+    const xpNeeded = newLevel * 100;
+    if (remainingXp >= xpNeeded) {
+      newLevel += 1;
+      remainingXp -= xpNeeded;
+    }
+    
+    db.prepare(`UPDATE gamification SET current_level=?, current_xp=?, total_xp=total_xp+? WHERE id=?`).run(
+      newLevel, remainingXp, xpGain, g.id
+    );
+  } else {
+    // Reverse XP if unchecking
+    const xpLoss = Math.round((cur.spoonCost || 1) * 10);
+    const g = getGamification();
+    let newXp = g.currentXp - xpLoss;
+    let newLevel = g.currentLevel;
+    if (newXp < 0 && newLevel > 1) {
+      newLevel -= 1;
+      newXp = (newLevel * 100) + newXp; // Add negative XP to previous level's cap
+    }
+    newXp = Math.max(0, newXp); // Floor at 0 for level 1
+    
+    db.prepare(`UPDATE gamification SET current_level=?, current_xp=?, total_xp=MAX(0, total_xp-?) WHERE id=?`).run(
+      newLevel, newXp, xpLoss, g.id
+    );
+  }
+  
   return getTask(db, id);
 }
 
@@ -312,12 +365,25 @@ function writeSetting(key: string, value: unknown): void {
     .run(key, JSON.stringify(value));
 }
 
+function normalizeConsentTimestamp(value: unknown): string | null {
+  if (typeof value !== 'string' || value.trim().length < 20) return null;
+  return Number.isNaN(Date.parse(value)) ? null : value;
+}
+
 export function getSettings(): Settings {
-  return { ...DEFAULT_SETTINGS, ...readSetting<Partial<Settings>>('app', {}) };
+  const stored = readSetting<Partial<Settings>>('app', {});
+  return {
+    ...DEFAULT_SETTINGS,
+    ...stored,
+    dailySpoons: normalizeDailySpoons(stored.dailySpoons ?? DEFAULT_SETTINGS.dailySpoons),
+    privacyConsentAt: normalizeConsentTimestamp(stored.privacyConsentAt),
+  };
 }
 
 export function saveSettings(patch: Partial<Settings>): Settings {
   const next = { ...getSettings(), ...patch };
+  next.dailySpoons = normalizeDailySpoons(next.dailySpoons);
+  next.privacyConsentAt = normalizeConsentTimestamp(next.privacyConsentAt);
   writeSetting('app', next);
   return next;
 }
@@ -340,4 +406,170 @@ export function saveCrisisPlan(plan: CrisisPlan): CrisisPlan {
 
 export function userConditions(): Condition[] {
   return getSettings().conditions;
+}
+
+// --- Structured reflection and local system features -----------------------
+
+import type {
+  ErpSession,
+  ErpInput,
+  DiaryCard,
+  DiaryCardInput,
+  Medication,
+  MedicationInput,
+  Gamification
+} from '../src/shared/types';
+
+function mapErpSession(r: Row): ErpSession {
+  return {
+    id: r.id as number,
+    targetObsession: r.target_obsession as string,
+    exposureActivity: r.exposure_activity as string,
+    preAnxiety: r.pre_anxiety as number,
+    postAnxiety: r.post_anxiety as number,
+    durationMinutes: r.duration_minutes as number,
+    notes: (r.notes as string) ?? null,
+    timestamp: r.timestamp as string,
+  };
+}
+
+export function listErpSessions(limit: number): ErpSession[] {
+  return getDb()
+    .prepare('SELECT * FROM erp_sessions ORDER BY timestamp DESC LIMIT ?')
+    .all(limit)
+    .map((r) => mapErpSession(r as Row));
+}
+
+export function createErpSession(input: ErpInput): ErpSession {
+  const db = getDb();
+  const info = db
+    .prepare(
+      `INSERT INTO erp_sessions (target_obsession, exposure_activity, pre_anxiety, post_anxiety, duration_minutes, notes)
+       VALUES (@target, @activity, @pre, @post, @duration, @notes)`
+    )
+    .run({
+      target: input.targetObsession,
+      activity: input.exposureActivity,
+      pre: input.preAnxiety,
+      post: input.postAnxiety,
+      duration: input.durationMinutes,
+      notes: input.notes ?? null,
+    });
+  return mapErpSession(db.prepare('SELECT * FROM erp_sessions WHERE id = ?').get(info.lastInsertRowid) as Row);
+}
+
+function mapDiaryCard(r: Row): DiaryCard {
+  return {
+    id: r.id as number,
+    date: r.date as string,
+    urgesSelfHarm: (r.urges_self_harm as number) ?? null,
+    urgesQuitTherapy: (r.urges_quit_therapy as number) ?? null,
+    emotionsSadness: (r.emotions_sadness as number) ?? null,
+    emotionsFear: (r.emotions_fear as number) ?? null,
+    skillsUsed: (r.skills_used as string) ?? null,
+    notes: (r.notes as string) ?? null,
+    timestamp: r.timestamp as string,
+  };
+}
+
+export function listDiaryCards(limit: number): DiaryCard[] {
+  return getDb()
+    .prepare('SELECT * FROM diary_cards ORDER BY date DESC LIMIT ?')
+    .all(limit)
+    .map((r) => mapDiaryCard(r as Row));
+}
+
+export function createDiaryCard(input: DiaryCardInput): DiaryCard {
+  const db = getDb();
+  const info = db
+    .prepare(
+      `INSERT INTO diary_cards (date, urges_self_harm, urges_quit_therapy, emotions_sadness, emotions_fear, skills_used, notes)
+       VALUES (@date, @harm, @quit, @sad, @fear, @skills, @notes)`
+    )
+    .run({
+      date: input.date,
+      harm: input.urgesSelfHarm ?? null,
+      quit: input.urgesQuitTherapy ?? null,
+      sad: input.emotionsSadness ?? null,
+      fear: input.emotionsFear ?? null,
+      skills: input.skillsUsed ?? null,
+      notes: input.notes ?? null,
+    });
+  return mapDiaryCard(db.prepare('SELECT * FROM diary_cards WHERE id = ?').get(info.lastInsertRowid) as Row);
+}
+
+function mapMedication(r: Row): Medication {
+  return {
+    id: r.id as number,
+    name: r.name as string,
+    dosage: r.dosage as string,
+    frequency: r.frequency as string,
+    reminderTime: (r.reminder_time as string) ?? null,
+    active: !!r.active,
+  };
+}
+
+export function listMedications(): Medication[] {
+  return getDb()
+    .prepare('SELECT * FROM medications ORDER BY name ASC')
+    .all()
+    .map((r) => mapMedication(r as Row));
+}
+
+export function createMedication(input: MedicationInput): Medication {
+  const db = getDb();
+  const info = db
+    .prepare(
+      `INSERT INTO medications (name, dosage, frequency, reminder_time, active)
+       VALUES (@name, @dosage, @frequency, @reminder_time, @active)`
+    )
+    .run({
+      name: input.name,
+      dosage: input.dosage,
+      frequency: input.frequency,
+      reminder_time: input.reminderTime ?? null,
+      active: input.active === false ? 0 : 1,
+    });
+  return mapMedication(db.prepare('SELECT * FROM medications WHERE id = ?').get(info.lastInsertRowid) as Row);
+}
+
+export function updateMedication(id: number, patch: Partial<MedicationInput>): Medication {
+  const db = getDb();
+  const cur = mapMedication(db.prepare('SELECT * FROM medications WHERE id = ?').get(id) as Row);
+  const merged = {
+    name: patch.name ?? cur.name,
+    dosage: patch.dosage ?? cur.dosage,
+    frequency: patch.frequency ?? cur.frequency,
+    reminder_time: patch.reminderTime !== undefined ? patch.reminderTime : cur.reminderTime,
+    active: (patch.active !== undefined ? patch.active : cur.active) ? 1 : 0,
+    id,
+  };
+  db.prepare(
+    `UPDATE medications SET name=@name, dosage=@dosage, frequency=@frequency,
+       reminder_time=@reminder_time, active=@active WHERE id=@id`
+  ).run(merged);
+  return mapMedication(db.prepare('SELECT * FROM medications WHERE id = ?').get(id) as Row);
+}
+
+export function deleteMedication(id: number): void {
+  getDb().prepare('DELETE FROM medications WHERE id = ?').run(id);
+}
+
+function mapGamification(r: Row): Gamification {
+  return {
+    id: r.id as number,
+    currentLevel: r.current_level as number,
+    currentXp: r.current_xp as number,
+    totalXp: r.total_xp as number,
+  };
+}
+
+export function getGamification(): Gamification {
+  const db = getDb();
+  let row = db.prepare('SELECT * FROM gamification LIMIT 1').get() as Row | undefined;
+  if (!row) {
+    db.prepare('INSERT INTO gamification (current_level, current_xp, total_xp) VALUES (1, 0, 0)').run();
+    row = db.prepare('SELECT * FROM gamification LIMIT 1').get() as Row;
+  }
+  return mapGamification(row);
 }

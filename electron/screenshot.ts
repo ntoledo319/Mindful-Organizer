@@ -7,6 +7,7 @@ import { BrowserWindow, ipcMain, nativeTheme } from 'electron';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { mkdirSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import * as repo from './repo';
 import { seedDemoData } from './devSeed';
 
@@ -22,14 +23,55 @@ interface Shot {
   route?: Route;
   theme: 'light' | 'dark';
   onboarded: boolean;
+  caption: string;
+}
+
+interface CapturedShot {
+  file: string;
+  route: Route | 'onboarding';
+  theme: 'light' | 'dark';
+  width: number;
+  height: number;
+  bytes: number;
+  sha256: string;
+  caption: string;
 }
 
 const SHOTS: Shot[] = [
-  { file: '01-today.png', route: 'dashboard', theme: 'light', onboarded: true },
-  { file: '02-tasks.png', route: 'tasks', theme: 'light', onboarded: true },
-  { file: '03-reflect.png', route: 'reflect', theme: 'light', onboarded: true },
-  { file: '04-rhythm.png', route: 'trends', theme: 'dark', onboarded: true },
-  { file: '05-onboarding.png', theme: 'light', onboarded: false },
+  {
+    file: '01-today.png',
+    route: 'dashboard',
+    theme: 'light',
+    onboarded: true,
+    caption: 'See the energy left today, a plain-language briefing, and open tasks whose recorded cost fits the remaining budget.',
+  },
+  {
+    file: '02-tasks.png',
+    route: 'tasks',
+    theme: 'light',
+    onboarded: true,
+    caption: 'Give work a priority, expected duration, and energy demand; Hearth estimates a spoon cost for the plan.',
+  },
+  {
+    file: '03-reflect.png',
+    route: 'reflect',
+    theme: 'light',
+    onboarded: true,
+    caption: 'Record mood, energy, anxiety, sleep, or a private journal entry in the local desktop app.',
+  },
+  {
+    file: '04-rhythm.png',
+    route: 'trends',
+    theme: 'dark',
+    onboarded: true,
+    caption: 'Review your own mood, energy, and sleep across 7, 14, or 30 days, then request a local PDF summary.',
+  },
+  {
+    file: '05-onboarding.png',
+    theme: 'light',
+    onboarded: false,
+    caption: 'Start without an account and review local-data consent before Hearth stores the information you enter.',
+  },
 ];
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -60,6 +102,17 @@ function loadApp(win: BrowserWindow): void {
 export async function runScreenshots(): Promise<void> {
   const outDir = process.env.HEARTH_SHOT_DIR || join(__dirname, '../screenshots');
   mkdirSync(outDir, { recursive: true });
+  const manifest: {
+    generatedAt: string;
+    buildRef: string | null;
+    containsFictionalDemoData: true;
+    images: CapturedShot[];
+  } = {
+    generatedAt: new Date().toISOString(),
+    buildRef: process.env.HEARTH_SHOT_BUILD_REF || null,
+    containsFictionalDemoData: true,
+    images: [],
+  };
 
   seedDemoData();
 
@@ -73,7 +126,7 @@ export async function runScreenshots(): Promise<void> {
       preload: join(__dirname, 'preload.cjs'),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: false,
+      sandbox: true,
       // The window is never shown (show:false); without this, Chromium throttles
       // timers/rAF on the hidden window and the route paint can lag the capture.
       backgroundThrottling: false,
@@ -92,6 +145,10 @@ export async function runScreenshots(): Promise<void> {
   for (const shot of SHOTS) {
     // The onboarding shot needs settings.onboarded=false; the rest need it true.
     repo.saveSettings({ onboarded: shot.onboarded });
+    const settings = repo.getSettings();
+    if (shot.onboarded && !settings.privacyConsentAt) {
+      throw new Error('Screenshot seed did not clear the explicit privacy-consent gate.');
+    }
 
     const ready = waitForReady();
     loadApp(win);
@@ -112,10 +169,26 @@ export async function runScreenshots(): Promise<void> {
     // of the requested content size, so pin the rect rather than trust the size.
     const image = await win.webContents.capturePage({ x: 0, y: 0, width: WIDTH, height: HEIGHT });
     const dest = join(outDir, shot.file);
-    writeFileSync(dest, image.toPNG());
+    const size = image.getSize();
+    if (size.width !== WIDTH || size.height !== HEIGHT) {
+      throw new Error('Screenshot capture did not produce the required 1920x1080 frame.');
+    }
+    const png = image.toPNG();
+    writeFileSync(dest, png);
+    manifest.images.push({
+      file: shot.file,
+      route: shot.route ?? 'onboarding',
+      theme: shot.theme,
+      width: size.width,
+      height: size.height,
+      bytes: png.byteLength,
+      sha256: createHash('sha256').update(png).digest('hex'),
+      caption: shot.caption,
+    });
     // eslint-disable-next-line no-console
     console.log(`[screenshot] wrote ${dest} (${image.getSize().width}x${image.getSize().height})`);
   }
 
+  writeFileSync(join(outDir, 'manifest.json'), JSON.stringify(manifest, null, 2));
   win.destroy();
 }

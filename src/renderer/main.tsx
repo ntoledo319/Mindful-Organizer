@@ -1,13 +1,26 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { StoreProvider } from './state/store';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import '@fontsource/fraunces/400.css';
+import '@fontsource/fraunces/600.css';
+import '@fontsource/atkinson-hyperlegible/400.css';
+import '@fontsource/atkinson-hyperlegible/700.css';
 import { App } from './App';
 import './styles/index.css';
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <StoreProvider>
+    <QueryClientProvider client={queryClient}>
       <App />
-    </StoreProvider>
+    </QueryClientProvider>
   </StrictMode>,
 );

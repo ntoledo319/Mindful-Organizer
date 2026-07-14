@@ -1,17 +1,29 @@
 import { describe, it, expect } from 'vitest';
-import { dailySpoonsFor, estimateSpoonCost, spoonWarning, DEFAULT_DAILY_SPOONS } from './spoons';
+import {
+  dailySpoonsFor,
+  estimateSpoonCost,
+  spoonWarning,
+  normalizeDailySpoons,
+  DEFAULT_DAILY_SPOONS,
+  MIN_DAILY_SPOONS,
+  MAX_DAILY_SPOONS,
+} from './spoons';
 
 describe('dailySpoonsFor', () => {
   it('returns the default with no conditions', () => {
     expect(dailySpoonsFor([])).toBe(DEFAULT_DAILY_SPOONS);
   });
 
-  it('reduces the budget for depression', () => {
-    expect(dailySpoonsFor(['depression'])).toBe(DEFAULT_DAILY_SPOONS - 3);
+  it('does not infer capacity from a condition label', () => {
+    expect(dailySpoonsFor(['depression'])).toBe(DEFAULT_DAILY_SPOONS);
+    expect(dailySpoonsFor(['adhd', 'anxiety', 'ptsd'])).toBe(DEFAULT_DAILY_SPOONS);
   });
 
-  it('never drops below the livable floor of 6', () => {
-    expect(dailySpoonsFor(['depression', 'ptsd', 'anxiety', 'ocd'])).toBe(6);
+  it('normalizes an explicitly chosen budget to supported bounds', () => {
+    expect(normalizeDailySpoons(3)).toBe(MIN_DAILY_SPOONS);
+    expect(normalizeDailySpoons(16.4)).toBe(16);
+    expect(normalizeDailySpoons(99)).toBe(MAX_DAILY_SPOONS);
+    expect(normalizeDailySpoons(Number.NaN)).toBe(DEFAULT_DAILY_SPOONS);
   });
 });
 

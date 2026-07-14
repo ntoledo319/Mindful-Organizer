@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
-import { useStore } from '../state/store';
-import type { MoodEntry, SleepLog, JournalEntry } from '@shared/types';
-import { PageHeader, Scale } from '../components/ui';
+import { InlineError, PageHeader, QueryErrorState, Scale, Spinner } from '../components/ui';
 import { formatDistanceToNow } from 'date-fns';
 
 type Tab = 'mood' | 'sleep' | 'journal';
@@ -19,56 +18,75 @@ export function Reflect() {
   return (
     <div>
       <PageHeader title="Reflect" subtitle="A quiet check-in. No streaks to break, no scores to chase." />
-      <div className="mb-5 flex gap-2">
+      <div className="mb-6 flex gap-2 border-b border-base-border dark:border-night-border pb-4" role="tablist" aria-label="Reflection categories">
         {(['mood', 'sleep', 'journal'] as Tab[]).map((t) => (
-          <button key={t} onClick={() => setTab(t)} className={tab === t ? 'btn-primary' : 'btn-ghost'}>
+          <button
+            key={t}
+            role="tab"
+            aria-selected={tab === t}
+            aria-controls={`panel-${t}`}
+            id={`tab-${t}`}
+            onClick={() => setTab(t)}
+            className={tab === t ? 'btn-primary' : 'btn-ghost'}
+          >
             {t[0].toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
-      {tab === 'mood' && <MoodPane />}
-      {tab === 'sleep' && <SleepPane />}
-      {tab === 'journal' && <JournalPane />}
+      <div id="panel-mood" role="tabpanel" aria-labelledby="tab-mood" hidden={tab !== 'mood'}>
+        {tab === 'mood' && <MoodPane />}
+      </div>
+      <div id="panel-sleep" role="tabpanel" aria-labelledby="tab-sleep" hidden={tab !== 'sleep'}>
+        {tab === 'sleep' && <SleepPane />}
+      </div>
+      <div id="panel-journal" role="tabpanel" aria-labelledby="tab-journal" hidden={tab !== 'journal'}>
+        {tab === 'journal' && <JournalPane />}
+      </div>
     </div>
   );
 }
 
 function MoodPane() {
-  const { bumpData } = useStore();
+  const queryClient = useQueryClient();
   const [mood, setMood] = useState(6);
   const [energy, setEnergy] = useState(5);
   const [anxiety, setAnxiety] = useState(3);
   const [notes, setNotes] = useState('');
-  const [recent, setRecent] = useState<MoodEntry[]>([]);
 
-  const load = () => void api.listMoods(8).then(setRecent);
-  useEffect(load, []);
+  const recentQuery = useQuery({
+    queryKey: ['moods'],
+    queryFn: () => api.listMoods(8),
+  });
+  const recent = recentQuery.data ?? [];
 
-  const save = () => {
-    void api
-      .createMood({ moodScore: mood, energyLevel: energy, anxietyLevel: anxiety, notes: notes || null })
-      .then(() => {
-        setNotes('');
-        load();
-        bumpData();
-      });
-  };
+  const saveMutation = useMutation({
+    mutationFn: () => api.createMood({ moodScore: mood, energyLevel: energy, anxietyLevel: anxiety, notes: notes || null }),
+    onSuccess: () => {
+      setNotes('');
+      queryClient.invalidateQueries({ queryKey: ['moods'] });
+      queryClient.invalidateQueries({ queryKey: ['snapshot'] });
+      queryClient.invalidateQueries({ queryKey: ['briefing'] });
+      queryClient.invalidateQueries({ queryKey: ['trends'] });
+    },
+  });
 
   return (
-    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-      <div className="glass-card space-y-5 p-6">
-        <Scale label="Mood" value={mood} onChange={setMood} />
-        <Scale label="Energy" value={energy} onChange={setEnergy} tone="lavender" />
-        <Scale label="Anxiety" value={anxiety} onChange={setAnxiety} min={0} tone="ember" />
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="surface-card space-y-6 p-7">
+        <Scale label="Mood" value={mood} onChange={setMood} tone="brand" />
+        <Scale label="Energy" value={energy} onChange={setEnergy} tone="success" />
+        <Scale label="Anxiety" value={anxiety} onChange={setAnxiety} min={0} tone="error" />
         <textarea
           className="field min-h-[72px] resize-none"
           placeholder="Anything worth noting? (optional)"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
+          aria-label="Notes for check-in"
         />
-        <button className="btn-primary w-full" onClick={save}>
-          Save check-in
+        <button className="btn-primary w-full" onClick={() => saveMutation.mutate()} disabled={saveMutation.isPending}>
+          {saveMutation.isPending ? 'Saving...' : 'Save check-in'}
         </button>
+        {saveMutation.isError && <InlineError>Hearth could not save this check-in. Try again.</InlineError>}
       </div>
       <RecentList
         title="Recent check-ins"
@@ -79,50 +97,59 @@ function MoodPane() {
           secondary: relTime(m.timestamp),
           note: m.notes,
         }))}
+        loading={recentQuery.isLoading}
+        error={recentQuery.isError}
+        onRetry={() => void recentQuery.refetch()}
       />
     </div>
   );
 }
 
 function SleepPane() {
-  const { bumpData } = useStore();
+  const queryClient = useQueryClient();
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [bedtime, setBedtime] = useState('23:00');
   const [wake, setWake] = useState('07:00');
   const [quality, setQuality] = useState(6);
-  const [recent, setRecent] = useState<SleepLog[]>([]);
 
-  const load = () => void api.listSleep(8).then(setRecent);
-  useEffect(load, []);
+  const recentQuery = useQuery({
+    queryKey: ['sleep'],
+    queryFn: () => api.listSleep(8),
+  });
+  const recent = recentQuery.data ?? [];
 
-  const save = () => {
-    void api.createSleep({ date, bedtime, wakeTime: wake, quality }).then(() => {
-      load();
-      bumpData();
-    });
-  };
+  const saveMutation = useMutation({
+    mutationFn: () => api.createSleep({ date, bedtime, wakeTime: wake, quality }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sleep'] });
+      queryClient.invalidateQueries({ queryKey: ['snapshot'] });
+      queryClient.invalidateQueries({ queryKey: ['briefing'] });
+      queryClient.invalidateQueries({ queryKey: ['trends'] });
+    },
+  });
 
   return (
-    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-      <div className="glass-card space-y-4 p-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="surface-card space-y-5 p-7">
         <label className="block">
-          <span className="mb-1.5 block text-sm font-medium text-charcoal-soft dark:text-cream/70">Night of</span>
+          <span className="mb-2 block text-sm font-medium text-text-primary dark:text-night-text">Night of</span>
           <input type="date" className="field" value={date} onChange={(e) => setDate(e.target.value)} />
         </label>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-4">
           <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-charcoal-soft dark:text-cream/70">Bedtime</span>
+            <span className="mb-2 block text-sm font-medium text-text-primary dark:text-night-text">Bedtime</span>
             <input type="time" className="field" value={bedtime} onChange={(e) => setBedtime(e.target.value)} />
           </label>
           <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-charcoal-soft dark:text-cream/70">Woke</span>
+            <span className="mb-2 block text-sm font-medium text-text-primary dark:text-night-text">Woke</span>
             <input type="time" className="field" value={wake} onChange={(e) => setWake(e.target.value)} />
           </label>
         </div>
-        <Scale label="How rested?" value={quality} onChange={setQuality} />
-        <button className="btn-primary w-full" onClick={save}>
-          Log sleep
+        <Scale label="How rested?" value={quality} onChange={setQuality} tone="brand" />
+        <button className="btn-primary w-full" onClick={() => saveMutation.mutate()} disabled={saveMutation.isPending}>
+          {saveMutation.isPending ? 'Logging...' : 'Log sleep'}
         </button>
+        {saveMutation.isError && <InlineError>Hearth could not save this sleep log. Try again.</InlineError>}
       </div>
       <RecentList
         title="Recent nights"
@@ -133,61 +160,85 @@ function SleepPane() {
           secondary: s.date,
           note: null,
         }))}
+        loading={recentQuery.isLoading}
+        error={recentQuery.isError}
+        onRetry={() => void recentQuery.refetch()}
       />
     </div>
   );
 }
 
 function JournalPane() {
-  const { bumpData } = useStore();
+  const queryClient = useQueryClient();
   const [prompt] = useState(() => JOURNAL_PROMPTS[Math.floor(Math.random() * JOURNAL_PROMPTS.length)]);
   const [content, setContent] = useState('');
-  const [entries, setEntries] = useState<JournalEntry[]>([]);
 
-  const load = () => void api.listJournal(10).then(setEntries);
-  useEffect(load, []);
+  const entriesQuery = useQuery({
+    queryKey: ['journal'],
+    queryFn: () => api.listJournal(10),
+  });
+  const entries = entriesQuery.data ?? [];
 
-  const save = () => {
-    if (!content.trim()) return;
-    void api.createJournal({ content: content.trim(), prompt }).then(() => {
+  const saveMutation = useMutation({
+    mutationFn: () => api.createJournal({ content: content.trim(), prompt }),
+    onSuccess: () => {
       setContent('');
-      load();
-      bumpData();
-    });
-  };
+      queryClient.invalidateQueries({ queryKey: ['journal'] });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: api.deleteJournal,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['journal'] });
+    },
+  });
 
   return (
-    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-      <div className="glass-card space-y-3 p-6">
-        <p className="font-display text-lg italic text-sage dark:text-eucalyptus">{prompt}</p>
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="surface-card space-y-4 p-7 relative">
+        <p className="font-display text-xl italic text-brand dark:text-night-brand">{prompt}</p>
         <textarea
-          className="field min-h-[180px] resize-none leading-relaxed"
+          className="field min-h-[220px] resize-none leading-relaxed text-base"
           placeholder="Write as much or as little as you like…"
           value={content}
           onChange={(e) => setContent(e.target.value)}
+          aria-label="Journal entry text"
         />
-        <button className="btn-primary w-full" onClick={save} disabled={!content.trim()}>
-          Keep this entry
+        <button 
+          className="btn-primary w-full" 
+          onClick={() => saveMutation.mutate()} 
+          disabled={!content.trim() || saveMutation.isPending}
+        >
+          {saveMutation.isPending ? 'Saving...' : 'Keep this entry'}
         </button>
+        {saveMutation.isError && <InlineError>Hearth could not save this entry. Try again.</InlineError>}
       </div>
-      <div className="space-y-2">
-        {entries.length === 0 ? (
-          <div className="glass-card px-5 py-8 text-center text-sm text-charcoal-mute dark:text-cream/50">
+      <div className="space-y-3">
+        {entriesQuery.isLoading ? (
+          <Spinner />
+        ) : entriesQuery.isError ? (
+          <QueryErrorState title="Journal entries didn't load" onRetry={() => void entriesQuery.refetch()} />
+        ) : entries.length === 0 ? (
+          <div className="surface-card px-6 py-10 text-center text-sm text-text-muted dark:text-night-muted/70">
             Entries stay on this machine, only for you.
           </div>
         ) : (
           entries.map((e) => (
-            <div key={e.id} className="glass-card group px-5 py-4">
-              <div className="flex items-start justify-between gap-2">
-                <p className="text-sm leading-relaxed text-charcoal-soft dark:text-cream/75">{e.content}</p>
+            <div key={e.id} className="surface-card group px-6 py-5">
+              <div className="flex items-start justify-between gap-3">
+                <p className="text-base leading-relaxed text-text-primary dark:text-night-text/90">{e.content}</p>
                 <button
-                  onClick={() => void api.deleteJournal(e.id).then(load)}
-                  className="shrink-0 text-xs text-charcoal-mute opacity-0 transition group-hover:opacity-100 hover:text-ember"
+                  onClick={() => {
+                    if (window.confirm('Delete this journal entry? This cannot be undone.')) deleteMutation.mutate(e.id);
+                  }}
+                  className="shrink-0 rounded-soft px-1 text-xs font-medium text-text-muted opacity-0 transition group-hover:opacity-100 hover:text-semantic-error focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-semantic-error dark:text-night-muted dark:hover:text-night-error"
+                  aria-label="Delete entry"
                 >
                   Remove
                 </button>
               </div>
-              <p className="mt-2 text-xs text-charcoal-mute dark:text-cream/40">{relTime(e.timestamp)}</p>
+              <p className="mt-3 text-xs text-text-muted dark:text-night-muted">{relTime(e.timestamp)}</p>
             </div>
           ))
         )}
@@ -200,23 +251,33 @@ function RecentList({
   title,
   empty,
   items,
+  loading,
+  error,
+  onRetry,
 }: {
   title: string;
   empty: string;
   items: { id: number; primary: string; secondary: string; note: string | null }[];
+  loading: boolean;
+  error: boolean;
+  onRetry: () => void;
 }) {
   return (
     <div>
-      <h3 className="mb-3 font-display text-lg font-semibold text-charcoal dark:text-cream">{title}</h3>
-      {items.length === 0 ? (
-        <div className="glass-card px-5 py-8 text-center text-sm text-charcoal-mute dark:text-cream/50">{empty}</div>
+      <h3 className="mb-4 font-display text-xl font-medium text-text-primary dark:text-night-text">{title}</h3>
+      {loading ? (
+        <Spinner />
+      ) : error ? (
+        <QueryErrorState title={`${title} didn't load`} onRetry={onRetry} />
+      ) : items.length === 0 ? (
+        <div className="surface-card px-6 py-10 text-center text-sm text-text-muted dark:text-night-muted">{empty}</div>
       ) : (
-        <ul className="space-y-2">
+        <ul className="space-y-3">
           {items.map((it) => (
-            <li key={it.id} className="glass-card px-4 py-3">
-              <p className="text-sm font-medium text-charcoal dark:text-cream">{it.primary}</p>
-              <p className="text-xs text-charcoal-mute dark:text-cream/40">{it.secondary}</p>
-              {it.note && <p className="mt-1 text-sm text-charcoal-soft dark:text-cream/60">{it.note}</p>}
+            <li key={it.id} className="surface-card px-5 py-4">
+              <p className="text-sm font-medium text-text-primary dark:text-night-text">{it.primary}</p>
+              <p className="mt-0.5 text-xs text-text-muted dark:text-night-muted">{it.secondary}</p>
+              {it.note && <p className="mt-2 text-sm text-text-muted dark:text-night-text/80 leading-snug">{it.note}</p>}
             </li>
           ))}
         </ul>

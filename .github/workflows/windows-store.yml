@@ -5,12 +5,17 @@ on:
   push:
     branches:
       - main
+      - "feature/**"
     paths:
+      - ".github/workflows/windows-store.yml"
       - "package.json"
+      - "package-lock.json"
+      - "electron-builder.cjs"
       - "electron/**"
       - "src/**"
-      - "scripts/generate-windows-store-assets.mjs"
+      - "scripts/**"
       - "resources/**"
+      - "store/**"
 
 permissions:
   contents: read
@@ -26,11 +31,17 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.12
           cache: npm
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Scan repository for committed secrets
+        run: npm run secrets
+
+      - name: Validate Store and landing content
+        run: npm run store:validate
 
       - name: Check Store identity
         id: identity
@@ -42,10 +53,24 @@ jobs:
             echo "::notice::store/identity.json still contains PLACEHOLDER values — building everything except the appx package. Fill store/identity.json to produce an MSIX."
           fi
 
+      - name: Reproduce rights-clean brand assets
+        run: |
+          npm run brand-assets
+          git diff --exit-code -- resources/app-icon.png resources/hero-illustration.png
+
       - name: Generate icons and Windows Store assets
         run: |
           npm run icons
           npm run winstore-assets
+
+      - name: Verify redistributed licenses
+        run: npm run licenses
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Lint
+        run: npm run lint
 
       - name: Typecheck
         run: npm run typecheck
@@ -56,9 +81,112 @@ jobs:
       - name: Build renderer + main
         run: npm run vite:build
 
+      - name: Capture exact-commit Store screenshots
+        run: npm run screenshots
+        env:
+          HEARTH_SHOT_BUILD_REF: ${{ github.sha }}
+
+      - name: Upload Store screenshots and manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: hearth-store-screenshots
+          path: store/screenshots/*
+          if-no-files-found: error
+          retention-days: 30
+
       - name: Package MSIX (appx)
         if: steps.identity.outputs.real == 'true'
         run: npx electron-builder --win appx --x64 --publish never
+
+      - name: Validate AppX structure, identity, and payload
+        if: steps.identity.outputs.real == 'true'
+        shell: pwsh
+        run: |
+          $package = Get-ChildItem release -Filter *.appx | Select-Object -First 1
+          if (-not $package) { throw 'No AppX package was generated.' }
+
+          $makeAppx = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\makeappx.exe" |
+            Sort-Object FullName -Descending |
+            Select-Object -First 1
+          if (-not $makeAppx) { throw 'makeappx.exe was not found on the hosted Windows image.' }
+          & $makeAppx.FullName validate /p $package.FullName
+          if ($LASTEXITCODE -ne 0) { throw "makeappx validation failed with exit code $LASTEXITCODE." }
+
+          New-Item -ItemType Directory -Force artifacts | Out-Null
+          $zip = Join-Path $PWD 'artifacts\hearth-appx.zip'
+          $expanded = Join-Path $PWD 'artifacts\appx-expanded'
+          Copy-Item $package.FullName $zip
+          Expand-Archive -Path $zip -DestinationPath $expanded -Force
+
+          [xml]$manifest = Get-Content (Join-Path $expanded 'AppxManifest.xml')
+          $expected = Get-Content store/identity.json | ConvertFrom-Json
+          $actualIdentity = $manifest.Package.Identity
+          if ($actualIdentity.Name -ne $expected.identityName) {
+            throw "Identity mismatch: expected $($expected.identityName), got $($actualIdentity.Name)."
+          }
+          if ($actualIdentity.Publisher -ne $expected.publisher) {
+            throw 'Publisher mismatch between AppxManifest.xml and store/identity.json.'
+          }
+
+          $executable = $manifest.Package.Applications.Application.Executable
+          if (-not (Test-Path (Join-Path $expanded $executable))) {
+            throw "Packaged executable is missing: $executable"
+          }
+          foreach ($required in @('resources\LICENSE', 'resources\THIRD_PARTY_NOTICES.md', 'resources\BRAND_PROVENANCE.md')) {
+            if (-not (Test-Path (Join-Path $expanded $required))) {
+              throw "Required packaged disclosure is missing: $required"
+            }
+          }
+
+          $validationData = Join-Path $PWD 'tmp\windows-release-validation'
+          New-Item -ItemType Directory -Force $validationData | Out-Null
+          New-Item -ItemType File -Force (Join-Path $validationData '.hearth-release-validation') | Out-Null
+          $env:HEARTH_RELEASE_VALIDATION = '1'
+          $env:HEARTH_DATA_DIR = $validationData
+          $executablePath = Join-Path $expanded $executable
+          $validationProcess = Start-Process -FilePath $executablePath -WorkingDirectory (Split-Path $executablePath) -PassThru
+          if (-not $validationProcess.WaitForExit(120000)) {
+            Stop-Process -Id $validationProcess.Id -Force -ErrorAction SilentlyContinue
+            throw 'Packaged Hearth did not complete its Windows data-lifecycle validation within 120 seconds.'
+          }
+          $validationProcess.Refresh()
+          if ($validationProcess.ExitCode -ne 0) {
+            throw "Packaged Hearth data-lifecycle validation exited with code $($validationProcess.ExitCode)."
+          }
+          $validationReport = Join-Path $validationData 'release-validation.json'
+          if (-not (Test-Path $validationReport)) {
+            throw 'Packaged Hearth did not produce release-validation.json.'
+          }
+          $validation = Get-Content $validationReport | ConvertFrom-Json
+          if ($validation.status -ne 'passed' -or $validation.platform -ne 'win32' -or $validation.architecture -ne 'x64') {
+            throw 'Packaged Hearth release validation report did not record a passing Windows x64 result.'
+          }
+          Copy-Item $validationReport 'artifacts\release-validation.json'
+          Remove-Item Env:\HEARTH_RELEASE_VALIDATION -ErrorAction SilentlyContinue
+          Remove-Item Env:\HEARTH_DATA_DIR -ErrorAction SilentlyContinue
+          Remove-Item $validationData -Recurse -Force -ErrorAction SilentlyContinue
+
+          $smokeData = Join-Path $PWD 'tmp\windows-smoke-data'
+          New-Item -ItemType Directory -Force $smokeData | Out-Null
+          $env:HEARTH_SMOKE = '1'
+          $env:HEARTH_DATA_DIR = $smokeData
+          $process = Start-Process -FilePath $executablePath -WorkingDirectory (Split-Path $executablePath) -PassThru
+          if (-not $process.WaitForExit(60000)) {
+            Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+            throw 'Packaged Hearth did not complete its renderer smoke check within 60 seconds.'
+          }
+          $process.Refresh()
+          if ($process.ExitCode -ne 0) {
+            throw "Packaged Hearth smoke check exited with code $($process.ExitCode)."
+          }
+          Remove-Item Env:\HEARTH_SMOKE -ErrorAction SilentlyContinue
+          Remove-Item Env:\HEARTH_DATA_DIR -ErrorAction SilentlyContinue
+          Remove-Item $smokeData -Recurse -Force -ErrorAction SilentlyContinue
+
+          $hash = (Get-FileHash $package.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  $($package.Name)" | Set-Content 'artifacts\hearth-appx.sha256.txt'
+          Remove-Item $zip -Force
+          Remove-Item $expanded -Recurse -Force
 
       - name: Collect MSIX artifact
         if: steps.identity.outputs.real == 'true'
