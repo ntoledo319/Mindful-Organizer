@@ -37,6 +37,53 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Electron 43 downloads its runtime lazily on first require. Fetch the
+      # exact pinned archive ourselves so CI cannot disappear into an
+      # unbounded, opaque download during screenshot capture. The archive is
+      # resolved through GitHub's API and verified against Electron's published
+      # npm-package checksum before it is ever executed or packaged.
+      - name: Install and verify pinned Electron runtime
+        shell: pwsh
+        timeout-minutes: 7
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = node -p "require('./node_modules/electron/package.json').version"
+          $artifact = "electron-v$version-win32-x64.zip"
+          $expected = node -e "const sums=require('./node_modules/electron/checksums.json'); process.stdout.write(sums[process.argv[1]] || '')" $artifact
+          if (-not $expected) { throw "Electron checksum is missing for $artifact." }
+
+          $headers = @{
+            Authorization = "Bearer $env:GH_TOKEN"
+            Accept = 'application/vnd.github+json'
+            'X-GitHub-Api-Version' = '2022-11-28'
+            'User-Agent' = 'Hearth-Windows-CI'
+          }
+          $release = Invoke-RestMethod -Headers $headers -Uri "https://api.github.com/repos/electron/electron/releases/tags/v$version"
+          $asset = $release.assets | Where-Object { $_.name -eq $artifact } | Select-Object -First 1
+          if (-not $asset) { throw "Electron release v$version has no $artifact asset." }
+
+          New-Item -ItemType Directory -Force tmp | Out-Null
+          $archive = Join-Path $PWD "tmp\$artifact"
+          & curl.exe --fail --location --retry 4 --retry-all-errors --connect-timeout 20 --max-time 300 `
+            -H "Authorization: Bearer $env:GH_TOKEN" `
+            -H 'Accept: application/octet-stream' `
+            -H 'X-GitHub-Api-Version: 2022-11-28' `
+            "https://api.github.com/repos/electron/electron/releases/assets/$($asset.id)?run=$env:GITHUB_RUN_ID" `
+            --output $archive
+          if ($LASTEXITCODE -ne 0) { throw "Electron runtime download failed with exit code $LASTEXITCODE." }
+
+          $actual = (Get-FileHash $archive -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actual -ne $expected) { throw "Electron runtime checksum mismatch: expected $expected, got $actual." }
+
+          $dist = Join-Path $PWD 'node_modules\electron\dist'
+          Remove-Item $dist -Recurse -Force -ErrorAction SilentlyContinue
+          Expand-Archive -Path $archive -DestinationPath $dist -Force
+          Set-Content -NoNewline -Path 'node_modules\electron\path.txt' -Value 'electron.exe'
+          if (-not (Test-Path (Join-Path $dist 'electron.exe'))) { throw 'Verified Electron runtime did not contain electron.exe.' }
+          "HEARTH_ELECTRON_DIST=$dist" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Remove-Item $archive -Force
+
       - name: Scan repository for committed secrets
         run: npm run secrets
 
@@ -82,6 +129,7 @@ jobs:
         run: npm run vite:build
 
       - name: Capture exact-commit Store screenshots
+        timeout-minutes: 5
         run: npm run screenshots
         env:
           HEARTH_SHOT_BUILD_REF: ${{ github.sha }}

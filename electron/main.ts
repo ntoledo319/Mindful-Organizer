@@ -271,11 +271,10 @@ function registerIpc(): void {
   }
 }
 
-// Screenshot mode runs on CI hosts where hardware acceleration may be
-// unavailable. Disabling hardware acceleration lets Chromium fall back to its
-// software renderer; do not disable that fallback or weaken the sandbox.
-// This must be set before app readiness, so it lives outside whenReady.
-if (SCREENSHOT_MODE) {
+// Linux screenshot hosts may have no usable GPU. Disable acceleration there so
+// Chromium uses its software renderer; Windows CI retains its normal compositor
+// because capturePage requires a live painted surface. This must run pre-ready.
+if (SCREENSHOT_MODE && process.platform === 'linux') {
   app.disableHardwareAcceleration();
   app.commandLine.appendSwitch('disable-gpu');
 }

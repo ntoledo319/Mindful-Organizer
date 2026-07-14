@@ -52,16 +52,31 @@ const child = spawn(electronBinary, [root], {
   stdio: 'inherit',
 });
 
+let finished = false;
+const timeout = setTimeout(() => {
+  if (finished) return;
+  console.error('Screenshot harness exceeded 150 seconds; terminating the Electron process.');
+  child.kill();
+  process.exitCode = 1;
+}, 150_000);
+
+function finish(code) {
+  if (finished) return;
+  finished = true;
+  clearTimeout(timeout);
+  process.exitCode = code;
+}
+
 child.once('error', (error) => {
   console.error(`Could not start Electron screenshot harness: ${error.message}`);
-  process.exitCode = 1;
+  finish(1);
 });
 
 child.once('exit', (code, signal) => {
   if (signal) {
     console.error(`Screenshot harness ended from signal ${signal}.`);
-    process.exitCode = 1;
+    finish(1);
     return;
   }
-  process.exitCode = code ?? 1;
+  finish(code ?? 1);
 });

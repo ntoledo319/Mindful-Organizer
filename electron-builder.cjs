@@ -24,6 +24,12 @@ if (storeReady) {
 module.exports = {
   appId: 'io.hearthproject.hearth',
   productName: 'Hearth',
+  // Windows CI preinstalls and checksum-verifies the exact Electron runtime so
+  // screenshot capture and packaging share one proven binary. Local builds
+  // retain electron-builder's normal download behavior when this is unset.
+  ...(process.env.HEARTH_ELECTRON_DIST
+    ? { electronDist: process.env.HEARTH_ELECTRON_DIST }
+    : {}),
   copyright: 'Copyright © 2026 Nicholas Toledo',
   directories: {
     output: 'release',

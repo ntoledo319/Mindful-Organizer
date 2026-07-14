@@ -76,27 +76,46 @@ const SHOTS: Shot[] = [
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-// Resolve on the next 'screenshot:ready' from the renderer, or after a timeout
-// so a renderer that never signals can't wedge the whole run.
-function waitForReady(timeoutMs = 8000): Promise<void> {
-  return new Promise((resolve) => {
+function withTimeout<T>(promise: Promise<T>, label: string, timeoutMs = 20_000): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(
+      () => reject(new Error(`${label} exceeded ${timeoutMs / 1000} seconds.`)),
+      timeoutMs,
+    );
+    promise.then(
+      (value) => {
+        clearTimeout(timeout);
+        resolve(value);
+      },
+      (error: unknown) => {
+        clearTimeout(timeout);
+        reject(error);
+      },
+    );
+  });
+}
+
+// Resolve on the next 'screenshot:ready' from the renderer. A missing signal is
+// a failed proof, not permission to capture a potentially blank Store image.
+function waitForReady(timeoutMs = 20_000): Promise<void> {
+  return new Promise((resolve, reject) => {
     const done = () => {
       clearTimeout(t);
       ipcMain.removeListener('screenshot:ready', done);
       resolve();
     };
     const t = setTimeout(() => {
-      console.warn('[screenshot] waitForReady timed out; proceeding anyway');
-      done();
+      ipcMain.removeListener('screenshot:ready', done);
+      reject(new Error(`Renderer did not signal screenshot readiness within ${timeoutMs / 1000} seconds.`));
     }, timeoutMs);
     ipcMain.once('screenshot:ready', done);
   });
 }
 
-function loadApp(win: BrowserWindow): void {
+function loadApp(win: BrowserWindow): Promise<void> {
   const devServer = process.env.VITE_DEV_SERVER_URL;
-  if (devServer) void win.loadURL(devServer);
-  else void win.loadFile(join(process.env.DIST!, 'index.html'));
+  if (devServer) return win.loadURL(devServer);
+  return win.loadFile(join(process.env.DIST!, 'index.html'));
 }
 
 export async function runScreenshots(): Promise<void> {
@@ -119,7 +138,10 @@ export async function runScreenshots(): Promise<void> {
   const win = new BrowserWindow({
     width: WIDTH,
     height: HEIGHT,
-    show: false,
+    // Windows hosted runners can stop painting a permanently hidden surface.
+    // Showing the frameless content window keeps capturePage deterministic; it
+    // never changes the captured content rectangle.
+    show: process.platform === 'win32',
     useContentSize: true, // 1920x1080 of actual web content, no chrome inset
     backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C201D' : '#F5F0E6',
     webPreferences: {
@@ -142,53 +164,61 @@ export async function runScreenshots(): Promise<void> {
     console.error('[screenshot] render-process-gone', details.reason),
   );
 
-  for (const shot of SHOTS) {
-    // The onboarding shot needs settings.onboarded=false; the rest need it true.
-    repo.saveSettings({ onboarded: shot.onboarded });
-    const settings = repo.getSettings();
-    if (shot.onboarded && !settings.privacyConsentAt) {
-      throw new Error('Screenshot seed did not clear the explicit privacy-consent gate.');
+  try {
+    for (const shot of SHOTS) {
+      // The onboarding shot needs settings.onboarded=false; the rest need it true.
+      repo.saveSettings({ onboarded: shot.onboarded });
+      const settings = repo.getSettings();
+      if (shot.onboarded && !settings.privacyConsentAt) {
+        throw new Error('Screenshot seed did not clear the explicit privacy-consent gate.');
+      }
+
+      const ready = waitForReady();
+      await Promise.all([
+        withTimeout(loadApp(win), `Loading ${shot.file}`),
+        ready, // app shell mounted (and read the current settings)
+      ]);
+
+      // Every shot waits for the renderer's settled signal. The onboarding shot
+      // carries no route but still loads the hero illustration — a multi-megabyte
+      // PNG that must finish decoding before the frame is clean — so it cannot
+      // rely on a fixed delay (the decode races the capture and the gradient
+      // fallback gets captured instead). The renderer signals only once the route
+      // has painted and any hero image has decoded.
+      const settled = waitForReady();
+      win.webContents.send('screenshot:goto', { route: shot.route, theme: shot.theme });
+      await settled;
+
+      await delay(500); // a final beat for fonts/images
+      // Capture an exact 1920x1080 rect — the xvfb backing buffer is one px short
+      // of the requested content size, so pin the rect rather than trust the size.
+      const image = await withTimeout(
+        win.webContents.capturePage({ x: 0, y: 0, width: WIDTH, height: HEIGHT }),
+        `Capturing ${shot.file}`,
+      );
+      const dest = join(outDir, shot.file);
+      const size = image.getSize();
+      if (size.width !== WIDTH || size.height !== HEIGHT) {
+        throw new Error('Screenshot capture did not produce the required 1920x1080 frame.');
+      }
+      const png = image.toPNG();
+      writeFileSync(dest, png);
+      manifest.images.push({
+        file: shot.file,
+        route: shot.route ?? 'onboarding',
+        theme: shot.theme,
+        width: size.width,
+        height: size.height,
+        bytes: png.byteLength,
+        sha256: createHash('sha256').update(png).digest('hex'),
+        caption: shot.caption,
+      });
+      // eslint-disable-next-line no-console
+      console.log(`[screenshot] wrote ${dest} (${image.getSize().width}x${image.getSize().height})`);
     }
 
-    const ready = waitForReady();
-    loadApp(win);
-    await ready; // app shell mounted (and read the current settings)
-
-    // Every shot waits for the renderer's settled signal. The onboarding shot
-    // carries no route but still loads the hero illustration — a multi-megabyte
-    // PNG that must finish decoding before the frame is clean — so it cannot
-    // rely on a fixed delay (the decode races the capture and the gradient
-    // fallback gets captured instead). The renderer signals only once the route
-    // has painted and any hero image has decoded.
-    const settled = waitForReady();
-    win.webContents.send('screenshot:goto', { route: shot.route, theme: shot.theme });
-    await settled;
-
-    await delay(500); // a final beat for fonts/images
-    // Capture an exact 1920x1080 rect — the xvfb backing buffer is one px short
-    // of the requested content size, so pin the rect rather than trust the size.
-    const image = await win.webContents.capturePage({ x: 0, y: 0, width: WIDTH, height: HEIGHT });
-    const dest = join(outDir, shot.file);
-    const size = image.getSize();
-    if (size.width !== WIDTH || size.height !== HEIGHT) {
-      throw new Error('Screenshot capture did not produce the required 1920x1080 frame.');
-    }
-    const png = image.toPNG();
-    writeFileSync(dest, png);
-    manifest.images.push({
-      file: shot.file,
-      route: shot.route ?? 'onboarding',
-      theme: shot.theme,
-      width: size.width,
-      height: size.height,
-      bytes: png.byteLength,
-      sha256: createHash('sha256').update(png).digest('hex'),
-      caption: shot.caption,
-    });
-    // eslint-disable-next-line no-console
-    console.log(`[screenshot] wrote ${dest} (${image.getSize().width}x${image.getSize().height})`);
+    writeFileSync(join(outDir, 'manifest.json'), JSON.stringify(manifest, null, 2));
+  } finally {
+    if (!win.isDestroyed()) win.destroy();
   }
-
-  writeFileSync(join(outDir, 'manifest.json'), JSON.stringify(manifest, null, 2));
-  win.destroy();
 }
