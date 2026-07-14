@@ -1,9 +1,9 @@
 // Main-process screenshot orchestrator. Runs only when HEARTH_SCREENSHOT=1
 // (see main.ts) and produces the Microsoft Store listing screenshots at exactly
 // 1920x1080. It seeds demo data, drives the renderer's route/theme through the
-// __hearthShot bridge, and writes PNGs via webContents.capturePage. Dev-only —
-// nothing here is reachable in a normal or packaged launch.
-import { BrowserWindow, ipcMain, nativeTheme } from 'electron';
+// __hearthShot bridge, and writes PNGs from a verified Chromium surface.
+// Dev-only — nothing here is reachable in a normal or packaged launch.
+import { BrowserWindow, ipcMain, nativeImage, nativeTheme, type NativeImage } from 'electron';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -35,6 +35,12 @@ interface CapturedShot {
   bytes: number;
   sha256: string;
   caption: string;
+}
+
+interface Viewport {
+  width?: unknown;
+  height?: unknown;
+  scale?: unknown;
 }
 
 const SHOTS: Shot[] = [
@@ -118,6 +124,15 @@ function loadApp(win: BrowserWindow): Promise<void> {
   return win.loadFile(join(process.env.DIST!, 'index.html'));
 }
 
+async function readViewport(win: BrowserWindow, file: string): Promise<Viewport> {
+  return (await withTimeout(
+    win.webContents.executeJavaScript(
+      '({ width: window.innerWidth, height: window.innerHeight, scale: window.devicePixelRatio })',
+    ),
+    `Inspecting ${file} viewport`,
+  )) as Viewport;
+}
+
 export async function runScreenshots(): Promise<void> {
   const outDir = process.env.HEARTH_SHOT_DIR || join(__dirname, '../screenshots');
   mkdirSync(outDir, { recursive: true });
@@ -160,6 +175,11 @@ export async function runScreenshots(): Promise<void> {
     },
   });
 
+  // BrowserWindow's constructor can be clamped to the hosted desktop work
+  // area. Electron permits a larger-than-screen window on Windows, so apply the
+  // content size again after native-window creation before loading the page.
+  win.setContentSize(WIDTH, HEIGHT, false);
+
   // Surface a crashed/blank renderer instead of silently capturing a blank frame.
   win.webContents.on('did-fail-load', (_e, code, desc, url) =>
     console.error('[screenshot] did-fail-load', code, desc, url),
@@ -167,6 +187,9 @@ export async function runScreenshots(): Promise<void> {
   win.webContents.on('render-process-gone', (_e, details) =>
     console.error('[screenshot] render-process-gone', details.reason),
   );
+
+  const debuggerSession = win.webContents.debugger;
+  let protocolCapture = false;
 
   try {
     for (const shot of SHOTS) {
@@ -182,12 +205,31 @@ export async function runScreenshots(): Promise<void> {
         withTimeout(loadApp(win), `Loading ${shot.file}`),
         ready, // app shell mounted (and read the current settings)
       ]);
-      const viewport = (await withTimeout(
-        win.webContents.executeJavaScript(
-          '({ width: window.innerWidth, height: window.innerHeight, scale: window.devicePixelRatio })',
-        ),
-        `Inspecting ${shot.file} viewport`,
-      )) as { width?: unknown; height?: unknown; scale?: unknown };
+      let viewport = await readViewport(win, shot.file);
+      if (viewport.width !== WIDTH || viewport.height !== HEIGHT || viewport.scale !== 1) {
+        // The protocol target exists only after the first page load. Attaching
+        // here avoids the Windows crash seen when attaching to an uninitialized
+        // renderer and gives constrained CI desktops an exact virtual viewport.
+        if (!debuggerSession.isAttached()) {
+          debuggerSession.attach('1.3');
+          await withTimeout(debuggerSession.sendCommand('Page.enable'), 'Enabling page capture');
+        }
+        await withTimeout(
+          debuggerSession.sendCommand('Emulation.setDeviceMetricsOverride', {
+            width: WIDTH,
+            height: HEIGHT,
+            deviceScaleFactor: 1,
+            mobile: false,
+            screenWidth: WIDTH,
+            screenHeight: HEIGHT,
+            scale: 1,
+          }),
+          `Configuring ${shot.file} viewport`,
+        );
+        protocolCapture = true;
+        await delay(100);
+        viewport = await readViewport(win, shot.file);
+      }
       if (viewport.width !== WIDTH || viewport.height !== HEIGHT || viewport.scale !== 1) {
         throw new Error(
           `Renderer viewport is ${String(viewport.width)}x${String(viewport.height)} at ${String(viewport.scale)}x; expected ${WIDTH}x${HEIGHT} at 1x.`,
@@ -205,13 +247,30 @@ export async function runScreenshots(): Promise<void> {
       await settled;
 
       await delay(500); // a final beat for fonts/images
-      const image = await withTimeout(
-        win.webContents.capturePage(
-          { x: 0, y: 0, width: WIDTH, height: HEIGHT },
-          { stayHidden: true, stayAwake: true },
-        ),
-        `Capturing ${shot.file}`,
-      );
+      let image: NativeImage;
+      if (protocolCapture) {
+        const capture = (await withTimeout(
+          debuggerSession.sendCommand('Page.captureScreenshot', {
+            format: 'png',
+            fromSurface: true,
+            captureBeyondViewport: true,
+            clip: { x: 0, y: 0, width: WIDTH, height: HEIGHT, scale: 1 },
+          }),
+          `Capturing ${shot.file}`,
+        )) as { data?: unknown };
+        if (typeof capture.data !== 'string') {
+          throw new Error(`Chromium did not return PNG data for ${shot.file}.`);
+        }
+        image = nativeImage.createFromBuffer(Buffer.from(capture.data, 'base64'));
+      } else {
+        image = await withTimeout(
+          win.webContents.capturePage(
+            { x: 0, y: 0, width: WIDTH, height: HEIGHT },
+            { stayHidden: true, stayAwake: true },
+          ),
+          `Capturing ${shot.file}`,
+        );
+      }
       const png = image.toPNG();
       const dest = join(outDir, shot.file);
       const size = image.getSize();
@@ -237,6 +296,7 @@ export async function runScreenshots(): Promise<void> {
 
     writeFileSync(join(outDir, 'manifest.json'), JSON.stringify(manifest, null, 2));
   } finally {
+    if (debuggerSession.isAttached()) debuggerSession.detach();
     if (!win.isDestroyed()) win.destroy();
   }
 }
