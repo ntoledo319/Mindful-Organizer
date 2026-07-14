@@ -5,12 +5,19 @@ on:
   push:
     branches:
       - main
+      - feature/revenue-cycle-0
     paths:
+      - ".github/workflows/windows-store.yml"
       - "package.json"
+      - "package-lock.json"
+      - "electron-builder.cjs"
       - "electron/**"
       - "src/**"
       - "scripts/generate-windows-store-assets.mjs"
+      - "scripts/generate-icons.mjs"
+      - "scripts/generate-third-party-notices.mjs"
       - "resources/**"
+      - "store/**"
 
 permissions:
   contents: read
@@ -46,6 +53,9 @@ jobs:
         run: |
           npm run icons
           npm run winstore-assets
+
+      - name: Verify redistributed licenses
+        run: npm run licenses
 
       - name: Typecheck
         run: npm run typecheck

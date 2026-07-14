@@ -30,12 +30,27 @@ Only observed evidence belongs here. Forecasts and target arithmetic live in
   was removed; paid metadata is now manual:
   <https://github.com/ntoledo319/Mindful-Organizer/actions>.
 
-### Local verification ledger
+### Local and hosted verification ledger
 
-- `npm run typecheck`: passed before the final dependency refresh; final rerun pending.
-- `npm run lint`: passed before the final dependency refresh; final rerun pending.
-- `npm test -- --no-cache`: 11 tests passed before the final dependency refresh;
-  final rerun pending.
+- Public review branch shipped:
+  <https://github.com/ntoledo319/Mindful-Organizer/tree/feature/revenue-cycle-0>.
+- Hosted Quality Gate #41: **passed** locked install, lint, both TypeScript
+  projects, 11 tests, renderer build, and Electron bundle build:
+  <https://github.com/ntoledo319/Mindful-Organizer/actions/runs/29309084417>.
+- Final local `npm run lint -- --no-cache`: **passed**.
+- Final local `npm run typecheck`: **passed**.
+- Final local `npm test`: **2 files / 11 tests passed** under Vitest 4.1.10.
+- `npm run vite:build`: **passed**, 762 renderer modules plus main/preload.
+- `npm run icons` and `npm run winstore-assets`: **passed** after Jimp 1.6
+  migration.
+- Full and production-only `npm audit`: **0 known vulnerabilities**.
+- SQLite in-memory load under the local Node runtime: **passed** after restoring
+  its Node-native binding.
+- Local `npm run build:dir`: **failed** during the Electron 43 SQLite rebuild;
+  Apple Clang 14 / SDK 13.3 cannot find C++20 `<source_location>`. This is a
+  recorded packaging failure, not a passing build.
 - No sale, signup, visit, or listing-impression number was observed.
 
-The public shipment URL and fresh CI result will be appended at cycle close.
+The Windows MSIX review run is pending. It cannot clear the encryption,
+provenance, support, certification, installation-smoke, or paid-listing gates by
+itself.

@@ -2,7 +2,7 @@
 
 # Revenue Plan
 
-_Updated 2026-07-14 01:24 EDT — Cycle 0 in progress._
+_Updated 2026-07-14 01:40 EDT — Cycle 0 closing._
 
 ## Containment
 
@@ -58,14 +58,23 @@ inspect.
 2. Removed the fake Stripe/`PRO-` path and every stale “clinical-grade,”
    guaranteed-revenue, or automated-outbound claim.
 3. Prepared a public, reviewable source/docs branch as the externally visible
-   cycle shipment. Its URL and remote CI state will be recorded before close.
+   cycle shipment:
+   <https://github.com/ntoledo319/Mindful-Organizer/tree/feature/revenue-cycle-0>.
+   Hosted Quality Gate #41 passed every step:
+   <https://github.com/ntoledo319/Mindful-Organizer/actions/runs/29309084417>.
+4. Attempted an unpacked local package. It failed honestly at native SQLite
+   rebuild because the jailed Apple Clang 14 / SDK 13.3 toolchain does not
+   provide C++20 `<source_location>`. The code was not weakened and the jail was
+   not escaped to replace system tooling. A hosted Windows MSIX review build is
+   the next packaging proof.
 
 ## Next technical actions
 
 1. Design and implement a supported local-data encryption/migration path without
    introducing account recovery, cloud escrow, or data-loss traps.
-2. Make the new public branch pass remote Node CI, then build/smoke-test a fresh
-   Windows MSIX from that exact commit.
+2. Complete the hosted Windows MSIX build from the public branch, then smoke-test
+   the exact artifact on supported Windows; a successful build alone is not a
+   usability test.
 3. If the Store protection path stalls for 30 minutes, park it and build the
    smallest genuinely new Electron-kit unit for Bet B inside this workspace.
 4. After the Human Queue checks, create—not merely draft—the appropriate

@@ -69,3 +69,19 @@ The cycle's external shipment will be a public source/documentation branch. It
 is honest evidence of progress without representing the app as certified,
 purchasable, or safe for Store release. No PR, outreach, post, or commitment is
 authorized.
+
+### D011 — Treat the local native-package failure as evidence
+
+`npm run build:dir` reached Electron 43's native `better-sqlite3` rebuild and
+failed because the contained Apple Clang 14 / SDK 13.3 toolchain has no C++20
+`<source_location>`. Upgrading system tooling would leave the jail. Decision:
+record the failure, preserve the supported Electron/runtime upgrades, and use a
+hosted current Windows runner for the next package proof.
+
+### D012 — Ship a public review branch without opening a PR
+
+Published `feature/revenue-cycle-0` at
+<https://github.com/ntoledo319/Mindful-Organizer/tree/feature/revenue-cycle-0>.
+Quality Gate #41 passed. A branch and CI evidence satisfy the external-change
+law while avoiding an unauthorized PR/post and avoiding a false product-release
+claim.

@@ -123,3 +123,10 @@ but adding it before either active bet reaches a falsifier would dilute work.
 - GitHub Pages additional terms prohibit using Pages primarily for online
   business/e-commerce/SaaS, so it was rejected as the commercial landing host:
   <https://docs.github.com/en/site-policy/github-terms/github-terms-for-additional-products-and-features>.
+
+## Cycle 0 evidence adjustment — 2026-07-14 01:40 EDT
+
+The public source/docs branch and green hosted code gate improve execution
+confidence but do **not** alter any `U`, conversion, or revenue assumption above.
+No listing view, signup, checkout, or dollar was observed. Bet A remains blocked
+before submission; Bet B remains conditional and unbuilt.
