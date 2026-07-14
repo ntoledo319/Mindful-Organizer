@@ -1,6 +1,6 @@
 # Monetization Frames and Ranking
 
-_Re-ranked 2026-07-14 after Cycle 2 execution. All U values are unvalidated
+_Re-ranked 2026-07-14 at Cycle 2 close. All U values are unvalidated
 four-week planning ranges, not observed revenue or promises._
 
 Legend: **T$** = days to first plausible collected dollar; **H** = owner minutes;
@@ -79,9 +79,10 @@ principal risk. A dash means no compliant near-term route.
 - **Funnel:** Microsoft Store search/category/recommendation plus only
   owner-approved launch links → product page → Store checkout.
 - **Current evidence:** a validated 1.1.0 AppX, complete copy and screenshots,
-  privacy-guarded support, a screenshot-backed landing artifact, and a held
-  Partner Center draft. No live Store page view, acquisition, purchase, or
-  payout exists.
+  publicly resolving privacy-guarded support/security pages, typed issue forms,
+  a screenshot-backed landing artifact, two green public-commit workflows, and
+  a held Partner Center draft. No live Store page view, acquisition, purchase,
+  or payout exists.
 - **Falsifier:** one reposition after five live days with zero external signal;
   replace after four additional live days with zero signal. Treat 100 product
   page views with zero purchases as an immediate conversion failure.
@@ -125,6 +126,7 @@ autonomously.
   <https://itch.io/docs/creators/faq>, and
   <https://itch.io/docs/creators/payments>
 
-Cycle 2 reduced support, presentation, and release-process risk, not demand
+Cycle 2 reduced support, presentation, security-intake, and release-process
+risk and shipped those changes on public GitHub main. It did not create demand
 evidence. Collected profit is still
 **$0.00**.

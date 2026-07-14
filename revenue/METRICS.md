@@ -151,6 +151,29 @@ certification, a Store-signed human smoke/accessibility pass, or publication.
 - No bank, tax, KYC, identity, or private account detail was entered or recorded
   in the workspace.
 
+## 2026-07-14 — Cycle 2 remote publication evidence
+
+- GitHub main commit:
+  `d01c013fd8beec91014c37d27a9a310cf5dd0470` — 35 files, 1,031 additions,
+  463 deletions.
+- Quality Gate run 29345864617: **passed**.
+- Windows Store run 29345863949: **passed** in 4m57s, including secret scan,
+  Store/listing validation, identity, deterministic assets, license and
+  production-dependency audits, lint, both typechecks, 30 tests, native rebuild,
+  both production builds, screenshot capture, AppX packaging, payload
+  validation, and artifact upload.
+- Verification-only AppX artifact 8316167277: 175,488,400 bytes; extracted AppX
+  SHA-256
+  `93279f430e024deb3b28ee12d98271ffa19d7093f8d9e667e7c9defcace2fc10`.
+  Screenshot artifact: 8316137548. These do not replace the exact AppX already
+  validated in Partner Center; the published changes did not change product
+  runtime code.
+- The public SUPPORT page and SECURITY policy resolve signed out. The issue
+  chooser redirects signed-out visitors to GitHub authentication as disclosed.
+- Repository description and eight topics were saved; private vulnerability
+  reporting is enabled. No issue, release, post, listing, or human contact was
+  created.
+
 ## Current not-observed list
 
 Store-signed installed behavior, Windows Narrator/high-contrast/text-scaling

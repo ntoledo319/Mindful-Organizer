@@ -1,6 +1,6 @@
 # Asset Audit
 
-_Cycle 2 truth update completed 2026-07-14. Scope is the containment root only._
+_Cycle 2 closed 2026-07-14. Scope is the containment root only._
 
 ## Workspace inventory
 
@@ -100,12 +100,26 @@ from silently returning to default navigation.
   4900f3823febace53f86f69ee2567b50208aec8f6677741c3c4dcf3667facdb1
 - GitHub package artifact ID: 8306541856
 - Screenshot artifact ID: 8306519500
+- Public launch-hardening commit:
+  d01c013fd8beec91014c37d27a9a310cf5dd0470
+- Public-commit Quality run:
+  <https://github.com/ntoledo319/Mindful-Organizer/actions/runs/29345864617>
+- Public-commit Windows Store run:
+  <https://github.com/ntoledo319/Mindful-Organizer/actions/runs/29345863949>
+- Verification-only package artifact ID / AppX SHA-256:
+  8316167277 / 93279f430e024deb3b28ee12d98271ffa19d7093f8d9e667e7c9defcace2fc10
+
+The later verification build proves the public commit remains buildable and
+package-valid. It does not supersede the exact candidate already saved and
+validated in Partner Center because this cycle changed support, launch,
+validation, and documentation surfaces rather than product runtime code.
 
 ## Current bottom line
 
 The product is no longer blocked by architecture, encryption, consent, asset
-rights, package generation, listing copy, screenshots, support setup, or core
-Partner Center data entry. It is a high-quality technical release candidate,
+rights, package generation, listing copy, screenshots, support setup, public
+repository presentation, vulnerability intake, CI, or core Partner Center data
+entry. It is a high-quality technical release candidate,
 but it is not a live listing. Because the accepted AppX is intentionally
 unsigned, Microsoft certification—not a locally altered test signature—is the
 exact-package technical gate. The remaining blockers are manual IARC/legal

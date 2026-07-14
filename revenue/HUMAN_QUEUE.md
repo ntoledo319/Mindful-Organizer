@@ -5,9 +5,11 @@ _Owner labor ceiling: 60 minutes for the full run. Current queued total:
 extra outreach or content work._
 
 The exact package, five screenshots, copy, price, release hold, public support
-page, privacy-guarded issue forms, security policy, and audience assets are
-prepared. Only factual/legal attestations, private financial setup, active
-Windows observation, certification, publication, and owner-authored posts remain.
+page, privacy-guarded issue forms, security policy, private vulnerability
+reporting, accurate repository metadata, audience assets, and both remote CI
+gates are shipped. Only factual/legal attestations, private financial setup,
+active Windows observation, certification, publication, and owner-authored
+posts remain.
 
 ## HQ-01 — Retake IARC manually and accept its terms — 5 minutes
 
@@ -104,6 +106,9 @@ Windows observation, certification, publication, and owner-authored posts remain
   2. Review the $14.99 US price, screenshots, categories, URLs, corrected IARC
      result, runFullTrust explanation, testing notes, and release control **Do
      not publish until I select Publish now**.
+     The public support URL now resolves signed out. Do not replace the validated
+     Partner Center package with verification artifact 8316167277; it is a
+     later documentation/launch-hardening build, not a new runtime candidate.
   3. Click **Submit for certification** and record the timestamp/status. Answer
      any Microsoft request truthfully without broadening capability claims.
   4. Preserve the certification result. Complete HQ-03 against the signed build.

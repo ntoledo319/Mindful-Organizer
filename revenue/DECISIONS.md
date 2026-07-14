@@ -261,3 +261,15 @@ Decision: keep Microsoft Store discovery as the only autonomous acquisition
 channel, preserve the five-day signal gate, and leave every post or human
 contact in the owner-approved launch batch. Collected revenue remains the only
 success metric.
+
+### D032 — Publish the launch surface but keep the accepted package stable
+
+The launch-hardening commit changed support, issue intake, landing presentation,
+release documentation, and validation tooling but not Hearth runtime code. It
+is live on GitHub main, both remote workflows passed, private vulnerability
+reporting is enabled, and the public support/security pages resolve. The fresh
+CI package has different bytes from the AppX already validated in Partner
+Center. Decision: record the later artifact as independent verification
+evidence, not as a replacement submission. Preserve the exact accepted AppX
+and hash through certification unless product runtime code or Store package
+requirements actually change.

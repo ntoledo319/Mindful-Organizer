@@ -2,7 +2,7 @@
 
 # Revenue Plan
 
-_Updated 2026-07-14 — Cycle 2 close in progress._
+_Updated 2026-07-14 — Cycle 2 closed._
 
 ## Containment
 
@@ -86,6 +86,12 @@ not count as revenue.
    private tax, bank, or identity data was entered or recorded.
 7. Fixed the local secret scanner so a legitimate working-tree deletion cannot
    crash the gate before remaining files are scanned.
+8. Published the complete hardening set to GitHub main at commit
+   `d01c013fd8beec91014c37d27a9a310cf5dd0470`. The public support and security
+   pages resolve without authentication; filing an issue correctly requires a
+   GitHub account. Quality Gate run 29345864617 and Windows Store run
+   29345863949 both passed. Repository description/topics are now truthful and
+   private vulnerability reporting is enabled.
 
 ## Remaining critical path
 
