@@ -1,9 +1,8 @@
 # Exact-candidate Windows validation
 
-This gate applies to the exact x64 AppX uploaded to Partner Center. Keep the
-package, SHA-256 file, screenshots, Windows App Certification Kit report, and
-this completed checklist together. A source build or extracted-package smoke
-test does not replace an installed-package test.
+This gate applies to the x64 AppX in Partner Center Submission 1. Keep the
+package hash, CI evidence, Microsoft certification result, Store-signed install
+observations, screenshots, and this checklist tied to the same release.
 
 ## Accepted candidate and automated evidence
 
@@ -24,28 +23,86 @@ The Windows workflow passed a sentinel-guarded real safeStorage/DPAPI lifecycle
 matrix for fresh encrypted persistence, corrupt-primary recovery, plaintext
 export warnings, key-first erase, interrupted erase, representative legacy
 migration and retirement, consent gating, and missing-key fail-closed behavior.
-Partner Center also marked this exact 1.1.0 AppX Validated.
+Partner Center also marked this exact AppX Validated.
 
-Still required before certification: install this exact AppX through the
-supported Windows package flow, complete the first-run smoke below, run WACK,
-and perform the manual accessibility/presentation matrix. Do not treat the
-automated lifecycle proof as those missing observations.
+## Why the accepted AppX is not a local-install proof
 
-## 1. Establish candidate identity
+The accepted file is an unsigned Store-submission package and contains no
+`AppxSignature.p7x`. Microsoft documents that Store packages do not need a
+CA-trusted signature before submission because Microsoft re-signs them after
+certification. The special unsigned-package installation path requires an
+identity prepared for unsigned installation; this package is not prepared that
+way. Adding a test signature or rebuilding would change the bytes and SHA-256.
 
-On a supported Windows 11 system, copy the AppX and its CI-produced checksum
-into one working directory. In PowerShell:
+Therefore:
 
-    Get-FileHash .\Hearth*.appx -Algorithm SHA256
+- do not claim that the exact accepted hash was installed locally;
+- do not replace the accepted package with a test-signed rebuild;
+- treat WACK against a test-signed equivalent, if one is created, only as
+  supporting evidence; and
+- use Microsoft certification as the authoritative install/run, security, and
+  technical-compliance gate for the exact submission.
 
-The observed hash must exactly match `hearth-appx.sha256.txt`. Stop if it does
-not. Record the Hearth version, Windows edition/build, architecture, test time,
-and tester in the release evidence ledger.
+References:
 
-## 2. Install and first-run smoke
+- <https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/publish-first-app>
+- <https://learn.microsoft.com/en-us/windows/msix/package/unsigned-package>
+- <https://learn.microsoft.com/en-us/windows/apps/publish/faq/get-your-app-certified>
 
-Install the exact package through the supported AppX installation flow. Launch
-it from Start, not from an extracted directory, and verify:
+## 1. Reconfirm candidate identity before certification
+
+Download artifact 8306541856 or use the jailed evidence copy. On Windows,
+PowerShell `Get-FileHash` must return the SHA-256 above. In Partner Center,
+Packages must still show only `Hearth 1.1.0.appx` as Validated. Stop if either
+observation differs.
+
+## 2. Preserve the pre-certification evidence
+
+Require the matching Quality and Windows Store workflows to pass. Preserve the
+CI-produced `release-validation.json`, screenshot manifest, screenshot hashes,
+AppX hash, application tree, and exact commit. These prove source quality,
+package structure, real Windows DPAPI behavior, and captured UI states. They do
+not prove Store installation, Narrator behavior, high contrast, or
+certification.
+
+## 3. Submit to Microsoft certification under the publication hold
+
+Complete the IARC questionnaire manually and accept its legal terms only as the
+real publisher. Confirm the saved release control still says **Do not publish
+until I select Publish now**, then submit the exact package for certification.
+
+Microsoft states that certification installs and runs the app and performs
+security, technical-compliance, content, and policy checks. Preserve the result,
+messages, and timestamp. A failure restarts the affected gate; it is not a
+reason to weaken a truthful disclosure.
+
+The manual publication hold prevents a certification pass from automatically
+making this submission public:
+
+- <https://learn.microsoft.com/en-us/windows/apps/publish/publish-your-app/msix/manage-submission-options>
+- <https://learn.microsoft.com/en-us/windows/apps/publish/faq/get-your-app-certified>
+
+## 4. Obtain a supported non-public Store install
+
+Before clicking **Publish now**, install the Microsoft-signed build through a
+supported Store testing route. For a first release, Microsoft's fully private
+route is **Private audience**, configured before the app has ever been published
+to a public audience and limited to named Microsoft accounts. The current draft
+is configured as Public, so changing it to Private audience is an owner decision
+that requires the tester's Microsoft-account address and an additional public
+submission later.
+
+If Partner Center does not provide another supported non-public install after
+certification, do not pretend the manual install happened. Either use Private
+audience and accept the extra submission cycle, or record that installed human
+validation remains open. Do not publish merely to manufacture a test path.
+
+Reference:
+<https://learn.microsoft.com/en-us/windows/apps/publish/beta-testing-and-targeted-distribution>
+
+## 5. Store-signed first-run smoke
+
+Use fictional data only. Launch from Start and verify:
 
 - the first window renders without a blank frame or preload error;
 - consent is required before a new profile stores personal entries;
@@ -53,75 +110,41 @@ it from Start, not from an extracted directory, and verify:
 - accepting creates a profile and a user-selected 4–24 budget survives a full
   quit and relaunch;
 - a task, check-in, practice, crisis-plan edit, JSON export, and PDF export work;
-- both exports state that they are plaintext and contain only the records the
-  user created; and
-- **Erase all Hearth data** returns to onboarding and the prior records do not
-  reappear after a full quit and relaunch.
+- both exports state that they are plaintext and contain only created records;
+- **Erase all Hearth data** returns to onboarding and prior records do not
+  reappear after a full quit and relaunch; and
+- package identity, publisher, version, x64 support, and installed footprint
+  match the certified listing.
 
-Use fictional test data only. Never attach encrypted snapshots, keys, exports,
-or screenshots containing real personal records to a public issue.
+Never attach snapshots, keys, exports, or screenshots containing real personal
+records to a public issue.
 
-## 3. DPAPI and recovery matrix
+## 6. Manual accessibility and presentation
 
-Use a disposable Windows test account and app-data directory. Preserve a copy
-of each test fixture before changing it.
+Against the Store-signed install, complete `docs/ACCESSIBILITY.md`: keyboard-only
+use, visible focus, Narrator names and state, Windows high-contrast themes, 200%
+text scaling, reduced motion, minimum window size, light/dark themes, modal
+focus trapping/restoration, and all five Store screenshot scenes. Reject clipped
+content, unreachable controls, unannounced state, private data, debug UI, or
+claims not present in the build.
 
-- **Legacy migration:** start from a representative pre-encryption `hearth.db`,
-  including committed WAL data. Verify the records migrate, `hearth.secure` and
-  `hearth.secure.backup` both authenticate through a second persisted
-  generation, and the plaintext DB/WAL/SHM/journal plus temporary
-  `hearth.secure.migration-backup` are retired.
-- **Corrupt primary:** after a clean close, corrupt only a copied
-  `hearth.secure` fixture. Verify Hearth recovers from the authenticated rolling
-  backup, does not create a replacement key, and does not silently discard the
-  known-good records.
-- **Missing key:** remove only a copied `hearth.key` fixture while encrypted
-  snapshots remain. Verify Hearth fails closed and leaves every snapshot
-  unchanged.
-- **Wrong Windows account:** attempt the copied fixture from a separate
-  disposable Windows account. Verify DPAPI cannot unlock it and Hearth fails
-  closed without mutating the fixture.
-- **Interrupted erase:** preserve a fixture representing an erase marker with
-  remaining encrypted files, then relaunch. Verify startup destroys the old key
-  first, finishes remnant cleanup, creates a new empty store, and never restores
-  deleted records.
+## Optional local WACK evidence
 
-Hash fixtures before and after each failure-path test so “unchanged” is evidence,
-not an impression.
+Microsoft documents WACK as a local pre-test. It requires an active Windows
+desktop session and may require interactive or administrative steps. If a
+test-signed equivalent is tested, preserve its separate hash and label the WACK
+report as equivalent-build evidence, not evidence for the accepted unsigned
+AppX. Never overwrite the accepted package or its hash.
 
-## 4. Windows App Certification Kit
-
-Microsoft documents the current WACK workflow at
-<https://learn.microsoft.com/windows/uwp/debug-test-perf/windows-app-certification-kit>.
-Run it from an active Windows desktop session with the current Windows SDK/WACK
-installed. An interactive/admin step may be required by the kit.
-
-From the kit's elevated command prompt, reset stale state and test the exact
-candidate:
-
-    appcert.exe reset
-    appcert.exe test -appxpackagepath "C:\path\Hearth.appx" -reportoutputpath "C:\path\Hearth-WACK.xml"
-
-Require a passing exit/result and inspect the report rather than relying on
-process exit alone. Preserve the unedited XML report beside the matching AppX
-and SHA-256 file. If the package changes for any reason, repeat every gate.
-
-## 5. Manual accessibility and presentation
-
-Against the installed candidate, complete the matrix in
-`docs/ACCESSIBILITY.md`: keyboard-only use, visible focus, Narrator names and
-state, Windows high-contrast themes, 200% text scaling, reduced motion, minimum
-window size, light/dark themes, modal focus trapping/restoration, and all five
-Store screenshot scenes. Reject clipped content, unreachable controls,
-unannounced state, private data, debug UI, or claims not present in the build.
+Reference:
+<https://learn.microsoft.com/en-us/windows/uwp/debug-test-perf/windows-app-certification-kit>
 
 ## Release evidence required
 
-- exact AppX filename and SHA-256;
-- successful CI run URL and commit SHA;
-- Windows version/build and x64 architecture;
-- completed fresh-install and lifecycle matrix;
-- passing WACK report;
+- exact AppX filename, SHA-256, commit, application tree, and CI run URLs;
 - accepted screenshot manifest and image hashes;
-- completed accessibility/presentation checklist; and
-- Partner Center submission ID and timestamp after owner review.
+- Microsoft certification result and timestamp;
+- supported Store-signed install route, Windows build, and x64 architecture;
+- completed first-run smoke and accessibility/presentation checklist;
+- seller/tax/payout readiness confirmed privately; and
+- Partner Center submission and eventual publication timestamps.

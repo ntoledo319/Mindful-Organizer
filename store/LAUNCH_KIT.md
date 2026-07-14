@@ -134,7 +134,9 @@ Never request the local database through a public issue.
 - [ ] Public page loads in a private browser.
 - [ ] Price and one-time purchase model match the approved submission.
 - [ ] Package, publisher, x64 requirement, and minimum Windows version match.
-- [ ] Privacy, terms, refund, and support links work without sign-in.
+- [ ] Privacy, terms, refund, and the support landing page work without sign-in;
+      the support page clearly discloses that filing an issue requires GitHub
+      sign-in.
 - [ ] Screenshots and feature bullets match the live package.
 - [ ] Campaign links land on the correct product.
 - [ ] Partner Center acquisition, usage, health, reviews, and payout reports are

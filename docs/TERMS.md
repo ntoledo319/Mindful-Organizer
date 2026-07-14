@@ -61,6 +61,8 @@ Nothing in these terms limits a right that cannot legally be limited.
 
 ## Support
 
-The planned support path is documented in [SUPPORT.md](SUPPORT.md). It is not a
-crisis or emergency channel. Never post a Hearth database or private wellness
-record in a public support request.
+The public support path is documented in [SUPPORT.md](SUPPORT.md). GitHub sign-in
+is required to create an issue. It is not a private, clinical, crisis, or
+emergency channel. Never post a Hearth database, encrypted snapshot, key,
+plaintext export, account detail, or private wellness record in a public support
+request.

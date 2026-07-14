@@ -2,7 +2,7 @@
 // matched values are never printed. This complements GitHub's remote scanning
 // without adding another dependency or uploading the working tree elsewhere.
 import { execFileSync } from 'node:child_process';
-import { lstatSync, readFileSync } from 'node:fs';
+import { existsSync, lstatSync, readFileSync } from 'node:fs';
 import { dirname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -22,13 +22,19 @@ const rules = [
 ];
 
 const findings = [];
+let scannedFiles = 0;
 for (const relative of tracked) {
   const absolute = resolve(root, relative);
   if (!(absolute === root || absolute.startsWith(`${root}${sep}`))) {
     throw new Error(`Refusing path outside workspace: ${relative}`);
   }
+  // `git ls-files --cached` includes paths deleted in the working tree until
+  // the deletion is committed. A secret gate must ignore that absent file,
+  // not crash before it scans the files that still exist.
+  if (!existsSync(absolute)) continue;
   const stat = lstatSync(absolute);
   if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 2_000_000) continue;
+  scannedFiles += 1;
   const buffer = readFileSync(absolute);
   if (buffer.includes(0)) continue;
   const lines = buffer.toString('utf8').split(/\r?\n/);
@@ -45,4 +51,4 @@ if (findings.length) {
   process.exit(1);
 }
 
-console.log(`Secret scan passed across ${tracked.length} tracked paths.`);
+console.log(`Secret scan passed across ${scannedFiles} readable files.`);

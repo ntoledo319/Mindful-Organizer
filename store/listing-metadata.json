@@ -1,5 +1,5 @@
 {
-  "_comment": "Manual Microsoft Store submission source. The fields are saved in Partner Center Submission 1, but no field here proves certification, publication, support availability, traffic, or revenue.",
+  "_comment": "Manual Microsoft Store submission source. The package, price, copy, screenshots, and release hold are saved in Partner Center Submission 1. No field here proves certification, publication, traffic, payout readiness, or revenue.",
   "schemaVersion": 2,
   "releaseState": "draft-not-publishable",
   "positioning": "A privacy-first Windows energy planner for ADHD and other variable-capacity days.",
@@ -45,8 +45,8 @@
     "customerValue": "Official x64 MSIX packaging and Microsoft Store delivery; the source remains MIT licensed."
   },
   "ageRating": {
-    "status": "saved-IARC-result-owner-must-review-before-certification",
-    "claimedRating": "IARC 3+ / ESRB Everyone (current Partner Center draft; not yet owner-affirmed for certification)",
+    "status": "manual-IARC-retake-and-legal-attestation-required-before-certification",
+    "claimedRating": null,
     "contentToDisclose": [
       "Personal wellness and mental-health language",
       "US 988 crisis-resource links",
@@ -78,7 +78,7 @@
       "High-contrast and color-contrast audit",
       "Text scaling and minimum-window audit",
       "Manual reduced-motion pass across release flows",
-      "Windows App Certification Kit result"
+      "Microsoft Store certification result"
     ]
   },
   "systemRequirements": {
@@ -104,12 +104,13 @@
     "terms": "https://github.com/ntoledo319/Mindful-Organizer/blob/main/docs/TERMS.md",
     "refundPolicy": "https://github.com/ntoledo319/Mindful-Organizer/blob/main/docs/REFUNDS.md",
     "source": "https://github.com/ntoledo319/Mindful-Organizer",
-    "support": null,
-    "plannedSupport": "https://github.com/ntoledo319/Mindful-Organizer/issues/new/choose",
+    "support": "https://github.com/ntoledo319/Mindful-Organizer/blob/main/docs/SUPPORT.md",
+    "plannedSupport": "https://github.com/ntoledo319/Mindful-Organizer/blob/main/docs/SUPPORT.md",
+    "issueTracker": "https://github.com/ntoledo319/Mindful-Organizer/issues/new/choose",
     "storeListing": null,
     "storeListingPattern": "https://apps.microsoft.com/detail/9PLRSZZMFPJH"
   },
-  "urlPublicationGate": "Final policies are on main. Enable and test the selected support channel, verify every URL in a private browser before certification, and keep storeListing null until the public page is observed.",
+  "urlPublicationGate": "Final policies and the public support page are on main. The privacy-guarded issue forms require GitHub sign-in. Verify every listing URL in a private browser before certification, and keep storeListing null until the public page is observed.",
   "screenshotPlan": "store/SCREENSHOTS.md",
   "campaignPlan": "store/CAMPAIGNS.md",
   "experimentPlan": "store/PRODUCT-PAGE-EXPERIMENTS.md",

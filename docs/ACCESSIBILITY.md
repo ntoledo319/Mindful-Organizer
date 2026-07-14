@@ -33,11 +33,13 @@ assistive technology.
 - Test Windows text scaling, browser zoom, and the minimum supported window size
 - Verify the implemented reduced-motion behavior across every release flow
 - Check focus visibility and restoration after every dialog and route change
-- Run the Windows App Certification Kit against the exact release package
+- Preserve the Microsoft Store certification result for the exact submission
+  package; if an installable test-signed equivalent is used for local WACK,
+  label it as supporting evidence rather than the accepted package hash
 
 Until those checks pass, the Store listing must not declare screen-reader,
 high-contrast, reduced-motion, WCAG, or other formal accessibility conformance.
 
-Accessibility problems can be reported through the verified channel described
-in [SUPPORT.md](SUPPORT.md) after that channel is enabled. Do not include private
-Hearth records in a public report.
+Accessibility problems can be reported through the channel described in
+[SUPPORT.md](SUPPORT.md). Creating an issue requires GitHub sign-in. Do not
+include private Hearth records in a public report.

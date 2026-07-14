@@ -17,6 +17,9 @@ summary—now works for every user without a gate.
 
 ## Status
 
-This is a hypothesis, not a live offer. Submission remains blocked on sensitive
-data protection, asset provenance, a working support channel, a fresh Windows
-package/smoke test, and manual Partner Center review. See `revenue/PLAN.md`.
+This is a hypothesis, not a live offer. Data protection, asset provenance,
+support, package generation, screenshots, listing copy, price, and the held
+Partner Center draft are prepared. Submission remains blocked on a manual IARC
+legal step; payout/profile readiness remains a payment blocker; publication
+remains blocked on Microsoft certification and Store-signed Windows human
+observation. See `revenue/PLAN.md`.

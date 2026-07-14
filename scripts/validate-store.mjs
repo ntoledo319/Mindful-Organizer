@@ -151,15 +151,13 @@ check(
   'Store listing pattern must match identity productId',
 );
 
-for (const key of ['privacyPolicy', 'terms', 'refundPolicy', 'source', 'plannedSupport', 'storeListingPattern']) {
+for (const key of ['privacyPolicy', 'terms', 'refundPolicy', 'source', 'support', 'plannedSupport', 'issueTracker', 'storeListingPattern']) {
   check(isHttpsUrl(listing.urls?.[key]), 'urls.' + key + ' must be an HTTPS URL');
 }
 
 if (listing.releaseState === 'draft-not-publishable') {
-  check(listing.urls?.support === null, 'draft support URL must remain null until verified');
   check(listing.urls?.storeListing === null, 'draft Store URL must remain null until verified live');
 } else {
-  check(isHttpsUrl(listing.urls?.support), 'live support URL must be HTTPS');
   check(isHttpsUrl(listing.urls?.storeListing), 'live Store URL must be HTTPS');
 }
 

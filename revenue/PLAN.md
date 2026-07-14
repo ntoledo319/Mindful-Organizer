@@ -2,7 +2,7 @@
 
 # Revenue Plan
 
-_Updated 2026-07-14 — Cycle 1 closed._
+_Updated 2026-07-14 — Cycle 2 close in progress._
 
 ## Containment
 
@@ -38,9 +38,10 @@ not count as revenue.
   signal, replace the bet. Also investigate immediately at 100 observed product
   page views with zero purchases.
 - **Current status:** exact 1.1.0 AppX validated in Partner Center; pricing,
-  properties, age rating, package, listing copy, and five screenshots are saved
-  in Submission 1. The submission is deliberately **not submitted, not
-  certified, not published, and not purchasable**.
+  properties, package, listing copy, and five screenshots are saved in
+  Submission 1. The existing low IARC draft is not accepted as accurate and
+  requires a TOS-compliant manual retake. The submission is deliberately **not
+  submitted, not certified, not published, and not purchasable**.
 
 ## Bet B — Heavy: Hearth-to-Production Electron Kit
 
@@ -61,42 +62,50 @@ not count as revenue.
 
 ## What shipped this cycle
 
-1. A production candidate with authenticated AES-256-GCM snapshots, a random
-   DPAPI-protected key, fail-closed recovery, legacy migration, explicit
-   consent, transactional erase/export behavior, and a narrowed honest product.
-2. A premium warm editorial interface with five core routes, accessibility
-   semantics, reduced-motion behavior, focus management, deterministic
-   rights-cleared art, and exact-candidate screenshots.
-3. A capability vault: diary cards, ERP notes, medication reference, legacy
-   condition metadata, and superseded artwork remain recoverable but are outside
-   the default launch experience. See docs/CAPABILITY_VAULT.md and
-   resources/vault/unverified-2026-07-14/.
-4. Green hosted Quality and Windows Store builds from candidate
-   8172603b62c2457696608c145511bd3fe92429d4:
-   <https://github.com/ntoledo319/Mindful-Organizer/actions/runs/29322423682>
-   and
-   <https://github.com/ntoledo319/Mindful-Organizer/actions/runs/29322423622>.
-5. A complete held Partner Center draft for product 9PLRSZZMFPJH: exact 1.1.0
-   package, $14.99 US pricing, categories, truthful listing copy, five
-   hash-matched screenshots, runFullTrust explanation, and certification notes.
-   Publication is set to wait for a separate manual Publish now action.
+1. Replaced unsafe legacy GitHub issue templates with typed Hearth/Windows forms
+   that prohibit private records, require fictional reproduction data, and use
+   only real repository labels. Blank issues are disabled and crisis help is
+   separated from software support.
+2. Published a truthful support landing page and security policy, with a private
+   vulnerability-reporting route and explicit GitHub sign-in boundary. GitHub
+   repository settings show Issues enabled for all users with no interaction
+   limits.
+3. Added an art-directed product tour to the static commercial landing artifact
+   using three hash-verified frames from the accepted candidate. The section was
+   visually checked at 1440 px and 390 px and remains tracker-, form-, script-,
+   cookie-, and remote-asset-free.
+4. Corrected the Windows release gate: the accepted AppX is an unsigned Store
+   submission, so local signing would change its hash. Microsoft certification
+   is the authoritative exact-package install/run and technical-compliance gate;
+   Store-signed human accessibility review remains explicit.
+5. Audited the packaged IARC content and documented a conservative manual answer
+   path for textual crisis/self-harm references and medication-reference code.
+   No automated result was saved after IARC's automation prohibition was read.
+6. Verified live Earnings access and $0.00 payments, and narrowed missing payout
+   readiness to the absent Payout and tax account section/role context. No
+   private tax, bank, or identity data was entered or recorded.
+7. Fixed the local secret scanner so a legitimate working-tree deletion cannot
+   crash the gate before remaining files are scanned.
 
 ## Remaining critical path
 
-Only owner-controlled or installed-Windows evidence remains:
+Only factual/legal, private-account, certification, and active-Windows evidence
+remains:
 
-1. Install and smoke-test the exact hash-recorded AppX, run WACK, and finish the
-   manual keyboard, Narrator, high-contrast, 200% text, and reduced-motion pass.
-2. Re-answer or affirm the IARC questionnaire after reviewing the packaged
-   crisis and self-harm references; the existing 3+/Everyone result was not
-   changed by this cycle.
-3. Confirm seller tax/payout readiness and an operable support route.
-4. Review and click Submit for certification. After certification passes, use
-   the deliberate manual hold to inspect the result and click Publish now.
-5. Once the product page is visibly purchasable, approve the prepared launch
-   batch and begin the five-day signal clock.
+1. Manually retake IARC from source-grounded disclosures, read its Terms, and
+   save only if the publisher's legal and majority-age attestations are true.
+2. Resolve the missing Payout and tax role/profile section, create or confirm
+   private tax and payout profiles, and assign them to the Store seller program.
+3. Choose Microsoft's supported non-public Store test route. The strongest first
+   release path is Private audience, but it requires a named tester account and
+   a later public submission.
+4. Submit the exact package to certification under the saved manual publication
+   hold, preserve the result, then run the keyboard, Narrator, high-contrast,
+   text-scaling, reduced-motion, smoke, and erase/export pass on the signed build.
+5. Publish only after those gates pass; then verify checkout, approve the launch
+   batch, and begin the five-day signal clock.
 
-Exact steps and the 56-minute owner budget are in revenue/HUMAN_QUEUE.md.
+Exact steps and the 44-minute owner budget are in revenue/HUMAN_QUEUE.md.
 
 ## Gap response
 

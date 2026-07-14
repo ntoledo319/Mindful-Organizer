@@ -30,8 +30,9 @@ future features.
 - Submission ID: 1152921505701225649
 - Pricing and availability: Complete
 - Properties: Complete
-- Age ratings: Complete, with the existing IARC 3+ / ESRB Everyone result still
-  requiring owner affirmation against packaged crisis/self-harm references
+- Age ratings: the existing low-rating draft is not accepted as accurate; the
+  owner must manually retake IARC against all packaged crisis/self-harm and
+  medication-reference content and accept IARC's legal terms
 - Packages: Complete; only Hearth 1.1.0.appx, marked Validated
 - Store listings: Complete
 - Submission options: Partner Center displays Incomplete even though the
@@ -49,8 +50,8 @@ future features.
 - CAMPAIGNS.md — Store-link campaign IDs and measurement rules
 - PRODUCT-PAGE-EXPERIMENTS.md — post-launch icon/screenshot test plan
 - LAUNCH_KIT.md — drafts for owner-approved launch actions; nothing is sent
-- WINDOWS-VALIDATION.md — exact-package install, DPAPI/recovery, WACK, and
-  accessibility evidence checklist
+- WINDOWS-VALIDATION.md — exact-package automated evidence, Store certification,
+  installed smoke, and accessibility evidence checklist
 - identity.json — reserved Partner Center package identity
 
 The static commercial landing artifact lives in landing/. It is intentionally
@@ -72,11 +73,12 @@ The AppX target is x64 and must run on Windows:
 shipping art deterministically; review the resulting diff and provenance file.
 `npm run store:validate` checks listing limits, required documents, URLs, local
 links, and static-landing invariants without adding a dependency. A successful
-build or validator run proves only that specific result. The exact candidate
-still needs installation, launch, feature, accessibility, security, and Windows
-App Certification Kit verification on supported Windows. Follow
-WINDOWS-VALIDATION.md and preserve its evidence against the matching package
-hash.
+build or validator run proves only that specific result. The exact candidate is
+an unsigned Store-submission package; Microsoft documents that it re-signs the
+package after certification. Adding a local test signature would change the
+package bytes and cannot become evidence for the accepted hash. Follow
+WINDOWS-VALIDATION.md and preserve every observation against the matching
+package and Store-signed release.
 
 The Windows Store workflow also launches the extracted exact candidate against
 real Windows `safeStorage`/DPAPI. Its sentinel-guarded validation covers fresh
@@ -84,7 +86,7 @@ encrypted persistence, corrupt-primary rollback, export contents, explicit and
 interrupted erase, representative legacy migration with consent gating, and
 missing-key fail-closed behavior. The resulting `release-validation.json` ships
 beside the AppX artifact. This materially narrows the manual matrix; it does not
-replace installed-package, separate-account, WACK, or assistive-technology
+replace Microsoft certification or assistive-technology and presentation
 testing in an active Windows desktop session.
 
 ## Verified source behavior
@@ -137,9 +139,10 @@ all visual and content checks pass.
       and all legacy plaintext files are retired as designed.
 - [x] On supported Windows CI, verify fail-closed behavior for missing or unusable
       protected key material without destroying recoverable encrypted data.
-- [ ] Install and smoke-test the exact hash-recorded x64 MSIX on supported
-      Windows.
-- [ ] Run the Windows App Certification Kit and preserve its passing result.
+- [ ] Submit the exact hash-recorded AppX to Microsoft certification after the
+      IARC legal step; preserve the certification report and any failure detail.
+- [ ] Before public release, smoke-test the Microsoft-signed build on supported
+      Windows using fictional data and complete the manual accessibility matrix.
 
 ### Rights, safety, and support
 
@@ -148,8 +151,10 @@ all visual and content checks pass.
       vaulted unverified assets excluded.
 - [x] Reconfirm the generated assets and provenance file are unchanged in the
       exact package and screenshot candidate.
-- [ ] Enable the planned GitHub Issues support channel and verify the new-issue
-      flow in a private browser.
+- [x] Enable GitHub Issues for all signed-in users and replace the unsafe legacy
+      templates with privacy-guarded bug and feature forms.
+- [x] Publish an unauthenticated support landing page; disclose that creating a
+      GitHub issue requires a free account and sign-in.
 - [ ] Review the IARC questionnaire disclosures in listing-metadata.json and
       complete the rating honestly in Partner Center.
 - [x] Recheck all medical, emergency, privacy, security, and medication language
@@ -170,7 +175,8 @@ all visual and content checks pass.
       accessibility fields.
 - [x] Merge the final privacy, terms, and refund documents to main and verify
       their public URLs.
-- [x] Keep the support URL blank until issue creation works.
+- [x] Set the support URL to the public support page and link from there to the
+      privacy-guarded issue forms.
 - [ ] Confirm seller, tax, and payout readiness before certification; the
       proposed $14.99 one-time price is saved in the held draft but is not live.
 
@@ -181,7 +187,7 @@ all visual and content checks pass.
 - [x] Enter the reviewed description, product features, seven keywords,
       categories, markets, system requirements, declarations, and screenshots.
 - [ ] Before certification, confirm the uploaded package is still the exact
-      hash-recorded AppX that passes installed smoke and WACK.
+      hash-recorded AppX accepted by the Windows workflow and Partner Center.
 - [ ] Review every legal declaration and final URL as the signed-in owner.
 - [ ] Submit manually and record the submission ID and time in the evidence
       ledger.

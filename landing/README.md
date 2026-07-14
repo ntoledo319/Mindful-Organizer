@@ -6,6 +6,8 @@ as plain static files. It is currently truthful to the pre-release state:
 - no purchase button;
 - no fake availability, audience, review, or security claim;
 - no external font, script, tracker, cookie, form, or third-party asset;
+- three hash-recorded exact-candidate screenshots containing only seeded,
+  fictional demonstration data;
 - the implemented encrypted-at-rest boundary and its memory, OS-session,
   export, deletion, and recovery limits are visible;
 - legal and project links point to stable main-branch document locations that
@@ -53,6 +55,11 @@ purchasable:
    ledger.
 
 Before any deployment, run `npm run store:validate` from the workspace root.
+
+The tracked product frames can be regenerated only when the matching accepted
+screenshot evidence is present under `tmp/artifacts/final-screenshots/`:
+
+    npm run landing:media
 
 ## Measurement
 

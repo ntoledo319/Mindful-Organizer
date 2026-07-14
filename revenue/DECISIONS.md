@@ -182,3 +182,82 @@ fee, 314 sales would model $4,000.83 before refunds and tax adjustments. No
 demand evidence supports that quantity yet. Decision: start the five-day signal
 gate only after the listing is actually visible and purchasable, then reposition
 once and replace promptly if external signal remains zero.
+
+## 2026-07-14 — Cycle 2
+
+### D024 — Stop automating the IARC rating tool
+
+The packaged source audit found textual crisis/self-harm references and a
+vaulted medication-reference screen that the saved 3+/Everyone questionnaire
+did not disclose. During review, IARC's current Terms were found to prohibit
+automated scripts from accessing or operating the rating tool. Decision: treat
+any automated preview as invalid, do not save it, stop all agent interaction
+with the questionnaire, and give the owner a manual, source-grounded answer
+guide. The real publisher must read the definitions, accept the legal terms,
+and attest majority age only if true.
+
+### D025 — Make support public without soliciting private wellness data
+
+GitHub Issues is enabled for all signed-in users and no interaction limit is
+active, but the legacy templates asked for diagnoses, energy level, mental
+health profile, screenshots, and nonexistent labels. Decision: replace them
+with typed Windows/Hearth forms that require fictional reproduction data,
+prohibit records/exports/keys/account details, disable blank issues, and route
+urgent crisis needs away from software support. Use the public SUPPORT page as
+the Store support URL because reading it does not require sign-in; disclose that
+filing an issue does.
+
+### D026 — Treat Microsoft certification as the exact unsigned-package gate
+
+The accepted AppX has no `AppxSignature.p7x`. Microsoft's Store path accepts an
+unsigned submission and re-signs it after certification. Local test signing or
+rebuilding changes the package bytes and SHA-256, while hosted Windows runners
+do not provide the active privileged desktop needed for authoritative WACK.
+Decision: supersede D021's pre-certification exact-install/WACK requirement.
+Microsoft certification is the exact-package install/run, security, and
+technical-compliance gate. A Store-signed human smoke/accessibility pass remains
+required before a quality claim or accessibility declaration.
+
+### D027 — Preserve the manual hold and expose the testing tradeoff
+
+The current submission is Public/discoverable but held after certification.
+Microsoft's strongest first-release non-public install path is Private audience,
+which requires a named tester Microsoft account and a later public submission.
+Decision: do not silently change visibility or store a private tester address.
+Put the choice in the Human Queue before certification. Never publish merely to
+manufacture an install path.
+
+### D028 — Use exact-candidate frames as conversion proof
+
+The pre-release landing page was polished but relied on a concept illustration
+and stale “package planned” wording. Decision: keep the illustration as an
+explicit concept, add three SHA-verified frames from the accepted screenshot
+manifest, and label them as fictional demo data from the exact candidate. Keep
+the page static, scriptless, trackerless, form-free, and without a purchase link
+until the Store page is observed live.
+
+### D029 — Narrow payout readiness to the account-role boundary
+
+The signed-in account can access Apps and games, Insights, and Earnings; the
+Earnings workspace shows $0.00. Account settings still does not expose Payout
+and tax. Microsoft documents Owner or Financial contributor context plus tax,
+payout, and program assignment as prerequisites. Decision: no agent guesses or
+enters private account, tax, bank, KYC, or role data. Queue the exact account
+repair and start it early because validation can take up to 48 hours.
+
+### D030 — Keep the local secret gate deletion-safe
+
+Replacing legacy issue templates exposed that the secret scanner crashes on a
+tracked path deleted in the working tree. Decision: skip only paths that no
+longer exist, retain containment and symlink/size/binary checks for everything
+else, and count readable files actually scanned. The repaired gate passed 160
+files in the same deletion state that triggered the defect.
+
+### D031 — Do not confuse launch assets with audience
+
+The support route, screenshot-backed landing artifact, campaign IDs, and launch
+copy are ready. None is a traffic source while the Store page is absent.
+Decision: keep Microsoft Store discovery as the only autonomous acquisition
+channel, preserve the five-day signal gate, and leave every post or human
+contact in the owner-approved launch batch. Collected revenue remains the only
+success metric.

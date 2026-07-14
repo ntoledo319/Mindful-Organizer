@@ -1,0 +1,52 @@
+name: Feature request
+description: Suggest a focused improvement to Hearth's offline planning workflow
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Hearth is personal organization and wellness software, not diagnosis, treatment, monitoring, or emergency support. Please describe the workflow rather than sharing diagnoses or private records.
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: This request contains no personal wellness records, account details, exports, keys, or identifying screenshots.
+          required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Workflow problem
+      description: What planning, focus, check-in, practice, or review task is difficult today?
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired behavior
+      description: Describe the smallest useful outcome without assuming a particular implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Optional. What do you do today instead?
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Product boundaries
+      options:
+        - label: The proposal can remain local-first and work without an account or cloud record sync.
+        - label: The proposal does not require Hearth to infer diagnosis, treatment, crisis risk, or daily capacity.
+  - type: textarea
+    id: accessibility
+    attributes:
+      label: Accessibility considerations
+      description: Optional. Note keyboard, screen-reader, contrast, text-scaling, or motion needs.
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional non-sensitive context

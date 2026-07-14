@@ -7,12 +7,13 @@ variable-capacity days. It gives tasks an estimated energy cost, keeps a finite
 daily “spoon” budget, and shows a small set of open tasks whose recorded cost
 fits what remains.
 
-> **Release status:** Hearth is substantial software with a generated x64 Store
-> package, but it is not currently certified, listed, or purchasable. The current
-> source implements authenticated encrypted snapshots and OS-protected key
-> storage, but the exact Windows release package still needs migration,
-> installation, accessibility, and certification verification. See
-> store/README.md before making any availability claim.
+> **Release status:** Hearth 1.1.0 is an accepted x64 package in a fully prepared
+> Microsoft Partner Center draft, but it is not certified, public, or
+> purchasable. The exact package passed source, package-structure, and real
+> Windows DPAPI lifecycle automation. Microsoft certification, a manual Windows
+> accessibility pass, an owner-completed IARC attestation, and seller payout
+> readiness remain release gates. See store/README.md before making any
+> availability claim.
 
 ## The core loop
 
@@ -75,10 +76,13 @@ The source is MIT licensed and stays public. The proposed one-time Microsoft
 Store purchase pays for an official x64 MSIX package and Store delivery, not
 exclusive code, a clinical capability, or guaranteed future features.
 
-The reserved Store identity is real, but the current build is not submitted.
-Price, package upload, age rating, declarations, screenshots, public URLs, and
-the final publish action remain manual owner decisions. The detailed release
-gate is in [store/README.md](store/README.md).
+The reserved Store identity is real. The exact package, proposed $14.99 US
+price, listing copy, declarations, and five screenshots are saved in Submission
+1 under a manual publication hold. The draft has not been submitted for
+certification. The owner must still complete the IARC legal attestation and
+seller payout checks; Microsoft must certify the package; and a human must
+review the installed Store-signed build before publication. The detailed
+release gate is in [store/README.md](store/README.md).
 
 ## Technology
 
@@ -156,5 +160,7 @@ certification, signing, installation, security, or usability result.
 - [License](LICENSE)
 - [Third-party notices](THIRD_PARTY_NOTICES.md)
 
-The planned public support path is GitHub Issues. It must not be advertised as a
-working customer channel until issue creation is enabled and verified.
+The public support page is [docs/SUPPORT.md](docs/SUPPORT.md). Reproducible
+software reports use privacy-guarded GitHub Issue forms and require a free
+GitHub sign-in. Private records, exports, databases, keys, and crisis or medical
+requests do not belong there.

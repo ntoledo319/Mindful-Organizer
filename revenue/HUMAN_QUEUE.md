@@ -1,148 +1,140 @@
 # Human Queue
 
 _Owner labor ceiling: 60 minutes for the full run. Current queued total:
-**56 minutes**. Machine wait and Microsoft review time are excluded. Do not add
+**44 minutes**. Machine wait and Microsoft review time are excluded. Do not add
 extra outreach or content work._
 
-The product, exact package, screenshots, copy, pricing, and Partner Center draft
-are prepared. These are the remaining human-controlled release gates.
+The exact package, five screenshots, copy, price, release hold, public support
+page, privacy-guarded issue forms, security policy, and audience assets are
+prepared. Only factual/legal attestations, private financial setup, active
+Windows observation, certification, publication, and owner-authored posts remain.
 
-## HQ-01 — Exact AppX install, WACK, and manual accessibility pass — 25 minutes
+## HQ-01 — Retake IARC manually and accept its terms — 5 minutes
 
-- **What:** Verify the exact 1.1.0 AppX in an installed Windows session.
-- **Why human-only:** WACK can require an interactive/elevated Windows session,
-  and Narrator, high contrast, text scaling, keyboard behavior, and visual fit
-  require human observation.
-- **Direct evidence:**
-  <https://github.com/ntoledo319/Mindful-Organizer/actions/runs/29322423622>
-- **Steps:**
-  1. Download artifact 8306541856 from the run above on a supported x64 Windows
-     11 machine.
-  2. In PowerShell run Get-FileHash on Hearth 1.1.0.appx and require SHA-256
-     4900f3823febace53f86f69ee2567b50208aec8f6677741c3c4dcf3667facdb1.
-     Stop if it differs.
-  3. Follow store/WINDOWS-VALIDATION.md with fictional data: install from the
-     AppX, launch from Start, exercise consent, capacity persistence, task,
-     check-in, practice, crisis-plan edit, JSON/PDF export, erase, quit, and
-     relaunch.
-  4. Run WACK against that AppX and preserve the passing XML beside the package.
-  5. Complete the keyboard-only, Narrator, high-contrast, 200% text,
-     reduced-motion, minimum-window, light/dark, and modal-focus matrix in
-     docs/ACCESSIBILITY.md.
-  6. Record only Windows build, pass/fail, WACK report name, and date in
-     revenue/METRICS.md. Never commit personal test records or key material.
-
-## HQ-02 — Review and affirm the IARC answers — 6 minutes
-
-- **What:** Decide whether the saved 3+/Everyone rating accurately reflects
-  everything packaged, including vaulted code and text.
-- **Why human-only:** IARC answers are a publisher legal/content
-  representation. The app contains crisis language and a preserved optional
-  self-harm urge field, so the classification should not be guessed by an
-  agent.
+- **What:** Replace the untrusted low-rating draft with a source-grounded IARC
+  questionnaire completed manually by the real publisher.
+- **Why human-only:** IARC's current Terms prohibit automated scripts from
+  operating the rating tool. Saving also requires the signer to accept a legal
+  agreement and attest that they are of majority age in their jurisdiction.
 - **Direct link:**
   <https://partner.microsoft.com/en-us/dashboard/products/9PLRSZZMFPJH/submissions/1152921505701225649/ageratings>
 - **Steps:**
-  1. Open the link and review the current IARC 10.3 result.
-  2. Click Edit and compare each answer with the disclosures in
-     store/listing-metadata.json, especially the question about inferences of or
-     references to violence, blood, or gory images.
-  3. Answer based on the packaged crisis/self-harm references, not merely the
-     default navigation. Do not optimize for a lower rating.
-  4. Save only when every answer is accurate, then record the resulting rating
-     and date in revenue/METRICS.md.
+  1. Click **Edit** and retake the questionnaire manually. Do not use browser
+     automation and do not optimize for a lower rating.
+  2. Use **All Other App Types** and answer **Yes** to ratings-relevant content
+     in the downloaded package.
+  3. Disclose textual crisis/self-harm references: Violence **Yes** → violence
+     or implied violence against humans → realistic setting → not childlike or
+     pixelated → realistic reaction → **Referred to** only → blood/gore None →
+     no war setting → no injured/killed characters → no fierce sounds,
+     intimidating characters, or dark visual/audio overtones.
+  4. Answer Fear No, Sexuality No, Gambling No, Language No, and Crude Humor No.
+  5. Disclose the vaulted medication-reference code: Controlled Substance Yes
+     → Medical Drugs → **Reference** → Rarely. Do not select illegal/recreational
+     drugs, alcohol, tobacco, use, or encouragement/glamorization unless a
+     manual reading of IARC's definitions changes that factual assessment.
+  6. Keep the no-social-sharing, no-purchases, no-location-sharing, no-rewards,
+     no-browser/search, and digital-only answers. Manually open IARC's help for
+     **Online Content** and confirm how it treats links handed to the external
+     browser before saving.
+  7. Read the IARC Terms. Check the legal/majority-age box only if true, save,
+     and record the resulting ratings and date in `revenue/METRICS.md`.
 
-## HQ-03 — Confirm seller, tax, payout, and account-role readiness — 10 minutes
+## HQ-02 — Confirm seller, tax, payout, and role readiness — 10 minutes
 
-- **What:** Confirm Toledo Technologies can receive paid Microsoft Store
-  proceeds.
-- **Why human-only:** Identity, tax attestations, banking, account roles, and KYC
-  are owner-controlled legal and financial actions. No payout/tax navigation
-  was visible in the current app-submission view, which may indicate a role or
-  profile prerequisite.
+- **What:** Make the Store seller account capable of receiving proceeds.
+- **Why human-only:** Tax status, banking, identity, role assignment, and KYC are
+  private legal and financial facts. The live account has Earnings access and
+  shows $0.00, but **Payout and tax** is absent from Account settings.
 - **Direct links:**
-  <https://partner.microsoft.com/dashboard> and
-  <https://partner.microsoft.com/en-us/dashboard/apps-and-games/overview>
+  <https://partner.microsoft.com/dashboard/v2/account-settings/overview> and
+  <https://learn.microsoft.com/en-us/partner-center/account-settings/set-up-your-payout-account>
 - **Steps:**
-  1. In Partner Center, open Settings → Account settings and verify the publisher
-     entity matches the real Toledo Technologies account.
-  2. Locate Payout and tax profiles. Complete or confirm every required profile
-     and payment method; if the section is missing, verify the signed-in role or
-     open Partner Center support.
-  3. Confirm product 9PLRSZZMFPJH can be sold at the saved one-time price.
-  4. Record only ready/not-ready, date, and any role blocker. Never put bank,
-     tax, identity, or support-contact details in the repository.
+  1. Open Settings → Account settings and confirm the real seller entity.
+  2. Verify this account has Owner or Financial contributor rights for the
+     Store seller account. If **Payout and tax** is still missing, use Partner
+     Center support to correct the developer-profile role/context.
+  3. Create or confirm the tax profile and payout profile, then assign both to
+     the Store program/seller ID. Microsoft says validation can take up to 48
+     hours; start it before certification wait time is spent.
+  4. Record only ready/not-ready, date, and a non-sensitive blocker in
+     `revenue/METRICS.md`. Never commit account names, bank data, tax data,
+     identity documents, or support-contact details.
 
-## HQ-04 — Enable and verify the public support route — 3 minutes
+## HQ-03 — Choose the non-public Store test route and perform the Windows pass — 18 minutes
 
-- **What:** Enable the GitHub Issues support path already named by the release
-  docs, or replace it with another channel the owner will monitor.
-- **Why human-only:** Opening an inbound customer-contact channel creates an
-  ongoing human support obligation.
+- **What:** Observe the Microsoft-signed app on supported x64 Windows before a
+  public release.
+- **Why human-only:** The accepted AppX is intentionally unsigned; signing it
+  locally changes its hash. Narrator, high contrast, text scaling, keyboard
+  behavior, and visual fit require an active Windows session and human judgment.
 - **Direct links:**
-  <https://github.com/ntoledo319/Mindful-Organizer/settings> and
-  <https://github.com/ntoledo319/Mindful-Organizer/issues/new/choose>
+  <https://partner.microsoft.com/en-us/dashboard/products/9PLRSZZMFPJH/submissions/1152921505701225649/availability>
+  and `store/WINDOWS-VALIDATION.md`.
 - **Steps:**
-  1. Under repository Settings → General → Features, enable Issues.
-  2. Open the new-issue link in a private window and verify that a customer can
-     begin an issue. Do not submit a test issue.
-  3. Put the verified URL into store/listing-metadata.json and record the check
-     date. If Issues will not be monitored, choose and verify a different real
-     support channel instead.
+  1. Before certification, decide whether to change the first submission from
+     Public to Microsoft's **Private audience** and add the Microsoft account
+     used by the Windows test device. This is the strongest non-public test
+     path, but it requires a second submission to move to Public later.
+  2. After certification, install the Microsoft-signed build through that
+     supported Store route. Do not test-sign or overwrite the accepted AppX.
+  3. With fictional data, run consent, capacity persistence, task, check-in,
+     practice, crisis-plan edit, JSON/PDF export, erase, quit, and relaunch.
+  4. Complete keyboard-only, Narrator, high contrast, 200% text scaling,
+     reduced motion, minimum-window, light/dark, and modal-focus checks in
+     `docs/ACCESSIBILITY.md`.
+  5. Record only Windows build, install route, pass/fail, installed footprint,
+     and date. Never commit test records, exports, snapshots, or keys.
 
-## HQ-05 — Submit for certification, then release from the manual hold — 7 minutes
+## HQ-04 — Submit for certification, then release the manual hold — 6 minutes
 
-- **What:** Make the final publisher declarations and start certification; after
-  a pass, perform the separate Publish now action.
-- **Why human-only:** Certification submission, content declarations,
-  restricted-capability representation, paid pricing, and publication are
-  legal/commercial commitments.
-- **Blocked until:** HQ-01 through HQ-04 are complete.
+- **What:** Start Microsoft review and, only after every gate passes, perform
+  the separate publication action.
+- **Why human-only:** Submission and publication are legal and commercial
+  commitments. Certification itself installs/runs and technically checks the
+  exact package; the saved hold prevents automatic public release.
+- **Blocked until:** HQ-01 is complete. Complete HQ-02 before expecting payouts;
+  choose the HQ-03 test route before submitting.
 - **Direct link:**
   <https://partner.microsoft.com/en-us/dashboard/products/9PLRSZZMFPJH/overview>
 - **Steps:**
-  1. Confirm Submission 1 still shows Pricing, Properties, Age ratings,
-     Packages, and Store listings as Complete; the package must be Hearth
-     1.1.0.appx and Validated.
-  2. Review the saved runFullTrust explanation and Additional Testing
-     Information. Confirm that no service, driver, elevation, background
-     monitoring, cloud account, ads, sync, or telemetry claim has appeared.
-  3. Review all URLs, $14.99 US price, screenshots, categories, IARC result, and
-     the exact AppX hash.
-  4. Click Submit for certification and record the timestamp/status in
-     revenue/METRICS.md. If Microsoft requests a restricted-capability
-     clarification, answer truthfully; do not broaden the capability claim.
-  5. After certification passes, inspect the report and private product page.
-     Because the draft is set to Do not publish until I select Publish now,
-     click Publish now only when the page, price, support, and package are
-     correct.
-  6. In a private browser, verify the public page is visible and purchasable,
-     then record the exact Store URL and time.
+  1. Confirm the package is only `Hearth 1.1.0.appx`, Partner Center says
+     Validated, and its source artifact SHA-256 is
+     `4900f3823febace53f86f69ee2567b50208aec8f6677741c3c4dcf3667facdb1`.
+  2. Review the $14.99 US price, screenshots, categories, URLs, corrected IARC
+     result, runFullTrust explanation, testing notes, and release control **Do
+     not publish until I select Publish now**.
+  3. Click **Submit for certification** and record the timestamp/status. Answer
+     any Microsoft request truthfully without broadening capability claims.
+  4. Preserve the certification result. Complete HQ-03 against the signed build.
+  5. Click **Publish now** only after certification, Windows observation, payout
+     readiness, page preview, price, support, and package all pass.
+  6. In a signed-out browser, verify the page is visible and purchasable; record
+     the exact Store URL and time.
 
-## HQ-06 — Approve and execute the first audience batch — 5 minutes
+## HQ-05 — Approve and execute the first audience batch — 5 minutes
 
-- **What:** Approve the prepared launch copy and make the minimum manual launch
-  posts only after the Store page is purchasable.
-- **Why human-only:** Posting as the owner or contacting real people is forbidden
+- **What:** Make the smallest owner-authored launch posts after the Store page
+  is purchasable.
+- **Why human-only:** Posting as the owner or contacting people is forbidden
   without explicit human review and action.
-- **Source:** store/LAUNCH_KIT.md and store/CAMPAIGNS.md.
+- **Source:** `store/LAUNCH_KIT.md` and `store/CAMPAIGNS.md`.
 - **Steps:**
-  1. Replace every draft link with the verified public Store URL and its
-     source-specific campaign ID.
-  2. Re-read each claim against the live listing and remove anything not
+  1. Replace draft links with the verified Store URL and source-specific
+     campaign IDs.
+  2. Re-read each claim against the live listing; remove anything not
      demonstrable that day.
-  3. Approve and manually post the smallest prepared batch to channels where the
-     owner already has a legitimate account and the platform permits it. Do not
-     cold-DM, scrape, automate, or manufacture engagement.
-  4. Record links and timestamps in revenue/METRICS.md, then inspect Store
-     acquisition data daily enough to enforce the five-day signal gate.
+  3. Manually post only to legitimate existing accounts and channels whose
+     current rules permit it. Do not cold-DM, scrape, automate, or manufacture
+     engagement.
+  4. Record URLs and timestamps, then inspect Store acquisition data often
+     enough to enforce the five-day signal gate.
 
 ## Running owner-time ledger
 
-Queued estimates: 25 + 6 + 10 + 3 + 7 + 5 = **56 minutes**, leaving 4 minutes
-of reserve. No owner minutes are recorded as spent in the repository yet.
+Queued estimates: 5 + 10 + 18 + 6 + 5 = **44 minutes**, leaving 16 minutes of
+reserve. No owner minutes are recorded as spent in the repository yet.
 
-Cycle 1 used the signed-in Partner Center session to prepare the draft but did
-not make the owner-only IARC change, certification declaration, publish action,
-support commitment, payout attestation, or outreach. Those remain exactly the
-items above.
+Removed from the queue this cycle: enabling Issues, correcting issue forms,
+publishing the support/security pages, and preparing the visual/audience assets.
+Those are shipped repository work, not owner chores.

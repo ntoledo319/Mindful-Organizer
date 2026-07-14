@@ -1,6 +1,6 @@
 # Monetization Frames and Ranking
 
-_Re-ranked 2026-07-14 after Cycle 1 execution. All U values are unvalidated
+_Re-ranked 2026-07-14 after Cycle 2 execution. All U values are unvalidated
 four-week planning ranges, not observed revenue or promises._
 
 Legend: **T$** = days to first plausible collected dollar; **H** = owner minutes;
@@ -15,7 +15,7 @@ principal risk. A dash means no compliant near-term route.
 | A1.2 | Paid session-summary output | 21+ | >60 | No marketplace | $0–$200 | Sensitive intake and fulfillment |
 | A1.3 | Sell existing source | 7+ | 20 | Asset marketplace | $0–$100 | Source is already public MIT |
 | A1.4 | Extract a paid component | 14+ | 20 | Asset marketplace | $0–$200 | New documentation and differentiation |
-| A1.5 | Official Windows package | 2–7 after owner gates | 56 total queue | **Microsoft Store** | $0–$4,001 | Certification and unproven demand |
+| A1.5 | Official Windows package | 3–10 after owner gates | 44 total queue | **Microsoft Store** | $0–$4,001 | Legal/payout gates, certification, and unproven demand |
 | A1.6 | Bundle with a future sibling | — | >60 | None | $0 | Sibling does not exist |
 | A1.7 | White-label clinic build | 21+ | >60 | Outbound required | $0 | Claims, sales, and support burden |
 
@@ -79,7 +79,8 @@ principal risk. A dash means no compliant near-term route.
 - **Funnel:** Microsoft Store search/category/recommendation plus only
   owner-approved launch links → product page → Store checkout.
 - **Current evidence:** a validated 1.1.0 AppX, complete copy and screenshots,
-  and a held Partner Center draft. No live page view, acquisition, purchase, or
+  privacy-guarded support, a screenshot-backed landing artifact, and a held
+  Partner Center draft. No live Store page view, acquisition, purchase, or
   payout exists.
 - **Falsifier:** one reposition after five live days with zero external signal;
   replace after four additional live days with zero signal. Treat 100 product
@@ -104,9 +105,11 @@ reserve after a Bet A falsifier.
 ## Audience reality
 
 There is no owned audience and no observed demand. Built-in Store distribution
-is the only autonomous discovery channel currently available. After publication,
-the owner may approve the already drafted launch batch in store/LAUNCH_KIT.md.
-No email, DM, post, review solicitation, or customer commitment may be sent
+is the only autonomous discovery channel currently available. The landing page,
+support path, campaign IDs, and owner-reviewed launch drafts reduce conversion
+and launch friction but do not create traffic by themselves. After publication,
+the owner may approve the prepared launch batch in store/LAUNCH_KIT.md. No
+email, DM, post, review solicitation, or customer commitment may be sent
 autonomously.
 
 ## Platform evidence
@@ -122,5 +125,6 @@ autonomously.
   <https://itch.io/docs/creators/faq>, and
   <https://itch.io/docs/creators/payments>
 
-Cycle 1 changed execution risk, not demand evidence. Collected profit is still
+Cycle 2 reduced support, presentation, and release-process risk, not demand
+evidence. Collected profit is still
 **$0.00**.

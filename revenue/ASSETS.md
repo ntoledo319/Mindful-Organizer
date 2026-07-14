@@ -1,6 +1,6 @@
 # Asset Audit
 
-_Cycle 1 truth update completed 2026-07-14. Scope is the containment root only._
+_Cycle 2 truth update completed 2026-07-14. Scope is the containment root only._
 
 ## Workspace inventory
 
@@ -15,10 +15,11 @@ evidence, and assistant state are not separate assets.
   person choose an energy budget, plan tasks that fit it, check in, and review
   their own rhythm without an account or cloud record sync.
 - **Completeness:** Release-candidate source, tests, deterministic assets,
-  package validation, DPAPI lifecycle automation, and Store screenshots are
-  complete. The exact AppX is validated in a fully populated Partner Center
-  draft. Installed-package smoke, WACK, manual assistive-technology checks,
-  owner IARC review, seller/payout confirmation, certification, and publication
+  package validation, DPAPI lifecycle automation, Store screenshots, support
+  forms, a security policy, and the commercial product tour are complete. The
+  exact unsigned AppX is validated in a fully populated Partner Center draft.
+  A TOS-compliant manual IARC retake, seller/payout confirmation, Microsoft
+  certification, Store-signed smoke/accessibility observation, and publication
   remain.
 - **Distribution target:** Microsoft Store using reserved product ID
   9PLRSZZMFPJH and its built-in discovery and checkout. GitHub remains the
@@ -46,7 +47,7 @@ evidence, and assistant state are not separate assets.
 
 Launch scope: Today, Tasks, Check in, Practices, Rhythm, Crisis, and Settings.
 Smallest sellable unit: the official Windows package. Status: release candidate
-and Store draft complete; not submitted or public.
+and Store draft complete; public support path prepared; not submitted or public.
 
 ### A2 — Presence and Focus Guard engine
 
@@ -103,8 +104,11 @@ from silently returning to default navigation.
 ## Current bottom line
 
 The product is no longer blocked by architecture, encryption, consent, asset
-rights, package generation, listing copy, screenshots, or Partner Center data
-entry. It is a high-quality technical release candidate, but it is not a live
-listing. The remaining blockers are exact installed-Windows/WACK evidence and
-owner-controlled legal, payout, certification, support, and publication
-actions. No asset is yet purchasable, so collected revenue remains zero.
+rights, package generation, listing copy, screenshots, support setup, or core
+Partner Center data entry. It is a high-quality technical release candidate,
+but it is not a live listing. Because the accepted AppX is intentionally
+unsigned, Microsoft certification—not a locally altered test signature—is the
+exact-package technical gate. The remaining blockers are manual IARC/legal
+attestation, seller payout setup, certification, Store-signed Windows human
+observation, and publication. No asset is yet purchasable, so collected revenue
+remains zero.

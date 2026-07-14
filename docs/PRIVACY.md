@@ -145,7 +145,8 @@ account or device.
 
 ## Contact
 
-The intended support channel is the repository's
-[GitHub Issues](https://github.com/ntoledo319/Mindful-Organizer/issues). Issue
-creation is currently restricted, so this channel must be enabled before a
-public release.
+The public support page is [SUPPORT.md](SUPPORT.md). Reproducible software
+reports use privacy-guarded
+[GitHub Issue forms](https://github.com/ntoledo319/Mindful-Organizer/issues/new/choose),
+which require a free GitHub account and sign-in. Never post private Hearth
+records, exports, databases, snapshots, keys, or account details there.

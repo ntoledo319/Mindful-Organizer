@@ -7,7 +7,7 @@ PLAN.md and OPPORTUNITIES.md.
 
 | Metric | Observed value | Evidence |
 |---|---:|---|
-| Partner Center earnings | **$0.00** | Signed-in Hearth overview observed this cycle |
+| Partner Center earnings | **$0.00** | Signed-in Earnings workspace observed in Cycle 2; no data for the selected period |
 | Collected profit recorded | **$0.00** | No sale, payout, refund, fee, or settlement record observed |
 | Gap to target | **$4,000.00** | $4,000 target minus $0 collected |
 | Live paid listing | 0 | Product is In draft; no public purchasable Store page verified |
@@ -58,8 +58,10 @@ PLAN.md and OPPORTUNITIES.md.
 | Artifact expiry | 2026-08-13 |
 | Partner Center result | Validated; x64; Windows Desktop minimum 10.0.14316.0 |
 
-Passing generation, lifecycle automation, and Partner validation do not prove an
-installed-package smoke test, WACK pass, certification, or publication.
+The exact accepted AppX is an unsigned Store-submission file with no
+`AppxSignature.p7x`; locally signing it would change its bytes and hash. Passing
+generation, lifecycle automation, and Partner validation do not prove Microsoft
+certification, a Store-signed human smoke/accessibility pass, or publication.
 
 ## 2026-07-14 — Exact screenshot evidence
 
@@ -90,10 +92,11 @@ installed-package smoke test, WACK pass, certification, or publication.
   manual action.
 - Properties: **Complete** — Productivity primary, Health + fitness secondary,
   personal-information declaration saved.
-- Age ratings: **Complete** — current saved result IARC 3+ / ESRB Everyone,
-  IARC 10.3. An exploratory questionnaire change was canceled without saving;
-  the result still requires owner review against the packaged crisis and
-  self-harm references.
+- Age ratings: current saved result IARC 3+ / ESRB Everyone, IARC 10.3. It is not
+  accepted as accurate against packaged crisis/self-harm and
+  medication-reference content. A Cycle 2 source audit produced a conservative
+  manual answer guide, but no automated questionnaire result was saved after
+  IARC's automation prohibition was identified.
 - Packages: **Complete** — only Hearth 1.1.0.appx remains in the draft and is
   marked Validated.
 - Store listings: **Complete** — final truthful description, eight features,
@@ -104,11 +107,56 @@ installed-package smoke test, WACK pass, certification, or publication.
 - Submit for certification: **enabled but not clicked**.
 - Release control: **Do not publish until I select Publish now** is saved.
 
+## 2026-07-14 — Cycle 2 support and audience evidence
+
+- Repository Settings → General showed Issues enabled with creation allowed by
+  all users. Repository- and account-level interaction limits were disabled.
+- Authenticated issue creation exposed Bug report, Feature request, and blank
+  issue options before the unsafe legacy templates were replaced. Signed-out
+  issue creation requires GitHub sign-in.
+- New local issue forms parse as YAML, disable blank issues, use only `bug` and
+  `enhancement` labels, and prohibit databases, snapshots, keys, plaintext
+  exports, personal records, and identifying screenshots.
+- A public support page, security policy, and private vulnerability-reporting
+  link were prepared for main. No issue, message, post, or customer commitment
+  was created.
+- Three accepted-candidate screenshots were copied only after their source
+  build reference and SHA-256 values matched the accepted manifest. The landing
+  product tour was visually inspected at 1440 px and 390 px; images loaded at
+  their natural 1920 × 1080 size.
+
+## 2026-07-14 — Cycle 2 local verification
+
+- GitHub form YAML: 3 files parsed.
+- Store identity check: true.
+- Store validator: **263 checks passed**.
+- ESLint: passed with zero warnings.
+- TypeScript: renderer and Electron projects passed.
+- Vitest: **9 files / 30 tests passed**.
+- Renderer and Electron production builds: passed.
+- Secret scan: **160 readable files passed**. The scanner was repaired to skip
+  tracked paths deleted in the working tree instead of crashing before it
+  scanned remaining files.
+- Third-party notices regenerated for **54 runtime packages**.
+- Deterministic brand assets regenerated without a source change.
+
+## 2026-07-14 — Cycle 2 seller-account evidence
+
+- My access showed Apps and games, Insights, and Earnings access granted.
+- The signed-in Earnings workspace showed $0.00 payments and no earnings data
+  for the current filter period.
+- Account settings did not expose a Payout and tax section. Official Microsoft
+  guidance says Store/Marketplace payout setup requires the appropriate Owner
+  or Financial contributor context and assigned tax and payout profiles.
+- No bank, tax, KYC, identity, or private account detail was entered or recorded
+  in the workspace.
+
 ## Current not-observed list
 
-Installed AppX behavior, WACK result, Windows Narrator/high-contrast/text-scaling
-results, owner-approved IARC answers, seller tax/payout readiness, certification
-result, public listing visibility, product-page traffic, purchases, refunds,
-fees, and payouts remain unobserved.
+Store-signed installed behavior, Windows Narrator/high-contrast/text-scaling
+results, owner-approved IARC answers, seller tax/payout readiness, Microsoft
+certification, public listing visibility, product-page traffic, purchases,
+refunds, fees, and payouts remain unobserved. The attempted Lighthouse run was
+terminated without usable audit results and is not counted as evidence.
 
 Collected profit remains **$0.00**. The current gap remains **$4,000.00**.
