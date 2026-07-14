@@ -84,13 +84,6 @@ jobs:
           "HEARTH_ELECTRON_DIST=$dist" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Remove-Item $archive -Force
 
-      # npm installs better-sqlite3 for the Node ABI. Screenshot capture runs
-      # the real Electron app, so rebuild native modules for Electron's ABI
-      # before either the screenshot proof or the AppX package uses them.
-      - name: Rebuild native dependencies for Electron
-        timeout-minutes: 7
-        run: npx electron-builder install-app-deps
-
       - name: Scan repository for committed secrets
         run: npm run secrets
 
@@ -131,6 +124,13 @@ jobs:
 
       - name: Unit tests
         run: npm test
+
+      # npm installs better-sqlite3 for the Node ABI used by the suite above.
+      # Screenshot capture runs the real Electron app, so switch native modules
+      # to Electron's ABI immediately before the Electron/AppX proof begins.
+      - name: Rebuild native dependencies for Electron
+        timeout-minutes: 7
+        run: npx electron-builder install-app-deps
 
       - name: Build renderer + main
         run: npm run vite:build
