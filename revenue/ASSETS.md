@@ -1,6 +1,6 @@
 # Asset Audit
 
-_Cycle 2 closed 2026-07-14. Scope is the containment root only._
+_Cycle 3 handoff update 2026-07-15. Scope is the containment root only._
 
 ## Workspace inventory
 
@@ -126,3 +126,8 @@ exact-package technical gate. The remaining blockers are manual IARC/legal
 attestation, seller payout setup, certification, Store-signed Windows human
 observation, and publication. No asset is yet purchasable, so collected revenue
 remains zero.
+
+## Cycle 3 continuation authority — 2026-07-15
+
+Root HANDOFF.md is the canonical zero-context continuation map. It preserves the accepted candidate, capability-vault boundary, public/private evidence distinction, release sequence, verification commands and completion criteria. Partner Center facts remain last observed 2026-07-14 until reverified live.
+
