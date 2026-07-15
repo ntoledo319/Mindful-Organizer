@@ -273,3 +273,14 @@ Center. Decision: record the later artifact as independent verification
 evidence, not as a replacement submission. Preserve the exact accepted AppX
 and hash through certification unless product runtime code or Store package
 requirements actually change.
+
+## 2026-07-15 — Cycle 3
+
+### D033 — Establish one canonical zero-context handoff
+
+The existing strategy handoff was accurate but too brief to reproduce the mission, evidence chain, legal gates, release sequence, audience loop and capability-preservation rules without prior memory. Decision: make root HANDOFF.md the canonical handoff and require it to change whenever the candidate, critical path, public URL, testing route or money state changes.
+
+### D034 — Preserve evidence boundaries during the shell failure
+
+Every local subprocess on 2026-07-15, including pwd and true, was killed with exit 137. Decision: do not call the local worktree clean, synced or verified. Audit public main through the authenticated GitHub connector, label Partner Center state with its 2026-07-14 observation date, publish the handoff remotely, and require the next agent to rerun local status and verification without destructive reset.
+

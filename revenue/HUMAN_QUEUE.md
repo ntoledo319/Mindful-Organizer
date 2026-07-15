@@ -1,5 +1,7 @@
 # Human Queue
 
+_Canonical context: root HANDOFF.md. Queue rechecked 2026-07-15; total unchanged._
+
 _Owner labor ceiling: 60 minutes for the full run. Current queued total:
 **44 minutes**. Machine wait and Microsoft review time are excluded. Do not add
 extra outreach or content work._
@@ -143,3 +145,8 @@ reserve. No owner minutes are recorded as spent in the repository yet.
 Removed from the queue this cycle: enabling Issues, correcting issue forms,
 publishing the support/security pages, and preparing the visual/audience assets.
 Those are shipped repository work, not owner chores.
+
+## Cycle 3 clarification — 2026-07-15
+
+Root HANDOFF.md is the canonical context and sequence. The 44-minute queue is unchanged. IARC answer paths below are factual preparation only: the owner must read the exact current question/help wording. Fear classification can depend on how the current tool treats emotionally distressing text, and Controlled Substance wording can distinguish prescribed medical references from illegal drugs. Do not blindly reuse a saved route or target a preferred rating.
+
