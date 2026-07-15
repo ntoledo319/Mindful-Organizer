@@ -2,7 +2,7 @@
 
 # Revenue Plan
 
-_Updated 2026-07-14 — Cycle 2 closed._
+_Updated 2026-07-15 — Cycle 3 canonical handoff published._
 
 ## Containment
 
@@ -120,3 +120,8 @@ The current gap is still **$4,000.00**. The next revenue-relevant action is
 certification, not another feature. Recompute the gap from collected proceeds at
 Days 7, 14, and 21 and apply the documented reposition/replace gates without
 counting downloads, impressions, or draft state as cash.
+
+## Cycle 3 canonical continuation — 2026-07-15
+
+Root HANDOFF.md is the restart-proof operator document. It distinguishes the accepted runtime candidate, later launch hardening, current state head, exact Partner IDs/hashes, public versus private evidence, owner-only gates, post-certification execution, audience signal rules and mission completion. Partner Center state remains last observed 2026-07-14 until a live refresh. This cycle changes no bet, price or dollar result.
+
