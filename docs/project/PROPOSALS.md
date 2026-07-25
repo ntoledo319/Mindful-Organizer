@@ -7,7 +7,7 @@ process scope. Established 2026-07-24._
 
 | ID | Title | Size | Approval | Affected area |
 |---|---|---|---|---|
-| PROP-001 | Reconcile working tree with `origin/main` `e0fc9e0` | S | pending | git state |
+| PROP-001 | Reconcile working tree with `origin/main` | S | **executed 2026-07-24** (merge `59787f4`) | git state |
 | PROP-002 | Branch hygiene: remove duplicate-content and superseded branches | S | pending (destructive; explicit approval required) | git refs |
 | PROP-003 | Branch strategy: fast-forward local `main`, retire `cycle-*` naming | S | pending | git workflow |
 | PROP-004 | Deploy `landing/` to an eligible $0 static host after Store publication | S | pending (gated on live Store URL) | distribution |
@@ -15,21 +15,16 @@ process scope. Established 2026-07-24._
 
 ## PROP-001 — Reconcile working tree with origin/main
 
-- **What:** adopt the published cycle-3 state (`e0fc9e0`) into the checkout and
-  retire the uncommitted local draft (8 modified files + untracked 528-line
-  `HANDOFF.md`, fingerprint `1cbebb903119c043`).
-- **Why:** the dirty tree is the pre-publication draft of content the remote
-  already published in condensed form (`0ff209e` + `e0fc9e0`); both describe
-  the same cycle-3 close. Keeping both invites double-truth drift.
-- **Evidence:** content hashes differ on all 9 files; diffs are draft-vs-published
-  wording (e.g., PLAN "prepared" vs "published"); draft preserved at
-  `docs/project/archive/pre-consolidation/2026-07-24/HANDOFF.local-draft-2026-07-15.md`,
-  published version in Git history.
-- **Value:** single authoritative state; unblocks clean verification refs.
-- **Risks:** losing draft-only nuance — mitigated by the archive; a final
-  spot-diff of the two handoff iterations is part of execution.
-- **Prerequisites:** owner approval for any `git checkout --` / clean of
-  user-owned uncommitted files.
+- **Status: EXECUTED 2026-07-24** via user-authorized commit + merge + push
+  (HIST-20260724-004…006). The draft was committed (`d1c9d91`), `origin/main`
+  merged (`59787f4`), and the result pushed to `main`. Resolution rules applied:
+  consolidated documents win where consolidation made a decision (HANDOFF.md,
+  PLAN.md, METRICS.md hand-merge); published remote iterations win for the four
+  revenue files the consolidation never touched. No content lost: draft lives in
+  `d1c9d91` and the archive; published iteration lives in `0ff209e`/`e0fc9e0`.
+- ~~What~~ (original): adopt the published cycle-3 state (`e0fc9e0`) into the
+  checkout and retire the uncommitted local draft.
+- **Evidence:** VER-20260724-006 (post-merge gates green).
 
 ## PROP-002 — Branch hygiene
 

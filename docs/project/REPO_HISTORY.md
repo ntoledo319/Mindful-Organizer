@@ -31,11 +31,12 @@ cross-check, both agreeing)._
 
 | Ref | SHA | State | Notes |
 |---|---|---|---|
-| `origin/main` | `e0fc9e01f4cd4a150b88fa4deb401116c47725c5` | live-verified 2026-07-24 | Effective project main line, 91 commits |
-| `origin/handoff-cycle-3` | `14f9fd718433047dfc38a2cd5a28d7da171106aa` | fetched | Cycle-3 handoff branch; NOT an ancestor of `main` (content re-applied as `0ff209e`) |
+| `origin/main` | `59787f4ae77901424947c3fb504f96dfce11e4a9` | live-verified 2026-07-24 (push) | Consolidated docs system + reconciled cycle-3 state |
+| `origin/handoff-cycle-3` | `14f9fd718433047dfc38a2cd5a28d7da171106aa` | fetched | Cycle-3 handoff branch; superseded on main (PROP-002) |
 | `origin/feature/monetization` | `8172603b62c2457696608c145511bd3fe92429d4` | fetched | Accepted-candidate preservation branch |
 | `origin/feature/revenue-cycle-0` | `09ec37eff4affcc1a0878205072a75f0cac13da5` | fetched | Diverged legacy cycle-0 docs close; do not continue |
-| local `cycle-2-shipped` (checked out) | `4a32b7306ab9ca76a09fb3fae399649c07543e5a` | 2 behind `origin/main`; dirty tree | See gap G1 |
+| local `cycle-2-shipped` (checked out) | `59787f4ae77901424947c3fb504f96dfce11e4a9` (+ state-sync commit) | synced with `origin/main` | Effective main line |
+| local `main` | `c2b1fc28a4ddedb3c8b234f66860642eff44fae4` | stale: far behind | See PROP-003 |
 | local `main` | `c2b1fc28a4ddedb3c8b234f66860642eff44fae4` | stale: 0 ahead, 17 behind | Fast-forwardable; see PROP-003 |
 | local `cycle-1-published` | `27db6c246de278fe119a46b7be2db35d9aa04a46` | local-only | Duplicate-content lineage of `4a32b73` (rebased SHAs) |
 | local `cycle-1-release-state` | `dab606e32622705ca79b7d13c14e6b1b794020bb` | local-only | Duplicate-content lineage of `5bb2611` |
@@ -70,6 +71,9 @@ cross-check, both agreeing)._
 | HIST-20260724-001 | 2026-07-24 | REPO-01 | history-reconciled | working tree `1cbebb903119c043` | local | First-run consolidation fetched origin and discovered the drift: local dirty files are the pre-publication cycle-3 draft (mtime 2026-07-15); remote published a condensed iteration. Draft archived; RECON-001 opened. Repository confirmed on a new host (`/home/nick/...`); 2026-07-15 shell failure no longer reproduces. | verified | git diff, ls-remote |
 | HIST-20260724-002 | 2026-07-24 | REPO-01 | documentation-consolidated | this change set | local | `PROJECT_TRACKER.md` + `docs/project/` control system created; documentation inventory established; strategy layer classified with banners; handoff compressed to launchpad. | verified | VER-20260724-001 |
 | HIST-20260724-003 | 2026-07-24 | REPO-01 | recovery | working tree | local (linux) | Host-move repair: `node_modules` contained macOS native builds and broke vitest (`@rollup/rollup-linux-x64-gnu` missing). Rebuilt with locked `npm ci` using in-jail caches; 9 files / 30 tests green. Electron binary and 3 install-script approvals remain pending — packaging not verified on this host. | verified | VER-20260724-005 |
+| HIST-20260724-004 | 2026-07-24 | REPO-01 | commit-milestone | `d1c9d915d333b2117f0ef7339b7b49d6ccf1c9d9` | local | Documentation control system + preserved cycle-3 local draft committed (user-authorized). 36 files, +2,759/−81. | verified | git |
+| HIST-20260724-005 | 2026-07-24 | REPO-01 | branch-merged | `59787f4ae77901424947c3fb504f96dfce11e4a9` | local | `origin/main` (`e0fc9e0`) merged into `cycle-2-shipped`. 7 conflicts resolved: HANDOFF.md kept as compressed launchpad (published 400-line version remains in history at `0ff209e`); ASSETS/OPPORTUNITIES/DECISIONS/HUMAN_QUEUE took the published remote iteration (local draft preserved in `d1c9d91`); PLAN/METRICS hand-merged (host-root fix + 2026-07-24 evidence section). | verified | git, VER-20260724-006 |
+| HIST-20260724-006 | 2026-07-24 | REPO-01 | remote-changed | `e0fc9e0` → `59787f4` | remote | `cycle-2-shipped` pushed to `main` (user-authorized): consolidated documentation system + reconciled cycle-3 state now on public main. | verified | push output |
 
 Rollbacks: none recorded. Hotfixes: HIST-20260714-004 is the only in-run fix.
 Deployments: none exist (no staging/production; landing undeployed; Store in
@@ -82,8 +86,8 @@ fact rather than fabricated migration events.
 
 | Gap | State | Resolution path |
 |---|---|---|
-| G1 — working tree vs `origin/main` | Dirty tree is the pre-publication cycle-3 draft (8 modified + `HANDOFF.md` untracked, fingerprint `1cbebb903119c043`); remote contains the published iteration (`e0fc9e0`) | RECON-001 / PROP-001 |
-| G2 — CI for `e0fc9e0` | Not observed; latest observed Quality run is `29346492274` @ `4a32b73` | Observe next Actions run (docs-only commits still trigger Quality Gate on push to main) |
+| G1 — working tree vs `origin/main` | **Resolved 2026-07-24:** draft committed (`d1c9d91`), remote merged (`59787f4`), pushed to `main` | HIST-20260724-004…006 |
+| G2 — CI for head commit | Not observed for `59787f4`; latest observed Quality run is `29346492274` @ `4a32b73` | Observe next Actions run on main |
 | G3 — Partner Center | Private state last observed 2026-07-14 | HQ-01/HQ-02 owner session re-verifies |
 | G4 — `v1.0.0` release | Tag exists; GitHub Release/artifact publication unobserved | Check GitHub Releases when network policy allows; record event |
 | G5 — branch sprawl | 3 local-only duplicate-content branches + stale local `main` | PROP-002 / PROP-003 (owner approval; no deletion authorized) |
@@ -106,7 +110,7 @@ fact rather than fabricated migration events.
 
 ## 6. Incremental refresh
 
-Per-repo last-indexed ref: REPO-01 = `e0fc9e0` (2026-07-24). On later runs:
+Per-repo last-indexed ref: REPO-01 = `59787f4` (2026-07-24, pushed to `main`). On later runs:
 fetch (if network allowed), compare heads to §2, inspect only new commits,
 append new events, regenerate `history/commit-index.tsv`, update §2. Do not
 re-narrate existing events.

@@ -27,6 +27,8 @@ partial. Times are UTC; "time n/o" = not observed in source evidence.
 | VER-20260724-004 | 2026-07-24T09:18Z | DOCS-001 | code baseline | `npm run typecheck` | working-tree:`4a32b73`+dirty:`451945c517e87554` | local (linux) | pass | `tsconfig.json` + `tsconfig.electron.json`, 0 errors | ~15s | script output | Confirms code tree unaffected by docs work. |
 | VER-20260724-005 | 2026-07-24T09:23Z | DOCS-001 | code baseline | `npm test` (vitest run) | working-tree:`4a32b73`+dirty:`451945c517e87554` | local (linux) | pass | 9 files / 30 tests, matches CI baseline | 3.38s | script output | First attempt failed: `node_modules` carried macOS native builds from the previous host (missing `@rollup/rollup-linux-x64-gnu`). Repaired via locked `npm ci` with in-jail caches (HIST-20260724-003). Electron binary and 3 install-script approvals still pending on this host — packaging/`npm run dev` not verified here. |
 
+| VER-20260724-006 | 2026-07-24T09:45Z | RECON-001 | docs+reconciliation | `validate_project_docs.py`, `npm run secrets`, `npm run store:validate`; commit index regenerated | `59787f4ae77901424947c3fb504f96dfce11e4a9` (clean tree) | local (linux) | pass | validator PASS; secrets 181 files; store 269 checks; index at 124 commits | ~8s | this log + script output | Post-merge gate after resolving 7 conflicts (5 → published remote versions, 2 hand-merged). Validator re-run green after state-sync edits. |
+
 ## Dirty-tree reference format
 
 `working-tree:<HEAD>+dirty:<fingerprint>` where the fingerprint is the first 16

@@ -1,11 +1,11 @@
 # Hearth — Project Tracker
 
 - **Schema:** project-tracker/v1 (2026-07-24)
-- **Last updated:** 2026-07-24T09:30Z by Kimi Code CLI (first-run consolidation, close-out)
+- **Last updated:** 2026-07-24T09:50Z by Kimi Code CLI (post-merge state sync)
 - **Workspace root:** `/home/nick/Development/active/mindful_organizer` (REPO-01)
-- **Branch / HEAD:** `cycle-2-shipped` @ `4a32b73`; `origin/main` @ `e0fc9e0` (fetched + live-verified 2026-07-24)
-- **Working tree:** dirty — cycle-3 draft + this consolidation; fingerprint `451945c517e87554` (see RECON-001)
-- **Operating mode:** ECONOMY / MAINTENANCE from the next session on
+- **Branch / HEAD:** `cycle-2-shipped` @ `59787f4` (+ this state-sync commit); `origin/main` @ `59787f4` (pushed 2026-07-24)
+- **Working tree:** clean apart from this state-sync commit's own ledger updates
+- **Operating mode:** ECONOMY / MAINTENANCE
 - **Canonical set:** [AGENTS.md](AGENTS.md) · [HANDOFF.md](HANDOFF.md) · [Docs index](docs/project/DOCS_INDEX.md) · [History](docs/project/REPO_HISTORY.md) · [Verification](docs/project/VERIFICATION_LOG.md) · [Decisions](revenue/DECISIONS.md) · [Proposals](docs/project/PROPOSALS.md) · [Migration map](docs/project/MIGRATION_MAP.md) · [Archive](docs/project/archive/)
 
 ## 0. How to use this tracker
@@ -26,7 +26,7 @@
 | Metric / environment | Current value | As of | Evidence |
 |---|---|---|---|
 | Product state | Hearth 1.1.0 release candidate; Store Submission 1 complete, held in draft | 2026-07-14 | revenue/METRICS.md |
-| Default-branch HEAD (`origin/main`) | `e0fc9e0` | 2026-07-24 | HIST-20260715-002, ls-remote |
+| Default-branch HEAD (`origin/main`) | `59787f4` (docs control system + cycle-3 reconciliation) | 2026-07-24 | HIST-20260724-006, push verified |
 | Live release | none — not submitted, certified, published, or purchasable | 2026-07-14 | HIST-20260714-003 |
 | Accepted candidate | AppX SHA-256 `4900f382…facdb1`, artifact 8306541856, Partner Center Validated | 2026-07-14 | VER-20260714-002 |
 | Latest CI verification | Quality Gate pass @ `4a32b73` (run 29346492274) | 2026-07-15 | VER-20260715-001 |
@@ -68,7 +68,7 @@ One current row per metric; superseded values live in REPO_HISTORY.md.
 |---|---|---|---|---|---|
 | WS-REL | Microsoft Store release (Bet A, $14.99) | blocked — all paths hard-blocked on owner gates | 2 ready, 3 blocked | `8172603` (candidate), 2026-07-14 | HQ-01…HQ-05 |
 | WS-REV | Monetization portfolio ($4,000 / Day 28) | blocked — Bet A = WS-REL; Bet B unapproved (PROP-005) | 0 active, 1 proposed | revenue/METRICS.md 2026-07-14 | — |
-| WS-DOCS | Documentation control system | open — RECON-001 needs reconciliation; DOCS-001 done 2026-07-24 | 1 done, 1 needs-reconciliation | VER-20260724-001…005 | RECON-001 |
+| WS-DOCS | Documentation control system | done 2026-07-24 (on public main @ `59787f4`) | 2 done | VER-20260724-001…006 | — |
 
 ## 4. Active task table
 
@@ -79,25 +79,13 @@ One current row per metric; superseded values live in REPO_HISTORY.md.
 | HQ-03 | Choose test route; Store-signed Windows pass | revenue/HUMAN_QUEUE.md | blocked | high | human | HQ-04 (certification); route-choice sub-step is ready now | `store/WINDOWS-VALIDATION.md` + accessibility matrix completed on signed build, fictional data | Validation record (build, route, pass/fail, footprint, date) | 2026-07-15 | Unblock = HQ-04 certification complete; decide Public→Private audience route beforehand |
 | HQ-04 | Submit for certification; publish deliberately | revenue/HUMAN_QUEUE.md | blocked | critical | human | HQ-01, HQ-02, HQ-03 route choice | Certification report preserved; `Publish now` only after all gates; signed-out purchase verified | Certification result + live URL in METRICS | 2026-07-15 | Unblock = HQ-01 done + payout ready + route chosen |
 | HQ-05 | Approve and send first audience batch | store/LAUNCH_KIT.md | blocked | medium | human | live purchasable page | Owner-posted launch batch with URLs + timestamps in METRICS | METRICS entry | 2026-07-15 | Unblock = signed-out checkout verification |
-| RECON-001 | Working tree vs `origin/main` draft drift | HIST-20260724-001 | needs-reconciliation | high | agent (+owner approval) | PROP-001 approval | Tree matches `e0fc9e0` or carries a documented exception; draft archived (done 2026-07-24) | clean `git status` or documented exception | 2026-07-24 | Present PROP-001 + draft-vs-published spot-diff to owner |
+| RECON-001 | Working tree vs `origin/main` draft drift | HIST-20260724-001 | done | high | agent | — | Draft committed + remote merged + pushed; single authoritative tree on `main` @ `59787f4` | VER-20260724-006 @ `59787f4` | 2026-07-24 | — |
 | DOCS-001 | Documentation consolidation + control system | user instruction 2026-07-24 | done | high | agent | — | Tracker, index, history, verification log, proposals, migration map, archive, validator all green | VER-20260724-001…005 @ working-tree:`4a32b73`+dirty:`451945c517e87554` | 2026-07-24 | — |
 
 Status vocabulary: proposed / todo / ready / in-progress / paused / blocked /
 needs-reconciliation / done / verified-stale / superseded / cancelled.
 
 ## 5. Active task details
-
-### RECON-001 — Working-tree drift (needs-reconciliation)
-
-- Objective: one authoritative project state again.
-- Facts: dirty tree = pre-publication cycle-3 draft (mtime 2026-07-15);
-  `origin/main` = published iteration (`0ff209e` + `e0fc9e0`); all 9 files
-  differ in wording, same content class.
-- Unblock condition: owner approves PROP-001 (adopt remote state, keep draft in
-  archive) or directs a merge of specific draft-only lines.
-- Notes: (1) Both iterations preserved (archive M1; Git history). (2) No
-  evidence of unique draft-only facts in spot review; full spot-diff is part of
-  execution. (3) Do not `git checkout --` user files without approval.
 
 ### HQ-04 — Certification then publication (blocked, highest risk)
 
@@ -115,7 +103,6 @@ needs-reconciliation / done / verified-stale / superseded / cancelled.
 | ID | Blocked item | Why | Unblock condition | Affected |
 |---|---|---|---|---|
 | B1 | Certification + publication | Owner-only legal attestation (IARC) and private payout setup not done; 0/44 owner minutes spent | Owner completes HQ-01, HQ-02 | HQ-04 → HQ-05, WS-REL, WS-REV |
-| B2 | Authoritative git state | Dirty pre-publication draft vs published `origin/main` | PROP-001 approval + execution | RECON-001, clean verification refs |
 
 | Risk | Likelihood | Impact | Mitigation | Owner |
 |---|---|---|---|---|
@@ -123,10 +110,9 @@ needs-reconciliation / done / verified-stale / superseded / cancelled.
 | R2 — certification failure (runFullTrust, content review) | medium | delay; new candidate cycle | Truthful disclosures; preserve report; narrow fix only | owner (submit), agent (fix) |
 | R3 — Partner Center facts stale (last observed 2026-07-14) | medium | decisions on old state | Re-verify live during HQ-01/HQ-02 session before acting | owner+agent |
 
-Discovery (current): D-2026-07-24 — repository moved hosts (macOS → Linux);
-`revenue/PLAN.md` line 1 and handoff startup path corrected; the 2026-07-15
-exit-137 shell failure does not reproduce here. Destination: resolved into
-HIST-20260724-001 after this session.
+Resolved 2026-07-24 and moved to history: host-move drift + working-tree
+reconciliation (HIST-20260724-001…006), stale node_modules repair
+(HIST-20260724-003).
 
 ## 7. Current verification snapshot
 
@@ -144,11 +130,11 @@ CI state for `e0fc9e0` (docs-only commits) not yet observed — see section 11.
 
 | Surface | Ref / version | State | Last verified | Evidence | Drift |
 |---|---|---|---|---|---|
-| Working tree | `4a32b73` + dirty `451945c517e87554` | cycle-3 draft + docs control system, uncommitted | 2026-07-24 | git status, VER-20260724-005 | diverged from `origin/main` (RECON-001); `node_modules` rebuilt for Linux via locked `npm ci` — Electron binary pending script approval, packaging unverified here |
-| Local `cycle-2-shipped` | `4a32b73` | 2 behind `origin/main` | 2026-07-24 | git | behind |
-| Local `main` | `c2b1fc2` | stale, 0 ahead / 17 behind | 2026-07-24 | git | stale (PROP-003) |
-| `origin/main` | `e0fc9e0` | current | 2026-07-24 | ls-remote + fetch | — |
-| CI | run 29346492274 @ `4a32b73` | green; head `e0fc9e0` unobserved | 2026-07-15 | VER-20260715-001 | G2 |
+| Working tree | `59787f4` (+ state-sync commit) | clean | 2026-07-24 | git status, VER-20260724-006 | `node_modules` rebuilt for Linux; Electron binary pending script approval — packaging unverified here |
+| Local `cycle-2-shipped` | `59787f4` | synced with `origin/main` | 2026-07-24 | git | — |
+| Local `main` | `c2b1fc2` | stale, far behind | 2026-07-24 | git | stale (PROP-003) |
+| `origin/main` | `59787f4` | current | 2026-07-24 | push verified | — |
+| CI | run 29346492274 @ `4a32b73` | green; head `59787f4` unobserved | 2026-07-15 | VER-20260715-001 | G2 |
 | Partner Center | Submission 1, package Validated, manual hold | draft; not submitted | 2026-07-14 (stale) | HIST-20260714-003 | G3 |
 | Microsoft Store live | — | does not exist | — | — | no listing |
 | Landing host | — | not deployed | — | landing/README.md | PROP-004 |
@@ -161,6 +147,7 @@ tag exists because tags trigger the Release Build and the Store path is manual.
 
 | Date | Item | Task | Verification | History |
 |---|---|---|---|---|
+| 2026-07-24 | Working-tree draft reconciled with `origin/main`; pushed to `main` | RECON-001 | VER-20260724-006 | HIST-20260724-004…006 |
 | 2026-07-24 | Documentation control system established (this tracker, index, history, verification log, proposals, validator) | DOCS-001 | VER-20260724-001…005 | HIST-20260724-002 |
 | 2026-07-15 | Cycle-3 canonical handoff published to `origin/main` | pre-tracker | VER-20260715-001 | HIST-20260715-002 |
 | 2026-07-14 | Launch support + audience assets on public main | pre-tracker | VER-20260714-004/005 | HIST-20260714-005 |
@@ -182,15 +169,13 @@ start without approval.
 
 1. **Owner:** HQ-01 manual IARC retake, then HQ-02 payout readiness (queue: 44
    min total, `revenue/HUMAN_QUEUE.md`).
-2. **Agent + owner:** resolve RECON-001 via PROP-001 (present spot-diff; adopt
-   `e0fc9e0`; keep archived draft).
-3. **Agent:** observe the Quality Gate run for `e0fc9e0`, record VER id, update
-   section 7 (closes gap G2).
-4. **Agent (before any packaging on this host):** restore the Electron binary
+2. **Agent:** observe the Quality Gate run for main @ `59787f4`, record VER id,
+   update section 7 (closes gap G2).
+3. **Agent (before any packaging on this host):** restore the Electron binary
    (`npm approve-scripts` for the 3 pending install scripts) — tests/typecheck
    are green; `npm run dev` / packaging are not (VER-20260724-005 notes).
-5. **After publication only:** execute `store/README.md` "After certification"
-   playbook, then PROP-004 landing deploy and HQ-05 launch batch.
+4. **After publication only:** execute `store/README.md` "Certification and
+   publication playbook", then PROP-004 landing deploy and HQ-05 launch batch.
 
 ## 12. Ledger and archive links
 
