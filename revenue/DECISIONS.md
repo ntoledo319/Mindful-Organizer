@@ -278,18 +278,9 @@ requirements actually change.
 
 ### D033 — Establish one canonical zero-context handoff
 
-The existing strategy handoff was accurate but too brief to reproduce the full
-mission, evidence chain, legal gates, release sequence, audience loop and
-capability-preservation rules without prior memory. Decision: make root
-`HANDOFF.md` the only canonical handoff, point README and the old strategy path
-to it, and require it to change whenever the candidate, critical path, public
-URL, testing route or money state changes.
+The existing strategy handoff was accurate but too brief to reproduce the mission, evidence chain, legal gates, release sequence, audience loop and capability-preservation rules without prior memory. Decision: make root HANDOFF.md the canonical handoff and require it to change whenever the candidate, critical path, public URL, testing route or money state changes.
 
 ### D034 — Preserve evidence boundaries during the shell failure
 
-Every local subprocess on 2026-07-15, including `pwd` and `true`, was killed
-with exit 137. Decision: do not call the local worktree clean, synced or
-verified. Audit public main through the authenticated GitHub connector, label
-Partner Center state with its 2026-07-14 observation date, write the handoff
-inside the jail, publish it remotely, and require the next agent to rerun local
-status and verification without destructive reset.
+Every local subprocess on 2026-07-15, including pwd and true, was killed with exit 137. Decision: do not call the local worktree clean, synced or verified. Audit public main through the authenticated GitHub connector, label Partner Center state with its 2026-07-14 observation date, publish the handoff remotely, and require the next agent to rerun local status and verification without destructive reset.
+

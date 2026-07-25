@@ -127,9 +127,7 @@ attestation, seller payout setup, certification, Store-signed Windows human
 observation, and publication. No asset is yet purchasable, so collected revenue
 remains zero.
 
-## Continuation authority
+## Cycle 3 continuation authority — 2026-07-15
 
-Root `HANDOFF.md` is the canonical zero-context continuation map. It preserves
-the accepted candidate, capability-vault boundary, public/private evidence
-distinction, release sequence, verification commands and completion criteria.
-Partner Center facts remain last observed 2026-07-14 until reverified live.
+Root HANDOFF.md is the canonical zero-context continuation map. It preserves the accepted candidate, capability-vault boundary, public/private evidence distinction, release sequence, verification commands and completion criteria. Partner Center facts remain last observed 2026-07-14 until reverified live.
+

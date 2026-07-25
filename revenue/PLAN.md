@@ -3,8 +3,8 @@
 # Revenue Plan
 
 _Updated 2026-07-24 — line 1 corrected to the current host root (workspace moved
-macOS → Linux; AGENTS.md §1 law). Cycle-3 content below remains as prepared
-2026-07-15; project-wide state now also lives in `PROJECT_TRACKER.md`._
+macOS → Linux; AGENTS.md §1 law). Cycle-3 handoff published 2026-07-15;
+project-wide state now also lives in `PROJECT_TRACKER.md`._
 
 ## Containment
 
@@ -23,14 +23,6 @@ Center work was allowed by section 1.6. No autonomous human contact occurred.
 
 Potential, draft pricing, CI artifacts, and an enabled certification button do
 not count as revenue.
-
-## Canonical continuation
-
-Root `HANDOFF.md` is the restart-proof operator document. It distinguishes the
-accepted runtime candidate, later launch hardening, current state head, exact
-Partner IDs/hashes, public versus private evidence, owner-only gates,
-post-certification execution, audience signal rules and mission completion.
-Partner Center state is labeled last observed 2026-07-14 until a live refresh.
 
 ## Bet A — Fast: official Hearth Windows package
 
@@ -71,9 +63,6 @@ Partner Center state is labeled last observed 2026-07-14 until a live refresh.
   external dollar.
 
 ## What shipped this cycle
-
-Cycle 3 ships the canonical root handoff and points README plus the former
-strategy handoff to it. Cycle 2 shipments below remain valid historical detail.
 
 1. Replaced unsafe legacy GitHub issue templates with typed Hearth/Windows forms
    that prohibit private records, require fictional reproduction data, and use
@@ -133,3 +122,8 @@ The current gap is still **$4,000.00**. The next revenue-relevant action is
 certification, not another feature. Recompute the gap from collected proceeds at
 Days 7, 14, and 21 and apply the documented reposition/replace gates without
 counting downloads, impressions, or draft state as cash.
+
+## Cycle 3 canonical continuation — 2026-07-15
+
+Root HANDOFF.md is the restart-proof operator document. It distinguishes the accepted runtime candidate, later launch hardening, current state head, exact Partner IDs/hashes, public versus private evidence, owner-only gates, post-certification execution, audience signal rules and mission completion. Partner Center state remains last observed 2026-07-14 until a live refresh. This cycle changes no bet, price or dollar result.
+
