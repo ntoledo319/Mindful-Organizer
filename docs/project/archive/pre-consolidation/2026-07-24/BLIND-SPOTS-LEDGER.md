@@ -1,11 +1,5 @@
 # Hearth Blind-Spots Ledger
 
-> **Historical (2026-07-24):** preserved for record. **Correction:** item 3 is
-> stale — at-rest snapshots are now AES-256-GCM encrypted with a DPAPI-protected
-> key (decision D014, `docs/ARCHITECTURE.md`, verified by Windows CI
-> VER-20260714-002). The broader "local-only is not the same as secure" warning
-> and the remaining items still stand.
-
 _Reconciled with the working tree on 2026-07-14._
 
 1. **Distribution is not demand.** A Store identity and package do not prove a

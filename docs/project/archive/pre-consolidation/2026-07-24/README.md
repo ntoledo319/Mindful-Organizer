@@ -1,8 +1,7 @@
 # Hearth
 
 > **Continuation:** agents and operators with no prior context must start with
-> [HANDOFF.md](HANDOFF.md) and [PROJECT_TRACKER.md](PROJECT_TRACKER.md);
-> monetization cycles then read all six files in `revenue/`.
+> [HANDOFF.md](HANDOFF.md), then read all six files in `revenue/`.
 
 **Plan the day you have, not the day a calendar assumes.**
 

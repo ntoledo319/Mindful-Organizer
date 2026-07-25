@@ -1,6 +1,6 @@
 # Monetization Frames and Ranking
 
-_Re-ranked 2026-07-14 at Cycle 2 close. All U values are unvalidated
+_Reconfirmed 2026-07-15 for the Cycle 3 handoff. All U values are unvalidated
 four-week planning ranges, not observed revenue or promises._
 
 Legend: **T$** = days to first plausible collected dollar; **H** = owner minutes;
@@ -130,3 +130,6 @@ Cycle 2 reduced support, presentation, security-intake, and release-process
 risk and shipped those changes on public GitHub main. It did not create demand
 evidence. Collected profit is still
 **$0.00**.
+
+Cycle 3 changed no ranking, price, demand claim or active bet. Root
+`HANDOFF.md` now contains the exact continuation and falsifier procedure.

@@ -1,9 +1,5 @@
 # Four-Week Revenue Calibration
 
-> **Historical (2026-07-24):** planning arithmetic only. The current gap and
-> evidence gates live in `revenue/PLAN.md`; observed evidence in
-> `revenue/METRICS.md`.
-
 _Current as of 2026-07-14._
 
 Collected profit is **$0**. The gap to the target is **$4,000**.

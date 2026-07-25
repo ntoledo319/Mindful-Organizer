@@ -1,8 +1,5 @@
 # Prior Attempts — Current Triage
 
-> **Historical (2026-07-24):** preserved for record; the verdicts remain
-> accurate. The decision canon is `revenue/DECISIONS.md`.
-
 | Attempt | Verdict | Evidence-based reason |
 | --- | --- | --- |
 | $49 supporter/consumer gate | Retired | It gated value without a verified payment or fulfillment path. |

@@ -183,3 +183,47 @@ refunds, fees, and payouts remain unobserved. The attempted Lighthouse run was
 terminated without usable audit results and is not counted as evidence.
 
 Collected profit remains **$0.00**. The current gap remains **$4,000.00**.
+
+## 2026-07-15 — Cycle 3 handoff evidence
+
+- Remote main was observed at
+  `4a32b7306ab9ca76a09fb3fae399649c07543e5a`; Quality run 29346492274 passed.
+- Root `HANDOFF.md` was prepared from all six revenue files, current public main,
+  Store/release/support/audience sources, and three independent specialist
+  audits.
+- Partner Center private state was not refreshed and remains explicitly dated
+  2026-07-14.
+- Local shell execution was unavailable: even `pwd` and `true` exited 137 with
+  no output. Therefore local branch cleanliness, sync and jailed artifact
+  presence are not newly observed. A future agent must reverify them.
+- No revenue, listing, certification, publication, post or human contact was
+  observed during this documentation cycle. Collected remains $0; gap $4,000.
+
+## 2026-07-24 — Host move, drift discovery, local verification restored
+
+- Workspace observed at `/home/nick/Development/active/mindful_organizer`
+  (Linux); `revenue/PLAN.md` line 1 corrected to match (AGENTS.md §1 law).
+- The 2026-07-15 exit-137 local-shell failure does not reproduce on this host;
+  commands ran normally all session. This entry satisfies the cycle-3
+  requirement to record a successful local-shell verification.
+- `git fetch` + `ls-remote`: `origin/main` advanced `4a32b73` → `e0fc9e0`
+  (cycle-3 handoff published remotely 2026-07-15). The uncommitted local
+  working tree is the pre-publication draft of that content (all 9 files
+  differ in wording); it is preserved in the working tree and archived, and
+  reconciliation is queued (`PROJECT_TRACKER.md` RECON-001 / PROP-001). No
+  destructive git action was taken.
+- First vitest attempt failed because `node_modules` carried macOS native
+  builds from the previous host (missing `@rollup/rollup-linux-x64-gnu`).
+  Repaired with locked `npm ci` using in-jail caches; no global installs.
+  Electron binary and 3 install-script approvals remain pending on this host,
+  so packaging and `npm run dev` are not yet verified here.
+- Local gates green on the dirty working tree (docs/state changes only, no
+  product-code change): secret scan 181 files; Store validation 269 checks;
+  both TypeScript projects; 9 test files / 30 tests; project-docs validator
+  PASS. Detail: `docs/project/VERIFICATION_LOG.md` VER-20260724-001…005.
+- Project documentation control system established: `PROJECT_TRACKER.md` plus
+  `docs/project/` (index, history, verification, proposals, migration map,
+  archive, commit index). See `docs/project/REPO_HISTORY.md`
+  HIST-20260724-001…003.
+- No revenue, listing, certification, publication, post, or human contact was
+  observed. Collected profit remains **$0.00**; the gap remains **$4,000.00**.

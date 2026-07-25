@@ -1,9 +1,5 @@
 # Current Monetization Decision
 
-> **Superseded (2026-07-24):** current monetization truth lives in
-> `revenue/PLAN.md` and `revenue/OPPORTUNITIES.md`. This file is preserved for
-> history; see `docs/project/DOCS_INDEX.md`.
-
 _Decision date: 2026-07-14._
 
 ## Selected fast bet

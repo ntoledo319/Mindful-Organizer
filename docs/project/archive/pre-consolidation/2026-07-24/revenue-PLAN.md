@@ -1,10 +1,8 @@
-/home/nick/Development/active/mindful_organizer
+/Users/nicholastoledo/Development/active/mindful_organizer
 
 # Revenue Plan
 
-_Updated 2026-07-24 — line 1 corrected to the current host root (workspace moved
-macOS → Linux; AGENTS.md §1 law). Cycle-3 content below remains as prepared
-2026-07-15; project-wide state now also lives in `PROJECT_TRACKER.md`._
+_Updated 2026-07-15 — Cycle 3 canonical handoff prepared._
 
 ## Containment
 

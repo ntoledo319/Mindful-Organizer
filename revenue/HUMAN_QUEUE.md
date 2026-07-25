@@ -1,5 +1,8 @@
 # Human Queue
 
+_Canonical context and sequencing: root `HANDOFF.md`. Queue rechecked
+2026-07-15; total unchanged._
+
 _Owner labor ceiling: 60 minutes for the full run. Current queued total:
 **44 minutes**. Machine wait and Microsoft review time are excluded. Do not add
 extra outreach or content work._
@@ -30,11 +33,15 @@ posts remain.
      pixelated → realistic reaction → **Referred to** only → blood/gore None →
      no war setting → no injured/killed characters → no fierce sounds,
      intimidating characters, or dark visual/audio overtones.
-  4. Answer Fear No, Sexuality No, Gambling No, Language No, and Crude Humor No.
-  5. Disclose the vaulted medication-reference code: Controlled Substance Yes
-     → Medical Drugs → **Reference** → Rarely. Do not select illegal/recreational
-     drugs, alcohol, tobacco, use, or encouragement/glamorization unless a
-     manual reading of IARC's definitions changes that factual assessment.
+  4. Factual source boundary: there is no visual violence, blood/gore,
+     frightening audiovisual material, sexuality, gambling, profanity, crude
+     humor, alcohol/tobacco, or illegal/recreational drug use. Because rating
+     systems may classify emotionally distressing text differently, answer Fear
+     from the exact current wording and help—not from a preferred result.
+  5. The package contains a named prescription-medication reference. Some
+     questionnaire versions distinguish medical drugs from illegal drugs. Read
+     the exact Controlled Substance wording/help and disclose the packaged fact
+     in the category it actually defines; do not blindly reuse a saved route.
   6. Keep the no-social-sharing, no-purchases, no-location-sharing, no-rewards,
      no-browser/search, and digital-only answers. Manually open IARC's help for
      **Online Content** and confirm how it treats links handed to the external

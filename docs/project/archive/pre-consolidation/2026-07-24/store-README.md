@@ -192,63 +192,19 @@ all visual and content checks pass.
 - [ ] Submit manually and record the submission ID and time in the evidence
       ledger.
 
-## Certification and publication playbook (owner-gated)
+## After certification
 
-Condensed from the retired long handoff on 2026-07-24; owner-action detail
-stays in `revenue/HUMAN_QUEUE.md`.
-
-**While waiting on owner gates:** keep the draft, public policies, support
-surface, and CI healthy; reverify current Store policies before any platform
-change; do not build Bet B merely to avoid the certification task — start it
-only when the active plan/falsifier or a recorded blocker justifies the pivot.
-A docs-only or analysis cycle still needs a visible shipment and all six
-revenue state files updated.
-
-**Pre-submission (after HQ-01 and HQ-02):** re-read all six revenue files;
-verify only the accepted package remains in the draft and is Validated; verify
-the hold still reads **Do not publish until I select Publish now**; verify
-policy/support/privacy/terms/refund URLs signed out; record the IARC outcome
-and payout-ready boolean without private details; confirm the Private/Public
-test-route choice (HQ-03).
-
-**During certification:** Microsoft review time is machine wait — monitor
-without changing the package or claims. On failure: preserve and redact the
-report, log it in METRICS/DECISIONS, fix the narrow real cause, and create a
-completely new candidate and evidence chain if runtime/package bytes change.
-Never weaken a truthful disclosure to pass. On success: do not release the
-hold yet.
-
-**After certification, before publication:** install the Microsoft-signed build
-through the HQ-03 route; run the smoke matrix — first render, consent
-accept/decline, 4–24 capacity persistence, task, check-in, practice,
-crisis-plan edit, JSON/PDF export with plaintext warnings, erase, full
-quit/relaunch, identity/footprint; run the accessibility matrix — keyboard-only,
-Narrator, focus, high contrast/forced colors, 200% text scaling, minimum
-window, reduced motion, light/dark, modal focus. Make no formal accessibility
-claim until that passes. Confirm payout readiness and the signed-out page
-preview. The owner then clicks **Publish now**.
-
-**Immediately after publication:**
-
-1. Verify the exact public page and paid checkout in a signed-out browser
-   (expected pattern `https://apps.microsoft.com/detail/9PLRSZZMFPJH`; do not
-   distribute the URL before observation). Change no call to action to “Get
-   Hearth” until the page is visibly purchasable.
-2. Record the observed Store URL, price, timestamp, package/version, and status
-   in `revenue/METRICS.md`.
-3. Replace the null Store URL in `store/listing-metadata.json` and set its live
-   release state.
-4. Update README, SUPPORT, TERMS, store docs, and landing copy from pre-release
-   to only what is observed.
-5. Deploy `landing/` to an eligible zero-cost static host (never GitHub Pages —
-   D007), then wire the source-specific links in CAMPAIGNS.md.
-6. Run full verification, publish the doc/link changes, and record evidence.
-7. Record Store page views, acquisitions, installs, usage, health, reviews,
-   refunds, and payout evidence as they arrive. Do not install third-party
-   analytics merely to create a launch chart, and do not run a product-page
-   experiment until traffic can compare one asset change against the baseline
-   (PRODUCT-PAGE-EXPERIMENTS.md).
-8. The owner executes HQ-05. No agent posts or contacts humans.
+1. Wait until the public product page is visible and purchasable in a private
+   browser before changing any call to action to “Get Hearth.”
+2. Replace the null Store URL in listing-metadata.json with the observed public
+   link.
+3. Deploy the static landing page to an eligible zero-cost host, then use the
+   source-specific links in CAMPAIGNS.md.
+4. Record Store page views, acquisitions, installs, usage, health, reviews,
+   refunds, and payout evidence. Do not install third-party analytics merely to
+   create a launch chart.
+5. Do not run a product-page experiment until there is enough traffic to compare
+   one asset change against the baseline.
 
 Owner-only actions remain governed by revenue/HUMAN_QUEUE.md. Draft launch copy
 does not authorize posting, messaging, promising, pricing, or publishing as the

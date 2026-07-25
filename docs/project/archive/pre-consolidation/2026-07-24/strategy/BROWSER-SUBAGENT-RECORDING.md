@@ -1,8 +1,5 @@
 # Invalidated Checkout Test Record
 
-> **Historical (2026-07-24):** preserved so the retired $249 checkout claim is
-> never resurrected as evidence (decision D002, `revenue/DECISIONS.md`).
-
 The old document claimed an end-to-end $249 checkout and fulfillment test. It
 was not evidence of a real paid path:
 

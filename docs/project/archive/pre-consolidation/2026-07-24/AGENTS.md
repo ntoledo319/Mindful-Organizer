@@ -237,17 +237,3 @@ These read `AGENTS.md` too, so the operating doc carries over unchanged. Their g
 3. Re-run that exact line for every cycle — manually or in a shell loop. Sessions are disposable; `revenue/` is the brain, so you can even alternate harnesses between cycles.
 4. Your entire job: check `HUMAN_QUEUE.md` every day or two and burn down the batch. Do the payment/KYC items first — verification latency silently eats Week 1.
 5. Honest calibration: this doc maximizes shots on goal and forbids stalling. It cannot make strangers buy. If Day 14 metrics show real signal, ride it; if they show nothing across multiple repositioned bets, the portfolio needs a distribution-side intervention no autonomous agent can perform alone.
-
----
-
-## 14. PROJECT STATE SYSTEM (added 2026-07-24)
-
-A project-wide control layer now sits beside the six revenue files. It does not replace them — §3's six-file law still governs monetization cycles — and it changes nothing in §§0–13.
-
-**Layers:** current truth → `PROJECT_TRACKER.md` · doc map → `docs/project/DOCS_INDEX.md` · repo/release history → `docs/project/REPO_HISTORY.md` · verification → `docs/project/VERIFICATION_LOG.md` · decisions → `revenue/DECISIONS.md` · proposals → `docs/project/PROPOSALS.md` · archives → `docs/project/archive/`. One fact, one canonical owner; other files link instead of repeating.
-
-**Session start:** this file → `PROJECT_TRACKER.md` → `git status --short --branch` → only the canonical document for the active task (tracker §2). Do not re-read history or archives unless the task is historical.
-
-**Session end:** update tracker statuses and its verification snapshot; append verification and history rows for real events; keep the tracker ≤ 350 lines; run `python3 scripts/project_docs/validate_project_docs.py`.
-
-**Status law:** `done` requires a verification ID plus an exact commit or honestly-labeled dirty-tree ref. Never collapse implemented / committed / pushed / submitted / certified / published / live-verified into one word. Unfinished work is `paused` (with resume point) or `blocked` (with unblock condition), never parked as `in-progress`.
