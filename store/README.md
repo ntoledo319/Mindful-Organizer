@@ -52,6 +52,8 @@ future features.
 - LAUNCH_KIT.md — drafts for owner-approved launch actions; nothing is sent
 - WINDOWS-VALIDATION.md — exact-package automated evidence, Store certification,
   installed smoke, and accessibility evidence checklist
+- POST_PUBLICATION_DOC_SWEEP.md — pre-drafted replacement paragraphs for every
+  pre-release status line, applied on publication day (playbook step 4)
 - identity.json — reserved Partner Center package identity
 
 The static commercial landing artifact lives in landing/. It is intentionally
@@ -238,8 +240,13 @@ preview. The owner then clicks **Publish now**.
    in `revenue/METRICS.md`.
 3. Replace the null Store URL in `store/listing-metadata.json` and set its live
    release state.
-4. Update README, SUPPORT, TERMS, store docs, and landing copy from pre-release
-   to only what is observed.
+4. Update every pre-release status line to only what is observed: README.md,
+   docs/SUPPORT.md, docs/TERMS.md, docs/REFUNDS.md, SECURITY.md, docs/PRIVACY.md
+   (re-check for status lines even though none are known today), the store
+   docs, and landing copy. Pre-drafted replacement paragraphs for each file
+   live in store/POST_PUBLICATION_DOC_SWEEP.md — apply them same-day with the
+   observed Store URL and price instead of writing fresh copy under time
+   pressure.
 5. Deploy `landing/` to an eligible zero-cost static host (never GitHub Pages —
    D007), then wire the source-specific links in CAMPAIGNS.md.
 6. Run full verification, publish the doc/link changes, and record evidence.

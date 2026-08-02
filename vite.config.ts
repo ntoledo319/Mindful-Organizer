@@ -4,7 +4,7 @@ import electron from 'vite-plugin-electron';
 import renderer from 'vite-plugin-electron-renderer';
 import { resolve } from 'node:path';
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   resolve: {
     alias: {
       '@shared': resolve(__dirname, 'src/shared'),
@@ -19,6 +19,12 @@ export default defineConfig({
         vite: {
           build: {
             outDir: 'dist-electron',
+            // vite-plugin-electron forces emptyOutDir:false and builds each
+            // entry sequentially in array order. Emptying on the FIRST entry
+            // clears stale hashed chunks (dynamic-import output accumulates
+            // across builds) while preload's output — built next — is
+            // untouched. Builds only: dev watch rebuilds must not empty.
+            emptyOutDir: command === 'build',
             rollupOptions: {
               external: ['better-sqlite3', 'electron'],
             },
@@ -52,4 +58,4 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true,
   },
-});
+}));

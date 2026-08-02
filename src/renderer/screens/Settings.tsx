@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useStore } from '../state/store';
-import { type Settings, type QuietMode } from '@shared/types';
+import { type Settings, type QuietMode, type AppInfo } from '@shared/types';
 import { MAX_DAILY_SPOONS, MIN_DAILY_SPOONS } from '@shared/spoons';
 import { api } from '../lib/api';
 import { PageHeader, Scale } from '../components/ui';
@@ -68,7 +68,79 @@ export function SettingsScreen() {
   const [eraseArmed, setEraseArmed] = useState(false);
   const [eraseText, setEraseText] = useState('');
   const [eraseState, setEraseState] = useState<'idle' | 'deleting' | 'error'>('idle');
+
+  // The name field persists to a local draft first: saving on every keystroke
+  // meant a full database serialize + encrypt + two atomic writes per character.
+  const serverName = settings?.displayName ?? '';
+  const [nameDraft, setNameDraft] = useState(serverName);
+  const nameSaveTimer = useRef<number | null>(null);
+  const pendingName = useRef<string | null>(null);
+
+  const [appInfo, setAppInfo] = useState<AppInfo | null>(null);
+  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'error'>('idle');
+
+  // Keep the draft in step with external changes (presence pushes, other saves).
+  useEffect(() => {
+    setNameDraft(serverName);
+  }, [serverName]);
+
+  // Flush a pending debounced save when the screen unmounts.
+  useEffect(() => {
+    return () => {
+      if (nameSaveTimer.current !== null) window.clearTimeout(nameSaveTimer.current);
+      if (pendingName.current !== null) void saveSettings({ displayName: pendingName.current });
+    };
+  }, [saveSettings]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void api
+      .getAppInfo()
+      .then((info) => {
+        if (!cancelled) setAppInfo(info);
+      })
+      .catch(() => {
+        // The About card shows an "unavailable" note instead of crashing.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   if (!settings) return null;
+
+  const changeName = (value: string) => {
+    setNameDraft(value);
+    pendingName.current = value;
+    if (nameSaveTimer.current !== null) window.clearTimeout(nameSaveTimer.current);
+    nameSaveTimer.current = window.setTimeout(() => {
+      nameSaveTimer.current = null;
+      pendingName.current = null;
+      void saveSettings({ displayName: value });
+    }, 500);
+  };
+
+  const flushNameSave = () => {
+    if (nameSaveTimer.current !== null) {
+      window.clearTimeout(nameSaveTimer.current);
+      nameSaveTimer.current = null;
+    }
+    if (pendingName.current !== null) {
+      const value = pendingName.current;
+      pendingName.current = null;
+      void saveSettings({ displayName: value });
+    }
+  };
+
+  const copyDiagnostics = async () => {
+    if (!appInfo) return;
+    try {
+      await navigator.clipboard.writeText(`Hearth ${appInfo.version} · ${appInfo.os} · ${appInfo.arch}`);
+      setCopyState('copied');
+    } catch {
+      setCopyState('error');
+    }
+  };
 
   const exportAllData = async () => {
     setExportState('saving');
@@ -101,9 +173,10 @@ export function SettingsScreen() {
             <span className="mb-2 block text-sm font-medium text-text-primary dark:text-night-text">Name</span>
             <input
               className="field max-w-sm text-base"
-              value={settings.displayName}
+              value={nameDraft}
               placeholder="What should Hearth call you?"
-              onChange={(e) => void saveSettings({ displayName: e.target.value })}
+              onChange={(e) => changeName(e.target.value)}
+              onBlur={flushNameSave}
             />
           </label>
         </div>
@@ -295,6 +368,28 @@ export function SettingsScreen() {
               </div>
             )}
           </div>
+        </div>
+
+        <div className="surface-card p-6">
+          <h3 className="mb-2 text-base font-medium text-text-primary dark:text-night-text">About Hearth</h3>
+          <p className="text-sm leading-relaxed text-text-muted dark:text-night-muted">
+            {appInfo
+              ? `Version ${appInfo.version} · ${appInfo.os} · ${appInfo.arch}`
+              : 'Version information is unavailable right now.'}
+          </p>
+          {appInfo && (
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <button className="btn-ghost" onClick={() => void copyDiagnostics()}>
+                Copy diagnostics
+              </button>
+              {copyState === 'copied' && (
+                <span className="text-sm text-semantic-success">Copied — paste it into the bug report form.</span>
+              )}
+              {copyState === 'error' && (
+                <span className="text-sm text-semantic-error">Copy failed. You can copy the version line above by hand.</span>
+              )}
+            </div>
+          )}
         </div>
 
       </div>

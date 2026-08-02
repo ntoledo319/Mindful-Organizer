@@ -1,16 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import type { CrisisPlan, CrisisContact } from '@shared/types';
 import { InlineError, PageHeader, QueryErrorState, Spinner } from '../components/ui';
 
 // The crisis plan is the one screen that must never feel like a form. It opens
-// with the lifeline already visible — help first, editing second.
+// with the lifeline already visible — help first, editing second. Unsaved edits
+// auto-save on navigation: this screen's whole purpose is being reliable.
 
 export function CrisisPlanScreen() {
   const queryClient = useQueryClient();
   const [localPlan, setLocalPlan] = useState<CrisisPlan | null>(null);
   const [saved, setSaved] = useState(false);
+  // Tracks unsaved edits so leaving the screen never silently discards them.
+  const dirtyPlanRef = useRef<{ dirty: boolean; plan: CrisisPlan | null }>({ dirty: false, plan: null });
 
   const { data: serverPlan, isLoading, isError, refetch } = useQuery({
     queryKey: ['crisisPlan'],
@@ -23,6 +26,30 @@ export function CrisisPlanScreen() {
       setLocalPlan(serverPlan);
     }
   }, [serverPlan, localPlan]);
+
+  useEffect(() => {
+    if (!localPlan || !serverPlan) return;
+    dirtyPlanRef.current = {
+      dirty: JSON.stringify(localPlan) !== JSON.stringify(serverPlan),
+      plan: localPlan,
+    };
+  }, [localPlan, serverPlan]);
+
+  // Auto-save unsaved edits when the screen unmounts (route change).
+  useEffect(() => {
+    return () => {
+      const { dirty, plan } = dirtyPlanRef.current;
+      if (dirty && plan) {
+        void api
+          .saveCrisisPlan(plan)
+          .then((savedPlan) => queryClient.setQueryData(['crisisPlan'], savedPlan))
+          .catch(() => {
+            // A failed auto-save loses nothing that wasn't already lost before
+            // this guard existed; the explicit Save path still surfaces errors.
+          });
+      }
+    };
+  }, [queryClient]);
 
   const updateMutation = useMutation({
     mutationFn: api.saveCrisisPlan,
@@ -181,6 +208,9 @@ export function CrisisPlanScreen() {
             {updateMutation.isPending ? 'Saving...' : 'Save plan'}
           </button>
           {saved && <span className="text-sm font-medium text-semantic-success dark:text-night-success" role="status">Saved.</span>}
+          <span className="text-xs text-text-muted dark:text-night-muted">
+            Unsaved edits are kept automatically if you leave this screen.
+          </span>
         </div>
         {updateMutation.isError && <InlineError>Hearth could not save this plan. Your edits are still on screen; try again.</InlineError>}
       </div>

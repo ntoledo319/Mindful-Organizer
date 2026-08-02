@@ -200,8 +200,10 @@ function ensureDimWindow(): void {
     focusable: false,
     hasShadow: false,
     show: false,
-    webPreferences: { contextIsolation: true, nodeIntegration: false },
+    webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true },
   });
+  // The dim renders inert data: HTML — it must never spawn a window.
+  dimWin.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   dimWin.setIgnoreMouseEvents(true, { forward: true }); // the dim never eats a click
   dimWin.setAlwaysOnTop(true, 'screen-saver');
   dimWin.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
@@ -235,8 +237,10 @@ function raiseFocusWindow(): void {
     skipTaskbar: true,
     hasShadow: false,
     show: false,
-    webPreferences: { contextIsolation: true, nodeIntegration: false },
+    webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true },
   });
+  // The hold renders inert data: HTML — it must never spawn a window.
+  focusWin.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   focusWin.setAlwaysOnTop(true, 'screen-saver');
   focusWin.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
 
@@ -273,6 +277,7 @@ function focusHtml(endsAt: string, intention: string | null): string {
       background:radial-gradient(circle at 50% 45%, rgba(159,179,140,0.9), rgba(159,179,140,0.15));
       animation:breathe 9s ease-in-out infinite}
     @keyframes breathe{0%,100%{transform:scale(0.82);opacity:.65}50%{transform:scale(1.12);opacity:1}}
+    @media (prefers-reduced-motion:reduce){.pulse{animation:none}}
     .time{font-size:64px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:1px}
     .line{font-size:16px;color:rgba(245,240,230,0.72);max-width:30rem;line-height:1.5}
     .i{color:#bfd0a8;font-weight:600}

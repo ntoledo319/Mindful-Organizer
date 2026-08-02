@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '../lib/api';
 import { estimateSpoonCost } from '@shared/spoons';
 import { listItemVariants, hoverTactile } from '../lib/motion';
-import type { Task, Priority } from '@shared/types';
+import type { Task, TaskInput, Priority } from '@shared/types';
 import { EmptyState, InlineError, Modal, PageHeader, QueryErrorState, Scale, Spinner } from '../components/ui';
 import { PlusIcon, CheckIcon, TrashIcon, TaskIcon } from '../components/icons';
 
@@ -18,41 +18,70 @@ const PRIORITY_DOT: Record<Priority, string> = {
 
 const CATEGORIES = ['Life', 'Work', 'Health', 'Home', 'People', 'Money'];
 
+const STATUS_TABS = [
+  { label: 'Open', value: false },
+  { label: 'All', value: true },
+] as const;
+
+// Seed steps for Smart Decompose. Keyword presets cover the common shapes;
+// anything else gets a generic scaffold the user rewrites in the preview
+// dialog before anything is committed — "Step 1" never reaches the list
+// unless the person chooses to keep it.
+function proposedSteps(t: Task): string[] {
+  const tStr = t.title.toLowerCase();
+  let steps: string[];
+  if (tStr.includes('clean') || tStr.includes('tidy')) {
+    steps = ['Gather supplies', 'Pick up floor', 'Wipe surfaces', 'Take out trash'];
+  } else if (tStr.includes('write') || tStr.includes('essay') || tStr.includes('paper')) {
+    steps = ['Create outline', 'Draft intro', 'Write body paragraphs', 'Review & edit'];
+  } else if (tStr.includes('pay') || tStr.includes('bill')) {
+    steps = ['Gather statements', 'Log into accounts', 'Schedule payments'];
+  } else if (tStr.includes('cook') || tStr.includes('dinner') || tStr.includes('meal')) {
+    steps = ['Check ingredients', 'Prep veg/protein', 'Cook', 'Clean as you go'];
+  } else {
+    steps = ['Step 1', 'Step 2', 'Step 3'];
+  }
+  return steps.map((s) => `${t.title}: ${s}`);
+}
+
 export function Tasks() {
   const queryClient = useQueryClient();
   const [showDone, setShowDone] = useState(false);
   const [open, setOpen] = useState(false);
+  const [editTarget, setEditTarget] = useState<Task | null>(null);
+  const [decomposeTarget, setDecomposeTarget] = useState<Task | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Task | null>(null);
+  const statusTabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const { data: tasks, isLoading, isError, refetch } = useQuery({
     queryKey: ['tasks', showDone],
     queryFn: () => api.listTasks(showDone),
   });
 
+  const invalidateTaskViews = () => {
+    queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    queryClient.invalidateQueries({ queryKey: ['snapshot'] });
+    queryClient.invalidateQueries({ queryKey: ['briefing'] });
+  };
+
   const toggleMutation = useMutation({
     mutationFn: api.toggleTask,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['snapshot'] });
-      queryClient.invalidateQueries({ queryKey: ['briefing'] });
-    },
+    onSuccess: invalidateTaskViews,
   });
 
   const deleteMutation = useMutation({
     mutationFn: api.deleteTask,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['snapshot'] });
-      queryClient.invalidateQueries({ queryKey: ['briefing'] });
-    },
+    onSuccess: invalidateTaskViews,
   });
 
   const createMutation = useMutation({
     mutationFn: api.createTask,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['snapshot'] });
-      queryClient.invalidateQueries({ queryKey: ['briefing'] });
-    },
+    onSuccess: invalidateTaskViews,
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, patch }: { id: number; patch: Partial<TaskInput> }) => api.updateTask(id, patch),
+    onSuccess: invalidateTaskViews,
   });
 
   const decomposeMutation = useMutation({
@@ -60,7 +89,7 @@ export function Tasks() {
       api.replaceTaskWithSubtasks(
         task.id,
         titles.map((title) => ({
-          title: `${task.title}: ${title}`,
+          title,
           priority: task.priority,
           category: task.category,
           energyRequired: Math.max(1, Math.round(task.energyRequired / titles.length)),
@@ -71,32 +100,18 @@ export function Tasks() {
           dueDate: task.dueDate,
         })),
       ),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['snapshot'] });
-      queryClient.invalidateQueries({ queryKey: ['briefing'] });
-    },
+    onSuccess: invalidateTaskViews,
   });
 
-
-  const smartDecompose = (t: Task) => {
-    const tStr = t.title.toLowerCase();
-    const subtasks: string[] = [];
-    if (tStr.includes('clean') || tStr.includes('tidy')) {
-      subtasks.push('Gather supplies', 'Pick up floor', 'Wipe surfaces', 'Take out trash');
-    } else if (tStr.includes('write') || tStr.includes('essay') || tStr.includes('paper')) {
-      subtasks.push('Create outline', 'Draft intro', 'Write body paragraphs', 'Review & edit');
-    } else if (tStr.includes('pay') || tStr.includes('bill')) {
-      subtasks.push('Gather statements', 'Log into accounts', 'Schedule payments');
-    } else if (tStr.includes('cook') || tStr.includes('dinner') || tStr.includes('meal')) {
-      subtasks.push('Check ingredients', 'Prep veg/protein', 'Cook', 'Clean as you go');
-    } else {
-      subtasks.push('Step 1', 'Step 2', 'Step 3');
-    }
-    
-    if (confirm(`Smart Decompose will break "${t.title}" into:\n- ${subtasks.join('\n- ')}\n\nProceed?`)) {
-      decomposeMutation.mutate({ task: t, titles: subtasks });
-    }
+  const onStatusTabKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+    event.preventDefault();
+    const next =
+      event.key === 'ArrowRight'
+        ? (index + 1) % STATUS_TABS.length
+        : (index - 1 + STATUS_TABS.length) % STATUS_TABS.length;
+    setShowDone(STATUS_TABS[next].value);
+    statusTabRefs.current[next]?.focus();
   };
 
   if (isLoading) return <Spinner />;
@@ -117,29 +132,29 @@ export function Tasks() {
         }
       />
 
-      {(toggleMutation.isError || deleteMutation.isError || decomposeMutation.isError) && (
+      {(toggleMutation.isError || deleteMutation.isError) && (
         <div className="mb-5">
           <InlineError>Hearth could not update this task. Try the action again.</InlineError>
         </div>
       )}
 
       <div className="mb-6 flex gap-2 border-b border-base-border dark:border-night-border pb-4" role="tablist" aria-label="Task status">
-        <button
-          role="tab"
-          aria-selected={!showDone}
-          onClick={() => setShowDone(false)}
-          className={!showDone ? 'btn-primary' : 'btn-ghost'}
-        >
-          Open
-        </button>
-        <button 
-          role="tab"
-          aria-selected={showDone}
-          onClick={() => setShowDone(true)} 
-          className={showDone ? 'btn-primary' : 'btn-ghost'}
-        >
-          All
-        </button>
+        {STATUS_TABS.map((t, i) => (
+          <button
+            key={t.label}
+            ref={(el) => {
+              statusTabRefs.current[i] = el;
+            }}
+            role="tab"
+            aria-selected={showDone === t.value}
+            tabIndex={showDone === t.value ? 0 : -1}
+            onClick={() => setShowDone(t.value)}
+            onKeyDown={(e) => onStatusTabKeyDown(e, i)}
+            className={showDone === t.value ? 'btn-primary' : 'btn-ghost'}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
 
       {tasks.length === 0 ? (
@@ -186,7 +201,7 @@ export function Tasks() {
                     {t.title}
                   </p>
                   <div className="mt-1 flex items-center gap-2 text-xs text-text-muted dark:text-night-muted/80">
-                    <span className={`h-1.5 w-1.5 rounded-full ${PRIORITY_DOT[t.priority]}`} aria-label={`Priority: ${t.priority}`} />
+                    <span className={`h-1.5 w-1.5 rounded-full ${PRIORITY_DOT[t.priority]}`} role="img" aria-label={`Priority: ${t.priority}`} />
                     {t.category}
                     <span>· {t.spoonCost} spoons</span>
                     {t.dueDate && <span>· due {t.dueDate}</span>}
@@ -197,7 +212,21 @@ export function Tasks() {
                     {...hoverTactile}
                     onClick={(e) => {
                       e.stopPropagation();
-                      smartDecompose(t);
+                      setEditTarget(t);
+                    }}
+                    className="app-no-drag rounded-soft p-2 text-text-muted transition hover:bg-brand/10 hover:text-brand focus-visible:ring-2 focus-visible:ring-brand focus:outline-none"
+                    title="Edit task"
+                    aria-label={`Edit ${t.title}`}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                    </svg>
+                  </motion.button>
+                  <motion.button
+                    {...hoverTactile}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDecomposeTarget(t);
                     }}
                     className="app-no-drag rounded-soft p-2 text-text-muted transition hover:bg-brand/10 hover:text-brand focus-visible:ring-2 focus-visible:ring-brand focus:outline-none"
                     title="Smart Decompose"
@@ -212,9 +241,7 @@ export function Tasks() {
                   </motion.button>
                   <motion.button
                     {...hoverTactile}
-                    onClick={() => {
-                      if (window.confirm(`Delete “${t.title}”? This cannot be undone.`)) deleteMutation.mutate(t.id);
-                    }}
+                    onClick={() => setDeleteTarget(t)}
                     className="app-no-drag rounded-soft p-2 text-text-muted transition hover:bg-semantic-error/10 hover:text-semantic-error focus-visible:ring-2 focus-visible:ring-semantic-error focus:outline-none"
                     aria-label={`Delete ${t.title}`}
                   >
@@ -227,47 +254,101 @@ export function Tasks() {
         </ul>
       )}
 
-      <NewTaskModal open={open} onClose={() => setOpen(false)} onCreate={async (t) => { await createMutation.mutateAsync(t); }} />
+      <TaskFormModal
+        key={editTarget ? `edit-${editTarget.id}` : 'new'}
+        open={open || editTarget !== null}
+        initialTask={editTarget}
+        onClose={() => {
+          setOpen(false);
+          setEditTarget(null);
+        }}
+        onSubmit={async (input) => {
+          if (editTarget) await updateMutation.mutateAsync({ id: editTarget.id, patch: input });
+          else await createMutation.mutateAsync(input);
+        }}
+      />
+
+      {decomposeTarget && (
+        <DecomposeModal
+          key={decomposeTarget.id}
+          task={decomposeTarget}
+          isCommitting={decomposeMutation.isPending}
+          isError={decomposeMutation.isError}
+          onClose={() => {
+            setDecomposeTarget(null);
+            decomposeMutation.reset();
+          }}
+          onCommit={async (titles) => {
+            await decomposeMutation.mutateAsync({ task: decomposeTarget, titles });
+            setDecomposeTarget(null);
+          }}
+        />
+      )}
+
+      <Modal open={deleteTarget !== null} onClose={() => setDeleteTarget(null)} title="Delete task?">
+        <p className="text-sm leading-relaxed text-text-muted dark:text-night-muted">
+          Delete “{deleteTarget?.title}”? This cannot be undone.
+        </p>
+        <div className="mt-6 flex justify-end gap-3">
+          <button className="btn-ghost" onClick={() => setDeleteTarget(null)}>
+            Cancel
+          </button>
+          <button
+            className="btn-primary bg-semantic-error hover:bg-semantic-error/90"
+            onClick={() => {
+              if (deleteTarget) deleteMutation.mutate(deleteTarget.id);
+              setDeleteTarget(null);
+            }}
+          >
+            Delete
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }
 
-function NewTaskModal({ open, onClose, onCreate }: { open: boolean; onClose: () => void; onCreate: (task: Parameters<typeof api.createTask>[0]) => Promise<void>; }) {
-  const [title, setTitle] = useState('');
-  const [priority, setPriority] = useState<Priority>('medium');
-  const [category, setCategory] = useState('Life');
-  const [energy, setEnergy] = useState(5);
-  const [duration, setDuration] = useState(30);
-  const [dueDate, setDueDate] = useState('');
+function TaskFormModal({
+  open,
+  onClose,
+  initialTask,
+  onSubmit,
+}: {
+  open: boolean;
+  onClose: () => void;
+  initialTask: Task | null; // null → creating a new task
+  onSubmit: (input: TaskInput) => Promise<void>;
+}) {
+  const editing = initialTask !== null;
+  const [title, setTitle] = useState(initialTask?.title ?? '');
+  const [priority, setPriority] = useState<Priority>(initialTask?.priority ?? 'medium');
+  const [category, setCategory] = useState(initialTask?.category ?? 'Life');
+  const [energy, setEnergy] = useState(initialTask?.energyRequired ?? 5);
+  const [duration, setDuration] = useState(initialTask?.estimatedDuration ?? 30);
+  const [dueDate, setDueDate] = useState(initialTask?.dueDate ?? '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-
-  const reset = () => {
-    setTitle('');
-    setPriority('medium');
-    setCategory('Life');
-    setEnergy(5);
-    setDuration(30);
-    setDueDate('');
-  };
 
   const submit = async () => {
     if (!title.trim()) return;
     setIsSubmitting(true);
     setSubmitError(null);
     try {
-      await onCreate({
+      const estCost = estimateSpoonCost(energy, duration);
+      await onSubmit({
         title: title.trim(),
         priority,
         category,
         energyRequired: energy,
         estimatedDuration: duration,
         dueDate: dueDate || null,
+        // Sent explicitly so an edit's cost tracks its new energy/duration
+        // (create derives the identical value server-side when omitted).
+        spoonCost: estCost,
       });
-      reset();
       onClose();
     } catch {
-      setSubmitError('Hearth could not add this task. Review the fields and try again.');
+      setSubmitError(editing ? 'Hearth could not save these changes. Review the fields and try again.' : 'Hearth could not add this task. Review the fields and try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -276,7 +357,7 @@ function NewTaskModal({ open, onClose, onCreate }: { open: boolean; onClose: () 
   const estCost = estimateSpoonCost(energy, duration);
 
   return (
-    <Modal open={open} onClose={onClose} title="New task">
+    <Modal open={open} onClose={onClose} title={editing ? 'Edit task' : 'New task'}>
       <div className="space-y-5 pt-2">
         <input
           autoFocus
@@ -337,7 +418,84 @@ function NewTaskModal({ open, onClose, onCreate }: { open: boolean; onClose: () 
             Cancel
           </button>
           <button className="btn-primary" onClick={submit} disabled={!title.trim() || isSubmitting}>
-            {isSubmitting ? 'Adding...' : 'Add task'}
+            {isSubmitting ? 'Saving…' : editing ? 'Save changes' : 'Add task'}
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+function DecomposeModal({
+  task,
+  isCommitting,
+  isError,
+  onClose,
+  onCommit,
+}: {
+  task: Task;
+  isCommitting: boolean;
+  isError: boolean;
+  onClose: () => void;
+  onCommit: (titles: string[]) => Promise<void>;
+}) {
+  const [steps, setSteps] = useState<string[]>(() => proposedSteps(task));
+  const trimmed = steps.map((s) => s.trim()).filter(Boolean);
+
+  const setStep = (index: number, value: string) =>
+    setSteps((current) => current.map((s, i) => (i === index ? value : s)));
+  const removeStep = (index: number) => setSteps((current) => current.filter((_, i) => i !== index));
+
+  return (
+    <Modal open onClose={onClose} title={`Break down “${task.title}”`}>
+      <div className="space-y-5 pt-2">
+        <p className="text-sm leading-relaxed text-text-muted dark:text-night-muted">
+          Shape these steps until they fit — edit, remove, or add your own. Committing replaces the
+          original task with exactly what you see, in one transaction.
+        </p>
+        <div className="space-y-2">
+          {steps.map((step, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <input
+                className="field"
+                value={step}
+                onChange={(e) => setStep(i, e.target.value)}
+                aria-label={`Step ${i + 1}`}
+              />
+              <button
+                type="button"
+                className="btn-ghost shrink-0 px-2 text-text-muted hover:text-semantic-error"
+                onClick={() => removeStep(i)}
+                disabled={steps.length <= 1}
+                aria-label={`Remove step ${i + 1}`}
+              >
+                <TrashIcon width={14} height={14} />
+              </button>
+            </div>
+          ))}
+        </div>
+        <div>
+          <button type="button" className="btn-ghost" onClick={() => setSteps((current) => [...current, ''])}>
+            <PlusIcon width={14} height={14} />
+            Add a step
+          </button>
+        </div>
+        {trimmed.length === 0 && (
+          <p className="text-sm text-text-muted dark:text-night-muted">
+            Add at least one step, or cancel to keep the original task.
+          </p>
+        )}
+        {isError && <InlineError>Hearth could not replace this task. Your steps are unchanged — try again.</InlineError>}
+        <div className="flex justify-end gap-3 pt-2">
+          <button className="btn-ghost" onClick={onClose}>
+            Cancel
+          </button>
+          <button
+            className="btn-primary"
+            disabled={trimmed.length === 0 || isCommitting}
+            onClick={() => void onCommit(trimmed)}
+          >
+            {isCommitting ? 'Replacing…' : `Replace with ${trimmed.length} ${trimmed.length === 1 ? 'step' : 'steps'}`}
           </button>
         </div>
       </div>

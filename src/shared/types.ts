@@ -208,6 +208,14 @@ export interface PersonalDataExportResult {
   filePath?: string;
 }
 
+// Version/platform info for the renderer's About block and bug reports.
+// Carries no personal data.
+export interface AppInfo {
+  version: string;
+  os: string;
+  arch: string;
+}
+
 // --- Structured reflection and local system features ---
 
 export interface ErpSession {

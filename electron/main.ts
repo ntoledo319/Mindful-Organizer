@@ -6,12 +6,12 @@ import {
   nativeTheme,
   globalShortcut,
   dialog,
-  type IpcMainInvokeEvent,
 } from 'electron';
 import { join, dirname, resolve } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 import { readFileSync, existsSync, mkdirSync } from 'node:fs';
 import { getDb, closeDb } from './db';
+import { isTrustedIpcSender } from './ipcTrust';
 import * as repo from './repo';
 import * as wellness from './wellness';
 import * as presence from './presence';
@@ -33,8 +33,10 @@ process.env.DIST = join(__dirname, '../dist');
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : join(__dirname, '../public');
 
 const DEV_SERVER = process.env.VITE_DEV_SERVER_URL;
-const SCREENSHOT_MODE = process.env.HEARTH_SCREENSHOT === '1';
-const SMOKE_MODE = process.env.HEARTH_SMOKE === '1';
+// Screenshot/smoke are dev harnesses: a packaged launch must ignore their env
+// vars so HEARTH_SCREENSHOT=1 can never reseed a real user's profile.
+const SCREENSHOT_MODE = !app.isPackaged && process.env.HEARTH_SCREENSHOT === '1';
+const SMOKE_MODE = !app.isPackaged && process.env.HEARTH_SMOKE === '1';
 const RELEASE_VALIDATION_MODE = process.env.HEARTH_RELEASE_VALIDATION === '1';
 
 let win: BrowserWindow | null = null;
@@ -43,28 +45,11 @@ let quitting = false;
 function openExternal(url: string): void {
   try {
     const protocol = new URL(url).protocol;
-    if (['https:', 'http:', 'mailto:', 'tel:', 'sms:'].includes(protocol)) {
+    if (['https:', 'mailto:', 'tel:', 'sms:'].includes(protocol)) {
       void shell.openExternal(url);
     }
   } catch {
     // Ignore malformed or unsupported links instead of navigating the app away.
-  }
-}
-
-function isTrustedIpcSender(event: IpcMainInvokeEvent): boolean {
-  const frame = event.senderFrame;
-  if (!frame || frame !== event.sender.mainFrame) return false;
-
-  try {
-    const senderUrl = new URL(frame.url);
-    if (DEV_SERVER) {
-      return senderUrl.origin === new URL(DEV_SERVER).origin;
-    }
-
-    const expected = pathToFileURL(join(process.env.DIST!, 'index.html'));
-    return senderUrl.protocol === 'file:' && senderUrl.pathname === expected.pathname;
-  } catch {
-    return false;
   }
 }
 
@@ -259,6 +244,9 @@ function registerIpc(): void {
         return null;
       }
     },
+
+    // Version/platform info for the renderer's About block and bug reports.
+    getAppInfo: async () => ({ version: app.getVersion(), os: process.platform, arch: process.arch }),
   };
 
   for (const [channel, fn] of Object.entries(handlers)) {
@@ -309,7 +297,8 @@ app.whenReady().then(async () => {
   registerIpc();
 
   // Dev-only screenshot mode: seed demo data, capture the Store listing images,
-  // then quit. Gated behind HEARTH_SCREENSHOT so it can't fire in a real launch.
+  // then quit. Unreachable in a packaged launch — SCREENSHOT_MODE is gated on
+  // !app.isPackaged where it is defined above.
   if (SCREENSHOT_MODE) {
     const { runScreenshots } = await import('./screenshot');
     try {

@@ -29,7 +29,9 @@ const DEFAULT_SETTINGS: Settings = {
   quietMode: 'auto',
   quietDim: 0.4,
   focusGuard: true,
-  nudges: true,
+  // Default-off: a notification can surface emotional state on a lock screen
+  // or in Action Center, so nothing leaves the app until the user opts in.
+  nudges: false,
   privacyConsentAt: null,
 };
 
@@ -182,49 +184,54 @@ export function updateTask(id: number, patch: Partial<TaskInput>): Task {
 
 export function toggleTask(id: number): Task {
   const db = getDb();
-  const cur = getTask(db, id);
-  const completed = cur.completed ? 0 : 1;
-  
-  db.prepare(
-    `UPDATE tasks SET completed=?, completed_at=?, updated_at=datetime('now') WHERE id=?`,
-  ).run(completed, completed ? new Date().toISOString() : null, id);
-  
-  // Gamification: Award XP when completed
-  if (completed) {
-    const xpGain = Math.round((cur.spoonCost || 1) * 10);
-    const g = getGamification();
-    const newXp = g.currentXp + xpGain;
-    let newLevel = g.currentLevel;
-    let remainingXp = newXp;
-    
-    // Level up logic (e.g. 100 XP per level)
-    const xpNeeded = newLevel * 100;
-    if (remainingXp >= xpNeeded) {
-      newLevel += 1;
-      remainingXp -= xpNeeded;
+  // The completion flip and its XP award/reversal are one atomic write — a
+  // crash between them would leave tasks and gamification disagreeing.
+  const toggle = db.transaction(() => {
+    const cur = getTask(db, id);
+    const completed = cur.completed ? 0 : 1;
+
+    db.prepare(
+      `UPDATE tasks SET completed=?, completed_at=?, updated_at=datetime('now') WHERE id=?`,
+    ).run(completed, completed ? new Date().toISOString() : null, id);
+
+    // Gamification: Award XP when completed
+    if (completed) {
+      const xpGain = Math.round((cur.spoonCost || 1) * 10);
+      const g = getGamification();
+      const newXp = g.currentXp + xpGain;
+      let newLevel = g.currentLevel;
+      let remainingXp = newXp;
+
+      // Level up logic (e.g. 100 XP per level)
+      const xpNeeded = newLevel * 100;
+      if (remainingXp >= xpNeeded) {
+        newLevel += 1;
+        remainingXp -= xpNeeded;
+      }
+
+      db.prepare(`UPDATE gamification SET current_level=?, current_xp=?, total_xp=total_xp+? WHERE id=?`).run(
+        newLevel, remainingXp, xpGain, g.id
+      );
+    } else {
+      // Reverse XP if unchecking
+      const xpLoss = Math.round((cur.spoonCost || 1) * 10);
+      const g = getGamification();
+      let newXp = g.currentXp - xpLoss;
+      let newLevel = g.currentLevel;
+      if (newXp < 0 && newLevel > 1) {
+        newLevel -= 1;
+        newXp = (newLevel * 100) + newXp; // Add negative XP to previous level's cap
+      }
+      newXp = Math.max(0, newXp); // Floor at 0 for level 1
+
+      db.prepare(`UPDATE gamification SET current_level=?, current_xp=?, total_xp=MAX(0, total_xp-?) WHERE id=?`).run(
+        newLevel, newXp, xpLoss, g.id
+      );
     }
-    
-    db.prepare(`UPDATE gamification SET current_level=?, current_xp=?, total_xp=total_xp+? WHERE id=?`).run(
-      newLevel, remainingXp, xpGain, g.id
-    );
-  } else {
-    // Reverse XP if unchecking
-    const xpLoss = Math.round((cur.spoonCost || 1) * 10);
-    const g = getGamification();
-    let newXp = g.currentXp - xpLoss;
-    let newLevel = g.currentLevel;
-    if (newXp < 0 && newLevel > 1) {
-      newLevel -= 1;
-      newXp = (newLevel * 100) + newXp; // Add negative XP to previous level's cap
-    }
-    newXp = Math.max(0, newXp); // Floor at 0 for level 1
-    
-    db.prepare(`UPDATE gamification SET current_level=?, current_xp=?, total_xp=MAX(0, total_xp-?) WHERE id=?`).run(
-      newLevel, newXp, xpLoss, g.id
-    );
-  }
-  
-  return getTask(db, id);
+
+    return getTask(db, id);
+  });
+  return toggle();
 }
 
 export function deleteTask(id: number): void {

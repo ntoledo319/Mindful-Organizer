@@ -15,7 +15,7 @@ principal risk. A dash means no compliant near-term route.
 | A1.2 | Paid session-summary output | 21+ | >60 | No marketplace | $0–$200 | Sensitive intake and fulfillment |
 | A1.3 | Sell existing source | 7+ | 20 | Asset marketplace | $0–$100 | Source is already public MIT |
 | A1.4 | Extract a paid component | 14+ | 20 | Asset marketplace | $0–$200 | New documentation and differentiation |
-| A1.5 | Official Windows package | 3–10 after owner gates | 44 total queue | **Microsoft Store** | $0–$4,001 | Legal/payout gates, certification, and unproven demand |
+| A1.5 | Official Windows package | 3–10 after owner gates | 59 total queue | **Microsoft Store** | $0–$4,001 | Legal/payout gates, certification, and unproven demand |
 | A1.6 | Bundle with a future sibling | — | >60 | None | $0 | Sibling does not exist |
 | A1.7 | White-label clinic build | 21+ | >60 | Outbound required | $0 | Claims, sales, and support burden |
 
@@ -93,7 +93,9 @@ principal risk. A dash means no compliant near-term route.
 - **Draft price:** $249 one time.
 - **Target arithmetic:** the existing fee model estimates $216.58 per sale;
   19 sales would be about $4,115 before payout transfer fees and the one-time
-  tax-identity adjustment.
+  $3 tax-identity adjustment (applies to itch.io's Collected/Payouts mode
+  only; source <https://itch.io/docs/creators/payments> fetched 2026-07-28 —
+  see D036).
 - **Funnel:** itch.io Assets browse/search → product page → checkout.
 - **Current evidence:** none. The exclusive deliverable and seller rail do not
   exist, so it cannot be represented as shipped.

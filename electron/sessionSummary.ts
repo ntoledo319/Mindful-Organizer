@@ -1,5 +1,5 @@
 import { app, BrowserWindow, dialog, type BrowserWindow as BrowserWindowType } from 'electron';
-import { writeFile } from 'node:fs/promises';
+import { chmod, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import * as repo from './repo';
 import * as wellness from './wellness';
@@ -56,7 +56,13 @@ export async function exportSessionSummary(
       printBackground: true,
       preferCSSPageSize: true,
     });
-    await writeFile(selection.filePath, pdf);
+    await writeFile(selection.filePath, pdf, { mode: 0o600 });
+    try {
+      await chmod(selection.filePath, 0o600);
+    } catch {
+      // Windows does not implement POSIX mode bits; the JSON export uses the
+      // same write-then-chmod pattern so both artifacts behave identically.
+    }
     return { status: 'saved', filePath: selection.filePath };
   } finally {
     if (!reportWindow.isDestroyed()) reportWindow.destroy();

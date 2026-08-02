@@ -284,3 +284,90 @@ The existing strategy handoff was accurate but too brief to reproduce the missio
 
 Every local subprocess on 2026-07-15, including pwd and true, was killed with exit 137. Decision: do not call the local worktree clean, synced or verified. Audit public main through the authenticated GitHub connector, label Partner Center state with its 2026-07-14 observation date, publish the handoff remotely, and require the next agent to rerun local status and verification without destructive reset.
 
+## 2026-07-28 — Day-15 market-readiness remediation
+
+### D035 — Execute the missed Day 7/14 §8 gates late, and escalate
+
+No Day 7 (2026-07-20) or Day 14 (2026-07-27) gate assessment was ever
+recorded, and the 44-minute owner queue sat untouched from 2026-07-15 through
+today. Decision: execute both gates now as one Day-15 assessment
+(`revenue/METRICS.md`, 2026-07-28). Conclusion: with 13 days left, a live
+window of only ~4–11 days (certification 1–7 days after queue completion),
+and 322–335 required sales at ~29–84 per live day with zero audience and $0
+spend, the $4,000 collected-cash target is not reachable in-window through
+Bet A — and ADA §6(c) monthly payout timing means even perfect sales would be
+accrued, not collected, by Day 28. §8 escalation applied: ship all
+agent-doable distribution prep today (D037, D039), put Bet B sequencing to
+the owner as an explicit choice (D038), and restate the Day-28 success
+criterion as live listing + first collected dollars + real demand signal
+(`revenue/PLAN.md`). The Day-21 gate (2026-08-03) executes on schedule.
+
+### D036 — Restate the money model: accrued vs collected, blended fees, Bet B tax fee cited
+
+Three corrections to the money model, all applied in `revenue/PLAN.md`.
+(1) **Accrued vs collected.** ADA v8.11 (published 2026-03-17, effective
+2026-04-17) §6(c) pays App Proceeds monthly, subject to the USD $50 payment
+threshold stated in the payout-methods documentation §6(c) references
+(<https://go.microsoft.com/fwlink/?linkid=2199849>, fetched 2026-07-28). Bet A
+proceeds from an ~Aug 1 launch pay out mid-August at the earliest,
+realistically mid-September — after Day 28. Accrued Store earnings are now
+tracked separately from collected cash and never counted as revenue.
+(2) **Blended fee model.** ADA §1(h) retains an extra 10% Commerce Expansion
+Adjustment on gift-card/mobile-operator-billing transactions (25% total on
+those) and §1(t) defines Net Receipts as net of refunds and chargebacks. The
+plan now models a blended $12.10–$12.74 net per sale with a 3% refund
+planning assumption → ≈ 322–335 required sales, replacing 314 as the
+planning figure (314 remains the optimistic baseline bound, verified per
+§6(b)(i)).
+(3) **Bet B tax-identity fee.** The "$3 one-time tax-identity adjustment"
+was recorded in D008 and `revenue/PLAN.md` without a cited source. A fresh
+fetch (2026-07-28) of <https://itch.io/docs/creators/payments> confirms the
+fee exists — "Account Adjustments → Tax Identity: a flat fee of $3.00 will be
+applied to your account once" — and that it applies to the "Collected by
+itch.io (Payouts)" mode only; the "Direct to you" mode gives tax identity to
+each payment provider and lists no such adjustment. Decision: keep the fee in
+the model with this citation and mode scope rather than remove it.
+
+### D037 — Pre-register the Day-5 reposition menu
+
+The falsifier allows exactly one reposition after five live days with zero
+signal. Decision: pre-register four concrete, pre-costed options in
+`revenue/PLAN.md` — RP-1 scheduled sale pricing, RP-2 keyword revision, RP-3
+listing copy variant, RP-4 market expansion deferred to Submission 2 with the
+crisis-copy evidence-chain constraint — with full execution artifacts in
+`store/REPOSITION_KIT.md` and a cross-link from `store/CAMPAIGNS.md`, so a
+gate fire costs the owner minutes instead of days. Every option names its
+exact Partner Center field and requires a new certified submission; every
+draft obeys the `store/LAUNCH_KIT.md` claims boundary.
+
+### D038 — Bet B sequencing put to the owner as an explicit either/or (not queued)
+
+Adding PROP-005 approval plus itch.io payout setup (~12 owner minutes) to the
+queue would push the total to ~71 minutes, over the 60-minute §10 law.
+Decision: no queue item is added; the choice is presented here and referenced
+from `revenue/HUMAN_QUEUE.md`.
+
+- **Option A — stay Bet-A-only.** Queue total ≈ 59–60 minutes (44 + HQ-06
+  5 min + HQ-07 10 min; 50 if HQ-07 is resolved by the 1-minute risk
+  acceptance). Bet B remains conditional and unbuilt.
+- **Option B — approve PROP-005 now.** Requires dropping or deferring another
+  queued item, or the owner accepting ~11 minutes over budget. CFO finding
+  recorded: Bet B's itch.io Direct-to-you rail pays at purchase — better
+  cash-timing than Bet A's monthly ADA §6(c) cadence, which cannot collect
+  before Day 28 — and the kit build itself is agent work that can start
+  immediately upon approval, consuming no owner minutes until listing review.
+
+### D039 — Distribution prep shipped; PROP-004 sequencing amendment proposed
+
+Two agent-doable distribution artifacts shipped today:
+`store/LAUNCH_TARGETS.md` (six rule-checked, owner-posted destinations plus
+two documented exclusions; HQ-05 now names the file) and the reposition
+cross-link in `store/CAMPAIGNS.md`. Separately, the council's sequencing
+recommendation — deploy the `landing/` artifact at certification-submit time
+instead of after publication — amends PROP-004 and therefore requires owner
+approval, so it is queued as HQ-06 (5 minutes) with the D007 GitHub-Pages
+constraint carried into the click steps (Cloudflare Pages or Netlify per
+PROP-004; GitHub Pages only if a current-TOS re-check reverses D007) and the
+rule that no `?cid=landing-primary` wiring happens until the Store page is
+observed live (enforced by `scripts/validate-store.mjs` while the listing
+stays in draft state).

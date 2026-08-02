@@ -1,8 +1,10 @@
-// Main-process screenshot orchestrator. Runs only when HEARTH_SCREENSHOT=1
-// (see main.ts) and produces the Microsoft Store listing screenshots at exactly
-// 1920x1080. It seeds demo data, drives the renderer's route/theme through the
-// __hearthShot bridge, and writes PNGs from a verified Chromium surface.
-// Dev-only — nothing here is reachable in a normal or packaged launch.
+// Main-process screenshot orchestrator. Runs only when HEARTH_SCREENSHOT=1 on
+// a non-packaged launch (main.ts gates the env var on !app.isPackaged) and
+// produces the Microsoft Store listing screenshots at exactly 1920x1080. It
+// seeds demo data, drives the renderer's route/theme through the __hearthShot
+// bridge, and writes PNGs from a verified Chromium surface.
+// Dev-only — a packaged launch with HEARTH_SCREENSHOT=1 behaves as a normal
+// launch and never reaches this module.
 import { BrowserWindow, ipcMain, nativeImage, nativeTheme, type NativeImage } from 'electron';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';

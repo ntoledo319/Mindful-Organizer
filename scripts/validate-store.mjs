@@ -77,6 +77,7 @@ const requiredFiles = [
   'store/PRODUCT-PAGE-EXPERIMENTS.md',
   'store/LAUNCH_KIT.md',
   'store/WINDOWS-VALIDATION.md',
+  'store/POST_PUBLICATION_DOC_SWEEP.md',
   'store/identity.json',
   'store/listing-metadata.json',
   'landing/README.md',
@@ -187,7 +188,17 @@ const html = read('landing/index.html');
 const css = read('landing/styles.css');
 check(/<title>[^<]+<\/title>/.test(html), 'landing requires a document title');
 check(/<meta\s+name="description"/.test(html), 'landing requires a meta description');
-check(!/<script\b/i.test(html), 'landing must not load or embed scripts');
+// JSON-LD structured-data blocks are the single permitted script form:
+// inert <script type="application/ld+json"> with no src attribute. Carve-out
+// added deliberately 2026-07-28 so deploy-time SEO structured data does not
+// trip this invariant. Every other script — external or inline — stays
+// forbidden, and a JSON-LD block carrying a src attribute fails below.
+const ldJsonPattern = /<script\b[^>]*\btype\s*=\s*["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi;
+for (const block of html.match(ldJsonPattern) || []) {
+  check(!/\bsrc\s*=/i.test(block), 'landing JSON-LD block must not load a src');
+}
+const htmlWithoutLdJson = html.replace(ldJsonPattern, '');
+check(!/<script\b/i.test(htmlWithoutLdJson), 'landing must not load or embed scripts (inert application/ld+json excepted)');
 check(!/<form\b/i.test(html), 'landing must not collect data through a form');
 check(!/<iframe\b/i.test(html), 'landing must not embed iframes');
 check(!/<img\b[^>]*\bsrc=["']https?:/i.test(html), 'landing must not load remote images');

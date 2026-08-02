@@ -3,7 +3,8 @@ import { AnimatePresence, MotionConfig, motion } from 'framer-motion';
 import { useStore } from './state/store';
 import { useScreenshotDriver } from './lib/screenshot';
 import { pageVariants } from './lib/motion';
-import { Spinner } from './components/ui';
+import { QueryErrorState, Spinner } from './components/ui';
+import { ScreenErrorBoundary } from './components/ScreenErrorBoundary';
 import {
   CORE_CAPABILITIES,
   UTILITY_CAPABILITIES,
@@ -57,7 +58,7 @@ export function App() {
 }
 
 function AppContent() {
-  const { settings, loading, presence, route, setRoute, initialize, setQuiet } = useStore();
+  const { settings, loading, initError, presence, route, setRoute, initialize, setQuiet } = useStore();
   const mainRef = useRef<HTMLElement>(null);
   const hasPresentedInitialRoute = useRef(false);
   const appReady = !loading && settings !== null;
@@ -91,6 +92,20 @@ function AppContent() {
   // No-op unless main launched us in screenshot mode; then it steers route/theme.
   useScreenshotDriver(navigate, appReady);
 
+  if (initError) {
+    return (
+      <div className="h-full bg-base-bg dark:bg-night-bg">
+        <div className="mx-auto max-w-xl px-10 pb-16 pt-24">
+          <QueryErrorState
+            title="Hearth couldn't finish starting up"
+            body="Your local records are still on this device. Try starting Hearth again."
+            onRetry={() => void initialize()}
+          />
+        </div>
+      </div>
+    );
+  }
+
   if (loading || !settings) {
     return (
       <div className="h-full bg-base-bg dark:bg-night-bg">
@@ -118,7 +133,7 @@ function AppContent() {
           </span>
           <span className="font-display text-xl font-semibold tracking-tight">Hearth</span>
         </div>
-        
+
         {/* Gamification purposefully removed to align with intrinsic reflection standards */}
 
         <nav className="app-no-drag flex flex-1 flex-col gap-1" aria-label="Main Navigation">
@@ -185,18 +200,20 @@ function AppContent() {
               animate="animate"
               exit="exit"
             >
-              <Suspense fallback={<div className="flex h-64 items-center justify-center"><Spinner /></div>}>
-                {activeRoute === 'dashboard' && <Dashboard onNavigate={navigate} />}
-                {activeRoute === 'tasks' && <Tasks />}
-                {activeRoute === 'reflect' && <Reflect />}
-                {activeRoute === 'diary' && <DiaryCards />}
-                {activeRoute === 'erp' && <ErpTracker />}
-                {activeRoute === 'practices' && <Practices />}
-                {activeRoute === 'meds' && <Medications />}
-                {activeRoute === 'trends' && <Trends />}
-                {activeRoute === 'crisis' && <CrisisPlanScreen />}
-                {activeRoute === 'settings' && <SettingsScreen />}
-              </Suspense>
+              <ScreenErrorBoundary>
+                <Suspense fallback={<div className="flex h-64 items-center justify-center"><Spinner /></div>}>
+                  {activeRoute === 'dashboard' && <Dashboard onNavigate={navigate} />}
+                  {activeRoute === 'tasks' && <Tasks />}
+                  {activeRoute === 'reflect' && <Reflect />}
+                  {activeRoute === 'diary' && <DiaryCards />}
+                  {activeRoute === 'erp' && <ErpTracker />}
+                  {activeRoute === 'practices' && <Practices />}
+                  {activeRoute === 'meds' && <Medications />}
+                  {activeRoute === 'trends' && <Trends />}
+                  {activeRoute === 'crisis' && <CrisisPlanScreen />}
+                  {activeRoute === 'settings' && <SettingsScreen />}
+                </Suspense>
+              </ScreenErrorBoundary>
             </motion.div>
           </AnimatePresence>
         </div>

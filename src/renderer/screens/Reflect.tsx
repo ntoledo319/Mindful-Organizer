@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
-import { InlineError, PageHeader, QueryErrorState, Scale, Spinner } from '../components/ui';
+import { InlineError, Modal, PageHeader, QueryErrorState, Scale, Spinner } from '../components/ui';
 import { formatDistanceToNow } from 'date-fns';
 
 type Tab = 'mood' | 'sleep' | 'journal';
+
+const REFLECT_TABS: Tab[] = ['mood', 'sleep', 'journal'];
 
 const JOURNAL_PROMPTS = [
   'What is taking up the most room in your head right now?',
@@ -15,18 +17,36 @@ const JOURNAL_PROMPTS = [
 
 export function Reflect() {
   const [tab, setTab] = useState<Tab>('mood');
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  const onTabKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+    event.preventDefault();
+    const next =
+      event.key === 'ArrowRight'
+        ? (index + 1) % REFLECT_TABS.length
+        : (index - 1 + REFLECT_TABS.length) % REFLECT_TABS.length;
+    setTab(REFLECT_TABS[next]);
+    tabRefs.current[next]?.focus();
+  };
+
   return (
     <div>
       <PageHeader title="Reflect" subtitle="A quiet check-in. No streaks to break, no scores to chase." />
       <div className="mb-6 flex gap-2 border-b border-base-border dark:border-night-border pb-4" role="tablist" aria-label="Reflection categories">
-        {(['mood', 'sleep', 'journal'] as Tab[]).map((t) => (
+        {REFLECT_TABS.map((t, i) => (
           <button
             key={t}
+            ref={(el) => {
+              tabRefs.current[i] = el;
+            }}
             role="tab"
             aria-selected={tab === t}
             aria-controls={`panel-${t}`}
             id={`tab-${t}`}
+            tabIndex={tab === t ? 0 : -1}
             onClick={() => setTab(t)}
+            onKeyDown={(e) => onTabKeyDown(e, i)}
             className={tab === t ? 'btn-primary' : 'btn-ghost'}
           >
             {t[0].toUpperCase() + t.slice(1)}
@@ -172,6 +192,7 @@ function JournalPane() {
   const queryClient = useQueryClient();
   const [prompt] = useState(() => JOURNAL_PROMPTS[Math.floor(Math.random() * JOURNAL_PROMPTS.length)]);
   const [content, setContent] = useState('');
+  const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null);
 
   const entriesQuery = useQuery({
     queryKey: ['journal'],
@@ -205,9 +226,9 @@ function JournalPane() {
           onChange={(e) => setContent(e.target.value)}
           aria-label="Journal entry text"
         />
-        <button 
-          className="btn-primary w-full" 
-          onClick={() => saveMutation.mutate()} 
+        <button
+          className="btn-primary w-full"
+          onClick={() => saveMutation.mutate()}
           disabled={!content.trim() || saveMutation.isPending}
         >
           {saveMutation.isPending ? 'Saving...' : 'Keep this entry'}
@@ -229,9 +250,7 @@ function JournalPane() {
               <div className="flex items-start justify-between gap-3">
                 <p className="text-base leading-relaxed text-text-primary dark:text-night-text/90">{e.content}</p>
                 <button
-                  onClick={() => {
-                    if (window.confirm('Delete this journal entry? This cannot be undone.')) deleteMutation.mutate(e.id);
-                  }}
+                  onClick={() => setPendingDeleteId(e.id)}
                   className="shrink-0 rounded-soft px-1 text-xs font-medium text-text-muted opacity-0 transition group-hover:opacity-100 hover:text-semantic-error focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-semantic-error dark:text-night-muted dark:hover:text-night-error"
                   aria-label="Delete entry"
                 >
@@ -243,6 +262,25 @@ function JournalPane() {
           ))
         )}
       </div>
+      <Modal open={pendingDeleteId !== null} onClose={() => setPendingDeleteId(null)} title="Delete journal entry?">
+        <p className="text-sm leading-relaxed text-text-muted dark:text-night-muted">
+          Delete this journal entry? This cannot be undone.
+        </p>
+        <div className="mt-6 flex justify-end gap-3">
+          <button className="btn-ghost" onClick={() => setPendingDeleteId(null)}>
+            Cancel
+          </button>
+          <button
+            className="btn-primary bg-semantic-error hover:bg-semantic-error/90"
+            onClick={() => {
+              if (pendingDeleteId !== null) deleteMutation.mutate(pendingDeleteId);
+              setPendingDeleteId(null);
+            }}
+          >
+            Delete
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }

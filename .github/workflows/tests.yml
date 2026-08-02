@@ -25,6 +25,11 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
+      - name: Verify third-party notices are current
+        run: |
+          npm run licenses
+          git diff --exit-code -- THIRD_PARTY_NOTICES.md
+
       - name: Scan repository for committed secrets
         run: npm run secrets
 

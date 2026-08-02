@@ -46,7 +46,10 @@ purchasable:
    data lifecycle, including migration-backup retirement after two verified
    encrypted generations.
 3. Change “proposed” price/package language only to observed live terms.
-4. Add the deployed canonical URL and matching Open Graph URL.
+4. Add the deployed canonical URL and matching Open Graph URL. JSON-LD
+   structured data (the store validator's application/ld+json carve-out), a
+   sitemap, and absolute og:image URLs are also due at deploy time, once the
+   domain is known.
 5. Verify privacy, terms, refunds, accessibility, support, source, and Store
    links in a private browser.
 6. Validate HTML, run keyboard and screen-reader checks, test 320 px through

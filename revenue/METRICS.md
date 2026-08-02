@@ -218,3 +218,48 @@ Collected profit remains **$0.00**. The current gap remains **$4,000.00**.
   archive, commit index).
 - No revenue, listing, certification, publication, post, or human contact was
   observed. Collected profit remains **$0.00**; the gap remains **$4,000.00**.
+
+## 2026-07-28 — Day 15 gate assessment (covers the missed Day 7 and Day 14 gates)
+
+Observed facts:
+
+| Metric | Observed value | Evidence |
+|---|---:|---|
+| Collected profit | **$0.00** | No sale, payout, refund, fee, or settlement record observed; no live listing exists to produce one |
+| Accrued net earnings | **$0.00** | No sales exist; nothing has accrued |
+| Gap to target | **$4,000.00** | $4,000 target minus $0 collected |
+| Live paid listing | 0 | Product remains In draft; no public purchasable Store page verified |
+| Owner queue consumption | 0 of 44 queued minutes | No HQ item recorded as executed in the repository since 2026-07-15 |
+| §8 gate assessments | 0 performed | No ledger entries exist for Day 7 (2026-07-20) or Day 14 (2026-07-27); this entry executes both late |
+
+Planning analysis (clearly labeled assumptions, not observations):
+
+- **Live-window math.** If the owner completes HQ-01/HQ-02 today (Day 15)
+  and certification is submitted immediately after, Microsoft certification
+  takes roughly 1–7 days, so the listing goes live around Day 17–23 —
+  leaving roughly **4–11 live days** before Day 28 (2026-08-10). The
+  falsifier cycle needs a minimum of 9 live days (5 + one reposition + 4),
+  so at the short end the full reposition-replace cycle cannot complete even
+  once.
+- **Required velocity.** At the revised 322–335-sale model (revenue/PLAN.md,
+  blended fee plus refund planning assumptions), closing the gap needs
+  roughly **29–84 sales per live day** (≈ 26–78/day under the pre-revision
+  314 baseline) from a zero-review, US-only, $14.99, no-trial listing, with
+  $0 spend and zero owned audience. `revenue/OPPORTUNITIES.md`'s own planning
+  range for this frame is U = $0–$4,001; the honest reading of that floor is
+  that this velocity is **not plausible**.
+- **Payout timing.** ADA v8.11 §6(c) pays monthly, subject to the USD $50
+  threshold; August sales pay out mid-August at the earliest, realistically
+  mid-September — after Day 28. Bet A dollars are accrued-not-collected
+  in-window.
+
+Gate conclusion: **the $4,000 collected-cash target is not reachable
+in-window through Bet A.** The §8 escalation executed today: (a) all
+agent-doable distribution prep shipped (reposition menu in `revenue/PLAN.md`,
+`store/REPOSITION_KIT.md`, `store/LAUNCH_TARGETS.md`, HQ-05 wiring); (b) the
+Bet B sequencing decision put to the owner as an explicit either/or (D038);
+(c) the Day-28 success criterion restated in `revenue/PLAN.md` as live
+listing + first collected dollars + real demand signal. Decision records:
+D035–D039. The Day-21 gate (2026-08-03) executes on schedule.
+
+Collected profit remains **$0.00**. The current gap remains **$4,000.00**.

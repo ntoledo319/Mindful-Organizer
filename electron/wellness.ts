@@ -24,8 +24,16 @@ const CRISIS_RECOMMENDATION =
 const mean = (xs: number[]): number | null =>
   xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null;
 
+// "Today" follows the user's clock: the day rolls over at local midnight, not
+// at 00:00 UTC (which lands mid-afternoon/evening for US users). Stored
+// timestamps stay UTC ISO; only the comparisons convert to local dates —
+// todayIso() in JS, SQLite's 'localtime' modifier in SQL. Both read the same
+// OS timezone, so the two sides always agree.
 function todayIso(): string {
-  return new Date().toISOString().slice(0, 10);
+  const d = new Date();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${d.getFullYear()}-${mm}-${dd}`;
 }
 
 // --- snapshot --------------------------------------------------------------
@@ -38,7 +46,7 @@ export function snapshot(): WellnessSnapshot {
 
   const completedToday = (
     db
-      .prepare(`SELECT COUNT(*) n FROM tasks WHERE completed = 1 AND date(completed_at) = ?`)
+      .prepare(`SELECT COUNT(*) n FROM tasks WHERE completed = 1 AND date(completed_at, 'localtime') = ?`)
       .get(today) as { n: number }
   ).n;
   const pending = (
@@ -48,7 +56,7 @@ export function snapshot(): WellnessSnapshot {
   const total = normalizeDailySpoons(repo.getSettings().dailySpoons);
   const spentToday = (
     db
-      .prepare(`SELECT COALESCE(SUM(spoon_cost),0) s FROM tasks WHERE completed = 1 AND date(completed_at) = ?`)
+      .prepare(`SELECT COALESCE(SUM(spoon_cost),0) s FROM tasks WHERE completed = 1 AND date(completed_at, 'localtime') = ?`)
       .get(today) as { s: number }
   ).s;
 
@@ -81,7 +89,7 @@ export function detectCrisisSignals(): CrisisSignal[] {
     const avgMood = mean(moodValues);
 
     const recentSleep = db
-      .prepare(`SELECT duration_hours FROM sleep_logs WHERE date >= date('now','-3 days') ORDER BY date DESC`)
+      .prepare(`SELECT duration_hours FROM sleep_logs WHERE date >= date('now','localtime','-3 days') ORDER BY date DESC`)
       .all() as { duration_hours: number }[];
     avgSleep = mean(recentSleep.map((r) => r.duration_hours).filter((v) => v != null));
 
@@ -229,14 +237,16 @@ export function trends(days: number): Trends {
   const db = getDb();
   const since = `-${days} days`;
 
+  // Mood/energy timestamps are UTC; bucket them by their local calendar date
+  // so they line up with sleep, whose date the user enters as a local day.
   const moodRows = db
-    .prepare(`SELECT date(timestamp) d, AVG(mood_score) v FROM mood_entries WHERE timestamp >= datetime('now', ?) GROUP BY d ORDER BY d`)
+    .prepare(`SELECT date(timestamp, 'localtime') d, AVG(mood_score) v FROM mood_entries WHERE timestamp >= datetime('now', ?) GROUP BY d ORDER BY d`)
     .all(since) as { d: string; v: number }[];
   const energyRows = db
-    .prepare(`SELECT date(timestamp) d, AVG(energy_level) v FROM mood_entries WHERE energy_level IS NOT NULL AND timestamp >= datetime('now', ?) GROUP BY d ORDER BY d`)
+    .prepare(`SELECT date(timestamp, 'localtime') d, AVG(energy_level) v FROM mood_entries WHERE energy_level IS NOT NULL AND timestamp >= datetime('now', ?) GROUP BY d ORDER BY d`)
     .all(since) as { d: string; v: number }[];
   const sleepRows = db
-    .prepare(`SELECT date d, AVG(duration_hours) v FROM sleep_logs WHERE date >= date('now', ?) GROUP BY d ORDER BY d`)
+    .prepare(`SELECT date d, AVG(duration_hours) v FROM sleep_logs WHERE date >= date('now', 'localtime', ?) GROUP BY d ORDER BY d`)
     .all(since) as { d: string; v: number }[];
 
   const toPoints = (rows: { d: string; v: number }[]): TrendPoint[] =>

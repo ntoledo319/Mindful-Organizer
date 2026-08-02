@@ -2,18 +2,22 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { api } from '../lib/api';
 import { useStore } from '../state/store';
-import { DEFAULT_DAILY_SPOONS } from '@shared/spoons';
+import { DEFAULT_DAILY_SPOONS, MAX_DAILY_SPOONS, MIN_DAILY_SPOONS } from '@shared/spoons';
 import { HearthMark } from '../components/icons';
-import { InlineError } from '../components/ui';
+import { InlineError, Scale } from '../components/ui';
 
-// Three quiet steps: welcome, optional name, and explicit local-data consent.
-// No account, diagnosis selector, email, or paywall is involved.
+// Four quiet steps: welcome, optional name, daily energy budget, and explicit
+// local-data consent. No account, diagnosis selector, email, or paywall is
+// involved. Users who already onboarded (legacy profiles) land directly on
+// the consent step — and can erase everything from there without consenting,
+// exactly as the privacy policy promises.
 
 export function Onboarding() {
   const { settings, saveSettings } = useStore();
-  const [step, setStep] = useState(() => (settings?.onboarded ? 2 : 0));
+  const [step, setStep] = useState(() => (settings?.onboarded ? 3 : 0));
   const [hero, setHero] = useState<string | null>(null);
   const [name, setName] = useState(() => settings?.displayName ?? '');
+  const [budget, setBudget] = useState(() => settings?.dailySpoons ?? DEFAULT_DAILY_SPOONS);
   const [privacyAcknowledged, setPrivacyAcknowledged] = useState(false);
   const [isFinishing, setIsFinishing] = useState(false);
   const [finishError, setFinishError] = useState(false);
@@ -29,7 +33,7 @@ export function Onboarding() {
       await saveSettings({
         displayName: name.trim(),
         onboarded: true,
-        dailySpoons: settings?.dailySpoons ?? DEFAULT_DAILY_SPOONS,
+        dailySpoons: budget,
         privacyConsentAt: new Date().toISOString(),
       });
     } catch {
@@ -110,6 +114,34 @@ export function Onboarding() {
 
           {step === 2 && (
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
+              <h1 className="font-display text-2xl font-semibold text-text-primary dark:text-night-text">
+                How much energy do you want to plan around?
+              </h1>
+              <p className="text-sm leading-relaxed text-text-muted dark:text-night-muted">
+                This is your daily budget — the number Hearth plans against each morning. You choose
+                it directly; check-ins never change it behind your back, and you can adjust it
+                anytime in Settings.
+              </p>
+              <Scale
+                label="Daily energy budget"
+                value={budget}
+                min={MIN_DAILY_SPOONS}
+                max={MAX_DAILY_SPOONS}
+                onChange={setBudget}
+              />
+              <div className="flex gap-2">
+                <button className="btn-ghost" onClick={() => setStep(1)}>
+                  Back
+                </button>
+                <button className="btn-primary" onClick={() => setStep(3)}>
+                  Continue
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {step === 3 && (
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
               <div>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-brand dark:text-night-brand">Before you add or change personal entries</p>
                 <h1 className="font-display text-2xl font-semibold text-text-primary dark:text-night-text">
@@ -125,6 +157,15 @@ export function Onboarding() {
                   Settings lets you export a readable copy or destroy every record, encrypted rollback snapshot,
                   and the key that decrypts them before Hearth creates a fresh empty store. A JSON or PDF you export
                   is not encrypted by Hearth after you choose its location.
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-text-muted dark:text-night-muted">
+                  Hearth can send operating-system notifications when a focus block ends or a hard moment shows
+                  in your own signals. They are off by default and controlled in Settings — and like any OS
+                  notification, they can be visible on a lock screen.
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-text-muted dark:text-night-muted">
+                  Closing Hearth's window keeps it running in your system tray — Quit lives there, and you can
+                  turn this off in Settings.
                 </p>
               </div>
               <label className="flex cursor-pointer items-start gap-3 rounded-soft border border-base-border bg-base-surface p-4 dark:border-night-border dark:bg-night-surface">
@@ -153,7 +194,7 @@ export function Onboarding() {
               {finishError && <InlineError>Hearth could not save these choices. Try again.</InlineError>}
               <div className="flex gap-2">
                 {!settings?.onboarded && (
-                  <button className="btn-ghost" onClick={() => setStep(1)}>
+                  <button className="btn-ghost" onClick={() => setStep(2)}>
                     Back
                   </button>
                 )}
@@ -161,10 +202,88 @@ export function Onboarding() {
                   {isFinishing ? 'Saving…' : settings?.onboarded ? 'Continue to Hearth' : 'Light the hearth'}
                 </button>
               </div>
+              <PreConsentErase />
             </motion.div>
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+// The deletion right the privacy policy documents, reachable from the consent
+// gate itself: a user who declines consent can destroy a migrated profile
+// without ever consenting. Mirrors the typed-ERASE flow in Settings.
+function PreConsentErase() {
+  const [armed, setArmed] = useState(false);
+  const [confirmText, setConfirmText] = useState('');
+  const [state, setState] = useState<'idle' | 'deleting' | 'error'>('idle');
+
+  const erase = async () => {
+    if (confirmText !== 'ERASE') return;
+    setState('deleting');
+    try {
+      await api.deleteAllData();
+      window.location.reload();
+    } catch {
+      setState('error');
+    }
+  };
+
+  if (!armed) {
+    return (
+      <div className="border-t border-base-border pt-4 dark:border-night-border">
+        <button
+          className="rounded-soft text-xs font-medium text-text-muted underline decoration-text-muted/40 underline-offset-4 hover:text-semantic-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-error dark:text-night-muted"
+          onClick={() => setArmed(true)}
+        >
+          Don't want to consent? Erase all Hearth data instead
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-soft border border-semantic-error/30 bg-semantic-error/5 p-4">
+      <p className="text-sm leading-relaxed text-text-primary dark:text-night-text">
+        This destroys every Hearth record, encrypted rollback snapshot, and the key that decrypts them,
+        then returns to a fresh empty store. It cannot be undone.
+      </p>
+      <label className="mt-3 block text-sm text-text-primary dark:text-night-text">
+        Type <span className="font-semibold">ERASE</span> to confirm permanent deletion.
+        <input
+          className="field mt-2"
+          value={confirmText}
+          onChange={(event) => setConfirmText(event.target.value)}
+          autoComplete="off"
+          spellCheck={false}
+        />
+      </label>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <button
+          className="btn-primary bg-semantic-error hover:bg-semantic-error/90"
+          onClick={() => void erase()}
+          disabled={confirmText !== 'ERASE' || state === 'deleting'}
+        >
+          {state === 'deleting' ? 'Erasing…' : 'Permanently erase data'}
+        </button>
+        <button
+          className="btn-ghost"
+          onClick={() => {
+            setArmed(false);
+            setConfirmText('');
+            setState('idle');
+          }}
+          disabled={state === 'deleting'}
+        >
+          Cancel
+        </button>
+      </div>
+      {state === 'error' && (
+        <p className="mt-3 text-sm text-semantic-error">
+          Hearth could not verify complete cleanup. Close and reopen Hearth; it will resume the requested deletion before opening storage.
+        </p>
+      )}
     </div>
   );
 }

@@ -24,6 +24,7 @@ import type {
   Gamification,
   SessionSummaryExportResult,
   PersonalDataExportResult,
+  AppInfo,
 } from './types';
 
 // The full surface the renderer can call. Each method maps 1:1 to an IPC
@@ -90,6 +91,7 @@ export interface HearthApi {
 
   // misc
   heroDataUrl(): Promise<string | null>;
+  getAppInfo(): Promise<AppInfo>;
 }
 
 export const IPC_CHANNELS: (keyof HearthApi)[] = [
@@ -132,4 +134,5 @@ export const IPC_CHANNELS: (keyof HearthApi)[] = [
   'deleteMedication',
   'getGamification',
   'heroDataUrl',
+  'getAppInfo',
 ];

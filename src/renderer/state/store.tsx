@@ -6,8 +6,9 @@ interface Store {
   settings: Settings | null;
   presence: PresenceState | null;
   loading: boolean;
+  initError: boolean; // first-load IPC failed — App shows a retryable error, not an eternal spinner
   route: string; // Moved manual routing state here for better performance
-  
+
   // Actions
   setRoute: (route: string) => void;
   initialize: () => Promise<void>;
@@ -19,38 +20,44 @@ export const useStore = create<Store>((set) => ({
   settings: null,
   presence: null,
   loading: true,
+  initError: false,
   route: 'dashboard',
 
   setRoute: (route) => set({ route }),
 
   initialize: async () => {
-    const [settings, presence] = await Promise.all([
-      api.getSettings(),
-      api.getPresence(),
-    ]);
+    set({ loading: true, initError: false });
+    try {
+      const [settings, presence] = await Promise.all([
+        api.getSettings(),
+        api.getPresence(),
+      ]);
 
-    set({ settings, presence, loading: false });
+      set({ settings, presence, loading: false });
 
-    // Apply theme
-    const applyTheme = (s: Settings) => {
-      const root = document.documentElement;
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const dark = s.theme === 'dark' || (s.theme === 'system' && prefersDark);
-      root.classList.toggle('dark', dark);
-    };
-    applyTheme(settings);
+      // Apply theme
+      const applyTheme = (s: Settings) => {
+        const root = document.documentElement;
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const dark = s.theme === 'dark' || (s.theme === 'system' && prefersDark);
+        root.classList.toggle('dark', dark);
+      };
+      applyTheme(settings);
 
-    // Live pushes from main
-    onPresence(({ state, settings: s }) => {
-      set({ settings: s, presence: state });
-      applyTheme(s);
-    });
+      // Live pushes from main
+      onPresence(({ state, settings: s }) => {
+        set({ settings: s, presence: state });
+        applyTheme(s);
+      });
+    } catch {
+      set({ loading: false, initError: true });
+    }
   },
 
   saveSettings: async (patch) => {
     const next = await api.saveSettings(patch);
     set({ settings: next });
-    
+
     // Re-apply theme if changed
     const root = document.documentElement;
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;

@@ -40,6 +40,16 @@ body {
   }
 }
 
+/* Windows High Contrast / forced-colors mode: Chromium strips the box-shadow
+   rings every focus style here relies on, so keyboard focus gets a real
+   outline drawn from system colors instead. No effect outside forced-colors. */
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 2px solid Highlight !important;
+    outline-offset: 2px;
+  }
+}
+
 /* Drag region for the frameless title bar; interactive children opt back out. */
 .app-drag {
   -webkit-app-region: drag;

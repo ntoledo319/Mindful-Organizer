@@ -1,10 +1,14 @@
 # Human Queue
 
-_Canonical context: root HANDOFF.md. Queue rechecked 2026-07-15; total unchanged._
+_Canonical context: root HANDOFF.md. Queue rechecked 2026-07-28: HQ-06 and
+HQ-07 added; HQ-02 and HQ-05 amended._
 
 _Owner labor ceiling: 60 minutes for the full run. Current queued total:
-**44 minutes**. Machine wait and Microsoft review time are excluded. Do not add
-extra outreach or content work._
+**59 minutes** (44 prior + 5 HQ-06 + 10 HQ-07; **50 minutes** if HQ-07 is
+resolved by the 1-minute risk acceptance). Machine wait and Microsoft review
+time are excluded. Do not add extra outreach or content work. Bet B is
+deliberately not queued — the explicit either/or is D038 in
+`revenue/DECISIONS.md`._
 
 The exact package, five screenshots, copy, price, release hold, public support
 page, privacy-guarded issue forms, security policy, private vulnerability
@@ -61,7 +65,13 @@ posts remain.
   3. Create or confirm the tax profile and payout profile, then assign both to
      the Store program/seller ID. Microsoft says validation can take up to 48
      hours; start it before certification wait time is spent.
-  4. Record only ready/not-ready, date, and a non-sensitive blocker in
+  4. Record the payout threshold and expected first payout date — both
+     non-sensitive facts — in `revenue/METRICS.md`. Microsoft's
+     payout-methods documentation (linked from ADA §6(c),
+     <https://go.microsoft.com/fwlink/?linkid=2199849>) states the payment
+     threshold is USD $50 and that payments occur monthly; note the first
+     monthly date on which accrued proceeds would actually pay out.
+  5. Record only ready/not-ready, date, and a non-sensitive blocker in
      `revenue/METRICS.md`. Never commit account names, bank data, tax data,
      identity documents, or support-contact details.
 
@@ -125,7 +135,10 @@ posts remain.
   is purchasable.
 - **Why human-only:** Posting as the owner or contacting people is forbidden
   without explicit human review and action.
-- **Source:** `store/LAUNCH_KIT.md` and `store/CAMPAIGNS.md`.
+- **Source:** `store/LAUNCH_KIT.md`, `store/CAMPAIGNS.md`, and the
+  rule-checked destination list in `store/LAUNCH_TARGETS.md` (built
+  2026-07-28; re-verify each destination's current rules immediately before
+  posting).
 - **Steps:**
   1. Replace draft links with the verified Store URL and source-specific
      campaign IDs.
@@ -137,10 +150,75 @@ posts remain.
   4. Record URLs and timestamps, then inspect Store acquisition data often
      enough to enforce the five-day signal gate.
 
+## HQ-06 — Approve landing deploy sequencing and enable the $0 static host — 5 minutes
+
+- **What:** Approve the PROP-004 sequencing amendment (deploy at
+  certification-submit time, not post-publication) and enable a $0 static
+  host for the scriptless `landing/` artifact; record the public URL.
+- **Why human-only:** Amending PROP-004 is an owner approval (D039), and
+  creating a hosting account/project is an external commitment tied to the
+  owner's identity.
+- **Direct links:** <https://pages.cloudflare.com/> or
+  <https://www.netlify.com/>; proposal text in
+  `docs/project/PROPOSALS.md` (PROP-004).
+- **Steps:**
+  1. Approve or reject the sequencing amendment: deploy the landing page when
+     HQ-04's certification submission goes in, so the page is established
+     before the Store page is live. The page's prelaunch state is truthful
+     ("Store release pending") and is enforced by
+     `scripts/validate-store.mjs` while the listing remains a draft.
+  2. Use **Cloudflare Pages or Netlify** per PROP-004. D007 rejected GitHub
+     Pages for commercial hosting; use GitHub Pages only if you first
+     re-check its current terms and record the reversal of D007 in
+     `revenue/DECISIONS.md`.
+  3. On the chosen host: create a free account, create a new project
+     connected to the GitHub repository, set **no build command** with the
+     publish/output directory `landing/`, and deploy.
+  4. Run the AGENTS.md §9 pre-publish checklist against the deployed page
+     (every claim demonstrable today; the artifact is already tracker-,
+     form-, script-, cookie-, and remote-asset-free by validator).
+  5. Record the public URL and date in `revenue/METRICS.md`.
+  6. Do **not** wire any `?cid=landing-primary` link until the Store page is
+     observed live and purchasable (HQ-04 step 6). The store validator fails
+     the build if that link appears while the listing is in draft state.
+
+## HQ-07 — Clear the "Hearth" name, or explicitly accept the risk — 10 minutes (or 1 minute)
+
+- **What:** A minimum trademark/name collision check for "Hearth" before a
+  paid listing attaches money to the name — or an explicit, informed decision
+  to accept the risk without searching.
+- **Why human-only:** Judging which collisions matter is a legal-risk
+  judgment, and accepting the risk is an owner decision. Neither path enters
+  private data.
+- **Direct links:** <https://tmsearch.uspto.gov/> (USPTO Trademark Search;
+  the legacy TESS system was retired 2023-11-30) and
+  <https://apps.microsoft.com/search?query=Hearth>.
+- **Steps (clearance path — 10 minutes):**
+  1. On tmsearch.uspto.gov, run a basic wordmark search for **Hearth**;
+     filter to **live** marks and skim software-relevant classes (IC 009,
+     IC 042) for anything covering productivity or wellness software.
+  2. Open the Microsoft Store search link and skim whether existing apps
+     already trade on "Hearth" in adjacent categories.
+  3. This is a spot check, not a legal opinion. If anything looks
+     conflicting, stop and decide before HQ-04.
+  4. Record a one-line, non-sensitive note in `revenue/METRICS.md`: date,
+     what was searched, outcome (no-obvious-conflict / follow-up-needed).
+- **Steps (risk-acceptance path — 1 minute):**
+  1. Record in `revenue/DECISIONS.md` that you accept the name-collision
+     risk for the 1.1.0 launch without a search. Nothing else changes.
+
 ## Running owner-time ledger
 
-Queued estimates: 5 + 10 + 18 + 6 + 5 = **44 minutes**, leaving 16 minutes of
-reserve. No owner minutes are recorded as spent in the repository yet.
+Queued estimates: 5 + 10 + 18 + 6 + 5 + 5 + 10 = **59 minutes**, leaving 1
+minute of reserve (resolving HQ-07 by the 1-minute risk acceptance lowers the
+total to **50 minutes**, leaving 10). No owner minutes are recorded as spent
+in the repository yet.
+
+Bet B (PROP-005 approval + itch.io payout setup, ≈ 12 minutes) is **not
+queued**: adding it would reach ≈ 71 minutes, over the 60-minute law. The
+explicit either/or is D038 in `revenue/DECISIONS.md` — Option A keeps the
+queue at 59–60; Option B requires dropping/deferring another item or the
+owner accepting ≈ 11 minutes over budget.
 
 Removed from the queue this cycle: enabling Issues, correcting issue forms,
 publishing the support/security pages, and preparing the visual/audience assets.

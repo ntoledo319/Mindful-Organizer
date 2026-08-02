@@ -71,5 +71,16 @@ reversal, or chargeback. Payout evidence remains the money source of truth.
 - Usage but weak return: improve the first completed energy-planning loop before
   adding acquisition channels.
 
+## Reposition protocol
+
+When a decision rule above fires at the five-day gate, the pre-registered,
+pre-costed fix is in [store/REPOSITION_KIT.md](REPOSITION_KIT.md) (menu in
+`revenue/PLAN.md`): one change per Partner Center submission, executed by the
+owner, recorded as observed values in `revenue/METRICS.md`. The
+"no impressions → revisit market" step treats market expansion as a
+Submission-2 decision, because the US crisis copy is hash-chained to the
+accepted candidate (kit option RP-4). Launch destinations whose rules permit
+owner-posted project notes are listed in `store/LAUNCH_TARGETS.md`.
+
 No draft here authorizes autonomous posting, messaging, review solicitation, or
 customer contact.

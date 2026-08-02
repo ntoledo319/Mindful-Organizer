@@ -2,7 +2,9 @@
 
 # Revenue Plan
 
-_Updated 2026-07-24 — line 1 corrected to the current host root (workspace moved
+_Updated 2026-07-28 (Day 15) — money model restated (accrued vs collected,
+blended fees), Day-15 gate assessment recorded, reposition menu pre-registered.
+2026-07-24 — line 1 corrected to the current host root (workspace moved
 macOS → Linux; AGENTS.md §1 law). Cycle-3 handoff published 2026-07-15;
 project-wide state now also lives in `PROJECT_TRACKER.md`._
 
@@ -18,21 +20,58 @@ Center work was allowed by section 1.6. No autonomous human contact occurred.
 
 - Target collected profit: **$4,000.00**
 - Collected profit observed in Partner Center: **$0.00**
+- Accrued net earnings observed: **$0.00** (no sales exist; nothing has accrued)
 - Processor or marketplace fees observed: **$0.00**
 - Current gap: **$4,000.00**
 
-Potential, draft pricing, CI artifacts, and an enabled certification button do
-not count as revenue.
+**Accrued net earnings vs collected cash.** The mission target is collected
+cash. Under the Microsoft App Developer Agreement (ADA) v8.11 (published
+2026-03-17, effective 2026-04-17) §6(c), Microsoft pays App Proceeds on a
+monthly basis and only when the applicable payment threshold is met; the
+payout-methods documentation that §6(c) references states the threshold is
+**USD $50**. Consequence: Bet A proceeds from a launch around 2026-08-01
+accrue in Partner Center during August but pay out mid-August at the earliest
+and realistically mid-September — **after Day 28 (2026-08-10)**. Bet A can
+therefore produce accrued, observable earnings inside the mission window but
+not collected Store cash. By contrast, itch.io's **Direct to you** payments
+mode (Bet B's rail) routes each transaction to the seller's own
+payment-provider balance at purchase time. Sources:
+<https://learn.microsoft.com/en-us/legal/windows/agreements/app-developer-agreement>
+(§6(c)); the payout thresholds/methods page it links,
+<https://go.microsoft.com/fwlink/?linkid=2199849>;
+<https://itch.io/docs/creators/payments> (Payment modes). All three fetched
+2026-07-28.
+
+Potential, draft pricing, CI artifacts, accrued-but-unpaid Store earnings, and
+an enabled certification button do not count as collected revenue.
 
 ## Bet A — Fast: official Hearth Windows package
 
 - **Offer:** Hearth 1.1.0 as a one-time $14.99 Microsoft Store purchase. The MIT
   source remains free; the purchase covers the maintained packaged app and
   Store delivery.
-- **Target arithmetic:** Microsoft documents a 15% commerce fee for non-game
-  apps. Planning net is $14.99 × 0.85 = $12.7415 per sale; 314 sales would net
-  **$4,000.83** before refunds or tax adjustments. Actual settlement terms and
-  deductions must be verified against the seller account.
+- **Target arithmetic (baseline, verified):** ADA v8.11 §6(b)(i) sets the
+  Store Fee at 15% of Net Receipts for non-game apps. Planning net is
+  $14.99 × 0.85 = **$12.7415 per sale**; 314 sales would net **$4,000.83**
+  before refunds or tax adjustments. Actual settlement terms and deductions
+  must be verified against the seller account.
+- **Target arithmetic (blended planning model — assumptions, not
+  observations):** ADA §1(h) retains an additional 10% Commerce Expansion
+  Adjustment on transactions paid by gift card or mobile operator billing
+  (25% total retention on those → $11.2425 net per sale), and ADA §1(t)
+  defines Net Receipts as net of refunds and chargebacks. Planning
+  assumptions: 3% of transactions refunded; a varying gift-card/operator
+  share. This models a blended net of **$12.10–$12.74 per sale** (lower
+  bound: 18% gift-card share with 3% refunds ≈ $12.0975; upper bound: the
+  15% baseline) and a revised required-sales range of **≈ 322–335** — cells:
+  314 at the refund-free baseline; 322 at a 20% gift-card share before
+  refunds ($12.4417); 324 at the 15% baseline with 3% refunds ($12.3593);
+  ≈335–336 at a 29% gift-card share with 3% refunds (≈$11.9376). The 314
+  figure remains the optimistic bound, not the plan.
+- **Payout timing:** ADA §6(c) pays monthly, subject to the USD $50
+  threshold. August sales accrue in August but pay out mid-August at the
+  earliest, realistically mid-September — after Day 28. Bet A dollars are
+  accrued-not-collected inside the mission window (see Money state).
 - **Funnel:** Microsoft Store search, Productivity and Health + fitness
   discovery, and owner-approved launch links → product page → Store checkout.
 - **Falsifier:** after five live days with no external signal, allow one
@@ -52,8 +91,16 @@ not count as revenue.
   CI, and tests. It may not be a paid copy of the public MIT repository.
 - **Target arithmetic:** the existing planning model estimates $216.58 net per
   sale at itch.io's default 10% share plus 2.9% + $0.30 processing; 19 sales
-  would produce about $4,115 before payout-transfer fees and the documented
-  one-time tax-identity adjustment.
+  would produce about $4,115 before payout-transfer fees. itch.io's current
+  payments documentation also lists a one-time **$3.00 tax-identity
+  adjustment** (charged once after the tax interview) that applies to the
+  "Collected by itch.io (Payouts)" mode only; the "Direct to you" mode gives
+  tax identity to each connected payment provider and lists no such
+  adjustment. Source, fetched 2026-07-28:
+  <https://itch.io/docs/creators/payments> ("Account Adjustments → Tax
+  Identity"; "Payment modes"). Payouts mode adds a 7-day transaction waiting
+  period, a ≥7-day (typically 10–14 day) staff payout review, and a $5
+  minimum balance; Direct mode pays at purchase. See D036.
 - **Funnel:** itch.io Assets browse/search → product page → marketplace
   checkout.
 - **Falsifier:** no zero-upfront seller path, marketplace/category rejection, or
@@ -113,15 +160,83 @@ remains:
 5. Publish only after those gates pass; then verify checkout, approve the launch
    batch, and begin the five-day signal clock.
 
-Exact steps and the 44-minute owner budget are in revenue/HUMAN_QUEUE.md.
+Exact steps and the owner budget (59 minutes queued; 50 if HQ-07 is resolved
+by risk acceptance) are in revenue/HUMAN_QUEUE.md.
+
+## Day-28 success criterion (restated 2026-07-28, Day 15)
+
+The $4,000 collected-cash target is not reachable through Bet A inside the
+window: the Day-15 gate assessment (`revenue/METRICS.md`, 2026-07-28) shows
+the listing cannot be live long enough, and ADA §6(c) monthly payout timing
+means even successful August sales would not be collected before Day 28. The
+honest Day-28 success criterion is therefore:
+
+1. **Live listing** — the exact accepted package certified and publicly
+   purchasable, verified in a signed-out browser;
+2. **First collected dollars** — any non-zero amount actually received. Bet A
+   dollars are accrued-not-collected in-window (monthly payout cadence);
+   itch.io Direct-to-you mode (Bet B, if approved per D038) pays at
+   purchase;
+3. **Real demand signal** — observed Store page views, acquisitions, ratings,
+   or campaign-link conversions recorded in `revenue/METRICS.md`,
+   establishing whether the falsifier or the reposition menu below governs
+   what follows.
+
+Collected cash remains the ledger's money metric; accrued Store earnings are
+recorded separately and never counted as collected.
+
+## Pre-registered reposition menu (Day-5 gate)
+
+Registered 2026-07-28 so a gate fire costs the owner minutes, not days. Each
+option names its exact Partner Center field; each requires a new submission
+that passes certification before it takes effect (owner action is minutes;
+the effective date is certification-bound). Full artifacts — click paths,
+drafts, screenshot plan — are in `store/REPOSITION_KIT.md`; trigger
+diagnostics are in `store/CAMPAIGNS.md` (Decision rules).
+
+- **RP-1 — Scheduled sale pricing ($0).** Partner Center → app submission →
+  **Pricing and availability** → **Sale pricing**: schedule a time-boxed sale
+  (e.g., $9.99 for 14 days, reverting to $14.99 automatically at the end
+  date). Shows strikethrough pricing on Windows 10/11. Trigger: page views
+  but no acquisitions at the five-day gate.
+- **RP-2 — Keyword/category revision ($0).** Partner Center → app submission →
+  **Store listings** → en-US → **Search terms** (7 terms max, ≤ 40 characters
+  each, ≤ 21 words total). Current terms: ADHD planner, energy planner, spoon
+  theory, offline task manager, focus planner, mood journal, variable
+  capacity. Candidate replacements grounded in the ADHD/spoon-theory niche:
+  "ADHD task manager", "energy budget", "spoon counter" (swap at most 2–3
+  terms per revision so effects are attributable; "executive function",
+  "chronic illness planner", and "task estimator" are further candidates).
+  Category fields live under **Properties** (primary Productivity / secondary
+  Health + fitness); a swap is registered but held as a later option.
+  Trigger: impressions near zero (surfacing failure).
+- **RP-3 — Listing copy variant ($0).** Partner Center → **Store listings** →
+  en-US → **Short description** (≤ 200 characters) and the first screenshot
+  with caption. The alternate short description and the first-screenshot
+  reframe plan are drafted in `store/REPOSITION_KIT.md`; the variant stays a
+  raw, truthful screenshot per `store/PRODUCT-PAGE-EXPERIMENTS.md`.
+  Trigger: impressions but weak page-view→acquisition conversion.
+- **RP-4 — Market expansion, deferred to Submission 2 (constrained).**
+  Partner Center → **Pricing and availability** → **Markets** (currently
+  United States only). Expansion requires localized crisis-resource copy: the
+  runtime crisis copy is US-specific (988) and hash-chained to the accepted
+  candidate, so changing it restarts the candidate evidence chain (D018) —
+  new build, new screenshots, new gates. This keeps the US-only launch in
+  place and makes the "no impressions → revisit category, keywords, market,
+  and eligibility" rule in `store/CAMPAIGNS.md` a Submission-2 decision, not
+  a Day-5 quick fix.
 
 ## Gap response
 
-The arithmetic can cross $4,000, but no observed demand supports 314 sales yet.
+The arithmetic can cross $4,000, but no observed demand supports 322–335
+sales, and the Day-15 gate assessment (2026-07-28, `revenue/METRICS.md`)
+concludes the collected-cash target is not reachable in-window through Bet A.
 The current gap is still **$4,000.00**. The next revenue-relevant action is
-certification, not another feature. Recompute the gap from collected proceeds at
-Days 7, 14, and 21 and apply the documented reposition/replace gates without
-counting downloads, impressions, or draft state as cash.
+certification, not another feature. The Day 7/14 gates were missed and were
+executed late on Day 15 (D035); the Day-21 gate (2026-08-03) recomputes the
+gap from collected proceeds and applies the pre-registered reposition menu
+above without counting downloads, impressions, accrued-unpaid earnings, or
+draft state as cash.
 
 ## Cycle 3 canonical continuation — 2026-07-15
 

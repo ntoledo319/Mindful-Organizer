@@ -19,6 +19,27 @@ observations, screenshots, and this checklist tied to the same release.
 - Local jailed evidence copy:
   tmp/artifacts/final-msix/Hearth 1.1.0.appx
 
+Artifact-retention and non-candidate notes (2026-07-28, observed via
+authenticated gh CLI):
+
+- The accepted candidate's own CI artifact 8306541856 expires
+  2026-08-13T09:41:07Z under GitHub's 30-day retention. After that date the
+  byte-level evidence for the accepted hash is the jailed copy above (SHA-256
+  re-verified against `4900f382…facdb1` on 2026-07-28) and the uploaded
+  package in Partner Center. The section-1 hash check is unaffected.
+- Later CI runs keep producing fresh `hearth-msix` artifacts; the newest is
+  run 30137481905 (2026-07-25, commit 59787f4) → artifact 8613344727
+  (174,531,117 bytes zipped — different bytes from the accepted package),
+  with screenshots artifact 8613334339; both expire 2026-08-24. Like the
+  already-documented artifact 8316167277, it is verification output, **not
+  the submission candidate**; the HQ-04 step-1 hash check against
+  `4900f382…facdb1` remains the guard.
+- Any future candidate will be a NEW AppX with a new hash produced by a fresh
+  CI run (in-flight code remediation will change package bytes), and the
+  accepted candidate becomes historical the moment a replacement is accepted.
+  The hash guard protects against accidental swaps, not deliberate candidate
+  cycles.
+
 The Windows workflow passed a sentinel-guarded real safeStorage/DPAPI lifecycle
 matrix for fresh encrypted persistence, corrupt-primary recovery, plaintext
 export warnings, key-first erase, interrupted erase, representative legacy
