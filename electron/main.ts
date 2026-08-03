@@ -33,10 +33,15 @@ process.env.DIST = join(__dirname, '../dist');
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : join(__dirname, '../public');
 
 const DEV_SERVER = process.env.VITE_DEV_SERVER_URL;
-// Screenshot/smoke are dev harnesses: a packaged launch must ignore their env
-// vars so HEARTH_SCREENSHOT=1 can never reseed a real user's profile.
-const SCREENSHOT_MODE = !app.isPackaged && process.env.HEARTH_SCREENSHOT === '1';
-const SMOKE_MODE = !app.isPackaged && process.env.HEARTH_SMOKE === '1';
+// Screenshot/smoke are dev + CI harnesses. In a packaged build we honor them
+// only when HEARTH_DATA_DIR points the run at a contained profile (set + applied
+// above), so a stray HEARTH_SCREENSHOT=1 can never reseed or touch a real user's
+// records — while the Store-build boot check, which always launches the packaged
+// app against a throwaway HEARTH_DATA_DIR, can still validate that it starts.
+// Unpackaged dev launches honor the vars directly.
+const HARNESS_CONTAINED = !app.isPackaged || Boolean(process.env.HEARTH_DATA_DIR);
+const SCREENSHOT_MODE = HARNESS_CONTAINED && process.env.HEARTH_SCREENSHOT === '1';
+const SMOKE_MODE = HARNESS_CONTAINED && process.env.HEARTH_SMOKE === '1';
 const RELEASE_VALIDATION_MODE = process.env.HEARTH_RELEASE_VALIDATION === '1';
 
 let win: BrowserWindow | null = null;
@@ -296,9 +301,9 @@ app.whenReady().then(async () => {
   }
   registerIpc();
 
-  // Dev-only screenshot mode: seed demo data, capture the Store listing images,
-  // then quit. Unreachable in a packaged launch — SCREENSHOT_MODE is gated on
-  // !app.isPackaged where it is defined above.
+  // Screenshot mode: seed demo data into the contained HEARTH_DATA_DIR profile,
+  // capture the Store listing images, then quit. In a packaged build this only
+  // runs when HEARTH_DATA_DIR is set, so it can never seed a real user's profile.
   if (SCREENSHOT_MODE) {
     const { runScreenshots } = await import('./screenshot');
     try {
