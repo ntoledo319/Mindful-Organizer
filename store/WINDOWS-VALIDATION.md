@@ -40,6 +40,33 @@ authenticated gh CLI):
   The hash guard protects against accidental swaps, not deliberate candidate
   cycles.
 
+## CAND-002 replacement candidate (2026-08-03)
+
+Produced on branch `feature/store-candidate-cand002` after committing the
+2026-07-29 council remediation and fixing a release-blocking regression: the
+remediation had gated `SCREENSHOT_MODE`/`SMOKE_MODE` on `!app.isPackaged`,
+which disabled the packaged renderer smoke gate in `windows-store.yml`. The
+first remediation build (commit `fe0fc4a`, run 30743167548) failed at
+"Validate AppX" with "renderer smoke check within 60 seconds". Fixed in commit
+`07cf815` by honoring the harness in a packaged build only when
+`HEARTH_DATA_DIR` points at a contained profile — preserving the "a stray
+HEARTH_SCREENSHOT=1 can never reseed a real user's profile" guarantee while
+letting the Store-build boot check validate the package.
+
+- Candidate commit: `07cf815` (on `feature/store-candidate-cand002`)
+- Package: Hearth 1.1.0.appx
+- Package size: 175,489,287 bytes
+- SHA-256:
+  a5d2cf3633def56983702d41d17f6fa458abd8dfedc818039ed1af040f36b18f
+- Windows Store run (green, 3m16s):
+  <https://github.com/ntoledo319/Mindful-Organizer/actions/runs/30790687808>
+- Refreshed screenshots: 01-today, 02-tasks, 03-reflect, 04-rhythm,
+  05-onboarding (onboarding/tasks/settings UI changed in remediation).
+- Status: CI-validated replacement candidate. **Not yet the accepted
+  candidate** — acceptance requires owner review + the Partner Center package
+  swap (HQ-04). The accepted-candidate hash `4900f382…facdb1` above remains the
+  guard until the owner accepts this candidate.
+
 The Windows workflow passed a sentinel-guarded real safeStorage/DPAPI lifecycle
 matrix for fresh encrypted persistence, corrupt-primary recovery, plaintext
 export warnings, key-first erase, interrupted erase, representative legacy
