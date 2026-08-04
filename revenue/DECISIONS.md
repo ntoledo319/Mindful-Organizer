@@ -371,3 +371,25 @@ PROP-004; GitHub Pages only if a current-TOS re-check reverses D007) and the
 rule that no `?cid=landing-primary` wiring happens until the Store page is
 observed live (enforced by `scripts/validate-store.mjs` while the listing
 stays in draft state).
+
+### D040 — Land CAND-002 to main under owner "get all you can do done" directive
+
+The owner directed the agent to complete all machine-doable work. The CAND-002
+replacement-candidate cycle — the 2026-07-29 council remediation plus the
+`07cf815` packaged-smoke-gate fix — was already committed and pushed on
+`feature/store-candidate-cand002`, CI-green (Windows Store MSIX run
+30790687808, AppX `a5d2cf36…`), and was re-verified locally on the **clean**
+commit `07d938c` (VER-20260804-001: lint/typecheck/46 tests/vite build/secrets/
+store 276/docs validator all pass). Superseding the stale 2026-07-29 "awaiting
+owner commit decision" note, `origin/main` was fast-forwarded `246baac`→`07d938c`.
+
+- **Scope:** code land only. It publishes nothing to the Store, connects no
+  payment, and contacts no one. The accepted-candidate hash guard
+  `4900f382…facdb1` still protects HQ-04 until the owner deliberately swaps in
+  CAND-002 (new HQ-04 "Package swap first" step).
+- **Reversible:** `git push --force-with-lease origin 246baac:main` restores the
+  prior default-branch HEAD.
+- **Consequence:** no agent-doable work remains; the sole path to a live listing
+  is the owner-only HQ queue. Honest money position is unchanged — the Day-21
+  gate finding (collected cash not reachable in-window; Store pays monthly)
+  still stands; landing the candidate only makes the product submit-ready.

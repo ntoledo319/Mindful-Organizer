@@ -1,10 +1,10 @@
 # Hearth — Project Tracker
 
 - **Schema:** project-tracker/v1 (2026-07-24)
-- **Last updated:** 2026-07-29T08:18Z by Kimi Code CLI (council remediation complete, all local gates green)
+- **Last updated:** 2026-08-04T08:16Z by Eve (CAND-002 landed to main; all local gates + CI MSIX re-verified green)
 - **Workspace root:** `/home/nick/Development/active/mindful_organizer` (REPO-01)
-- **Branch / HEAD:** `cycle-2-shipped` @ `246baac`; `origin/main` @ `246baac` (pushed 2026-07-25; Quality Gate green)
-- **Working tree:** dirty — market-readiness council remediation complete and verified (VER-20260729-001), **uncommitted**, awaiting owner commit decision
+- **Branch / HEAD:** `origin/main` @ `07d938c` (fast-forwarded from `246baac` this session, D040); source branch `feature/store-candidate-cand002` @ `07d938c`
+- **Working tree:** clean at `07d938c` — CAND-002 replacement-candidate cycle committed, pushed, and re-verified (VER-20260804-001)
 - **Operating mode:** ECONOMY / MAINTENANCE
 - **Canonical set:** [AGENTS.md](AGENTS.md) · [HANDOFF.md](HANDOFF.md) · [Docs index](docs/project/DOCS_INDEX.md) · [History](docs/project/REPO_HISTORY.md) · [Verification](docs/project/VERIFICATION_LOG.md) · [Decisions](revenue/DECISIONS.md) · [Proposals](docs/project/PROPOSALS.md) · [Migration map](docs/project/MIGRATION_MAP.md) · [Archive](docs/project/archive/)
 
@@ -25,15 +25,15 @@
 
 | Metric / environment | Current value | As of | Evidence |
 |---|---|---|---|
-| Product state | Hearth 1.1.0 release candidate + council remediation in tree (uncommitted); Store Submission 1 complete, held in draft | 2026-07-29 | VER-20260729-001 |
-| Default-branch HEAD (`origin/main`) | `246baac` (post-reconciliation state sync) | 2026-07-28 | git rev-parse, VER-20260728-002 |
+| Product state | Hearth 1.1.0 + council remediation **committed and landed to main** (CAND-002); Store Submission 1 complete, held in draft — not submitted/certified/published | 2026-08-04 | VER-20260804-001 |
+| Default-branch HEAD (`origin/main`) | `07d938c` (CAND-002 landed; fast-forwarded from `246baac`, D040) | 2026-08-04 | git rev-parse, VER-20260804-001 |
 | Live release | none — not submitted, certified, published, or purchasable | 2026-07-14 | HIST-20260714-003 |
 | Accepted candidate | AppX SHA-256 `4900f382…facdb1`, artifact 8306541856, Partner Center Validated — **superseded in source**: remediation changed app bytes; a replacement candidate cycle (new AppX + refreshed screenshots) is required before HQ-04 | 2026-07-29 | VER-20260714-002 + VER-20260729-001 |
 | Latest CI verification | Quality Gate pass @ `246baac` (run 30137666428); Windows Store MSIX pass @ `59787f4` (run 30137481905) | 2026-07-25, observed 2026-07-28 | VER-20260728-001…003 |
-| Latest local verification | all local gates green on the remediated tree: lint 0 warnings, typecheck ×2, 12 files/46 tests, renderer+electron builds, secrets 189 files, store 276 checks, docs validator | 2026-07-29 | VER-20260729-001 |
+| Latest local verification | all local gates green on the **clean** commit `07d938c`: lint 0 warnings, typecheck ×2, 12 files/46 tests, renderer vite build, secrets 189 files, store identity ✓, store 276 checks, docs validator PASS | 2026-08-04 | VER-20260804-001 |
 | Collected revenue | $0.00; gap $4,000.00; 0 live listings; Day-15 gate assessment executed (D035) | 2026-07-28 | revenue/METRICS.md |
-| Major open blocker | Owner-only legal/payout gates HQ-01, HQ-02 (59-min queue incl. HQ-06/HQ-07, 0 minutes spent) | 2026-07-28 | revenue/HUMAN_QUEUE.md |
-| Next recommended action | Owner: HQ-01 (manual IARC retake) + commit decision on the remediated tree. Agents: CAND-002 after commit | 2026-07-29 | section 11 |
+| Major open blocker | Owner-only HQ queue is now the **sole** remaining path (agent work complete): HQ-01…HQ-07 + CAND-002 Partner Center package swap (~54 min via the HQ-07 1-min risk-accept path; ~63 min via full clearance), 0 minutes spent | 2026-08-04 | revenue/HUMAN_QUEUE.md |
+| Next recommended action | Owner: HQ-02 payout (48h latency — start first) + HQ-01 IARC retake, then swap CAND-002 package into Submission 1 and HQ-03/HQ-04. No agent work remains. | 2026-08-04 | section 11 |
 
 One current row per metric; superseded values live in REPO_HISTORY.md.
 
@@ -186,20 +186,22 @@ start without approval.
 
 ## 11. Next recommended actions
 
-1. **Owner:** commit decision on the remediated tree (unblocks CAND-002), then
-   HQ-01 manual IARC retake and HQ-02 payout readiness (queue: 59 min total,
-   `revenue/HUMAN_QUEUE.md`).
-2. **Agent (after commit/push):** CAND-002 — observe the Windows Store CI run on
-   the remediation commit, record the new AppX hash + refreshed screenshots in
-   `store/WINDOWS-VALIDATION.md`, mark the old candidate historical, queue the
-   draft-package swap into HQ-04 steps. Screenshot refresh is required:
-   onboarding, tasks, and settings UI changed.
-3. **Agent (before any packaging on this host):** restore the Electron binary
-   (`npm approve-scripts` for the 3 pending install scripts) — tests/typecheck
-   are green; `npm run dev` / packaging are not (VER-20260724-005 notes).
+**Agent work is complete** (VER-20260804-001): CAND-002 committed, CI-green, and
+landed to `origin/main`; ledgers reconciled. Everything below is owner-only.
+
+1. **Owner — start the long-poles first:** HQ-02 payout/tax readiness (up to 48h
+   Microsoft validation latency) and HQ-01 manual IARC retake (unblocks HQ-04).
+   Full queue and click-steps: `revenue/HUMAN_QUEUE.md`.
+2. **Owner — swap in CAND-002:** replace the held Partner Center package with the
+   CAND-002 AppX (`a5d2cf36…`, CI run 30790687808) + refreshed screenshots, per
+   the new HQ-04 "Package swap first" step. The old-hash guard `4900f382…` stays
+   until this swap is done deliberately.
+3. **Owner — then:** HQ-03 Windows/accessibility pass on the signed build → HQ-04
+   submit-for-certification + publish → HQ-06 landing deploy → HQ-05 launch batch
+   (HQ-07 name check or 1-min risk-accept anytime before HQ-04).
 4. **After publication only:** execute `store/README.md` "Certification and
    publication playbook", applying `store/POST_PUBLICATION_DOC_SWEEP.md`
-   same-day, then HQ-06 landing deploy and HQ-05 launch batch.
+   same-day.
 
 ## 12. Ledger and archive links
 

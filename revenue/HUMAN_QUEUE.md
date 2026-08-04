@@ -111,9 +111,20 @@ posts remain.
   choose the HQ-03 test route before submitting.
 - **Direct link:**
   <https://partner.microsoft.com/en-us/dashboard/products/9PLRSZZMFPJH/overview>
+- **Package swap first (CAND-002) — ≈4 min:** the 2026-07-29 remediation changed
+  the app bytes, so the originally accepted AppX is superseded. Before step 1,
+  replace the held Submission 1 package and screenshots with CAND-002: download
+  `hearth-msix` + `hearth-store-screenshots` from CI run 30790687808
+  (<https://github.com/ntoledo319/Mindful-Organizer/actions/runs/30790687808>),
+  confirm the AppX SHA-256 is
+  `a5d2cf3633def56983702d41d17f6fa458abd8dfedc818039ed1af040f36b18f`
+  (full record in `store/WINDOWS-VALIDATION.md`), then upload that AppX and the
+  five refreshed screenshots. **After the swap, the hash to confirm in step 1 is
+  the CAND-002 hash above, not `4900f382…facdb1`.**
 - **Steps:**
   1. Confirm the package is only `Hearth 1.1.0.appx`, Partner Center says
-     Validated, and its source artifact SHA-256 is
+     Validated, and its source artifact SHA-256 is the accepted candidate —
+     `a5d2cf36…b18f` (CAND-002) once swapped, else the prior
      `4900f3823febace53f86f69ee2567b50208aec8f6677741c3c4dcf3667facdb1`.
   2. Review the $14.99 US price, screenshots, categories, URLs, corrected IARC
      result, runFullTrust explanation, testing notes, and release control **Do
@@ -209,10 +220,13 @@ posts remain.
 
 ## Running owner-time ledger
 
-Queued estimates: 5 + 10 + 18 + 6 + 5 + 5 + 10 = **59 minutes**, leaving 1
-minute of reserve (resolving HQ-07 by the 1-minute risk acceptance lowers the
-total to **50 minutes**, leaving 10). No owner minutes are recorded as spent
-in the repository yet.
+Queued estimates: 5 + 10 + 18 + 6 + 5 + 5 + 10 = **59 minutes**, plus the
+CAND-002 package swap in HQ-04 (**≈4 min**, added 2026-08-04 after the candidate
+landed to main, D040) → **≈63 minutes** at the full HQ-07 clearance path (just
+over the 60-min §10 ceiling), or **≈54 minutes** with the HQ-07 1-minute
+risk-acceptance path (within ceiling). **Recommended: take the HQ-07 risk-accept
+path to stay in budget.** No owner minutes are recorded as spent in the
+repository yet.
 
 Bet B (PROP-005 approval + itch.io payout setup, ≈ 12 minutes) is **not
 queued**: adding it would reach ≈ 71 minutes, over the 60-minute law. The

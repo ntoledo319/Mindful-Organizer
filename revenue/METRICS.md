@@ -263,3 +263,20 @@ listing + first collected dollars + real demand signal. Decision records:
 D035–D039. The Day-21 gate (2026-08-03) executes on schedule.
 
 Collected profit remains **$0.00**. The current gap remains **$4,000.00**.
+
+## 2026-08-04 — CAND-002 landed; gates re-verified
+
+- **Code:** the CAND-002 replacement-candidate cycle was fast-forwarded to
+  `origin/main` (`246baac`→`07d938c`, D040). Re-verified on the clean commit:
+  lint 0, typecheck ×2 0, 12 files / 46 tests, renderer vite build, secrets 189
+  files, store identity ✓, store validation 276 checks, docs validator PASS
+  (VER-20260804-001).
+- **Windows package:** CI Windows Store MSIX run 30790687808 green (3m16s);
+  artifacts `hearth-msix` (AppX `a5d2cf36…`, 175,489,287 B) + refreshed
+  `hearth-store-screenshots`. This is the CAND-002 candidate, **not yet the
+  accepted Partner Center package** — the swap is owner action HQ-04.
+- **Money: unchanged.** Collected profit **$0.00**, gap **$4,000.00**, 0 live
+  listings. The Day-21 conclusion stands: with monthly ADA §6(c) payout timing,
+  in-window *collected* cash by Day 28 remains implausible; landing CAND-002
+  only makes the product submit-ready. All that now blocks a live listing is the
+  owner-only HQ queue.

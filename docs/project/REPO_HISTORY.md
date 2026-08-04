@@ -31,7 +31,7 @@ cross-check, both agreeing)._
 
 | Ref | SHA | State | Notes |
 |---|---|---|---|
-| `origin/main` | `59787f4ae77901424947c3fb504f96dfce11e4a9` | live-verified 2026-07-24 (push) | Consolidated docs system + reconciled cycle-3 state |
+| `origin/main` | `07d938c6545698a73462454543d60b65bbdbe080` | live-verified 2026-08-04 (fast-forward push from `246baac`, D040) | CAND-002 replacement candidate landed: council remediation + `07cf815` smoke-gate fix. Prior heads on this line since 2026-07-24: `e0fc9e0`→`59787f4`→`246baac`→`07d938c` |
 | `origin/handoff-cycle-3` | `14f9fd718433047dfc38a2cd5a28d7da171106aa` | fetched | Cycle-3 handoff branch; superseded on main (PROP-002) |
 | `origin/feature/monetization` | `8172603b62c2457696608c145511bd3fe92429d4` | fetched | Accepted-candidate preservation branch |
 | `origin/feature/revenue-cycle-0` | `09ec37eff4affcc1a0878205072a75f0cac13da5` | fetched | Diverged legacy cycle-0 docs close; do not continue |
@@ -74,6 +74,7 @@ cross-check, both agreeing)._
 | HIST-20260724-004 | 2026-07-24 | REPO-01 | commit-milestone | `d1c9d915d333b2117f0ef7339b7b49d6ccf1c9d9` | local | Documentation control system + preserved cycle-3 local draft committed (user-authorized). 36 files, +2,759/−81. | verified | git |
 | HIST-20260724-005 | 2026-07-24 | REPO-01 | branch-merged | `59787f4ae77901424947c3fb504f96dfce11e4a9` | local | `origin/main` (`e0fc9e0`) merged into `cycle-2-shipped`. 7 conflicts resolved: HANDOFF.md kept as compressed launchpad (published 400-line version remains in history at `0ff209e`); ASSETS/OPPORTUNITIES/DECISIONS/HUMAN_QUEUE took the published remote iteration (local draft preserved in `d1c9d91`); PLAN/METRICS hand-merged (host-root fix + 2026-07-24 evidence section). | verified | git, VER-20260724-006 |
 | HIST-20260724-006 | 2026-07-24 | REPO-01 | remote-changed | `e0fc9e0` → `59787f4` | remote | `cycle-2-shipped` pushed to `main` (user-authorized): consolidated documentation system + reconciled cycle-3 state now on public main. | verified | push output |
+| HIST-20260804-001 | 2026-08-04 | REPO-01 | remote-changed | `246baac` → `07d938c` | remote | CAND-002 landed to `main` (owner directive "get all you can do done", D040): 2026-07-29 council remediation + `07cf815` packaged-smoke-gate fix + CAND-002 record; fast-forward, 3 commits, +2133/−302 across 39 files. Re-verified on clean `07d938c` (VER-20260804-001) + CI Windows MSIX run 30790687808 (AppX `a5d2cf36…`). Intervening 2026-07-25…08-03 CI/remediation events are recorded in the verification log and `store/WINDOWS-VALIDATION.md`, not backfilled here. | verified | git, VER-20260804-001 |
 
 Rollbacks: none recorded. Hotfixes: HIST-20260714-004 is the only in-run fix.
 Deployments: none exist (no staging/production; landing undeployed; Store in
