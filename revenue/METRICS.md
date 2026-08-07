@@ -320,3 +320,48 @@ Collected profit remains **$0.00**. The current gap remains **$4,000.00**.
   listings, 0 owner minutes spent. Day 28 is 2026-08-10 and nothing is
   submitted. No owner-only action was taken this session: nothing submitted,
   published, attested, priced, or connected to payment.
+
+## 2026-08-07 — HQ-07 name check executed (agent research; owner judgment still required)
+
+HQ-07 steps 1–2 are public research, not a legal judgment, so they were run by
+the agent. **Outcome: follow-up-needed, not no-obvious-conflict.**
+
+Searched 2026-08-07 via public trademark mirrors and open web. Not USPTO
+tmsearch directly, and **not a legal opinion** — the agent is not a lawyer and
+third-party mirrors carry stale status data.
+
+**Material finding — HEARTH DISPLAY / Hearth Display, Inc.**
+
+- USPTO serial **97524800**, word mark HEARTH DISPLAY, filed 2022-07-28.
+  IC 009 covers *downloadable and recorded software for use in family and
+  household management and productivity, calendaring and scheduling, routine
+  building, and task delegation and reporting*; IC 042 covers the
+  non-downloadable equivalent. Status as mirrored: 630 (new application) —
+  **stale, must be rechecked on tmsearch.uspto.gov**.
+- Corresponding WIPO filing 1716122 (2023-01-27), owner Hearth Display, Inc.,
+  Brooklyn NY.
+- The company is real, funded, founded 2020, and **markets under "Hearth"
+  alone** — its own materials describe Hearth as a tool for family management
+  and productivity, with calendars, routines, to-dos, task assignment, and a
+  subscription tier.
+
+**Why this matters:** this is not an adjacent industry with a coincidentally
+similar name. It is the same short word, used as a standalone brand, by a
+funded company, over goods in the same International Classes and arguably the
+same description of goods — household/personal organization, routines, task
+management software.
+
+**Non-material:** HEARTH BY DESIGN (reg. 5415274) is registered but covers
+fireplace-configuration software and **disclaims "HEARTH"**. HEARTHMATES,
+HEARTHMATCH, HEARTH TIME, HEARTH-AID, HEARTH FLO are unrelated goods
+(roommate matching, hearth-product installation, fire pits, stoves).
+
+**Recommendation:** the queue's suggested 1-minute risk-accept path is no longer
+the appropriate default. Attaching a paid listing to this name without at least
+rechecking 97524800's current status on tmsearch.uspto.gov is a materially
+different decision than it was when HQ-07 was written with no search behind it.
+Options are the owner's: proceed with informed risk acceptance, recheck status
+first, seek actual counsel, or rename before the listing is live — renaming
+costs far less now than after a purchasable page exists.
+
+Microsoft Store name-collision search (HQ-07 step 2) not yet run.
