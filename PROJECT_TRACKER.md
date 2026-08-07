@@ -26,14 +26,16 @@
 | Metric / environment | Current value | As of | Evidence |
 |---|---|---|---|
 | Product state | Hearth 1.1.0 + council remediation **committed and landed to main** (CAND-002); Store Submission 1 complete, held in draft — not submitted/certified/published | 2026-08-04 | VER-20260804-001 |
-| Default-branch HEAD (`origin/main`) | `07d938c` (CAND-002 landed; fast-forwarded from `246baac`, D040) | 2026-08-04 | git rev-parse, VER-20260804-001 |
+| Default-branch HEAD (`origin/main`) | `37feea1` (docs/handoff commit; CAND-002 landed via `270e650`). **Checked-out branch is `feature/store-candidate-cand002`; local `main` is stale at `c2b1fc2`, 25 behind.** Corrected 2026-08-07 — this row said `07d938c` while HANDOFF said `270e650`; both were wrong | 2026-08-07 | `git rev-parse origin/main`, VER-20260807-001 |
 | Live release | none — not submitted, certified, published, or purchasable | 2026-07-14 | HIST-20260714-003 |
 | Accepted candidate | AppX SHA-256 `4900f382…facdb1`, artifact 8306541856, Partner Center Validated — **superseded in source**: remediation changed app bytes; a replacement candidate cycle (new AppX + refreshed screenshots) is required before HQ-04 | 2026-07-29 | VER-20260714-002 + VER-20260729-001 |
-| Latest CI verification | Quality Gate pass @ `246baac` (run 30137666428); Windows Store MSIX pass @ `59787f4` (run 30137481905) | 2026-07-25, observed 2026-07-28 | VER-20260728-001…003 |
-| Latest local verification | all local gates green on the **clean** commit `07d938c`: lint 0 warnings, typecheck ×2, 12 files/46 tests, renderer vite build, secrets 189 files, store identity ✓, store 276 checks, docs validator PASS | 2026-08-04 | VER-20260804-001 |
+| Latest CI verification | Quality Gate pass @ `37feea1` (run 31154833115); last MSIX build @ `270e650` (run 30891744008); candidate MSIX @ `07cf815` (run 30790687808). Row was 10 days and three builds stale before this correction | 2026-08-07 | VER-20260807-001 |
+| Latest local verification | all gates green on clean `37feea1`: lint 0, typecheck ×2, **46/46 tests (after `npm rebuild better-sqlite3` — see below)**, vite build, secrets 189, store 276, `npm audit --omit=dev` 0 vulns | 2026-08-07 | VER-20260807-001 |
+| Local test environment | `better-sqlite3` alternates between node and Electron ABIs depending on whether `electron-builder` last ran. In the Electron state 16/46 tests fail with `NODE_MODULE_VERSION` mismatch — environmental, CI unaffected. `npm rebuild better-sqlite3` restores `npm test` | 2026-08-07 | VER-20260807-001 |
+| Candidate package | CAND-002 AppX hash **independently reverified** by download + `sha256sum` (`a5d2cf36…b18f`); package + 5 screenshots staged at `tmp/CAND-002-SWAP/`. New never-submit decoy recorded: artifact 8885413072, `368b0eeb…e7b1` | 2026-08-07 | VER-20260807-001; store/WINDOWS-VALIDATION.md |
 | Collected revenue | $0.00; gap $4,000.00; 0 live listings; Day-15 gate assessment executed (D035) | 2026-07-28 | revenue/METRICS.md |
-| Major open blocker | Owner-only HQ queue is now the **sole** remaining path (agent work complete): HQ-01…HQ-07 + CAND-002 Partner Center package swap (~54 min via the HQ-07 1-min risk-accept path; ~63 min via full clearance), 0 minutes spent | 2026-08-04 | revenue/HUMAN_QUEUE.md |
-| Next recommended action | Owner: HQ-02 payout (48h latency — start first) + HQ-01 IARC retake, then swap CAND-002 package into Submission 1 and HQ-03/HQ-04. No agent work remains. | 2026-08-04 | section 11 |
+| Major open blocker | Owner-only HQ queue: HQ-01…HQ-07 + CAND-002 Partner Center swap. ≈50–60 owner-minutes of clicking, but gated by **HQ-02 payout-role resolution (possibly a multi-day Partner Center support ticket, unpriced)**, Microsoft certification (days), and an **unestablished x64 Windows machine for HQ-03**. 0 minutes spent | 2026-08-07 | revenue/HUMAN_QUEUE.md; HANDOFF §0 re-estimate |
+| Next recommended action | Owner: start HQ-02 payout **today** — it has the longest and least predictable latency — then HQ-01 IARC. Swap is pre-staged. Confirm an x64 Windows machine exists for HQ-03 before scheduling HQ-04 | 2026-08-07 | section 11; HANDOFF §8 |
 
 One current row per metric; superseded values live in REPO_HISTORY.md.
 
@@ -111,14 +113,17 @@ needs-reconciliation / done / verified-stale / superseded / cancelled.
 | ID | Blocked item | Why | Unblock condition | Affected |
 |---|---|---|---|---|
 | B1 | Certification + publication | Owner-only legal attestation (IARC) and private payout setup not done; 0/59 owner minutes spent | Owner completes HQ-01, HQ-02 | HQ-04 → HQ-05, WS-REL, WS-REV |
-| B2 | Replacement candidate (CAND-002) | Remediated tree uncommitted; CI builds candidates from commits | Owner approves commit + push | HQ-04, screenshots, evidence chain |
+| ~~B2~~ | ~~Replacement candidate (CAND-002)~~ | **Resolved 2026-08-02…08-04** — the tree was committed (`fe0fc4a`…`270e650`) and CI built the candidate. This row survived five days after its own unblock condition was met; removed from active blockers 2026-08-07 | — | — |
 
 | Risk | Likelihood | Impact | Mitigation | Owner |
 |---|---|---|---|---|
 | R1 — zero demand after launch (no demand evidence exists) | high | Bet A falsifier path | 5-day signal gate → pre-built reposition menu RP-1…RP-4 + `store/REPOSITION_KIT.md` (revenue/PLAN.md, D037) | agent+owner |
 | R2 — certification failure (runFullTrust, content review) | medium | delay; new candidate cycle | Truthful disclosures; preserve report; narrow fix only | owner (submit), agent (fix) |
-| R3 — Partner Center facts stale (last observed 2026-07-14) | medium | decisions on old state | Re-verify live during HQ-01/HQ-02 session before acting; resolve "Submission options: Incomplete" flag (council release seat G4) | owner+agent |
-| R4 — remediation drift/loss while uncommitted | medium | rework; candidate confusion | Commit + push promptly on owner approval (single remediated tree, gates green) | owner (approval), agent (commit) |
+| R3 — Partner Center facts stale (last observed 2026-07-14, now 24 days) | **high** (raised 2026-08-07) | decisions on old state | Re-verify live during HQ-01/HQ-02 session before acting; resolve "Submission options: Incomplete" flag (council release seat G4). Every Partner Center statement in this repo — including the §4 "non-negotiable" guard hash — is memory, not observation | owner+agent |
+| ~~R4~~ | — | — | **Resolved 2026-08-04** — remediation is committed and landed. Row retired 2026-08-07 | — |
+| R5 — wrong MSIX submitted (new 2026-08-07) | medium | broken evidence chain; wrong bytes certified | Decoy artifact 8885413072 (`368b0eeb…e7b1`) now named in HANDOFF §4 and `store/WINDOWS-VALIDATION.md`; correct package pre-staged at `tmp/CAND-002-SWAP/` so the owner never browses the Actions list | agent (done), owner (confirm hash at swap) |
+| R6 — HQ-03 has no verified Windows machine (new 2026-08-07) | medium | HQ-03/HQ-04 cannot complete; no date attachable | Owner confirms x64 Windows availability before scheduling certification | owner |
+| R7 — session-to-session document drift (new 2026-08-07) | **high** | agents act on stale state; owner acts on wrong hash/commit | Re-derive the resume point from `git`/`gh` every session rather than trusting the prior summary. This risk has now materialised three times (RECON-001, B2/R4 survival, the 08-04 resume point) | agent |
 
 Resolved 2026-07-24 and moved to history: host-move drift + working-tree
 reconciliation (HIST-20260724-001…006), stale node_modules repair

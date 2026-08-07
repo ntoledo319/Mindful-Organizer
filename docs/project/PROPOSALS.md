@@ -67,3 +67,45 @@ process scope. Established 2026-07-24._
 - **Status:** conditional; stays behind Bet A's certification path. Falsifier,
   arithmetic, and funnel are defined in `revenue/OPPORTUNITIES.md` and
   `revenue/PLAN.md`.
+
+## PROP-006 — Lead with privacy, not with ADHD (2026-08-07)
+
+- **What:** reframe the Store listing's leading claim and the HQ-05 launch
+  targets around *local-only, no account, no telemetry, one-time purchase,
+  Windows desktop* — keeping ADHD and variable-capacity days as the supporting
+  use case rather than the headline. No code, no feature, and no price change.
+- **Why:** the first comparable set for this product
+  (`revenue/MARKET-ANALYSIS-2026-08-07.md`) shows the ADHD-planner category is
+  subscription-priced and mobile/Apple-dominated. In that category Hearth's
+  Windows-only, sync-free, AI-free, no-free-tier profile reads as a list of
+  missing features against better-funded incumbents. Described instead as
+  software that never touches the network, the same properties read as the
+  product, and the comparable set contains no competitor at all — every one is
+  a cloud account.
+- **Also:** the privacy framing has $0 amplification channels (technical and
+  privacy communities) that the ADHD framing does not, which matters because
+  HQ-05 is capped at owner-authored posts and there is no ad budget.
+- **Prerequisites:** owner approval. Listing copy is an owner action; the
+  agent-side work (redrafting `store/listing-metadata.json` copy,
+  `store/LAUNCH_KIT.md`, and re-vetting `store/LAUNCH_TARGETS.md` against the
+  new framing) can be prepared for review in advance.
+- **Honest limit:** this reasons from category structure, not from observed
+  demand for Hearth. It is better grounded than the current framing's evidence
+  base, which is none. It is still a guess, and the five-day signal gate is what
+  would actually settle it.
+- **Do not:** widen any capability claim to fit the new frame. The privacy
+  claims must stay exactly as narrow and demonstrable as `docs/PRIVACY.md` and
+  `README.md` already make them.
+
+## PROP-007 — Close out the $4,000 / Day-28 target (2026-08-07)
+
+- **What:** formally retire the $4,000-collected-by-Day-28 goal in
+  `revenue/PLAN.md` and replace it with: a live purchasable listing, first
+  collected dollar, and a first real demand signal.
+- **Why:** Day 28 is 2026-08-10 and nothing is submitted; certification is days
+  and the Store pays monthly against a $50 threshold, so August sales pay
+  ~mid-September. The Day-21 gate already reached this conclusion. Continuing to
+  restate a $4,000 gap that is arithmetically unreachable is itself a source of
+  manufactured urgency, which `AGENTS.md` §2 forbids.
+- **Prerequisites:** owner decision. This changes the mission statement, so it
+  is not agent-executable.

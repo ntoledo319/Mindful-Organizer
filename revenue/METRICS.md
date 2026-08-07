@@ -280,3 +280,43 @@ Collected profit remains **$0.00**. The current gap remains **$4,000.00**.
   in-window *collected* cash by Day 28 remains implausible; landing CAND-002
   only makes the product submit-ready. All that now blocks a live listing is the
   owner-only HQ queue.
+
+## 2026-08-07 — Independent reverification; market/pricing re-derivation
+
+- **Verification (VER-20260807-001).** The 2026-08-04 handoff was reverified
+  against `git`, the GitHub API, and a full local gate run under owner
+  direction. Confirmed accurate: CI runs 30891743797, 30891744008, 30790687808
+  all green; lint/typecheck/build/secrets(189)/store(276) exact; **CAND-002 AppX
+  hash independently recomputed as `a5d2cf36…b18f` — matches**. `npm audit
+  --omit=dev`: 0 vulnerabilities.
+- **Corrections.** `origin/main` is `37feea1` (HANDOFF said `270e650`, the
+  tracker said `07d938c`). HANDOFF §7's "uncommitted cycle-3 draft" no longer
+  exists. Tracker blockers B2/R4 were live five days after resolution. "All
+  local gates green" was not reproducible — `better-sqlite3` carried the
+  Electron ABI and failed 16/46 tests locally (environmental; 46/46 after
+  `npm rebuild better-sqlite3`). `store/WINDOWS-VALIDATION.md` claimed Partner
+  Center marked the CAND-002 AppX Validated; that contradicts HQ-04 and has been
+  retracted.
+- **New risk recorded (R5).** Previously undocumented MSIX artifact 8885413072
+  (run 30891744008, `270e650`), AppX `368b0eeb…e7b1` — the newest build in the
+  Actions list and within 124 bytes of CAND-002. Now named as never-submit in
+  HANDOFF §4 and `store/WINDOWS-VALIDATION.md`. The correct package and the five
+  screenshots are staged at `tmp/CAND-002-SWAP/`.
+- **Owner-time re-estimate.** ≈50–60 minutes of clicking is roughly right, but
+  the figure omits the three things that control the date: HQ-02's missing
+  payout role may need a multi-day Partner Center support ticket; HQ-03 needs an
+  x64 Windows machine that is nowhere established to exist; certification is
+  days of wall-clock. Expect at least three sessions.
+- **Market/pricing.** First comparable set recorded:
+  `revenue/MARKET-ANALYSIS-2026-08-07.md`. Microsoft's 15% app fee confirmed
+  against Microsoft Learn (own-commerce 0% path exists but is incompatible with
+  the no-network product claim). The ADHD-planner category is subscription-based
+  and mobile/Apple-dominated at roughly $2.49–$22/month; **$14.99 one-time is
+  the cheapest serious option in the category, not an expensive one.** Price
+  recommended unchanged — not because it is optimal, but because demand, not
+  price, is the binding constraint and there is still zero demand data.
+  Positioning finding raised as a proposal, not a change.
+- **Money: unchanged.** Collected profit **$0.00**, gap **$4,000.00**, 0 live
+  listings, 0 owner minutes spent. Day 28 is 2026-08-10 and nothing is
+  submitted. No owner-only action was taken this session: nothing submitted,
+  published, attested, priced, or connected to payment.

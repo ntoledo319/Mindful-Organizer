@@ -66,12 +66,44 @@ letting the Store-build boot check validate the package.
   candidate** — acceptance requires owner review + the Partner Center package
   swap (HQ-04). The accepted-candidate hash `4900f382…facdb1` above remains the
   guard until the owner accepts this candidate.
+- **Independently reverified 2026-08-07 (VER-20260807-001):** artifact
+  `hearth-msix` 8846968340 downloaded from run 30790687808 (174,530,445 bytes
+  zipped) and the contained `Hearth 1.1.0.appx` recomputed with `sha256sum` →
+  `a5d2cf3633def56983702d41d17f6fa458abd8dfedc818039ed1af040f36b18f`. Matches
+  the CI-emitted `hearth-appx.sha256.txt` and the value recorded above. The
+  package plus the five refreshed screenshots are staged for the owner at
+  `tmp/CAND-002-SWAP/` (gitignored; convenience copy, not evidence).
+
+### Decoy artifact — 8885413072 (added 2026-08-07)
+
+The MSIX built on `270e650` (run 30891744008) is the **highest-risk
+non-candidate** and was previously undocumented:
+
+- Artifact 8885413072, zipped 174,530,569 bytes — within 124 bytes of CAND-002.
+- Contained AppX SHA-256:
+  `368b0eebe8bc5c73b3e67cb196f52471742c547224d2cbcbd84ea3d68bd4e7b1`
+- `07cf815..270e650` is a **docs-only** diff, so this is the same application
+  rebuilt: identical behavior, different bytes, different hash.
+- It is the newest MSIX in the Actions list and therefore the artifact an owner
+  reaching for "the latest build" will hit first. Submitting it would break the
+  evidence chain that `store/README.md` and this file depend on.
+
+Verified by download and `sha256sum` on 2026-08-07 (VER-20260807-001).
 
 The Windows workflow passed a sentinel-guarded real safeStorage/DPAPI lifecycle
 matrix for fresh encrypted persistence, corrupt-primary recovery, plaintext
 export warnings, key-first erase, interrupted erase, representative legacy
 migration and retirement, consent gating, and missing-key fail-closed behavior.
-Partner Center also marked this exact AppX Validated.
+
+> **Correction 2026-08-07:** an earlier revision of this section ended with
+> "Partner Center also marked this exact AppX Validated." That is not true of
+> CAND-002 and contradicted `HANDOFF.md` §4 and HQ-04, both of which state the
+> swap has not happened and the Partner Center guard is still `4900f382…facdb1`.
+> The sentence appears to have been carried over from the accepted-candidate
+> section above. No Partner Center state has been observed since 2026-07-14
+> (tracker risk R3) — treat all Partner Center facts in this repository as
+> 24-day-old memory until the owner reobserves them.
+
 
 ## Why the accepted AppX is not a local-install proof
 
