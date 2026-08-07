@@ -15,7 +15,19 @@ on:
       - "src/**"
       - "scripts/**"
       - "resources/**"
-      - "store/**"
+      # Narrowed 2026-08-07. This list was "store/**", which meant editing any
+      # markdown under store/ minted a fresh MSIX. On 2026-08-07 a documentation
+      # commit to store/WINDOWS-VALIDATION.md produced two more non-candidate
+      # packages (8987197965, 8987206429), bringing the total to five artifacts
+      # that must never be submitted. Every extra build is another near-identical
+      # decoy sitting above the real candidate in the Actions list.
+      #
+      # Only files that can change the AppX bytes belong here. store/*.md is
+      # documentation and still gets validated on every push by the Quality Gate
+      # (tests.yml has no path filter and runs npm run store:validate).
+      - "store/identity.json"
+      - "store/identity.cjs"
+      - "store/listing-metadata.json"
 
 permissions:
   contents: read

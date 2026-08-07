@@ -75,7 +75,6 @@ letting the Store-build boot check validate the package.
   `tmp/CAND-002-SWAP/` (gitignored; convenience copy, not evidence).
 
 ### Decoy artifact — 8885413072 (added 2026-08-07)
-
 The MSIX built on `270e650` (run 30891744008) is the **highest-risk
 non-candidate** and was previously undocumented:
 
@@ -89,6 +88,33 @@ non-candidate** and was previously undocumented:
   evidence chain that `store/README.md` and this file depend on.
 
 Verified by download and `sha256sum` on 2026-08-07 (VER-20260807-001).
+
+### Non-candidate register — complete list (2026-08-07)
+
+**Only `a5d2cf36…b18f` (artifact 8846968340, run 30790687808) is the CAND-002
+submission candidate.** Every other MSIX this repository has produced is a
+non-candidate. The full list, so no future session has to reconstruct it:
+
+| Artifact | Run / ref | Zipped bytes | Why not |
+|---|---|---|---|
+| 8885413072 | 30891744008 / `270e650` | 174,530,569 | docs-only rebuild; hash `368b0eeb…e7b1` |
+| 8987197965 | 31161190842 / `f63f792` main | 174,530,243 | docs-only rebuild (see note below) |
+| 8987206429 | 31161188967 / `f63f792` feature | 174,530,491 | docs-only rebuild (see note below) |
+| 8316167277 | — | — | documentation/launch-hardening build |
+| 8613344727 | 30137481905 / `59787f4` | — | pre-remediation verification output |
+
+**Why 8987197965 and 8987206429 exist — a self-inflicted lesson.** The
+2026-08-07 documentation commit that first recorded the decoy problem edited
+*this file*, and `store/**` was inside `windows-store.yml`'s trigger paths. So
+writing down "beware of extra MSIX artifacts" minted two more. The workflow's
+path filter has since been narrowed to `store/identity.json`,
+`store/identity.cjs`, and `store/listing-metadata.json` — the only files under
+`store/` that can change AppX bytes. Markdown under `store/` is still validated
+on every push by the Quality Gate, which has no path filter.
+
+Expect **one final** MSIX build from the commit that narrows the filter, since
+`.github/workflows/windows-store.yml` is itself a trigger path. After that,
+documentation work stops producing packages.
 
 The Windows workflow passed a sentinel-guarded real safeStorage/DPAPI lifecycle
 matrix for fresh encrypted persistence, corrupt-primary recovery, plaintext
