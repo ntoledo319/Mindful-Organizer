@@ -1,0 +1,125 @@
+# Get Ample listed — owner runbook (2026-08-07)
+
+Everything the agent can do is done. This is the remaining path, in order, with
+the reason each step blocks the next. Nothing here can be done by an agent:
+every item is a legal attestation, a financial credential, a commercial
+commitment, or a Partner Center action tied to your identity.
+
+**Total clicking time: roughly 50–60 minutes.** Wall-clock is longer and mostly
+outside your control — see "What actually sets the date" at the bottom.
+
+---
+
+## Step 0 — Reserve the name "Ample" (5 min) — BLOCKS EVERYTHING
+
+Partner Center → your product → **Product identity** / **Manage app names**.
+
+Reserve **Ample**. Then read the **Package/Identity/Name** value Partner Center
+assigns and paste it into `store/identity.json` → `identityName`, and set
+`identityVerified` to `true`.
+
+**Why this blocks the build, not just the listing:** Partner Center assigns the
+package identity from the reservation — it is not author-chosen. The rename
+sweep wrote `ToledoTechnologies.Ample` as a placeholder because that is the
+pattern, not because anyone observed it. If the built AppX identity does not
+match the reservation exactly, submission is rejected. **No submittable package
+can be produced until you paste the real value.**
+
+Also decide here whether Ample is a *new* product or an added name on
+`9PLRSZZMFPJH`. If Partner Center forces a new product reservation, the existing
+Submission 1 (pricing, copy, categories, certification notes) does not carry
+over and has to be re-entered. Ask support in the same session as Step 1 if it
+is not obvious.
+
+## Step 1 — Payout and tax (10 min, then up to 48h latency) — START TODAY
+
+Partner Center → **Account settings → Payout and tax**.
+
+Complete the payout account and tax profile. **Start this first regardless of
+where you are in the rest of the list** — it has the longest and least
+predictable latency.
+
+**Known problem:** the "Payout and tax" section has previously been *absent*
+from Account settings, which usually means the developer-profile role is wrong.
+If it is still missing, open a Partner Center support ticket immediately. That
+is a multi-day path, and it is the single most likely thing to push the launch
+date. Do not discover this on Sunday.
+
+## Step 2 — IARC age rating (10 min)
+
+Partner Center → submission → **Age ratings** → complete the IARC
+questionnaire.
+
+Answer honestly about the mood, energy, and crisis-plan content. Saving requires
+attesting you are of majority age in your jurisdiction — a legal declaration in
+your name, which is why no agent can do it.
+
+## Step 3 — Trademark check on "Ample" (1 min)
+
+<https://tmsearch.uspto.gov/> — search **Ample** in classes 009 and 042.
+
+The known collisions are food brands (Ample Foods, Ample Hills Creamery), not
+software. This is screening confirmation, not clearance. While you are there,
+also look up serial **97524800** (HEARTH DISPLAY) — it is the reason for the
+rename and the record status has never been observed directly.
+
+Microsoft's policy: a rights holder can report an infringement, and after
+publication the app is removed from the Store until every instance of the name
+is changed in the app, its content, and the listing, and it is submitted for
+certification again.
+
+## Step 4 — Candidate build (agent, ~16 min, unattended)
+
+Once Step 0 lands, tell the agent. It will commit the verified identity, fire
+the Windows Store MSIX workflow, download the artifact, recompute the AppX
+SHA-256, record it in `store/WINDOWS-VALIDATION.md`, and stage the package plus
+screenshots for you.
+
+CAND-002 (`a5d2cf36…b18f`) is now **historical** — the rename changed the AppX
+manifest. Do not upload it. There are six non-candidate MSIX artifacts in CI
+history; the register is in `store/WINDOWS-VALIDATION.md`.
+
+## Step 5 — Upload package and finalize the listing (15 min)
+
+Upload the new AppX. Confirm the hash matches what the agent recorded.
+
+Refresh the listing copy and keywords — see
+`store/DISCOVERY-REVIEW-2026-08-07.md`. Lead with the platform, not privacy:
+**nobody else ships energy-budgeted planning on Windows.** Every competitor
+(Spoons, SpoonieDay, SpoonDo, Visible, Tiimo) is Apple-only. Privacy is now
+table stakes in this niche — use it as proof, not as the pitch, and note that
+SpoonieDay collects usage data and diagnostics while your source is MIT-licensed
+and auditable.
+
+Also reconsider the **Health + fitness** secondary category. It puts you beside
+apps you compete poorly against and may invite closer content review of a
+product that repeatedly disclaims being a medical device.
+
+## Step 6 — Submit (2 min) + certification (days, not yours to control)
+
+Submit. Microsoft certification takes days. Nothing you do changes that.
+
+## Step 7 — After certification
+
+- Install the Store-signed build and run the accessibility pass
+  (`docs/ACCESSIBILITY.md`). This needs an x64 Windows machine — confirm you
+  have one before you get here.
+- Deploy the landing page (`landing/`) only once the listing is genuinely live
+  and purchasable.
+- Run `store/POST_PUBLICATION_DOC_SWEEP.md`.
+
+---
+
+## What actually sets the date
+
+Not the 50 minutes of clicking. These three:
+
+1. **Payout role resolution** — unknown, possibly a multi-day support ticket
+2. **Microsoft certification** — days
+3. **First payment** — the Store pays monthly against a $50 threshold, so August
+   sales pay around mid-September regardless of when you list
+
+Day 28 is 2026-08-10. **$4,000 collected by then is not reachable** and has not
+been since before this session. Carrying it as a live gap manufactures urgency
+that `AGENTS.md` §2 forbids — see PROP-007. The honest replacement target is a
+live purchasable listing plus a first real demand signal.

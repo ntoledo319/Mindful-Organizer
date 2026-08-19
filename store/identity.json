@@ -1,6 +1,7 @@
 {
-  "_comment": "Verified Partner Center package identity for the reserved Ample product. Identity readiness does not mean the listing is submitted, certified, live, or purchasable. Paid listing work is manual in Partner Center; see store/README.md.",
+  "_comment": "UNVERIFIED AFTER RENAME (2026-08-07). Product 9PLRSZZMFPJH was reserved as 'Hearth'; its Partner Center package identity was ToledoTechnologies.Hearth. The Hearth->Ample sweep rewrote this file automatically, so identityName below is a PLACEHOLDER, not an observed value. Partner Center assigns Package/Identity/Name from the reserved name - it is not author-chosen. Before any candidate build: reserve 'Ample' in Partner Center, read the assigned identity off the product's Identity page, and paste the exact value here. A package whose identity does not match the reservation will be rejected at submission.",
   "identityName": "ToledoTechnologies.Ample",
+  "identityVerified": false,
   "publisher": "CN=FBC80173-0C85-481E-BC5E-A3BE88BC2020",
   "publisherDisplayName": "Toledo Technologies",
   "productId": "9PLRSZZMFPJH"
