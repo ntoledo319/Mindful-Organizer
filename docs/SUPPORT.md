@@ -1,10 +1,10 @@
-# Hearth Support
+# Ample Support
 
 _Last updated: 2026-07-14_
 
 ## Current availability
 
-Hearth is not currently released. This page is the public support landing page.
+Ample is not currently released. This page is the public support landing page.
 Reproducible software bugs and focused feature requests can be filed through the
 repository's privacy-guarded
 [GitHub Issue forms](https://github.com/ntoledo319/Mindful-Organizer/issues/new/choose).
@@ -15,7 +15,7 @@ and existing issues does not require one.
 
 Include:
 
-- Hearth version
+- Ample version
 - Windows version and x64 device confirmation
 - The action immediately before the problem
 - What was expected and what happened
@@ -24,10 +24,10 @@ Include:
 
 Never attach or paste:
 
-- hearth.secure, hearth.secure.backup, hearth.secure.migration-backup, or
-  hearth.key
-- legacy hearth.db, hearth.db-wal, hearth.db-shm, or journal files
-- JSON or PDF exports, because Hearth exports are readable plaintext files
+- ample.secure, ample.secure.backup, ample.secure.migration-backup, or
+  ample.key
+- legacy ample.db, ample.db-wal, ample.db-shm, or journal files
+- JSON or PDF exports, because Ample exports are readable plaintext files
 - journal, crisis-plan, ERP, diary-card, medication, mood, anxiety, or sleep
   content
 - Windows account details, payment details, tax details, credentials, or keys

@@ -8,7 +8,7 @@ _Decision date: 2026-07-14._
 
 ## Selected fast bet
 
-Prepare an official Hearth Windows package for a one-time **$14.99** Microsoft
+Prepare an official Ample Windows package for a one-time **$14.99** Microsoft
 Store listing. The Store supplies discovery and payment. The source remains MIT;
 the paid value is a maintained, packaged, Store-delivered build.
 

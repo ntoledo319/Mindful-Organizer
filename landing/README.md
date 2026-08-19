@@ -1,4 +1,4 @@
-# Hearth static landing artifact
+# Ample static landing artifact
 
 This directory is a zero-dependency commercial landing page that can be served
 as plain static files. It is currently truthful to the pre-release state:
@@ -68,5 +68,5 @@ screenshot evidence is present under `tmp/artifacts/final-screenshots/`:
 
 The page intentionally has no analytics script. The landing-primary Store
 campaign ID supplies aggregate page-view and conversion attribution in Partner
-Center without adding third-party telemetry to Hearth. See
+Center without adding third-party telemetry to Ample. See
 store/CAMPAIGNS.md.

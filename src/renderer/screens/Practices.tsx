@@ -20,7 +20,7 @@ const PRACTICES: Practice[] = [
   { kind: 'breathing', technique: 'Box breathing', blurb: 'Four counts in, hold, out, hold. A slower rhythm to follow.', durationSeconds: 96 },
   { kind: 'grounding', technique: '5-4-3-2-1 senses', blurb: 'Name what you see, hear, touch, smell, and taste. Return attention to now.', durationSeconds: 120 },
   { kind: 'meditation', technique: 'Body scan', blurb: 'Move attention slowly head to toe. No fixing, just noticing.', durationSeconds: 180 },
-  { kind: 'focus', technique: '25-minute focus block', blurb: 'One thing, protected. Hearth holds the door.', durationSeconds: 1500 },
+  { kind: 'focus', technique: '25-minute focus block', blurb: 'One thing, protected. Ample holds the door.', durationSeconds: 1500 },
 ];
 
 export function Practices() {
@@ -43,7 +43,7 @@ export function Practices() {
       try {
         await api.startFocus({ seconds: p.durationSeconds, intention: null });
       } catch {
-        setActionError('Hearth could not start the focus hold. Try again, or turn the hold off in Settings.');
+        setActionError('Ample could not start the focus hold. Try again, or turn the hold off in Settings.');
       }
       return;
     }
@@ -63,14 +63,14 @@ export function Practices() {
               A focus block is running
             </p>
             <p className="text-base text-text-muted dark:text-night-text/80 mt-1">
-              Hearth is holding the door. The hold lives over your screen — end it there, with Esc, or here.
+              Ample is holding the door. The hold lives over your screen — end it there, with Esc, or here.
             </p>
           </div>
           <button
             className="btn-ghost shrink-0"
             onClick={() => {
               setActionError(null);
-              void api.endFocus().catch(() => setActionError('Hearth could not end the focus hold here. Use Esc or the tray, then try again.'));
+              void api.endFocus().catch(() => setActionError('Ample could not end the focus hold here. Use Esc or the tray, then try again.'));
             }}
           >
             End now
@@ -235,7 +235,7 @@ function PracticeRunner({
           <button className="btn-primary w-full" onClick={finish} disabled={isFinishing}>
             {isFinishing ? 'Saving...' : 'Save & close'}
           </button>
-          {finishError && <InlineError>Hearth could not save this practice. Try again.</InlineError>}
+          {finishError && <InlineError>Ample could not save this practice. Try again.</InlineError>}
         </div>
       )}
     </div>

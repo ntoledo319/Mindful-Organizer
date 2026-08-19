@@ -31,12 +31,12 @@ export function completeCryptographicDeletion(paths: CryptographicDeletionPaths)
   // can no longer be decrypted. Every remnant is still attempted.
   const failures = removeBestEffort([paths.key, ...paths.remnants]);
   if (failures.length > 0) {
-    throw new Error(`Hearth erased the encryption key but could not remove every remnant. ${failures.join(' | ')}`);
+    throw new Error(`Ample erased the encryption key but could not remove every remnant. ${failures.join(' | ')}`);
   }
   unlinkSync(paths.marker);
 }
 
 export function beginCryptographicDeletion(paths: CryptographicDeletionPaths): void {
-  atomicWrite(paths.marker, Buffer.from('hearth-delete-v1\n', 'utf8'));
+  atomicWrite(paths.marker, Buffer.from('ample-delete-v1\n', 'utf8'));
   completeCryptographicDeletion(paths);
 }

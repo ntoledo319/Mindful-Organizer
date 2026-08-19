@@ -12,7 +12,7 @@ export class ScreenErrorBoundary extends Component<{ children: ReactNode }, { ha
   }
 
   componentDidCatch(error: unknown) {
-    console.error('[hearth] screen render failed', error);
+    console.error('[ample] screen render failed', error);
   }
 
   render() {

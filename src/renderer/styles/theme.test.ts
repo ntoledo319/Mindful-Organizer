@@ -21,7 +21,7 @@ function contrast(first: string, second: string): number {
   );
 }
 
-describe('Hearth theme', () => {
+describe('Ample theme', () => {
   it('keeps normal-size brand and warning text at WCAG AA contrast', () => {
     expect(contrast(THEME_COLORS.brand, '#FFFFFF')).toBeGreaterThanOrEqual(4.5);
     expect(contrast(THEME_COLORS.brand, THEME_COLORS.base.bg)).toBeGreaterThanOrEqual(4.5);

@@ -135,7 +135,7 @@ export function SettingsScreen() {
   const copyDiagnostics = async () => {
     if (!appInfo) return;
     try {
-      await navigator.clipboard.writeText(`Hearth ${appInfo.version} · ${appInfo.os} · ${appInfo.arch}`);
+      await navigator.clipboard.writeText(`Ample ${appInfo.version} · ${appInfo.os} · ${appInfo.arch}`);
       setCopyState('copied');
     } catch {
       setCopyState('error');
@@ -165,7 +165,7 @@ export function SettingsScreen() {
 
   return (
     <div>
-      <PageHeader title="Settings" subtitle="Tune Hearth to you. Everything here stays on this machine." />
+      <PageHeader title="Settings" subtitle="Tune Ample to you. Everything here stays on this machine." />
 
       <div className="space-y-6">
         <div className="surface-card p-6">
@@ -174,7 +174,7 @@ export function SettingsScreen() {
             <input
               className="field max-w-sm text-base"
               value={nameDraft}
-              placeholder="What should Hearth call you?"
+              placeholder="What should Ample call you?"
               onChange={(e) => changeName(e.target.value)}
               onBlur={flushNameSave}
             />
@@ -198,20 +198,20 @@ export function SettingsScreen() {
           </div>
         </div>
 
-        {/* The acting layer — the part of Hearth that reaches past its own window.
+        {/* The acting layer — the part of Ample that reaches past its own window.
             Free for everyone, always. Never gated. */}
         <div className="surface-card space-y-6 p-6">
           <div className="border-b border-base-border dark:border-night-border pb-4">
-            <h3 className="text-lg font-medium text-text-primary dark:text-night-text">How Hearth shows up</h3>
+            <h3 className="text-lg font-medium text-text-primary dark:text-night-text">How Ample shows up</h3>
             <p className="mt-1 text-sm text-text-muted dark:text-night-text/80">
-              Beyond its own window, Hearth can lower the lights when your readings say you're drained, and hold the
+              Beyond its own window, Ample can lower the lights when your readings say you're drained, and hold the
               door while you focus. All of it runs on this machine.
             </p>
           </div>
 
           <SettingRow
             title="Live in the tray"
-            desc="A quiet way back to Hearth, and the quick controls, from your menu bar."
+            desc="A quiet way back to Ample, and the quick controls, from your menu bar."
             on={settings.presence}
             onChange={(v) => void saveSettings({ presence: v })}
           />
@@ -276,7 +276,7 @@ export function SettingsScreen() {
         <div className="surface-card p-6">
           <h3 className="mb-2 text-base font-medium text-text-primary dark:text-night-text">Daily energy budget</h3>
           <p className="mb-4 text-sm text-text-muted dark:text-night-text/80">
-            Set the amount you want to plan against today. Hearth does not infer this number from a diagnosis or a check-in.
+            Set the amount you want to plan against today. Ample does not infer this number from a diagnosis or a check-in.
           </p>
           <div className="max-w-sm">
             <Scale
@@ -296,7 +296,7 @@ export function SettingsScreen() {
           <div>
             <h3 className="mb-2 text-base font-medium text-text-primary dark:text-night-text">Privacy and your data</h3>
             <p className="text-sm leading-relaxed text-text-muted dark:text-night-text/80">
-              Hearth stores an AES-256-GCM encrypted database on this device. Its random key is protected by your
+              Ample stores an AES-256-GCM encrypted database on this device. Its random key is protected by your
               operating-system sign-in. There is no account, sync, analytics, telemetry, or record upload. Consent
               was recorded {new Date(settings.privacyConsentAt ?? '').toLocaleString()}.
             </p>
@@ -321,12 +321,12 @@ export function SettingsScreen() {
           <div className="border-t border-semantic-error/25 pt-5">
             <h4 className="text-sm font-medium text-semantic-error">Withdraw consent and erase everything</h4>
             <p className="mt-1 text-sm leading-relaxed text-text-muted dark:text-night-muted">
-              This destroys every Hearth record, encrypted rollback snapshot, and the key that decrypts them, then
+              This destroys every Ample record, encrypted rollback snapshot, and the key that decrypts them, then
               returns to a fresh empty store. It cannot erase PDFs or JSON files you previously exported.
             </p>
             {!eraseArmed ? (
               <button className="btn-ghost mt-3" onClick={() => setEraseArmed(true)}>
-                Erase all Hearth data…
+                Erase all Ample data…
               </button>
             ) : (
               <div className="mt-4 rounded-soft border border-semantic-error/30 bg-semantic-error/5 p-4">
@@ -362,7 +362,7 @@ export function SettingsScreen() {
                 </div>
                 {eraseState === 'error' && (
                   <p className="mt-3 text-sm text-semantic-error">
-                    Hearth could not verify complete cleanup. Close and reopen Hearth; it will resume the requested deletion before opening storage.
+                    Ample could not verify complete cleanup. Close and reopen Ample; it will resume the requested deletion before opening storage.
                   </p>
                 )}
               </div>
@@ -371,7 +371,7 @@ export function SettingsScreen() {
         </div>
 
         <div className="surface-card p-6">
-          <h3 className="mb-2 text-base font-medium text-text-primary dark:text-night-text">About Hearth</h3>
+          <h3 className="mb-2 text-base font-medium text-text-primary dark:text-night-text">About Ample</h3>
           <p className="text-sm leading-relaxed text-text-muted dark:text-night-muted">
             {appInfo
               ? `Version ${appInfo.version} · ${appInfo.os} · ${appInfo.arch}`

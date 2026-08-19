@@ -7,7 +7,7 @@ Legend: **T$** = days to first plausible collected dollar; **H** = owner minutes
 **D** = distribution; **U** = plausible four-week net planning range; **R** =
 principal risk. A dash means no compliant near-term route.
 
-## A1 — Full Hearth app: seven frames
+## A1 — Full Ample app: seven frames
 
 | # | Frame | T$ | H | D | U | R |
 |---|---|---:|---:|---|---:|---|
@@ -27,7 +27,7 @@ principal risk. A dash means no compliant near-term route.
 | A2.2 | Paid focus-plan output | 14+ | 20 | No audience | $0–$75 | Easy to substitute |
 | A2.3 | Sell engine code | 14+ | 20 | Asset marketplace | $0–$150 | Public antecedent and extraction work |
 | A2.4 | Standalone Focus Guard app | 14–21 | 15 | Microsoft Store | $0–$150 | New identity and certification |
-| A2.5 | Bundle inside Hearth | Same as A1.5 | Included | Microsoft Store | Included in A1.5 | No independent price signal |
+| A2.5 | Bundle inside Ample | Same as A1.5 | Included | Microsoft Store | Included in A1.5 | No independent price signal |
 | A2.6 | Productized focus setup | 21+ | >60 | Outbound required | $0 | Human service delivery |
 | A2.7 | White-label focus utility | 21+ | >60 | Outbound required | $0 | Sales and support labor |
 
@@ -69,7 +69,7 @@ principal risk. A dash means no compliant near-term route.
 
 ## Active portfolio
 
-### Bet A — Fast: official Hearth Microsoft Store package
+### Bet A — Fast: official Ample Microsoft Store package
 
 - **Frame:** A1.5.
 - **Draft price:** $14.99 one time.
@@ -87,7 +87,7 @@ principal risk. A dash means no compliant near-term route.
   replace after four additional live days with zero signal. Treat 100 product
   page views with zero purchases as an immediate conversion failure.
 
-### Bet B — Heavy: Hearth-to-Production Electron Kit
+### Bet B — Heavy: Ample-to-Production Electron Kit
 
 - **Frame:** A4.6.
 - **Draft price:** $249 one time.

@@ -22,13 +22,13 @@ if (storeReady) {
 }
 
 module.exports = {
-  appId: 'io.hearthproject.hearth',
-  productName: 'Hearth',
+  appId: 'io.ampleproject.ample',
+  productName: 'Ample',
   // Windows CI preinstalls and checksum-verifies the exact Electron runtime so
   // screenshot capture and packaging share one proven binary. Local builds
   // retain electron-builder's normal download behavior when this is unset.
-  ...(process.env.HEARTH_ELECTRON_DIST
-    ? { electronDist: process.env.HEARTH_ELECTRON_DIST }
+  ...(process.env.AMPLE_ELECTRON_DIST
+    ? { electronDist: process.env.AMPLE_ELECTRON_DIST }
     : {}),
   copyright: 'Copyright © 2026 Nicholas Toledo',
   directories: {
@@ -55,11 +55,11 @@ module.exports = {
     target: winTargets,
   },
   appx: {
-    applicationId: 'Hearth',
+    applicationId: 'Ample',
     identityName: identity.identityName,
     publisher: identity.publisher,
     publisherDisplayName: identity.publisherDisplayName,
-    displayName: 'Hearth',
+    displayName: 'Ample',
     backgroundColor: '#F5F0E6',
     showNameOnTiles: true,
     languages: ['en-US'],
@@ -68,10 +68,10 @@ module.exports = {
     oneClick: false,
     perMachine: false,
     allowToChangeInstallationDirectory: true,
-    artifactName: 'Hearth-Setup-${version}.${ext}',
+    artifactName: 'Ample-Setup-${version}.${ext}',
   },
   portable: {
-    artifactName: 'Hearth-Portable-${version}.${ext}',
+    artifactName: 'Ample-Portable-${version}.${ext}',
   },
   linux: {
     icon: 'build/icon.png',

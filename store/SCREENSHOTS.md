@@ -23,10 +23,10 @@ Official requirements:
 | Order | File | Screen | Caption |
 |---:|---|---|---|
 | 1 | 01-today.png | Today, light | See the energy left today, a plain-language briefing, and open tasks whose recorded cost fits the remaining budget. |
-| 2 | 02-tasks.png | Tasks, light | Give work a priority, expected duration, and energy demand; Hearth estimates a spoon cost for the plan. |
+| 2 | 02-tasks.png | Tasks, light | Give work a priority, expected duration, and energy demand; Ample estimates a spoon cost for the plan. |
 | 3 | 04-rhythm.png | Rhythm, dark | Review your own mood, energy, and sleep across 7, 14, or 30 days, then request a local PDF summary. |
 | 4 | 03-reflect.png | Check in, light | Record mood, energy, anxiety, sleep, or a private journal entry in the local desktop app. |
-| 5 | 05-onboarding.png | First run, light | Start without an account and review local-data consent before Hearth stores the information you enter. |
+| 5 | 05-onboarding.png | First run, light | Start without an account and review local-data consent before Ample stores the information you enter. |
 
 The filenames follow the driver output; the Store upload order intentionally
 puts Rhythm before Reflect.
@@ -53,7 +53,7 @@ puts Rhythm before Reflect.
 ## Capture contract
 
 1. Start from the exact release commit and record that commit as
-   HEARTH_SHOT_BUILD_REF.
+   AMPLE_SHOT_BUILD_REF.
 2. Use a fresh screenshot-only app-data directory. Never point the driver at a
    real user profile.
 3. Confirm the seed records a screenshot-only privacy-consent timestamp. The
@@ -67,9 +67,9 @@ puts Rhythm before Reflect.
 
 Example from the workspace root, with the output path kept inside the jail:
 
-    HEARTH_SCREENSHOT=1 \
-    HEARTH_SHOT_BUILD_REF="$(git rev-parse HEAD)" \
-    HEARTH_SHOT_DIR="$PWD/screenshots/candidate" \
+    AMPLE_SCREENSHOT=1 \
+    AMPLE_SHOT_BUILD_REF="$(git rev-parse HEAD)" \
+    AMPLE_SHOT_DIR="$PWD/screenshots/candidate" \
     npm run dev
 
 Review manifest.json rather than reconstructing hashes from memory. A null build

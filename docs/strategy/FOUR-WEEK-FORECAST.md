@@ -14,6 +14,6 @@ $12.74 after rounding. It therefore takes 314 sales to reach approximately
 $4,001 net.
 
 That is target math, not a forecast. There is no observed listing traffic,
-conversion rate, purchase, or comparable demand signal for Hearth. A zero-dollar
+conversion rate, purchase, or comparable demand signal for Ample. A zero-dollar
 four-week outcome remains plausible. The bet must be killed or repositioned if
 its explicit evidence gate in `revenue/PLAN.md` fails.

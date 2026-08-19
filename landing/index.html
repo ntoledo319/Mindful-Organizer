@@ -6,15 +6,15 @@
     <meta name="theme-color" content="#f3eee2">
     <meta
       name="description"
-      content="Hearth is a privacy-first Windows energy planner for ADHD and other variable-capacity days. Plan around the capacity you have, without an account or cloud sync."
+      content="Ample is a privacy-first Windows energy planner for ADHD and other variable-capacity days. Plan around the capacity you have, without an account or cloud sync."
     >
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Hearth — plan the day you have">
+    <meta property="og:title" content="Ample — plan the day you have">
     <meta
       property="og:description"
       content="A privacy-first Windows energy planner for ADHD and other variable-capacity days."
     >
-    <title>Hearth — plan the day you have</title>
+    <title>Ample — plan the day you have</title>
     <link rel="stylesheet" href="styles.css">
     <link
       rel="icon"
@@ -25,16 +25,16 @@
     <a class="skip-link" href="#main">Skip to content</a>
 
     <header class="site-header">
-      <a class="wordmark" href="#top" aria-label="Hearth home">
+      <a class="wordmark" href="#top" aria-label="Ample home">
         <svg aria-hidden="true" viewBox="0 0 48 48">
           <rect width="48" height="48" rx="14"></rect>
           <path d="M13 35V21l11-8 11 8v14H13Zm7 0v-9h8v9"></path>
         </svg>
-        <span>Hearth</span>
+        <span>Ample</span>
       </a>
       <nav aria-label="Primary">
         <a href="#how-it-works">How it works</a>
-        <a href="#inside-hearth">Inside Hearth</a>
+        <a href="#inside-ample">Inside Ample</a>
         <a href="#privacy">Privacy</a>
         <a href="#questions">Questions</a>
       </nav>
@@ -50,7 +50,7 @@
           <p class="eyebrow"><span></span> Microsoft Store submission in progress</p>
           <h1 id="hero-title">Plan the day you have.</h1>
           <p class="hero-deck">
-            Hearth is a privacy-first energy planner for ADHD and other
+            Ample is a privacy-first energy planner for ADHD and other
             variable-capacity days. It helps you decide what fits before a tired
             day becomes an impossible list.
           </p>
@@ -95,13 +95,13 @@
         </div>
       </section>
 
-      <section class="proof-strip" aria-label="Hearth principles">
+      <section class="proof-strip" aria-label="Ample principles">
         <p><strong>Finite by design.</strong> Work receives an energy cost.</p>
         <p><strong>Local and encrypted at rest.</strong> SQLite runs in memory while open.</p>
         <p><strong>No performance theater.</strong> No streaks, ads, or public scores.</p>
       </section>
 
-      <section class="product-tour section" id="inside-hearth" aria-labelledby="product-tour-title">
+      <section class="product-tour section" id="inside-ample" aria-labelledby="product-tour-title">
         <div class="section-intro product-tour-intro">
           <p class="kicker">The actual release candidate</p>
           <h2 id="product-tour-title">A calm surface for days that are not.</h2>
@@ -119,7 +119,7 @@
               width="1920"
               height="1080"
               loading="lazy"
-              alt="Hearth Today screen showing an energy budget, a plain-language daily briefing, suggested focus, and three fictional tasks."
+              alt="Ample Today screen showing an energy budget, a plain-language daily briefing, suggested focus, and three fictional tasks."
             >
           </figure>
           <div class="scene-caption">
@@ -140,7 +140,7 @@
               width="1920"
               height="1080"
               loading="lazy"
-              alt="Hearth Rhythm screen in dark mode showing fictional mood, energy, and sleep trends across fourteen days."
+              alt="Ample Rhythm screen in dark mode showing fictional mood, energy, and sleep trends across fourteen days."
             >
           </figure>
           <div class="scene-caption">
@@ -161,14 +161,14 @@
               width="1920"
               height="1080"
               loading="lazy"
-              alt="Hearth Check in screen showing fictional mood, energy, anxiety, and recent check-in values."
+              alt="Ample Check in screen showing fictional mood, energy, anxiety, and recent check-in values."
             >
           </figure>
           <div class="scene-caption">
             <span>03 / Check in</span>
             <h3>Reflection stays optional and local.</h3>
             <p>
-              Record only what is useful. Hearth does not send entries to an
+              Record only what is useful. Ample does not send entries to an
               account, cloud API, ad network, remote AI service, or analytics
               provider.
             </p>
@@ -181,7 +181,7 @@
           <p class="kicker">The core loop</p>
           <h2 id="workflow-title">Three decisions, then less noise.</h2>
           <p>
-            Hearth does not promise to optimize a person. It makes the cost of a
+            Ample does not promise to optimize a person. It makes the cost of a
             day visible and keeps the next step small enough to choose.
           </p>
         </div>
@@ -193,7 +193,7 @@
               <h3>Name today's capacity</h3>
               <p>
                 Choose a daily budget from 4 to 24. Optional mood, energy, and
-                sleep check-ins shape a plain-language briefing, but Hearth
+                sleep check-ins shape a plain-language briefing, but Ample
                 never infers or changes the budget from a diagnosis or check-in.
               </p>
             </div>
@@ -203,7 +203,7 @@
             <div>
               <h3>Give work a cost</h3>
               <p>
-                Add priority, expected duration, and energy demand. Hearth
+                Add priority, expected duration, and energy demand. Ample
                 estimates a spoon cost and subtracts completed work from the
                 day's budget.
               </p>
@@ -237,18 +237,18 @@
         </div>
         <div class="privacy-copy">
           <p>
-            Hearth stores tasks, check-ins, journal text, and optional wellness
+            Ample stores tasks, check-ins, journal text, and optional wellness
             records in an in-memory SQLite database while open. At rest, it
             writes versioned, authenticated AES-256-GCM snapshots with a fresh
             random IV. A random 256-bit key is protected by Windows DPAPI through
             Electron safeStorage. A temporary encrypted migration backup for
             older installs is retired after two verified encrypted generations.
-            Hearth has no advertising, remote AI service, or app telemetry.
+            Ample has no advertising, remote AI service, or app telemetry.
           </p>
           <aside class="candor-note">
             <strong>Limits, stated plainly</strong>
             <p>
-              Records and the key are decrypted in memory while Hearth is open,
+              Records and the key are decrypted in memory while Ample is open,
               and Windows may copy memory into swap, hibernation, crash, or
               diagnostic storage. Someone controlling the signed-in OS session
               may be able to use the same credential facility. JSON and PDF
@@ -303,7 +303,7 @@
         </div>
         <div>
           <p>
-            Hearth's source remains MIT licensed. The proposed one-time Store
+            Ample's source remains MIT licensed. The proposed one-time Store
             price would cover an official x64 package and Microsoft Store
             delivery—not exclusive code, clinical capability, or guaranteed
             future features.
@@ -322,7 +322,7 @@
         </div>
         <div class="faq">
           <details>
-            <summary>Is Hearth available to buy now?</summary>
+            <summary>Is Ample available to buy now?</summary>
             <p>
               No. The exact 1.1.0 x64 package, proposed price, listing copy, and
               five screenshots are saved in a Partner Center draft under a
@@ -333,9 +333,9 @@
             </p>
           </details>
           <details>
-            <summary>Does Hearth diagnose or treat ADHD?</summary>
+            <summary>Does Ample diagnose or treat ADHD?</summary>
             <p>
-              No. Hearth is personal organization and reflection software. It
+              No. Ample is personal organization and reflection software. It
               does not diagnose, treat, monitor, or replace professional care.
             </p>
           </details>
@@ -350,13 +350,13 @@
             <summary>Does it send medication reminders?</summary>
             <p>
               No. Medication names, doses, and usual times can be kept as local
-              references, but Hearth does not issue medication reminders.
+              references, but Ample does not issue medication reminders.
             </p>
           </details>
           <details>
             <summary>What happens in a crisis?</summary>
             <p>
-              Hearth can display a user-written crisis plan and US 988 links,
+              Ample can display a user-written crisis plan and US 988 links,
               but it does not monitor a person or guarantee detection. In a US
               crisis, call or text 988; in immediate danger, call the local
               emergency number.
@@ -372,7 +372,7 @@
           <rect width="48" height="48" rx="14"></rect>
           <path d="M13 35V21l11-8 11 8v14H13Zm7 0v-9h8v9"></path>
         </svg>
-        <span>Hearth</span>
+        <span>Ample</span>
       </div>
       <p>Personal organization software. Not medical or emergency care.</p>
       <nav aria-label="Legal and project links">

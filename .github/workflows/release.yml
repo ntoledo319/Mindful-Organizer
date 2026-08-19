@@ -18,9 +18,9 @@ jobs:
       matrix:
         include:
           - os: macos-latest
-            artifact: hearth-macos
+            artifact: ample-macos
           - os: windows-latest
-            artifact: hearth-windows
+            artifact: ample-windows
 
     steps:
       - uses: actions/checkout@v4

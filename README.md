@@ -1,4 +1,4 @@
-# Hearth
+# Ample
 
 > **Continuation:** agents and operators with no prior context must start with
 > [HANDOFF.md](HANDOFF.md) and [PROJECT_TRACKER.md](PROJECT_TRACKER.md);
@@ -6,12 +6,12 @@
 
 **Plan the day you have, not the day a calendar assumes.**
 
-Hearth is a privacy-first Windows energy planner for ADHD and other
+Ample is a privacy-first Windows energy planner for ADHD and other
 variable-capacity days. It gives tasks an estimated energy cost, keeps a finite
 daily “spoon” budget, and shows a small set of open tasks whose recorded cost
 fits what remains.
 
-> **Release status:** Hearth 1.1.0 is an accepted x64 package in a fully prepared
+> **Release status:** Ample 1.1.0 is an accepted x64 package in a fully prepared
 > Microsoft Partner Center draft, but it is not certified, public, or
 > purchasable. The exact package passed source, package-structure, and real
 > Windows DPAPI lifecycle automation. Microsoft certification, a manual Windows
@@ -23,10 +23,10 @@ fits what remains.
 
 1. **Set the capacity you have.** Choose a daily energy budget from 4 to 24.
    Optional mood, energy, and sleep check-ins shape a plain-language Today
-   briefing, but Hearth never infers or changes that budget from a diagnosis or
+   briefing, but Ample never infers or changes that budget from a diagnosis or
    a check-in.
 2. **Cost the work honestly.** Give a task its priority, expected duration, and
-   energy demand. Hearth estimates a spoon cost, and completing the task
+   energy demand. Ample estimates a spoon cost, and completing the task
    subtracts that cost from today's budget.
 3. **Choose what fits.** Today can show up to three open tasks whose recorded
    cost fits the remaining budget. Smart Decompose can replace one task with a
@@ -38,15 +38,15 @@ and action.
 
 ## Privacy model
 
-Hearth has no account, cloud API, advertising, record sync, app telemetry, or
-remote AI service. While the app is open, SQLite runs in memory. At rest, Hearth
+Ample has no account, cloud API, advertising, record sync, app telemetry, or
+remote AI service. While the app is open, SQLite runs in memory. At rest, Ample
 writes versioned, authenticated AES-256-GCM snapshots with a fresh random IV for
 each successful write. A random 256-bit key is protected through Electron
-`safeStorage`—Windows DPAPI on Windows—and Hearth fails closed when protected key
+`safeStorage`—Windows DPAPI on Windows—and Ample fails closed when protected key
 storage is unavailable.
 
 Those protections have limits. Decrypted records and the key exist in process
-memory while Hearth is open, and the operating system may copy memory into swap,
+memory while Ample is open, and the operating system may copy memory into swap,
 hibernation, crash, or diagnostic storage. Someone controlling the signed-in OS
 session may be able to access the same credential facility. User-requested JSON
 and PDF exports are plaintext, and deleting old database files cannot guarantee
@@ -57,7 +57,7 @@ migration backup is retired after two verified encrypted generations. Read
 
 ## Secondary toolkit
 
-The launch promise is energy planning. Hearth also contains optional local tools
+The launch promise is energy planning. Ample also contains optional local tools
 that support a broader personal routine:
 
 | Area | Demonstrable behavior |
@@ -69,7 +69,7 @@ that support a broader personal routine:
 | Crisis plan | User-written warning signs, coping steps, contacts, and US 988 links |
 | Preserved modules | ERP notes, diary cards, medication references, and legacy condition-label metadata remain in the codebase but are outside the default experience pending dedicated opt-in and safety review |
 
-Hearth does not monitor a person, guarantee crisis detection, deliver medication
+Ample does not monitor a person, guarantee crisis detection, deliver medication
 reminders, diagnose a condition, provide treatment, or replace professional or
 emergency care. In a US crisis, call or text 988; in immediate danger, call the
 local emergency number.

@@ -106,7 +106,7 @@ function MoodPane() {
         <button className="btn-primary w-full" onClick={() => saveMutation.mutate()} disabled={saveMutation.isPending}>
           {saveMutation.isPending ? 'Saving...' : 'Save check-in'}
         </button>
-        {saveMutation.isError && <InlineError>Hearth could not save this check-in. Try again.</InlineError>}
+        {saveMutation.isError && <InlineError>Ample could not save this check-in. Try again.</InlineError>}
       </div>
       <RecentList
         title="Recent check-ins"
@@ -169,11 +169,11 @@ function SleepPane() {
         <button className="btn-primary w-full" onClick={() => saveMutation.mutate()} disabled={saveMutation.isPending}>
           {saveMutation.isPending ? 'Logging...' : 'Log sleep'}
         </button>
-        {saveMutation.isError && <InlineError>Hearth could not save this sleep log. Try again.</InlineError>}
+        {saveMutation.isError && <InlineError>Ample could not save this sleep log. Try again.</InlineError>}
       </div>
       <RecentList
         title="Recent nights"
-        empty="Log a night and Hearth starts reading your rhythm."
+        empty="Log a night and Ample starts reading your rhythm."
         items={recent.map((s) => ({
           id: s.id,
           primary: `${s.durationHours}h · quality ${s.quality}/10`,
@@ -233,7 +233,7 @@ function JournalPane() {
         >
           {saveMutation.isPending ? 'Saving...' : 'Keep this entry'}
         </button>
-        {saveMutation.isError && <InlineError>Hearth could not save this entry. Try again.</InlineError>}
+        {saveMutation.isError && <InlineError>Ample could not save this entry. Try again.</InlineError>}
       </div>
       <div className="space-y-3">
         {entriesQuery.isLoading ? (

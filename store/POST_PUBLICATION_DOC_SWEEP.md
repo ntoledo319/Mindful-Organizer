@@ -28,7 +28,7 @@ manual accessibility pass), delete that clause — claim only what happened.
 
 Current:
 
-> **Release status:** Hearth 1.1.0 is an accepted x64 package in a fully
+> **Release status:** Ample 1.1.0 is an accepted x64 package in a fully
 > prepared Microsoft Partner Center draft, but it is not certified, public, or
 > purchasable. The exact package passed source, package-structure, and real
 > Windows DPAPI lifecycle automation. Microsoft certification, a manual Windows
@@ -38,7 +38,7 @@ Current:
 
 Replacement:
 
-> **Release status:** Hearth 1.1.0 is available on the Microsoft Store for
+> **Release status:** Ample 1.1.0 is available on the Microsoft Store for
 > <OBSERVED_PRICE>: <LIVE_STORE_URL>. The shipped package passed source,
 > package-structure, and real Windows DPAPI lifecycle automation, Microsoft
 > certification, and a manual Windows accessibility pass. The source remains
@@ -57,7 +57,7 @@ Current:
 ```
 ## Current status
 
-Hearth is not currently listed as purchasable. These terms describe the intended
+Ample is not currently listed as purchasable. These terms describe the intended
 official Microsoft Store package and do not represent that a price, package, or
 listing is live.
 ```
@@ -67,7 +67,7 @@ Replacement:
 ```
 ## Current status
 
-Hearth is available on the Microsoft Store for <OBSERVED_PRICE> at
+Ample is available on the Microsoft Store for <OBSERVED_PRICE> at
 <LIVE_STORE_URL>. These terms govern the official Microsoft Store package.
 ```
 
@@ -78,7 +78,7 @@ Also bump `_Last updated: 2026-07-14_` to `_Last updated: <PUBLICATION_DATE>_`.
 Current:
 
 ```
-Hearth is not currently listed as purchasable. No direct payment link,
+Ample is not currently listed as purchasable. No direct payment link,
 developer-run checkout, subscription, in-app purchase, or license-key sale is
 active.
 
@@ -88,7 +88,7 @@ If an official paid Microsoft Store package is released:
 Replacement:
 
 ```
-Hearth is available on the Microsoft Store for <OBSERVED_PRICE> at
+Ample is available on the Microsoft Store for <OBSERVED_PRICE> at
 <LIVE_STORE_URL>. No developer-run checkout, subscription, in-app purchase,
 or license-key sale exists; Microsoft processes every purchase.
 
@@ -102,13 +102,13 @@ Also bump `_Last updated:_` as above.
 Current:
 
 ```
-Hearth is not currently released. This page is the public support landing page.
+Ample is not currently released. This page is the public support landing page.
 ```
 
 Replacement:
 
 ```
-Hearth is available on the Microsoft Store at <LIVE_STORE_URL>. This page is
+Ample is available on the Microsoft Store at <LIVE_STORE_URL>. This page is
 the public support landing page.
 ```
 
@@ -119,7 +119,7 @@ Also bump `_Last updated:_` as above.
 Current:
 
 ```
-Hearth 1.1.x is the current release-candidate line. No Hearth binary is public
+Ample 1.1.x is the current release-candidate line. No Ample binary is public
 or purchasable yet. Security fixes will be evaluated against the current source
 and, after publication, the current Microsoft Store release.
 ```
@@ -127,7 +127,7 @@ and, after publication, the current Microsoft Store release.
 Replacement:
 
 ```
-Hearth 1.1.x is the current Microsoft Store release line, available at
+Ample 1.1.x is the current Microsoft Store release line, available at
 <LIVE_STORE_URL>. Security fixes are evaluated against the current source and
 the current Microsoft Store release.
 ```
@@ -143,7 +143,7 @@ hero span. The store validator's draft-only invariants stop applying once
 Current (lines ~324–334):
 
 ```
-<summary>Is Hearth available to buy now?</summary>
+<summary>Is Ample available to buy now?</summary>
 <p>
   No. The exact 1.1.0 x64 package, proposed price, listing copy, and
   five screenshots are saved in a Partner Center draft under a
@@ -157,9 +157,9 @@ Current (lines ~324–334):
 Replacement:
 
 ```
-<summary>Is Hearth available to buy now?</summary>
+<summary>Is Ample available to buy now?</summary>
 <p>
-  Yes. Hearth 1.1.0 is available on the Microsoft Store for
+  Yes. Ample 1.1.0 is available on the Microsoft Store for
   <OBSERVED_PRICE>: <LIVE_STORE_URL>?cid=landing-primary
 </p>
 ```

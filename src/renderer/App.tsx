@@ -13,7 +13,7 @@ import {
   type Route,
 } from './capabilities';
 import {
-  HearthMark,
+  AmpleMark,
   HomeIcon,
   TaskIcon,
   MoodIcon,
@@ -97,8 +97,8 @@ function AppContent() {
       <div className="h-full bg-base-bg dark:bg-night-bg">
         <div className="mx-auto max-w-xl px-10 pb-16 pt-24">
           <QueryErrorState
-            title="Hearth couldn't finish starting up"
-            body="Your local records are still on this device. Try starting Hearth again."
+            title="Ample couldn't finish starting up"
+            body="Your local records are still on this device. Try starting Ample again."
             onRetry={() => void initialize()}
           />
         </div>
@@ -128,10 +128,10 @@ function AppContent() {
     <div data-app-shell className="flex h-full bg-base-bg text-text-primary dark:bg-night-bg dark:text-night-text">
       <aside className="app-drag flex w-60 shrink-0 flex-col gap-1 border-r border-base-border px-4 pb-5 pt-12 dark:border-night-border overflow-y-auto">
         <div className="app-no-drag mb-4 flex items-center gap-2.5 px-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-soft bg-brand text-white shadow-hearth dark:bg-night-brand dark:text-night-bg">
-            <HearthMark width={20} height={20} />
+          <span className="flex h-9 w-9 items-center justify-center rounded-soft bg-brand text-white shadow-ample dark:bg-night-brand dark:text-night-bg">
+            <AmpleMark width={20} height={20} />
           </span>
-          <span className="font-display text-xl font-semibold tracking-tight">Hearth</span>
+          <span className="font-display text-xl font-semibold tracking-tight">Ample</span>
         </div>
 
         {/* Gamification purposefully removed to align with intrinsic reflection standards */}
@@ -188,7 +188,7 @@ function AppContent() {
         ref={mainRef}
         className="relative flex-1 overflow-y-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand dark:focus-visible:ring-night-brand"
         tabIndex={-1}
-        aria-label={`${currentCapability?.title ?? 'Hearth'} view`}
+        aria-label={`${currentCapability?.title ?? 'Ample'} view`}
       >
         <div className="app-drag absolute inset-x-0 top-0 h-12" />
         <div className="mx-auto max-w-4xl px-10 pb-16 pt-12">

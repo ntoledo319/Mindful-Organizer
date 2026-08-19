@@ -1,4 +1,4 @@
-// A small, user-controlled way to budget finite daily energy. Hearth never
+// A small, user-controlled way to budget finite daily energy. Ample never
 // infers someone's capacity from a diagnosis, condition label, or check-in.
 // Legacy condition labels remain only as backward-compatible metadata.
 

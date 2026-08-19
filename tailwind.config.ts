@@ -47,9 +47,9 @@ export default {
       },
       boxShadow: {
         // Physical shadow for earthenware
-        hearth: '0 4px 12px -2px rgba(44, 39, 37, 0.08), 0 2px 4px -2px rgba(44, 39, 37, 0.04)',
+        ample: '0 4px 12px -2px rgba(44, 39, 37, 0.08), 0 2px 4px -2px rgba(44, 39, 37, 0.04)',
         glow: '0 4px 20px -2px rgba(196, 85, 54, 0.15)',
-        'night-hearth': '0 4px 12px -2px rgba(0, 0, 0, 0.4)',
+        'night-ample': '0 4px 12px -2px rgba(0, 0, 0, 0.4)',
       },
       keyframes: {
         breathe: {

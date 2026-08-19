@@ -4,14 +4,14 @@ _Cycle 3 handoff update 2026-07-15. Scope is the containment root only._
 
 ## Workspace inventory
 
-There is one product codebase in the workspace: **Hearth**, an
+There is one product codebase in the workspace: **Ample**, an
 Electron/React/TypeScript Windows desktop application backed by in-memory SQLite
 and encrypted local snapshots. Generated dependencies, caches, build output,
 evidence, and assistant state are not separate assets.
 
-## Codebase: Hearth
+## Codebase: Ample
 
-- **Buyer sentence:** Hearth is a calm private Windows organizer that helps a
+- **Buyer sentence:** Ample is a calm private Windows organizer that helps a
   person choose an energy budget, plan tasks that fit it, check in, and review
   their own rhythm without an account or cloud record sync.
 - **Completeness:** Release-candidate source, tests, deterministic assets,
@@ -38,12 +38,12 @@ evidence, and assistant state are not separate assets.
   export warnings are covered by automated Windows lifecycle validation.
 - **Single capability a stranger could pay for:** A maintained, packaged,
   Store-delivered offline Windows planner built around user-chosen capacity.
-- **Smallest sellable unit:** The official x64 Hearth 1.1.0 Store package at a
+- **Smallest sellable unit:** The official x64 Ample 1.1.0 Store package at a
   one-time $14.99 price, with honest wellness and local-data boundaries.
 
 ## Separable asset map
 
-### A1 — Full Hearth desktop app
+### A1 — Full Ample desktop app
 
 Launch scope: Today, Tasks, Check in, Practices, Rhythm, Crisis, and Settings.
 Smallest sellable unit: the official Windows package. Status: release candidate
@@ -53,7 +53,7 @@ and Store draft complete; public support path prepared; not submitted or public.
 
 Tray lifecycle, optional whole-screen dim, focus hold, settings, notifications,
 and escape routes. Smallest sellable unit: a narrowly extracted Focus Guard
-utility. Status: bundled into Hearth; standalone frame is reserve-only.
+utility. Status: bundled into Ample; standalone frame is reserve-only.
 
 ### A3 — Adaptive planning engine
 

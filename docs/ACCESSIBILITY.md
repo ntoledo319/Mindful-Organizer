@@ -1,8 +1,8 @@
-# Hearth Accessibility Status
+# Ample Accessibility Status
 
 _Last updated: 2026-07-14_
 
-Hearth is designed to reduce cognitive load, but no formal accessibility
+Ample is designed to reduce cognitive load, but no formal accessibility
 conformance claim has been completed for the release candidate.
 
 ## Present in the source
@@ -42,4 +42,4 @@ high-contrast, reduced-motion, WCAG, or other formal accessibility conformance.
 
 Accessibility problems can be reported through the channel described in
 [SUPPORT.md](SUPPORT.md). Creating an issue requires GitHub sign-in. Do not
-include private Hearth records in a public report.
+include private Ample records in a public report.

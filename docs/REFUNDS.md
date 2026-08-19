@@ -1,8 +1,8 @@
-# Hearth Purchases and Refunds
+# Ample Purchases and Refunds
 
 _Last updated: 2026-07-14_
 
-Hearth is not currently listed as purchasable. No direct payment link,
+Ample is not currently listed as purchasable. No direct payment link,
 developer-run checkout, subscription, in-app purchase, or license-key sale is
 active.
 

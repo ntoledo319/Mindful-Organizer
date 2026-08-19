@@ -88,7 +88,7 @@ export function recoverSnapshot(
   }
 
   throw new Error(
-    `No authenticated Hearth database snapshot could be opened. ${failures.join(' | ')}`,
+    `No authenticated Ample database snapshot could be opened. ${failures.join(' | ')}`,
   );
 }
 
@@ -103,7 +103,7 @@ export function persistSnapshot(
   const nextEnvelope = encryptDatabase(plaintext, key);
   const roundTrip = decryptDatabase(nextEnvelope, key);
   if (!roundTrip.equals(plaintext)) {
-    throw new Error('Encrypted Hearth database verification failed before write.');
+    throw new Error('Encrypted Ample database verification failed before write.');
   }
 
   if (existsSync(paths.primary)) {

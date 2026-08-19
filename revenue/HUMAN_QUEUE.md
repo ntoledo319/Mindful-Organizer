@@ -114,7 +114,7 @@ posts remain.
 - **Package swap first (CAND-002) — ≈4 min:** the 2026-07-29 remediation changed
   the app bytes, so the originally accepted AppX is superseded. Before step 1,
   replace the held Submission 1 package and screenshots with CAND-002: download
-  `hearth-msix` + `hearth-store-screenshots` from CI run 30790687808
+  `ample-msix` + `ample-store-screenshots` from CI run 30790687808
   (<https://github.com/ntoledo319/Mindful-Organizer/actions/runs/30790687808>),
   confirm the AppX SHA-256 is
   `a5d2cf3633def56983702d41d17f6fa458abd8dfedc818039ed1af040f36b18f`
@@ -122,7 +122,7 @@ posts remain.
   five refreshed screenshots. **After the swap, the hash to confirm in step 1 is
   the CAND-002 hash above, not `4900f382…facdb1`.**
 - **Steps:**
-  1. Confirm the package is only `Hearth 1.1.0.appx`, Partner Center says
+  1. Confirm the package is only `Ample 1.1.0.appx`, Partner Center says
      Validated, and its source artifact SHA-256 is the accepted candidate —
      `a5d2cf36…b18f` (CAND-002) once swapped, else the prior
      `4900f3823febace53f86f69ee2567b50208aec8f6677741c3c4dcf3667facdb1`.
@@ -193,9 +193,9 @@ posts remain.
      observed live and purchasable (HQ-04 step 6). The store validator fails
      the build if that link appears while the listing is in draft state.
 
-## HQ-07 — Clear the "Hearth" name, or explicitly accept the risk — 10 minutes (or 1 minute)
+## HQ-07 — Clear the "Ample" name, or explicitly accept the risk — 10 minutes (or 1 minute)
 
-- **What:** A minimum trademark/name collision check for "Hearth" before a
+- **What:** A minimum trademark/name collision check for "Ample" before a
   paid listing attaches money to the name — or an explicit, informed decision
   to accept the risk without searching.
 - **Why human-only:** Judging which collisions matter is a legal-risk
@@ -203,13 +203,13 @@ posts remain.
   private data.
 - **Direct links:** <https://tmsearch.uspto.gov/> (USPTO Trademark Search;
   the legacy TESS system was retired 2023-11-30) and
-  <https://apps.microsoft.com/search?query=Hearth>.
+  <https://apps.microsoft.com/search?query=Ample>.
 - **Steps (clearance path — 10 minutes):**
-  1. On tmsearch.uspto.gov, run a basic wordmark search for **Hearth**;
+  1. On tmsearch.uspto.gov, run a basic wordmark search for **Ample**;
      filter to **live** marks and skim software-relevant classes (IC 009,
      IC 042) for anything covering productivity or wellness software.
   2. Open the Microsoft Store search link and skim whether existing apps
-     already trade on "Hearth" in adjacent categories.
+     already trade on "Ample" in adjacent categories.
   3. This is a spot check, not a legal opinion. If anything looks
      conflicting, stop and decide before HQ-04.
   4. Record a one-line, non-sensitive note in `revenue/METRICS.md`: date,

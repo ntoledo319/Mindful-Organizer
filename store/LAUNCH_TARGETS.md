@@ -15,7 +15,7 @@ Standing rules for every destination:
 
 1. Re-read the destination's current rules in full immediately before
    posting.
-2. Disclose the maker relationship in the first line: "I built Hearth."
+2. Disclose the maker relationship in the first line: "I built Ample."
 3. Post only after the Store page is observed live and purchasable in a
    private browser (HQ-04 step 6); use the destination's campaign ID from
    `store/CAMPAIGNS.md` (`owner-approved-community-<slug>`).
@@ -34,14 +34,14 @@ Standing rules for every destination:
   Third-party rule checks (2026-07) report self-promotion explicitly
   permitted with "share your project, not just a link", no repeated posting
   of the same project, and engagement with commenters expected.
-- Required disclosure: "I built Hearth" in the opening line; never present
+- Required disclosure: "I built Ample" in the opening line; never present
   the post as a user review.
 - Draft post body:
 
-> **I built Hearth: a privacy-first Windows energy planner for ADHD and
+> **I built Ample: a privacy-first Windows energy planner for ADHD and
 > variable-capacity days**
 >
-> I built Hearth. It is a Windows app for days when your capacity does not
+> I built Ample. It is a Windows app for days when your capacity does not
 > match your calendar: you give each task an energy cost and duration, choose
 > a daily energy budget from 4 to 24, and Today shows up to three open tasks
 > whose recorded cost fits what is left. Check-ins, 7/14/30-day trends, and
@@ -64,7 +64,7 @@ Standing rules for every destination:
 - Self-promotion summary: founder-oriented community; third-party rule
   checks (2026-05) report project and launch posts welcome with full founder
   disclosure. Re-verify before posting.
-- Required disclosure: "I built Hearth" in the opening line.
+- Required disclosure: "I built Ample" in the opening line.
 - Draft post body: same facts as destination 1, reframed around the build —
   what was built, the local-encryption design, and the one-time-price
   choice — with one paragraph of genuine build detail before the link. Do
@@ -79,7 +79,7 @@ Standing rules for every destination:
   threads or formats; a standalone launch post may be removed. Post only
   inside the currently designated self-promotion thread, if one exists, and
   follow its format exactly.
-- Required disclosure: "I built Hearth" plus exact thread-format compliance.
+- Required disclosure: "I built Ample" plus exact thread-format compliance.
 - Draft post body: a two-to-three-sentence version of destination 1 — what
   it does, who it is for, the privacy model in one clause, the disclosure,
   and the campaign link.
@@ -93,11 +93,11 @@ Standing rules for every destination:
   marketing channel. Do not post a project link without prior written
   moderator approval via modmail; accept "no" without argument. If approval
   is granted, follow every condition the moderators set.
-- Required disclosure: "I built Hearth" and, if asked, that the app is a
+- Required disclosure: "I built Ample" and, if asked, that the app is a
   paid $14.99 one-time purchase with MIT-licensed source.
 - Draft modmail (not a post):
 
-> Hello moderators — I built Hearth, a Windows energy planner based on a
+> Hello moderators — I built Ample, a Windows energy planner based on a
 > user-chosen 4–24 daily budget with spoon-style task costs. It is local and
 > encrypted at rest, with no account or cloud. May I share it once with the
 > community under your rules? I will follow any format or disclosure you
@@ -114,7 +114,7 @@ Standing rules for every destination:
   factually; never solicit or fabricate reviews.
 - Draft listing summary (short, factual):
 
-> Hearth is a privacy-first Windows energy planner for ADHD and other
+> Ample is a privacy-first Windows energy planner for ADHD and other
 > variable-capacity days. Tasks get an energy cost; you choose a 4–24 daily
 > budget and see what fits. Local and encrypted at rest; no account, cloud,
 > ads, or record sync. One-time purchase; MIT-licensed source.
@@ -127,7 +127,7 @@ Standing rules for every destination:
   Maker badge, which satisfies disclosure by design. Expect to answer
   comments on launch day — schedule it only when the owner can respond.
 - Required disclosure: automatic via the Maker badge; still say "I built
-  Hearth" in the first comment.
+  Ample" in the first comment.
 - Draft first comment: the destination-1 facts minus the Reddit framing,
   plus one sentence on why local-first (records stay on the user's machine;
   requested exports are plaintext). Include the Store campaign link with

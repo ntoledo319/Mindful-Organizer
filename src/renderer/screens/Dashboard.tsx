@@ -85,7 +85,7 @@ export function Dashboard({ onNavigate }: { onNavigate: (r: Route) => void }) {
     return (
       <QueryErrorState
         title="Today's view didn't load"
-        body="Hearth could not read the local briefing just now. Your entries have not been removed."
+        body="Ample could not read the local briefing just now. Your entries have not been removed."
         onRetry={() => {
           void Promise.all([briefingQuery.refetch(), snapshotQuery.refetch()]);
         }}
@@ -113,7 +113,7 @@ export function Dashboard({ onNavigate }: { onNavigate: (r: Route) => void }) {
           <section className="surface-card border-brand/20 p-6 dark:border-night-brand/25" aria-labelledby="start-title">
             <p className="text-xs font-semibold uppercase tracking-widest text-brand dark:text-night-brand">Start with what is true</p>
             <h2 id="start-title" className="mt-2 font-display text-2xl font-medium text-text-primary dark:text-night-text">
-              Give Hearth one small piece of today.
+              Give Ample one small piece of today.
             </h2>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-text-muted dark:text-night-muted">
               A quick check-in helps set the energy picture. One task gives that energy somewhere useful to go.

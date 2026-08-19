@@ -24,7 +24,7 @@ afterEach(() => rmSync(dir, { recursive: true, force: true }));
 
 describe('legacy migration lifecycle', () => {
   it('captures committed WAL data and retires plaintext plus migration backup', () => {
-    const database = join(dir, 'hearth.db');
+    const database = join(dir, 'ample.db');
     const writer = new Database(database);
     writer.pragma('journal_mode = WAL');
     writer.exec('CREATE TABLE private_notes (id INTEGER PRIMARY KEY, note TEXT NOT NULL)');
@@ -39,7 +39,7 @@ describe('legacy migration lifecycle', () => {
     migrated.close();
     writer.close();
 
-    const migrationBackup = join(dir, 'hearth.secure.migration-backup');
+    const migrationBackup = join(dir, 'ample.secure.migration-backup');
     writeFileSync(migrationBackup, randomBytes(64));
     retireLegacyMigration(
       {
@@ -57,9 +57,9 @@ describe('legacy migration lifecycle', () => {
 });
 describe('cryptographic erase lifecycle', () => {
   it('destroys the protected key and every encrypted remnant', () => {
-    const marker = join(dir, 'hearth.deleting');
-    const key = join(dir, 'hearth.key');
-    const remnants = [join(dir, 'hearth.secure'), join(dir, 'hearth.secure.backup')];
+    const marker = join(dir, 'ample.deleting');
+    const key = join(dir, 'ample.key');
+    const remnants = [join(dir, 'ample.secure'), join(dir, 'ample.secure.backup')];
     for (const path of [key, ...remnants]) writeFileSync(path, randomBytes(32));
 
     beginCryptographicDeletion({ marker, key, remnants });
@@ -67,9 +67,9 @@ describe('cryptographic erase lifecycle', () => {
   });
 
   it('resumes an interrupted explicit deletion before storage can reopen', () => {
-    const marker = join(dir, 'hearth.deleting');
-    const key = join(dir, 'hearth.key');
-    const remnants = [join(dir, 'hearth.secure.migration-backup')];
+    const marker = join(dir, 'ample.deleting');
+    const key = join(dir, 'ample.key');
+    const remnants = [join(dir, 'ample.secure.migration-backup')];
     for (const path of [marker, key, ...remnants]) writeFileSync(path, randomBytes(32));
 
     completeCryptographicDeletion({ marker, key, remnants });

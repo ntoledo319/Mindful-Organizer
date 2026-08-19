@@ -9,14 +9,14 @@ const HEADER_BYTES = MAGIC.length + 1 + IV_BYTES + TAG_BYTES;
 export const MASTER_KEY_BYTES = 32;
 
 export class InvalidEncryptedDatabaseError extends Error {
-  constructor(message = 'The encrypted Hearth database could not be authenticated.') {
+  constructor(message = 'The encrypted Ample database could not be authenticated.') {
     super(message);
     this.name = 'InvalidEncryptedDatabaseError';
   }
 }
 function assertKey(key: Buffer): void {
   if (key.length !== MASTER_KEY_BYTES) {
-    throw new Error(`Hearth database keys must be ${MASTER_KEY_BYTES} bytes.`);
+    throw new Error(`Ample database keys must be ${MASTER_KEY_BYTES} bytes.`);
   }
 }
 
@@ -40,21 +40,21 @@ export function encryptDatabase(plaintext: Buffer, key: Buffer): Buffer {
   return Buffer.concat([aad, iv, tag, ciphertext]);
 }
 
-/** Decrypt and authenticate a Hearth database envelope. */
+/** Decrypt and authenticate a Ample database envelope. */
 export function decryptDatabase(envelope: Buffer, key: Buffer): Buffer {
   assertKey(key);
   if (envelope.length < HEADER_BYTES) {
-    throw new InvalidEncryptedDatabaseError('The encrypted Hearth database is truncated.');
+    throw new InvalidEncryptedDatabaseError('The encrypted Ample database is truncated.');
   }
 
   const magic = envelope.subarray(0, MAGIC.length);
   if (!magic.equals(MAGIC)) {
-    throw new InvalidEncryptedDatabaseError('The encrypted Hearth database has an unknown format.');
+    throw new InvalidEncryptedDatabaseError('The encrypted Ample database has an unknown format.');
   }
 
   const version = envelope[MAGIC.length];
   if (version !== VERSION) {
-    throw new InvalidEncryptedDatabaseError(`Unsupported Hearth database version: ${version}.`);
+    throw new InvalidEncryptedDatabaseError(`Unsupported Ample database version: ${version}.`);
   }
 
   const aad = envelope.subarray(0, MAGIC.length + 1);

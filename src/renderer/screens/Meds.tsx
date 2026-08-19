@@ -40,7 +40,7 @@ export function Medications() {
     <div>
       <PageHeader
         title="Medications"
-        subtitle="A local reference for names, doses, and usual times. Hearth does not send reminders or monitor adherence."
+        subtitle="A local reference for names, doses, and usual times. Ample does not send reminders or monitor adherence."
         action={
           <button className="btn-primary" onClick={() => setOpen(true)}>
             <PlusIcon width={16} height={16} />
@@ -51,7 +51,7 @@ export function Medications() {
 
       {(toggleMutation.isError || deleteMutation.isError) && (
         <div className="mb-5">
-          <InlineError>Hearth could not update this reference. Try again.</InlineError>
+          <InlineError>Ample could not update this reference. Try again.</InlineError>
         </div>
       )}
 
@@ -204,10 +204,10 @@ function NewMedModal({ open, onClose }: { open: boolean; onClose: () => void; })
         </label>
 
         <p className="text-xs leading-relaxed text-text-muted dark:text-night-muted">
-          Hearth records this time for reference; it does not send medication reminders.
+          Ample records this time for reference; it does not send medication reminders.
         </p>
 
-        {createMutation.isError && <InlineError>Hearth could not save this medication reference. Try again.</InlineError>}
+        {createMutation.isError && <InlineError>Ample could not save this medication reference. Try again.</InlineError>}
 
         <div className="flex justify-end gap-3 pt-4">
           <button className="btn-ghost" onClick={onClose}>

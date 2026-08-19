@@ -46,7 +46,7 @@ export function EmptyState({
 }
 
 export function QueryErrorState({
-  title = "Hearth couldn't load this view",
+  title = "Ample couldn't load this view",
   body = 'Your local records are still on this device. Try loading the view again.',
   onRetry,
 }: {

@@ -30,7 +30,7 @@ Click path (from Microsoft's current sale-pricing documentation, fetched
 2026-07-28:
 <https://learn.microsoft.com/en-us/windows/apps/publish/put-apps-and-add-ons-on-sale>):
 
-1. Open the Hearth submission (product 9PLRSZZMFPJH) and go to the
+1. Open the Ample submission (product 9PLRSZZMFPJH) and go to the
    **Pricing and availability** page.
 2. In the **Sale pricing** section, select **Show options**, then
    **New sale**.
