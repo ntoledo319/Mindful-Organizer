@@ -77,7 +77,7 @@ export function buildSessionSummaryHtml(input: SessionSummaryInput): string {
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Hearth session summary</title>
+  <title>Ample session summary</title>
   <style>
     @page { size: A4; margin: 17mm; }
     * { box-sizing: border-box; }
@@ -103,7 +103,7 @@ export function buildSessionSummaryHtml(input: SessionSummaryInput): string {
 </head>
 <body>
   <header>
-    <p class="eyebrow">Hearth · ${days}-day reflection</p>
+    <p class="eyebrow">Ample · ${days}-day reflection</p>
     <h1>Session summary</h1>
     <p class="meta">${name ? `Prepared by ${escapeHtml(name)} · ` : ''}Generated locally on ${escapeHtml(generated)}</p>
   </header>
@@ -133,7 +133,7 @@ export function buildSessionSummaryHtml(input: SessionSummaryInput): string {
   </ul>
 
   <footer>
-    Generated entirely on this device. Hearth does not upload this report or the data behind it. Sharing the saved PDF is always the user's choice.
+    Generated entirely on this device. Ample does not upload this report or the data behind it. Sharing the saved PDF is always the user's choice.
   </footer>
 </body>
 </html>`;

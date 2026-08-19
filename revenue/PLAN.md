@@ -45,9 +45,9 @@ payment-provider balance at purchase time. Sources:
 Potential, draft pricing, CI artifacts, accrued-but-unpaid Store earnings, and
 an enabled certification button do not count as collected revenue.
 
-## Bet A — Fast: official Hearth Windows package
+## Bet A — Fast: official Ample Windows package
 
-- **Offer:** Hearth 1.1.0 as a one-time $14.99 Microsoft Store purchase. The MIT
+- **Offer:** Ample 1.1.0 as a one-time $14.99 Microsoft Store purchase. The MIT
   source remains free; the purchase covers the maintained packaged app and
   Store delivery.
 - **Target arithmetic (baseline, verified):** ADA v8.11 §6(b)(i) sets the
@@ -84,7 +84,7 @@ an enabled certification button do not count as collected revenue.
   requires a TOS-compliant manual retake. The submission is deliberately **not
   submitted, not certified, not published, and not purchasable**.
 
-## Bet B — Heavy: Hearth-to-Production Electron Kit
+## Bet B — Heavy: Ample-to-Production Electron Kit
 
 - **Offer:** a genuinely new $249 developer kit with a clean demo, threat model,
   encrypted local-storage migration pattern, sender-validated IPC, packaging,
@@ -111,7 +111,7 @@ an enabled certification button do not count as collected revenue.
 
 ## What shipped this cycle
 
-1. Replaced unsafe legacy GitHub issue templates with typed Hearth/Windows forms
+1. Replaced unsafe legacy GitHub issue templates with typed Ample/Windows forms
    that prohibit private records, require fictional reproduction data, and use
    only real repository labels. Blank issues are disabled and crisis help is
    separated from software support.

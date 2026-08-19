@@ -29,7 +29,7 @@ import type {
 
 // The full surface the renderer can call. Each method maps 1:1 to an IPC
 // channel of the same name. Defining it once keeps preload + main honest.
-export interface HearthApi {
+export interface AmpleApi {
   // tasks
   listTasks(includeCompleted: boolean): Promise<Task[]>;
   createTask(input: TaskInput): Promise<Task>;
@@ -69,7 +69,7 @@ export interface HearthApi {
   exportAllData(): Promise<PersonalDataExportResult>;
   deleteAllData(): Promise<void>;
 
-  // presence — the acting layer that reaches past Hearth's own window
+  // presence — the acting layer that reaches past Ample's own window
   getPresence(): Promise<PresenceState>;
   setQuietActive(active: boolean): Promise<PresenceState>;
   startFocus(input: { seconds: number; intention?: string | null }): Promise<PresenceState>;
@@ -94,7 +94,7 @@ export interface HearthApi {
   getAppInfo(): Promise<AppInfo>;
 }
 
-export const IPC_CHANNELS: (keyof HearthApi)[] = [
+export const IPC_CHANNELS: (keyof AmpleApi)[] = [
   'listTasks',
   'createTask',
   'replaceTaskWithSubtasks',

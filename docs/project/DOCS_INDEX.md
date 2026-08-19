@@ -1,4 +1,4 @@
-# Hearth Documentation Index
+# Ample Documentation Index
 
 _Canonical inventory of repository documentation. Established 2026-07-24
 (first-run consolidation). Verified against working tree
@@ -28,7 +28,7 @@ so), **artifact** (raw evidence/output, not prose truth).
 
 | Path | Purpose | Audience | Class | Action |
 |---|---|---|---|---|
-| `README.md` | Product front door: what Hearth is, release status, dev/quality commands | users, devs, agents | canonical (product overview) | keep; continuation pointer updated 2026-07-24 |
+| `README.md` | Product front door: what Ample is, release status, dev/quality commands | users, devs, agents | canonical (product overview) | keep; continuation pointer updated 2026-07-24 |
 | `AGENTS.md` | Revenue-loop operating doctrine: jail, constraints, memory files, gates | agents | canonical (operating constraints) | keep; §14 project-state protocol appended 2026-07-24 |
 | `CLAUDE.md` | Taste standards and brand identity | agents | canonical (taste/brand) | keep |
 | `HANDOFF.md` | Cold-start launchpad | agents | canonical (launchpad) | compressed 2026-07-24 (see MIGRATION_MAP M1/M2) |

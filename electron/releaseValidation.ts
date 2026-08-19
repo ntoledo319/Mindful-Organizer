@@ -1,8 +1,8 @@
 /**
  * Exact-package Windows data-lifecycle validation.
  *
- * This module is reachable only when HEARTH_RELEASE_VALIDATION=1 and refuses to
- * run unless HEARTH_DATA_DIR points at a fresh directory containing the
+ * This module is reachable only when AMPLE_RELEASE_VALIDATION=1 and refuses to
+ * run unless AMPLE_DATA_DIR points at a fresh directory containing the
  * explicit sentinel created by CI. It exercises the packaged better-sqlite3
  * binary and Electron safeStorage/DPAPI, not mocks.
  */
@@ -25,7 +25,7 @@ import { SCHEMA } from './schema';
 import { beginCryptographicDeletion } from './security/cryptographicDeletion';
 import { atomicWrite } from './security/secureFile';
 
-const SENTINEL = '.hearth-release-validation';
+const SENTINEL = '.ample-release-validation';
 
 interface ValidationPaths {
   root: string;
@@ -45,19 +45,19 @@ interface ValidationPaths {
 function paths(): ValidationPaths {
   const root = app.getPath('userData');
   const data = join(root, 'data');
-  const legacy = join(data, 'hearth.db');
+  const legacy = join(data, 'ample.db');
   return {
     root,
     data,
-    primary: join(data, 'hearth.secure'),
-    backup: join(data, 'hearth.secure.backup'),
-    migrationBackup: join(data, 'hearth.secure.migration-backup'),
-    key: join(data, 'hearth.key'),
+    primary: join(data, 'ample.secure'),
+    backup: join(data, 'ample.secure.backup'),
+    migrationBackup: join(data, 'ample.secure.migration-backup'),
+    key: join(data, 'ample.key'),
     legacy,
     legacyWal: `${legacy}-wal`,
     legacyShm: `${legacy}-shm`,
     legacyJournal: `${legacy}-journal`,
-    deletionMarker: join(data, 'hearth.deleting'),
+    deletionMarker: join(data, 'ample.deleting'),
     report: join(root, 'release-validation.json'),
   };
 }
@@ -138,7 +138,7 @@ function removeEncryptedStoreForLegacyFixture(p: ValidationPaths): void {
 
 export async function runExactCandidateValidation(): Promise<void> {
   const p = paths();
-  assert(process.env.HEARTH_DATA_DIR, 'HEARTH_DATA_DIR is required.');
+  assert(process.env.AMPLE_DATA_DIR, 'AMPLE_DATA_DIR is required.');
   assert(existsSync(join(p.root, SENTINEL)), `missing ${SENTINEL} sentinel.`);
   assert(!existsSync(p.data), 'refusing to run because the test data directory already exists.');
   mkdirSync(p.data, { recursive: true });
@@ -188,7 +188,7 @@ export async function runExactCandidateValidation(): Promise<void> {
   repo.createTask({ title: 'Interrupted erase task', spoonCost: 1 });
   closeDb();
   const keyHashBeforeInterruptedErase = sha256(p.key);
-  atomicWrite(p.deletionMarker, Buffer.from('hearth-delete-v1\n', 'utf8'));
+  atomicWrite(p.deletionMarker, Buffer.from('ample-delete-v1\n', 'utf8'));
   getDb();
   assert(repo.listTasks(true).length === 0, 'startup did not finish interrupted deletion.');
   assert(repo.getSettings().privacyConsentAt === null, 'interrupted deletion retained consent.');

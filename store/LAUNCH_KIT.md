@@ -1,4 +1,4 @@
-# Hearth launch kit
+# Ample launch kit
 
 Status: **drafts only — not authorized for posting or sending**
 
@@ -8,10 +8,10 @@ Status: **drafts only — not authorized for posting or sending**
 private, calmer way to decide what realistically fits today.
 
 **Primary job:** let the user choose a 4–24 daily energy budget and turn it into
-a smaller, finishable task plan. Hearth never infers or changes that budget from
+a smaller, finishable task plan. Ample never infers or changes that budget from
 a diagnosis or check-in.
 
-**One sentence:** Hearth is a privacy-first Windows energy planner that helps you
+**One sentence:** Ample is a privacy-first Windows energy planner that helps you
 plan around the capacity you have, with no account, cloud, ads, or record sync.
 
 **Proof available in the product:** task energy and duration inputs, estimated
@@ -61,12 +61,12 @@ Do not use:
 
 Draft only:
 
-> Hearth is now available for Windows through the Microsoft Store. It is an
+> Ample is now available for Windows through the Microsoft Store. It is an
 > energy planner for ADHD and other variable-capacity days: give work an energy
 > cost, choose a daily budget from 4 to 24, and see what fits the day you have.
 > Records are encrypted at rest with authenticated AES-256-GCM snapshots and a
 > key protected by Windows; exports you request are plaintext. There is no
-> account, cloud, advertising, or record sync. Hearth is personal organization
+> account, cloud, advertising, or record sync. Ample is personal organization
 > software, not medical care. [verified campaign link]
 
 Before approval, replace “now available” only after the product page is visibly
@@ -77,9 +77,9 @@ store/CAMPAIGNS.md.
 
 Draft only:
 
-### Hearth for Windows
+### Ample for Windows
 
-This release prepares the official x64 Microsoft Store package for Hearth, a
+This release prepares the official x64 Microsoft Store package for Ample, a
 local-first energy planner for variable-capacity days.
 
 Core loop:
@@ -90,13 +90,13 @@ Core loop:
 - review local mood, energy, and sleep trends;
 - export a personal PDF summary only when requested.
 
-While open, Hearth runs SQLite in memory. At rest it uses authenticated
+While open, Ample runs SQLite in memory. At rest it uses authenticated
 AES-256-GCM snapshots and a random key protected by the operating system. The
 privacy policy documents memory, OS-session, export, deletion, and recovery
 limits; requested JSON and PDF exports are plaintext.
 
 The source remains MIT licensed. The Store purchase covers official packaging
-and Store delivery. Hearth is not a medical device or emergency service.
+and Store delivery. Ample is not a medical device or emergency service.
 
 Do not publish this note until the package hash, public Store URL, certification,
 support, privacy, price, and release date are all observed.
@@ -109,7 +109,7 @@ Do not mass-post the launch note. For any community:
 2. Confirm that developer promotion is allowed.
 3. Rewrite the opening around a real discussion the community permits; do not
    impersonate a customer or conceal the maker relationship.
-4. Disclose: “I built Hearth.”
+4. Disclose: “I built Ample.”
 5. Use a unique owner-approved-community campaign ID.
 6. Have the owner review and submit it.
 
@@ -121,9 +121,9 @@ be verified immediately before any post.
 Use only as a human-reviewed response:
 
 > Thanks for reporting this. I have not reproduced or confirmed the cause yet.
-> Please share the Hearth version, Windows version, the steps immediately before
+> Please share the Ample version, Windows version, the steps immediately before
 > the problem, and whether it repeats after a normal restart. Do not attach your
-> Hearth encrypted snapshots or key, plaintext JSON or PDF exports, journal
+> Ample encrypted snapshots or key, plaintext JSON or PDF exports, journal
 > text, crisis-plan text, medication information, or screenshots containing
 > private records.
 

@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react';
 
-// A small, hand-picked stroke-icon set. Hearth uses thin 1.6px strokes and
+// A small, hand-picked stroke-icon set. Ample uses thin 1.6px strokes and
 // round caps everywhere — softer than the usual sharp UI iconography, to match
 // the "quiet companion" feel rather than a productivity dashboard.
 type P = SVGProps<SVGSVGElement>;
@@ -16,7 +16,7 @@ const base = (props: P) => ({
   ...props,
 });
 
-export const HearthMark = (props: P) => (
+export const AmpleMark = (props: P) => (
   <svg {...base(props)}>
     <path d="M4 11.5 12 4l8 7.5" />
     <path d="M6 10.5V20h12v-9.5" />

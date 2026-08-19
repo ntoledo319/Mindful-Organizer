@@ -27,10 +27,10 @@ export async function exportSessionSummary(
   });
   const defaultPath = join(
     app.getPath('documents'),
-    `Hearth-session-summary-${generatedAt.toISOString().slice(0, 10)}.pdf`,
+    `Ample-session-summary-${generatedAt.toISOString().slice(0, 10)}.pdf`,
   );
   const options = {
-    title: 'Save Hearth session summary',
+    title: 'Save Ample session summary',
     defaultPath,
     filters: [{ name: 'PDF document', extensions: ['pdf'] }],
   };

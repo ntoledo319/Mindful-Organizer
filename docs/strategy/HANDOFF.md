@@ -1,4 +1,4 @@
-# Hearth handoff pointer
+# Ample handoff pointer
 
 The single canonical engineering, Store, audience, and revenue continuation
 document is [`HANDOFF.md`](../../HANDOFF.md).

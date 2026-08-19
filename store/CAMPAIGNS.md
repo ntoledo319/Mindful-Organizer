@@ -13,7 +13,7 @@ listing.
 
 Microsoft Store custom campaign IDs allow Partner Center to separate page views
 and conversions from different links without adding third-party analytics to
-Hearth. The campaign ID is public in the URL; it must never contain a name,
+Ample. The campaign ID is public in the URL; it must never contain a name,
 email, diagnosis, account identifier, or other personal data.
 
 Official measurement reference:
@@ -30,7 +30,7 @@ so reports remain comparable.
 
 | ID | Intended placement | Authorization |
 |---|---|---|
-| landing-primary | Primary button on the deployed Hearth landing page | May be wired after the Store page is live |
+| landing-primary | Primary button on the deployed Ample landing page | May be wired after the Store page is live |
 | github-readme | Public repository README | May be wired after the Store page is live |
 | owner-launch-note | One launch note on an owner-controlled channel | Human review and send required |
 | owner-approved-community-<slug> | One community whose rules explicitly permit the post | Human review and send required |

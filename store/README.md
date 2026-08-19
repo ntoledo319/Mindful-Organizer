@@ -1,6 +1,6 @@
 # Microsoft Store release path
 
-This directory is the manual submission source for Hearth's reserved Microsoft
+This directory is the manual submission source for Ample's reserved Microsoft
 Store product. Submission 1 now contains the exact validated 1.1.0 AppX, saved
 $14.99 US pricing, reviewed copy, categories, properties, certification notes,
 and five hash-matched screenshots. It is deliberately held in draft and has not
@@ -8,11 +8,11 @@ been submitted, certified, published, or verified purchasable.
 
 ## Launch position
 
-Hearth launches as a **privacy-first Windows energy planner for ADHD and other
+Ample launches as a **privacy-first Windows energy planner for ADHD and other
 variable-capacity days**.
 
 The primary job is simple: let someone choose a 4–24 daily energy budget and put
-a realistic amount of work into the day they actually have. Hearth never infers
+a realistic amount of work into the day they actually have. Ample never infers
 or changes that capacity from a diagnosis or check-in. Check-ins, practices,
 rhythm, and crisis-plan text are secondary tools. ERP notes, diary cards,
 medication-reference modules, and legacy condition-label metadata remain
@@ -33,7 +33,7 @@ future features.
 - Age ratings: the existing low-rating draft is not accepted as accurate; the
   owner must manually retake IARC against all packaged crisis/self-harm and
   medication-reference content and accept IARC's legal terms
-- Packages: Complete; only Hearth 1.1.0.appx, marked Validated
+- Packages: Complete; only Ample 1.1.0.appx, marked Validated
 - Store listings: Complete
 - Submission options: Partner Center displays Incomplete even though the
   runFullTrust explanation and Additional Testing Information are saved;
@@ -93,20 +93,20 @@ testing in an active Windows desktop session.
 
 ## Verified source behavior
 
-The source now runs SQLite in memory while Hearth is open and persists
+The source now runs SQLite in memory while Ample is open and persists
 versioned, authenticated AES-256-GCM snapshots at rest. Each successful write
 uses a fresh random IV. A random 256-bit key is protected by Electron
 `safeStorage`—DPAPI on Windows—and the app fails closed if secure OS-backed key
 storage is unavailable.
 
-Legacy migration is deliberately conservative: Hearth verifies an encrypted
+Legacy migration is deliberately conservative: Ample verifies an encrypted
 migration backup and encrypted primary before removing plaintext database files.
 The migration backup is temporary and is retired after two verified encrypted
 generations. The rolling encrypted backup remains. This source-level result is
 not a substitute for testing the exact packaged Windows migration path.
 
 The limits remain part of every release claim: records and the key are decrypted
-in process memory while Hearth is open; the OS may copy memory to swap,
+in process memory while Ample is open; the OS may copy memory to swap,
 hibernation, crash, or diagnostic storage; control of the signed-in OS session
 weakens the boundary; JSON and PDF exports are plaintext by user choice; and
 deleting old files cannot guarantee removal from SSD recovery, snapshots, or
@@ -123,7 +123,7 @@ The screenshot driver creates five 1920 × 1080 PNG files with seeded,
 non-customer demo data. It now gives product frames an explicit screenshot-only
 privacy-consent timestamp so they do not fall back to onboarding.
 
-Set HEARTH_SHOT_BUILD_REF to the exact candidate commit when running the capture
+Set AMPLE_SHOT_BUILD_REF to the exact candidate commit when running the capture
 process and save the output under a new directory. Do not mix frames from
 different builds. Follow SCREENSHOTS.md and retain the generated files only after
 all visual and content checks pass.
@@ -235,7 +235,7 @@ preview. The owner then clicks **Publish now**.
 1. Verify the exact public page and paid checkout in a signed-out browser
    (expected pattern `https://apps.microsoft.com/detail/9PLRSZZMFPJH`; do not
    distribute the URL before observation). Change no call to action to “Get
-   Hearth” until the page is visibly purchasable.
+   Ample” until the page is visibly purchasable.
 2. Record the observed Store URL, price, timestamp, package/version, and status
    in `revenue/METRICS.md`.
 3. Replace the null Store URL in `store/listing-metadata.json` and set its live

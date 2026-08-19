@@ -1,9 +1,9 @@
-// Main-process screenshot orchestrator. Runs only when HEARTH_SCREENSHOT=1 on
+// Main-process screenshot orchestrator. Runs only when AMPLE_SCREENSHOT=1 on
 // a non-packaged launch (main.ts gates the env var on !app.isPackaged) and
 // produces the Microsoft Store listing screenshots at exactly 1920x1080. It
-// seeds demo data, drives the renderer's route/theme through the __hearthShot
+// seeds demo data, drives the renderer's route/theme through the __ampleShot
 // bridge, and writes PNGs from a verified Chromium surface.
-// Dev-only — a packaged launch with HEARTH_SCREENSHOT=1 behaves as a normal
+// Dev-only — a packaged launch with AMPLE_SCREENSHOT=1 behaves as a normal
 // launch and never reaches this module.
 import { BrowserWindow, ipcMain, nativeImage, nativeTheme, type NativeImage } from 'electron';
 import { join, dirname } from 'node:path';
@@ -58,7 +58,7 @@ const SHOTS: Shot[] = [
     route: 'tasks',
     theme: 'light',
     onboarded: true,
-    caption: 'Give work a priority, expected duration, and energy demand; Hearth estimates a spoon cost for the plan.',
+    caption: 'Give work a priority, expected duration, and energy demand; Ample estimates a spoon cost for the plan.',
   },
   {
     file: '03-reflect.png',
@@ -78,7 +78,7 @@ const SHOTS: Shot[] = [
     file: '05-onboarding.png',
     theme: 'light',
     onboarded: false,
-    caption: 'Start without an account and review local-data consent before Hearth stores the information you enter.',
+    caption: 'Start without an account and review local-data consent before Ample stores the information you enter.',
   },
 ];
 
@@ -136,7 +136,7 @@ async function readViewport(win: BrowserWindow, file: string): Promise<Viewport>
 }
 
 export async function runScreenshots(): Promise<void> {
-  const outDir = process.env.HEARTH_SHOT_DIR || join(__dirname, '../screenshots');
+  const outDir = process.env.AMPLE_SHOT_DIR || join(__dirname, '../screenshots');
   mkdirSync(outDir, { recursive: true });
   const manifest: {
     generatedAt: string;
@@ -145,7 +145,7 @@ export async function runScreenshots(): Promise<void> {
     images: CapturedShot[];
   } = {
     generatedAt: new Date().toISOString(),
-    buildRef: process.env.HEARTH_SHOT_BUILD_REF || null,
+    buildRef: process.env.AMPLE_SHOT_BUILD_REF || null,
     containsFictionalDemoData: true,
     images: [],
   };
@@ -173,7 +173,7 @@ export async function runScreenshots(): Promise<void> {
       // frame. Offscreen rendering gives Chromium its own unconstrained surface
       // instead of letting Windows clip the hidden window to the work area.
       offscreen: true,
-      additionalArguments: ['--hearth-screenshot'],
+      additionalArguments: ['--ample-screenshot'],
     },
   });
 

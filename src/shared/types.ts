@@ -166,7 +166,7 @@ export interface Settings {
   onboarded: boolean;
   theme: 'light' | 'dark' | 'system';
   dailySpoons: number;
-  // --- presence: how Hearth shows up beyond its own window ---
+  // --- presence: how Ample shows up beyond its own window ---
   presence: boolean; // live in the tray / menu bar
   quietMode: QuietMode; // dim the screen when you're drained
   quietDim: number; // 0.1–0.8: how deep the dim goes when quiet is active

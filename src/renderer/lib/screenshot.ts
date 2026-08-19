@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import type { Route } from '../App';
 
 // Renderer half of the screenshot tooling. Entirely inert in normal launches —
-// window.__hearthShot only exists when the Electron main process started us in
+// window.__ampleShot only exists when the Electron main process started us in
 // screenshot mode (see electron/preload.ts + electron/screenshot.ts). When it
 // does, the main process sends route/theme specs and we apply them, then signal
 // that the view has settled so main can capture a clean frame.
@@ -19,7 +19,7 @@ interface ShotBridge {
 
 declare global {
   interface Window {
-    __hearthShot?: ShotBridge;
+    __ampleShot?: ShotBridge;
   }
 }
 
@@ -46,7 +46,7 @@ function decodeWhenLoaded(img: HTMLImageElement): Promise<void> {
 
 export function useScreenshotDriver(setRoute: (r: Route) => void, appReady: boolean): void {
   useEffect(() => {
-    const shot = window.__hearthShot;
+    const shot = window.__ampleShot;
     if (!shot) return;
 
     shot.onGoto((spec) => {
@@ -73,6 +73,6 @@ export function useScreenshotDriver(setRoute: (r: Route) => void, appReady: bool
   // Tell main the app shell has mounted (used for the onboarding capture, which
   // has no route to navigate to).
   useEffect(() => {
-    if (appReady) window.__hearthShot?.ready();
+    if (appReady) window.__ampleShot?.ready();
   }, [appReady]);
 }

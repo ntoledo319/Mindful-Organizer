@@ -1,5 +1,5 @@
 name: Feature request
-description: Suggest a focused improvement to Hearth's offline planning workflow
+description: Suggest a focused improvement to Ample's offline planning workflow
 title: "[Feature]: "
 labels:
   - enhancement
@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Hearth is personal organization and wellness software, not diagnosis, treatment, monitoring, or emergency support. Please describe the workflow rather than sharing diagnoses or private records.
+        Ample is personal organization and wellness software, not diagnosis, treatment, monitoring, or emergency support. Please describe the workflow rather than sharing diagnoses or private records.
   - type: checkboxes
     id: privacy
     attributes:
@@ -40,7 +40,7 @@ body:
       label: Product boundaries
       options:
         - label: The proposal can remain local-first and work without an account or cloud record sync.
-        - label: The proposal does not require Hearth to infer diagnosis, treatment, crisis risk, or daily capacity.
+        - label: The proposal does not require Ample to infer diagnosis, treatment, crisis risk, or daily capacity.
   - type: textarea
     id: accessibility
     attributes:

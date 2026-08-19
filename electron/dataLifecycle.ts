@@ -47,7 +47,7 @@ export function buildPersonalDataExport(exportedAt = new Date()): Record<string,
   );
 
   return {
-    format: 'hearth-personal-data',
+    format: 'ample-personal-data',
     version: 1,
     exportedAt: exportedAt.toISOString(),
     securityNotice:
@@ -60,10 +60,10 @@ export function buildPersonalDataExport(exportedAt = new Date()): Record<string,
 export async function exportAllData(parent: BrowserWindow | null): Promise<PersonalDataExportResult> {
   const now = new Date();
   const options = {
-    title: 'Export all Hearth data',
+    title: 'Export all Ample data',
     defaultPath: join(
       app.getPath('documents'),
-      `Hearth-personal-data-${now.toISOString().slice(0, 10)}.json`,
+      `Ample-personal-data-${now.toISOString().slice(0, 10)}.json`,
     ),
     filters: [{ name: 'JSON document', extensions: ['json'] }],
   };

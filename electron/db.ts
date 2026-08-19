@@ -30,7 +30,7 @@ import {
 } from './security/secureFile';
 
 /**
- * Hearth keeps SQLite in memory and persists only authenticated ciphertext.
+ * Ample keeps SQLite in memory and persists only authenticated ciphertext.
  *
  * - Each snapshot uses AES-256-GCM with a fresh IV.
  * - The random master key is protected by Electron safeStorage (DPAPI on
@@ -58,17 +58,17 @@ let activePaths: DatabasePaths | null = null;
 const transactionState: TransactionState = { depth: 0 };
 
 function pathsFor(dir: string): DatabasePaths {
-  const legacy = join(dir, 'hearth.db');
+  const legacy = join(dir, 'ample.db');
   return {
-    primary: join(dir, 'hearth.secure'),
-    backup: join(dir, 'hearth.secure.backup'),
-    migrationBackup: join(dir, 'hearth.secure.migration-backup'),
-    key: join(dir, 'hearth.key'),
+    primary: join(dir, 'ample.secure'),
+    backup: join(dir, 'ample.secure.backup'),
+    migrationBackup: join(dir, 'ample.secure.migration-backup'),
+    key: join(dir, 'ample.key'),
     legacy,
     legacyWal: `${legacy}-wal`,
     legacyShm: `${legacy}-shm`,
     legacyJournal: `${legacy}-journal`,
-    deletionMarker: join(dir, 'hearth.deleting'),
+    deletionMarker: join(dir, 'ample.deleting'),
   };
 }
 
@@ -79,7 +79,7 @@ function hasEncryptedSnapshot(paths: DatabasePaths): boolean {
 function assertSecureOsKeyStore(): void {
   if (!safeStorage.isEncryptionAvailable()) {
     throw new Error(
-      'Secure local storage is unavailable. Hearth will not open or create personal records without OS-backed encryption.',
+      'Secure local storage is unavailable. Ample will not open or create personal records without OS-backed encryption.',
     );
   }
 
@@ -88,7 +88,7 @@ function assertSecureOsKeyStore(): void {
     const secureBackends = new Set(['gnome_libsecret', 'kwallet', 'kwallet5', 'kwallet6']);
     if (!secureBackends.has(backend)) {
       throw new Error(
-        `Linux secure storage backend "${backend}" is not suitable for personal records. Configure Secret Service or KWallet before using Hearth.`,
+        `Linux secure storage backend "${backend}" is not suitable for personal records. Configure Secret Service or KWallet before using Ample.`,
       );
     }
   }
@@ -101,7 +101,7 @@ function decodeProtectedKey(path: string): Buffer {
     return decoded;
   } catch (error) {
     throw new Error(
-      'Hearth could not unlock its encrypted database key. No data was changed; sign in to the original OS account or restore its credential store.',
+      'Ample could not unlock its encrypted database key. No data was changed; sign in to the original OS account or restore its credential store.',
       { cause: error },
     );
   }
@@ -113,7 +113,7 @@ function loadOrCreateMasterKey(paths: DatabasePaths): Buffer {
 
   if (hasEncryptedSnapshot(paths)) {
     throw new Error(
-      'The encrypted Hearth database exists but its OS-protected key is missing. Hearth will not replace it or erase existing data.',
+      'The encrypted Ample database exists but its OS-protected key is missing. Ample will not replace it or erase existing data.',
     );
   }
 
@@ -156,14 +156,14 @@ function invalidateInMemoryDatabase(error: unknown): never {
     masterKey = null;
   }
   throw new Error(
-    'Hearth could not durably save the encrypted database. The previous authenticated snapshot is intact; reopen the app before continuing.',
+    'Ample could not durably save the encrypted database. The previous authenticated snapshot is intact; reopen the app before continuing.',
     { cause: error },
   );
 }
 
 function persistCurrentDatabase(): void {
   if (!nativeDb || !masterKey || !activePaths) {
-    throw new Error('The secure Hearth database is not open.');
+    throw new Error('The secure Ample database is not open.');
   }
   try {
     persistSnapshot(
@@ -215,7 +215,7 @@ type TransactionRunner = ((...args: unknown[]) => unknown) & {
 };
 
 function wrapTransaction(callback: TransactionCallback): TransactionRunner {
-  if (!nativeDb) throw new Error('The secure Hearth database is not open.');
+  if (!nativeDb) throw new Error('The secure Ample database is not open.');
   const transaction = nativeDb.transaction(callback) as unknown as TransactionRunner;
   const run = (runner: (...args: unknown[]) => unknown, args: unknown[]) =>
     runDurableTransaction(transactionState, runner, args, mutationCompleted);
@@ -337,7 +337,7 @@ function initializeDatabase(): void {
 
 export function getDb(): Database.Database {
   if (!exposedDb) initializeDatabase();
-  if (!exposedDb) throw new Error('The secure Hearth database did not initialize.');
+  if (!exposedDb) throw new Error('The secure Ample database did not initialize.');
   return exposedDb;
 }
 

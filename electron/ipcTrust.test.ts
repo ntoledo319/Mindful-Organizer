@@ -36,7 +36,7 @@ describe('isTrustedIpcSender', () => {
 
   it('trusts only the packaged index.html over file: in production', () => {
     delete process.env.VITE_DEV_SERVER_URL;
-    process.env.DIST = join('hearth-test', 'dist');
+    process.env.DIST = join('ample-test', 'dist');
     const expected = pathToFileURL(join(process.env.DIST, 'index.html')).href;
     expect(isTrustedIpcSender(fakeEvent(expected))).toBe(true);
     expect(

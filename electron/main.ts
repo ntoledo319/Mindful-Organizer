@@ -17,14 +17,14 @@ import * as wellness from './wellness';
 import * as presence from './presence';
 import * as sessionSummary from './sessionSummary';
 import * as dataLifecycle from './dataLifecycle';
-import type { HearthApi } from '../src/shared/ipc';
+import type { AmpleApi } from '../src/shared/ipc';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Local screenshot/smoke harnesses set this to a contained workspace path.
 // It must be applied before the first app.getPath('userData')/getDb call.
-if (process.env.HEARTH_DATA_DIR) {
-  const containedDataDir = resolve(process.env.HEARTH_DATA_DIR);
+if (process.env.AMPLE_DATA_DIR) {
+  const containedDataDir = resolve(process.env.AMPLE_DATA_DIR);
   mkdirSync(containedDataDir, { recursive: true });
   app.setPath('userData', containedDataDir);
 }
@@ -34,15 +34,15 @@ process.env.PUBLIC = app.isPackaged ? process.env.DIST : join(__dirname, '../pub
 
 const DEV_SERVER = process.env.VITE_DEV_SERVER_URL;
 // Screenshot/smoke are dev + CI harnesses. In a packaged build we honor them
-// only when HEARTH_DATA_DIR points the run at a contained profile (set + applied
-// above), so a stray HEARTH_SCREENSHOT=1 can never reseed or touch a real user's
+// only when AMPLE_DATA_DIR points the run at a contained profile (set + applied
+// above), so a stray AMPLE_SCREENSHOT=1 can never reseed or touch a real user's
 // records — while the Store-build boot check, which always launches the packaged
-// app against a throwaway HEARTH_DATA_DIR, can still validate that it starts.
+// app against a throwaway AMPLE_DATA_DIR, can still validate that it starts.
 // Unpackaged dev launches honor the vars directly.
-const HARNESS_CONTAINED = !app.isPackaged || Boolean(process.env.HEARTH_DATA_DIR);
-const SCREENSHOT_MODE = HARNESS_CONTAINED && process.env.HEARTH_SCREENSHOT === '1';
-const SMOKE_MODE = HARNESS_CONTAINED && process.env.HEARTH_SMOKE === '1';
-const RELEASE_VALIDATION_MODE = process.env.HEARTH_RELEASE_VALIDATION === '1';
+const HARNESS_CONTAINED = !app.isPackaged || Boolean(process.env.AMPLE_DATA_DIR);
+const SCREENSHOT_MODE = HARNESS_CONTAINED && process.env.AMPLE_SCREENSHOT === '1';
+const SMOKE_MODE = HARNESS_CONTAINED && process.env.AMPLE_SMOKE === '1';
+const RELEASE_VALIDATION_MODE = process.env.AMPLE_RELEASE_VALIDATION === '1';
 
 let win: BrowserWindow | null = null;
 let quitting = false;
@@ -122,15 +122,15 @@ function createWindow(): void {
             const deadline = Date.now() + 15000;
             const inspect = () => {
               const root = document.querySelector('#root');
-              const hasBridge = typeof window.hearth?.getSettings === 'function';
-              const hasHearthContent = (root?.textContent || '').includes('Hearth');
+              const hasBridge = typeof window.ample?.getSettings === 'function';
+              const hasAmpleContent = (root?.textContent || '').includes('Ample');
               const hasInteraction = Boolean(root?.querySelector('button, input, textarea'));
-              if (hasBridge && hasHearthContent && hasInteraction) {
+              if (hasBridge && hasAmpleContent && hasInteraction) {
                 resolve({ ok: true });
                 return;
               }
               if (Date.now() >= deadline) {
-                resolve({ ok: false, hasBridge, hasHearthContent, hasInteraction });
+                resolve({ ok: false, hasBridge, hasAmpleContent, hasInteraction });
                 return;
               }
               setTimeout(inspect, 100);
@@ -156,7 +156,7 @@ function createWindow(): void {
     });
   }
 
-  // With tray presence enabled, closing the window tucks Hearth away instead
+  // With tray presence enabled, closing the window tucks Ample away instead
   // of silently killing the acting layer. The tray's Quit action still exits.
   win.on('close', (event) => {
     if (!quitting && repo.getSettings().presence) {
@@ -172,10 +172,10 @@ function createWindow(): void {
   }
 }
 
-// --- IPC: one handler per HearthApi method --------------------------------
+// --- IPC: one handler per AmpleApi method --------------------------------
 
 function registerIpc(): void {
-  const handlers: HearthApi = {
+  const handlers: AmpleApi = {
     listTasks: async (inc) => repo.listTasks(inc),
     createTask: async (i) => repo.createTask(i),
     replaceTaskWithSubtasks: async (id, subtasks) => repo.replaceTaskWithSubtasks(id, subtasks),
@@ -295,15 +295,15 @@ app.whenReady().then(async () => {
       app.exit(1);
       return;
     }
-    dialog.showErrorBox('Hearth could not open secure storage', message);
+    dialog.showErrorBox('Ample could not open secure storage', message);
     app.exit(1);
     return;
   }
   registerIpc();
 
-  // Screenshot mode: seed demo data into the contained HEARTH_DATA_DIR profile,
+  // Screenshot mode: seed demo data into the contained AMPLE_DATA_DIR profile,
   // capture the Store listing images, then quit. In a packaged build this only
-  // runs when HEARTH_DATA_DIR is set, so it can never seed a real user's profile.
+  // runs when AMPLE_DATA_DIR is set, so it can never seed a real user's profile.
   if (SCREENSHOT_MODE) {
     const { runScreenshots } = await import('./screenshot');
     try {

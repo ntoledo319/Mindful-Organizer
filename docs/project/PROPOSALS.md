@@ -1,4 +1,4 @@
-# Hearth Proposals
+# Ample Proposals
 
 _Unapproved scope. Nothing here is active work; promotion requires owner
 approval (or an explicit user instruction). Monetization frame proposals live
@@ -11,7 +11,7 @@ process scope. Established 2026-07-24._
 | PROP-002 | Branch hygiene: remove duplicate-content and superseded branches | S | pending (destructive; explicit approval required) | git refs |
 | PROP-003 | Branch strategy: fast-forward local `main`, retire `cycle-*` naming | S | pending | git workflow |
 | PROP-004 | Deploy `landing/` to an eligible $0 static host after Store publication | S | pending (gated on live Store URL) | distribution |
-| PROP-005 | Bet B — Hearth-to-Production Electron Kit (frame A4.6) | L | pending (conditional behind Bet A) | monetization |
+| PROP-005 | Bet B — Ample-to-Production Electron Kit (frame A4.6) | L | pending (conditional behind Bet A) | monetization |
 
 ## PROP-001 — Reconcile working tree with origin/main
 
@@ -58,7 +58,7 @@ process scope. Established 2026-07-24._
   ready but has no purchase link until the listing exists.
 - **Prerequisites:** live Store URL (HQ-04), campaign IDs (store/CAMPAIGNS.md).
 
-## PROP-005 — Bet B: Hearth-to-Production Electron Kit
+## PROP-005 — Bet B: Ample-to-Production Electron Kit
 
 - **What:** genuinely new $249 developer kit (frame A4.6 in
   `revenue/OPPORTUNITIES.md`): clean demo, threat model, encrypted-storage
@@ -76,7 +76,7 @@ process scope. Established 2026-07-24._
   use case rather than the headline. No code, no feature, and no price change.
 - **Why:** the first comparable set for this product
   (`revenue/MARKET-ANALYSIS-2026-08-07.md`) shows the ADHD-planner category is
-  subscription-priced and mobile/Apple-dominated. In that category Hearth's
+  subscription-priced and mobile/Apple-dominated. In that category Ample's
   Windows-only, sync-free, AI-free, no-free-tier profile reads as a list of
   missing features against better-funded incumbents. Described instead as
   software that never touches the network, the same properties read as the
@@ -90,7 +90,7 @@ process scope. Established 2026-07-24._
   `store/LAUNCH_KIT.md`, and re-vetting `store/LAUNCH_TARGETS.md` against the
   new framing) can be prepared for review in advance.
 - **Honest limit:** this reasons from category structure, not from observed
-  demand for Hearth. It is better grounded than the current framing's evidence
+  demand for Ample. It is better grounded than the current framing's evidence
   base, which is none. It is still a guess, and the five-day signal gate is what
   would actually settle it.
 - **Do not:** widen any capability claim to fit the new frame. The privacy

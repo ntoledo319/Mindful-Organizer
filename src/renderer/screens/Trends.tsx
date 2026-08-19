@@ -36,7 +36,7 @@ export function Trends() {
         setExportMessage('Nothing was saved.');
       }
     } catch {
-      setExportMessage('Hearth could not save the PDF. Choose another location and try again.');
+      setExportMessage('Ample could not save the PDF. Choose another location and try again.');
     } finally {
       setExporting(false);
     }
@@ -74,7 +74,7 @@ export function Trends() {
           Your data, your choice
         </p>
         <p className="mb-6 text-sm leading-relaxed text-text-muted dark:text-night-muted">
-          Hearth will make a {days}-day PDF from your mood, energy, and sleep observations. It is a personal
+          Ample will make a {days}-day PDF from your mood, energy, and sleep observations. It is a personal
           reflection—not a medical record or diagnosis—and it is generated entirely on this device.
         </p>
         <button
@@ -103,9 +103,9 @@ export function Trends() {
         />
       ) : (
         <div className="space-y-6">
-          <TrendCard title="Mood" points={data.mood} max={10} color="var(--hearth-brand)" unit="/10" />
-          <TrendCard title="Energy" points={data.energy} max={10} color="var(--hearth-warning)" unit="/10" />
-          <TrendCard title="Sleep" points={data.sleep} max={12} color="var(--hearth-success)" unit="h" />
+          <TrendCard title="Mood" points={data.mood} max={10} color="var(--ample-brand)" unit="/10" />
+          <TrendCard title="Energy" points={data.energy} max={10} color="var(--ample-warning)" unit="/10" />
+          <TrendCard title="Sleep" points={data.sleep} max={12} color="var(--ample-success)" unit="h" />
         </div>
       )}
     </div>

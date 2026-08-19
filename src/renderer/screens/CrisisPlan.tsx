@@ -212,7 +212,7 @@ export function CrisisPlanScreen() {
             Unsaved edits are kept automatically if you leave this screen.
           </span>
         </div>
-        {updateMutation.isError && <InlineError>Hearth could not save this plan. Your edits are still on screen; try again.</InlineError>}
+        {updateMutation.isError && <InlineError>Ample could not save this plan. Your edits are still on screen; try again.</InlineError>}
       </div>
     </div>
   );

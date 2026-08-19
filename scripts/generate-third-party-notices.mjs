@@ -77,11 +77,11 @@ const sections = packages.map((pkg) => {
 ${notice}`;
 });
 
-const output = `# Hearth Third-Party Notices
+const output = `# Ample Third-Party Notices
 
 Generated from the production dependency closure in \`package-lock.json\` plus the Electron runtime. Run \`npm run licenses\` after every dependency change.
 
-Hearth's own source is licensed under the repository's MIT \`LICENSE\`. The packages below remain subject to their respective licenses. Electron distributions also include \`LICENSES.chromium.html\` for Chromium and other bundled third-party components; electron-builder preserves those runtime notices in packaged applications.
+Ample's own source is licensed under the repository's MIT \`LICENSE\`. The packages below remain subject to their respective licenses. Electron distributions also include \`LICENSES.chromium.html\` for Chromium and other bundled third-party components; electron-builder preserves those runtime notices in packaged applications.
 
 Audit result: ${packages.length} runtime packages; no GPL, AGPL, LGPL, SSPL, CDDL, EUPL, EPL, or MPL declaration detected.
 

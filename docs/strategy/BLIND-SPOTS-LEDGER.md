@@ -1,4 +1,4 @@
-# Hearth Blind-Spots Ledger
+# Ample Blind-Spots Ledger
 
 > **Historical (2026-07-24):** preserved for record. **Correction:** item 3 is
 > stale — at-rest snapshots are now AES-256-GCM encrypted with a DPAPI-protected

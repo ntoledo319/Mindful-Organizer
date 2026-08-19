@@ -23,9 +23,9 @@ beforeEach(() => {
   mkdirSync(tmpRoot, { recursive: true });
   dir = mkdtempSync(join(tmpRoot, 'secure-file-test-'));
   paths = {
-    primary: join(dir, 'hearth.secure'),
-    backup: join(dir, 'hearth.secure.backup'),
-    migrationBackup: join(dir, 'hearth.secure.migration-backup'),
+    primary: join(dir, 'ample.secure'),
+    backup: join(dir, 'ample.secure.backup'),
+    migrationBackup: join(dir, 'ample.secure.migration-backup'),
   };
 });
 
