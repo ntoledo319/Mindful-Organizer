@@ -2,6 +2,23 @@
 
 _Cycle 3 handoff update 2026-07-15. Scope is the containment root only._
 
+## Current correction — 2026-08-19
+
+The completeness and exact-release sections below describe the Hearth-era
+candidate and are retained as historical evidence. Source is now renamed to
+**Ample**, but no Ample AppX exists: the package identity is unverified, the
+first Ample CI runs failed before artifact upload, and CAND-002 is never-submit.
+The buyer capability and smallest sellable unit are unchanged; package
+generation, exact-candidate evidence, and the Partner Center draft must be
+re-established after the observed identity is supplied.
+
+## Current correction — 2026-08-25
+
+Partner Center product `9PLRSZZMFPJH` was reobserved with exact package identity
+`ToledoTechnologies.Hearth`; only the Hearth app name is currently reserved.
+The identity is now verified for a fresh build, but no new candidate existed at
+observation time and Ample name reservation remains owner-only.
+
 ## Workspace inventory
 
 There is one product codebase in the workspace: **Ample**, an
@@ -130,4 +147,3 @@ remains zero.
 ## Cycle 3 continuation authority — 2026-07-15
 
 Root HANDOFF.md is the canonical zero-context continuation map. It preserves the accepted candidate, capability-vault boundary, public/private evidence distinction, release sequence, verification commands and completion criteria. Partner Center facts remain last observed 2026-07-14 until reverified live.
-

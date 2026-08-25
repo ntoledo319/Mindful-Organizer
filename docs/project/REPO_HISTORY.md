@@ -1,4 +1,4 @@
-# Hearth Repository History
+# Ample Repository History
 
 _Centralized repository and operational history. Established 2026-07-24.
 Event ledger is append-only: correct history by adding a superseding event,
@@ -10,7 +10,7 @@ Machine-readable commit list: `history/commit-index.tsv` (regenerate with
 
 | ID | Name | Role | Local path | Canonical remote | Default branch | Relationship | History coverage | Last indexed ref |
 |---|---|---|---|---|---|---|---|---|
-| REPO-01 | Mindful-Organizer (Hearth) | Primary app + docs + store ops | `/home/nick/Development/active/mindful_organizer` | `https://github.com/ntoledo319/Mindful-Organizer.git` (no credentials embedded) | `main` | — | Complete local clone; all remote refs fetched 2026-07-24 | `e0fc9e0` |
+| REPO-01 | Mindful-Organizer (Ample; formerly Hearth) | Primary app + docs + store ops | `/home/nick/Development/active/mindful_organizer` | `https://github.com/ntoledo319/Mindful-Organizer.git` (no credentials embedded) | `main` | — | Complete local clone; live refs re-derived 2026-08-25 | `c0eb360` |
 
 Verified 2026-07-24: no submodules, no nested Git repositories (single `.git`).
 
@@ -20,24 +20,25 @@ repositories:
 | ID | System | Role | Access state |
 |---|---|---|---|
 | EXT-GHA | GitHub Actions (this repo) | CI: Quality Gate, Windows Store, Release, Pages | Public run history; run IDs recorded in events |
-| EXT-PC | Microsoft Partner Center | Store draft, certification, payout | Private; last observed 2026-07-14; product `9PLRSZZMFPJH` |
+| EXT-PC | Microsoft Partner Center | Store draft, certification, payout | Private; identity, app names, and overview last observed 2026-08-25; product `9PLRSZZMFPJH` |
 | EXT-STORE | Microsoft Store public listing | Distribution | Does not exist yet (draft only) |
 | EXT-ITCH | itch.io | Conditional Bet B marketplace | No account/page observed |
 
 ## 2. Current head snapshot
 
-_Mutable. Last refreshed 2026-07-24 (`git fetch origin` + `ls-remote`
-cross-check, both agreeing)._
+_Mutable. Last refreshed 2026-08-25 from local refs plus authenticated `gh`
+cross-check._
 
 | Ref | SHA | State | Notes |
 |---|---|---|---|
-| `origin/main` | `07d938c6545698a73462454543d60b65bbdbe080` | live-verified 2026-08-04 (fast-forward push from `246baac`, D040) | CAND-002 replacement candidate landed: council remediation + `07cf815` smoke-gate fix. Prior heads on this line since 2026-07-24: `e0fc9e0`→`59787f4`→`246baac`→`07d938c` |
+| `origin/main` | `c0eb360f78fc10587a57fe6e9fcf9432b416ddf0` | live-verified 2026-08-19; CI red | Ample rename + explicit unverified-identity runbook. No Ample artifact exists; see VER-20260819-001. |
+| `origin/feature/store-candidate-cand002` | `c0eb360f78fc10587a57fe6e9fcf9432b416ddf0` | live-verified 2026-08-19 | Matches default branch; branch name is historical. |
 | `origin/handoff-cycle-3` | `14f9fd718433047dfc38a2cd5a28d7da171106aa` | fetched | Cycle-3 handoff branch; superseded on main (PROP-002) |
 | `origin/feature/monetization` | `8172603b62c2457696608c145511bd3fe92429d4` | fetched | Accepted-candidate preservation branch |
 | `origin/feature/revenue-cycle-0` | `09ec37eff4affcc1a0878205072a75f0cac13da5` | fetched | Diverged legacy cycle-0 docs close; do not continue |
-| local `cycle-2-shipped` (checked out) | `59787f4ae77901424947c3fb504f96dfce11e4a9` (+ state-sync commit) | synced with `origin/main` | Effective main line |
-| local `main` | `c2b1fc28a4ddedb3c8b234f66860642eff44fae4` | stale: far behind | See PROP-003 |
-| local `main` | `c2b1fc28a4ddedb3c8b234f66860642eff44fae4` | stale: 0 ahead, 17 behind | Fast-forwardable; see PROP-003 |
+| local `main` (checked out) | `c0eb360f78fc10587a57fe6e9fcf9432b416ddf0` + dirty working tree | active AMPLE-001 candidate prep | Identity observed; complete local gate green; canonical commit/CI pending (VER-20260825-002). |
+| local `feature/store-candidate-cand002` | `c0eb360f78fc10587a57fe6e9fcf9432b416ddf0` | historical branch name; matches remote/default base | Not pushed again; use canonical `main` only for AMPLE-001. |
+| local `cycle-2-shipped` | `246baac5033001b00f586f570c3ce842218c1fb5` | stale: 13 behind | Historical branch. |
 | local `cycle-1-published` | `27db6c246de278fe119a46b7be2db35d9aa04a46` | local-only | Duplicate-content lineage of `4a32b73` (rebased SHAs) |
 | local `cycle-1-release-state` | `dab606e32622705ca79b7d13c14e6b1b794020bb` | local-only | Duplicate-content lineage of `5bb2611` |
 | local `feature/monetization` | `22275ec2adcdf948f0dcdc90cb0ef799ed2556fa` | local-only | Duplicate-content lineage diverged from remote `8172603` |
@@ -75,6 +76,10 @@ cross-check, both agreeing)._
 | HIST-20260724-005 | 2026-07-24 | REPO-01 | branch-merged | `59787f4ae77901424947c3fb504f96dfce11e4a9` | local | `origin/main` (`e0fc9e0`) merged into `cycle-2-shipped`. 7 conflicts resolved: HANDOFF.md kept as compressed launchpad (published 400-line version remains in history at `0ff209e`); ASSETS/OPPORTUNITIES/DECISIONS/HUMAN_QUEUE took the published remote iteration (local draft preserved in `d1c9d91`); PLAN/METRICS hand-merged (host-root fix + 2026-07-24 evidence section). | verified | git, VER-20260724-006 |
 | HIST-20260724-006 | 2026-07-24 | REPO-01 | remote-changed | `e0fc9e0` → `59787f4` | remote | `cycle-2-shipped` pushed to `main` (user-authorized): consolidated documentation system + reconciled cycle-3 state now on public main. | verified | push output |
 | HIST-20260804-001 | 2026-08-04 | REPO-01 | remote-changed | `246baac` → `07d938c` | remote | CAND-002 landed to `main` (owner directive "get all you can do done", D040): 2026-07-29 council remediation + `07cf815` packaged-smoke-gate fix + CAND-002 record; fast-forward, 3 commits, +2133/−302 across 39 files. Re-verified on clean `07d938c` (VER-20260804-001) + CI Windows MSIX run 30790687808 (AppX `a5d2cf36…`). Intervening 2026-07-25…08-03 CI/remediation events are recorded in the verification log and `store/WINDOWS-VALIDATION.md`, not backfilled here. | verified | git, VER-20260804-001 |
+| HIST-20260819-001 | 2026-08-19 | REPO-01 | product-renamed | `8c853b245bdca8b549536b306d8f6c434ccf34ea` | remote | Hearth renamed to Ample. The AppX manifest identity changed, so CAND-002 and every prior package became historical/never-submit; no Ample candidate was produced by this event. | verified | git, D041 |
+| HIST-20260819-002 | 2026-08-19 | REPO-01 | incident | `c0eb360f78fc10587a57fe6e9fcf9432b416ddf0` | remote + CI | First Ample Quality and Windows runs failed (stale notices; obsolete screenshot env) and produced zero artifacts. Reconciliation found the committed identity checker ignored `identityVerified:false`; screenshot failure alone prevented a guessed-identity AppX. | verified | VER-20260819-001 |
+| HIST-20260819-003 | 2026-08-19 | REPO-01 | remediation-prepared | working tree at `c0eb360` | local | Identity guard, guarded Store-build entry point, screenshot harness, notices, listing copy/keywords, regression tests, and durable state corrections prepared and non-package verified; paused for HQ-00 exact Partner Center identity. | verified-dirty | VER-20260819-002 |
+| HIST-20260825-001 | 2026-08-25 | REPO-01 | external-state-observed | Partner Center product `9PLRSZZMFPJH` | external + local | Owner-authorized observation found exact Package/Identity/Name `ToledoTechnologies.Hearth`; only Hearth was currently reserved and the submission remained draft/not submitted. No name or submission state changed. The observed value replaced the rename-script guess and cleared the executable identity gate. | verified | VER-20260825-001, D044 |
 
 Rollbacks: none recorded. Hotfixes: HIST-20260714-004 is the only in-run fix.
 Deployments: none exist (no staging/production; landing undeployed; Store in
@@ -88,10 +93,10 @@ fact rather than fabricated migration events.
 | Gap | State | Resolution path |
 |---|---|---|
 | G1 — working tree vs `origin/main` | **Resolved 2026-07-24:** draft committed (`d1c9d91`), remote merged (`59787f4`), pushed to `main` | HIST-20260724-004…006 |
-| G2 — CI for head commit | Not observed for `59787f4`; latest observed Quality run is `29346492274` @ `4a32b73` | Observe next Actions run on main |
-| G3 — Partner Center | Private state last observed 2026-07-14 | HQ-01/HQ-02 owner session re-verifies |
+| G2 — CI for head commit | Observed **failing** at `c0eb360`; Quality + Windows causes recorded, zero artifacts | Push the locally verified AMPLE-001 tree on canonical `main`, then observe only its exact-SHA runs |
+| G3 — Partner Center | Product identity, app names, and submission overview reobserved 2026-08-25; listing fields, IARC, and payout readiness remain unverified/current owner gates | Owner completes the remaining queue without changing the observed package identity |
 | G4 — `v1.0.0` release | Tag exists; GitHub Release/artifact publication unobserved | Check GitHub Releases when network policy allows; record event |
-| G5 — branch sprawl | 3 local-only duplicate-content branches + stale local `main` | PROP-002 / PROP-003 (owner approval; no deletion authorized) |
+| G5 — branch sprawl | Local `main` was refreshed 2026-08-25; duplicate-content and historical local/remote branches remain | PROP-002 for any later branch deletion (owner approval; no deletion authorized) |
 | G6 — deployments | None exist anywhere; "deployed" claims must not appear | Keep EXT-STORE absent until observed live |
 | G7 — old GitHub branches | `handoff-cycle-3` content already on main; branch itself not deleted | Fold into PROP-002 |
 
@@ -111,7 +116,7 @@ fact rather than fabricated migration events.
 
 ## 6. Incremental refresh
 
-Per-repo last-indexed ref: REPO-01 = `59787f4` (2026-07-24, pushed to `main`). On later runs:
+Per-repo last-indexed ref: REPO-01 = `c0eb360` (2026-08-19, observed on `main`). On later runs:
 fetch (if network allowed), compare heads to §2, inspect only new commits,
 append new events, regenerate `history/commit-index.tsv`, update §2. Do not
 re-narrate existing events.

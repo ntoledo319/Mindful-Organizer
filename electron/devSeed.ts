@@ -1,8 +1,8 @@
 // Dev-only demo seed. Populates the local SQLite DB with a warm, realistic
 // fortnight of data so the Store screenshots look alive. The only caller is
-// runScreenshots() (electron/screenshot.ts), which main.ts reaches solely when
-// HEARTH_SCREENSHOT=1 in a non-packaged launch — packaged builds ignore the
-// env var, so this can never overwrite a real user's settings.
+// runScreenshots() (electron/screenshot.ts), which main.ts reaches only when
+// AMPLE_SCREENSHOT=1. Packaged launches additionally require AMPLE_DATA_DIR,
+// keeping the seeded profile inside the explicit harness directory.
 import { getDb } from './db';
 import * as repo from './repo';
 

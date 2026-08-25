@@ -393,3 +393,47 @@ owner commit decision" note, `origin/main` was fast-forwarded `246baac`→`07d93
   is the owner-only HQ queue. Honest money position is unchanged — the Day-21
   gate finding (collected cash not reachable in-window; Store pays monthly)
   still stands; landing the candidate only makes the product submit-ready.
+
+## 2026-08-19 — Ample candidate reset
+
+### D041 — Treat all Hearth packages as historical after the Ample rename
+
+The rename at `8c853b2` changed the AppX manifest. Decision: CAND-002 and every
+other existing MSIX are never-submit; no package hash, screenshot set, or
+Partner Center validation observation transfers to Ample. This supersedes
+D040's operational conclusion that no agent-doable work remained while
+preserving D040 as the true record of the Hearth candidate land.
+
+### D042 — Make observed identity a hard executable gate
+
+The committed checker at `c0eb360` discarded `identityVerified` and therefore
+accepted the rename-script guess. The first Ample Windows runs avoided producing
+that unsafe AppX only because an unrelated screenshot timeout occurred first.
+Decision: require `identityVerified === true` in the shared identity checker,
+put the preflight before the local Store build script, cover it with regression
+tests, and keep the release state draft while false. The identity string must
+come from Partner Center; syntax and naming patterns are not evidence.
+
+### D043 — Lead Store copy with the Windows opening
+
+The 2026-08-07 discovery review found the comparable energy-planning set to be
+Apple-only. Decision: lead positioning, short description, feature order, and
+description with Windows availability; use local/no-account protections as
+proof instead of the headline. Replace the seven search terms with `spoon
+theory`, `pacing`, `offline task manager`, `ADHD planner`, `no subscription`,
+`offline planner`, and `executive function`. Capability, privacy, medical, and
+release claims remain within README.md and docs/PRIVACY.md.
+
+## 2026-08-25 — Existing-product identity observation
+
+### D044 — Separate immutable package identity evidence from display-name work
+
+Authenticated Partner Center observation corrected the 2026-08-19 assumption
+that the Ample display-name reservation would yield a new Ample-shaped package
+identity. Existing product `9PLRSZZMFPJH` reports exact
+Package/Identity/Name `ToledoTechnologies.Hearth`, while Manage app names shows
+only `Hearth` currently in use. Decision: build the renamed source with that
+observed existing-product identity and keep `identityVerified: true`; never
+rewrite it from branding patterns. Reserving the Ample display name remains an
+owner-only pre-submission action. No reservation, submission, publication,
+attestation, payout/tax, or terms action was taken during the observation.

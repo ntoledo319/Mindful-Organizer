@@ -1,10 +1,10 @@
-// Main-process screenshot orchestrator. Runs only when AMPLE_SCREENSHOT=1 on
-// a non-packaged launch (main.ts gates the env var on !app.isPackaged) and
+// Main-process screenshot orchestrator. Runs only when AMPLE_SCREENSHOT=1 in
+// a contained harness (main.ts requires AMPLE_DATA_DIR for packaged runs) and
 // produces the Microsoft Store listing screenshots at exactly 1920x1080. It
 // seeds demo data, drives the renderer's route/theme through the __ampleShot
 // bridge, and writes PNGs from a verified Chromium surface.
-// Dev-only — a packaged launch with AMPLE_SCREENSHOT=1 behaves as a normal
-// launch and never reaches this module.
+// Packaged harnesses remain safe because they can reach this module only with
+// an explicit contained data directory.
 import { BrowserWindow, ipcMain, nativeImage, nativeTheme, type NativeImage } from 'electron';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';

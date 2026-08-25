@@ -148,6 +148,16 @@ check(
 );
 check(identity.productId === '9PLRSZZMFPJH', 'identity productId must match the reserved product');
 check(
+  typeof identity.identityVerified === 'boolean',
+  'identityVerified must be a boolean backed by Partner Center observation',
+);
+if (identity.identityVerified !== true) {
+  check(
+    listing.releaseState === 'draft-not-publishable',
+    'an unverified package identity requires draft-not-publishable release state',
+  );
+}
+check(
   listing.urls?.storeListingPattern === 'https://apps.microsoft.com/detail/' + identity.productId,
   'Store listing pattern must match identity productId',
 );

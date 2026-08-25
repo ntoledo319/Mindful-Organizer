@@ -8,6 +8,35 @@ blended fees), Day-15 gate assessment recorded, reposition menu pre-registered.
 macOS → Linux; AGENTS.md §1 law). Cycle-3 handoff published 2026-07-15;
 project-wide state now also lives in `PROJECT_TRACKER.md`._
 
+## Current correction — 2026-08-25
+
+Partner Center product `9PLRSZZMFPJH` was reobserved with exact package
+identity `ToledoTechnologies.Hearth`; only `Hearth` is currently reserved. The
+repository now records that observed identity with `identityVerified: true`,
+and the complete local candidate gate is green. The next machine step is the
+single canonical `main` commit/push followed by exact-SHA CI, AppX hashing, and
+staging. No fresh AppX exists yet, the Ample listing copy remains repository-
+only, and the separate Ample display-name reservation and all submission,
+IARC, payout/tax, terms, certification, and publication actions remain human-
+only. The 2026-08-19 correction below is retained as the true former-blocker
+record.
+
+## Current correction — 2026-08-19
+
+Ample replaced Hearth in source at `8c853b2`, but the rename invalidated every
+prior package candidate. `store/identity.json` remains explicitly unverified,
+no Ample AppX exists, and the first Ample workflows at `c0eb360` produced zero
+artifacts. The current machine path is: record the observed Partner Center
+identity → rerun the complete local gate → make one canonical push → bind
+the resulting AppX and screenshots to that exact SHA. CAND-002 and the package
+swap steps later in this file are historical and must not be used.
+
+The platform-first listing copy and seven replacement keywords (`spoon theory`,
+`pacing`, `offline task manager`, `ADHD planner`, `no subscription`, `offline
+planner`, `executive function`) are prepared only in the local working tree;
+they have not been saved in Partner Center. This dated correction supersedes
+the historical keyword list in RP-2 without rewriting what that plan recorded.
+
 ## Containment
 
 WORKSPACE_ROOT resolves to the first line above. The working directory and every
@@ -241,4 +270,3 @@ draft state as cash.
 ## Cycle 3 canonical continuation — 2026-07-15
 
 Root HANDOFF.md is the restart-proof operator document. It distinguishes the accepted runtime candidate, later launch hardening, current state head, exact Partner IDs/hashes, public versus private evidence, owner-only gates, post-certification execution, audience signal rules and mission completion. Partner Center state remains last observed 2026-07-14 until a live refresh. This cycle changes no bet, price or dollar result.
-

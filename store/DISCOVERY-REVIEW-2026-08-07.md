@@ -5,6 +5,13 @@ listing rules. Nothing here is applied — listing copy is an owner action, and
 `store/listing-metadata.json` is untouched. Companion to
 `revenue/MARKET-ANALYSIS-2026-08-07.md`._
 
+> **Application note — 2026-08-19:** the preceding sentence remains true for
+> the 2026-08-07 review date. Its recommendation is now applied in the local
+> working tree: platform-first copy plus seven replacement keywords. Nothing
+> has been saved in Partner Center. The chosen keywords contain 14 words, so
+> this document's later "16 words" count was an arithmetic error; the terms
+> themselves are unchanged.
+
 ## 0. Correction to PROP-006
 
 PROP-006 asserted that the listing "leads with ADHD." That is **wrong**, and the

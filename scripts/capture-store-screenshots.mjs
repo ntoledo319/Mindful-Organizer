@@ -37,17 +37,17 @@ const head = execFileSync('git', ['rev-parse', '--short=12', 'HEAD'], { cwd: roo
   .toString('utf8')
   .trim();
 const dirty = execFileSync('git', ['status', '--porcelain'], { cwd: root }).length > 0;
-const buildRef = process.env.HEARTH_SHOT_BUILD_REF || `${head}${dirty ? '-working-tree' : ''}`;
+const buildRef = process.env.AMPLE_SHOT_BUILD_REF || `${head}${dirty ? '-working-tree' : ''}`;
 const electronBinary = require('electron');
 
 const child = spawn(electronBinary, [root], {
   cwd: root,
   env: {
     ...process.env,
-    HEARTH_SCREENSHOT: '1',
-    HEARTH_DATA_DIR: dataDir,
-    HEARTH_SHOT_DIR: shotDir,
-    HEARTH_SHOT_BUILD_REF: buildRef,
+    AMPLE_SCREENSHOT: '1',
+    AMPLE_DATA_DIR: dataDir,
+    AMPLE_SHOT_DIR: shotDir,
+    AMPLE_SHOT_BUILD_REF: buildRef,
   },
   stdio: 'inherit',
 });

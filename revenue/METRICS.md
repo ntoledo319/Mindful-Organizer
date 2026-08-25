@@ -365,3 +365,56 @@ first, seek actual counsel, or rename before the listing is live — renaming
 costs far less now than after a purchasable page exists.
 
 Microsoft Store name-collision search (HQ-07 step 2) not yet run.
+
+## 2026-08-19 — Ample rename state independently re-derived
+
+- Live `git` observation: checked-out
+  `feature/store-candidate-cand002`, `origin/main`, and
+  `origin/feature/store-candidate-cand002` all pointed to `c0eb360`; local
+  `main` remained `c2b1fc2` (33 behind). `stash@{0}` remained intact.
+- Live GitHub observation: Quality runs 32310869115 (main) and 32310866310
+  (feature) failed because regenerated third-party notices changed two Hearth
+  references to Ample. Windows runs 32310869046 (main) and 32310866359
+  (feature) failed when the screenshot launcher timed out after exporting the
+  obsolete `HEARTH_*` harness variables. Both Windows runs produced **zero
+  artifacts**.
+- Safety finding: committed `store/identity.cjs` ignored
+  `identityVerified: false` and reported the guessed rename identity ready.
+  Packaging did not occur only because screenshot capture failed first. The
+  local correction now reports false and rejects the Store-build preflight.
+- Candidate state: **no Ample AppX exists**. CAND-002
+  (`a5d2cf36…b18f`) and all other recorded packages are historical Hearth
+  artifacts and never-submit after the manifest rename.
+- Local prep: platform-first listing copy and seven revised keywords are edited
+  in the working tree but are not saved in Partner Center. Non-package checks
+  passed: lint 0; typecheck ×2; 14 test files / 49 tests; renderer + Electron
+  bundle build; secrets 197 files; Store validation 278 checks; project-docs
+  validator; production audit 0 vulnerabilities; deterministic brand assets;
+  third-party notices for 54 runtime packages. A package was deliberately not
+  built because the Partner Center identity remains unobserved.
+- Money and publication are unchanged: collected profit **$0.00**, gap
+  **$4,000.00**, 0 live listings, 0 Ample artifacts, and no submission,
+  certification, publication, payout setup, or owner-authored contact.
+
+## 2026-08-25 — Partner Center identity reobserved
+
+- Live `git`/GitHub state had not moved: checked-out
+  `feature/store-candidate-cand002`, `origin/main`, and the remote feature ref
+  remained at `c0eb360`; the prior Quality and Windows failures still had zero
+  artifacts, and `stash@{0}` remained intact.
+- With owner authorization, authenticated Partner Center product
+  `9PLRSZZMFPJH` was inspected. Product identity reports exact
+  Package/Identity/Name `ToledoTechnologies.Hearth`, publisher
+  `CN=FBC80173-0C85-481E-BC5E-A3BE88BC2020`, and publisher display name
+  `Toledo Technologies`.
+- Manage app names reports `Hearth` as the only name currently in use. No name
+  was reserved or changed. The submission remains a draft/not submitted, and
+  the package shown there remains the historical Hearth AppX.
+- `store/identity.json` now records the observed identity with
+  `identityVerified: true`; both `npm run store:check` and
+  `npm run store:require-verified` passed. This clears the package-build
+  identity gate but not the separate owner-only Ample display-name reservation,
+  IARC, payout/tax, submission, certification, or publication gates.
+- Money and publication remain unchanged: collected profit **$0.00**, gap
+  **$4,000.00**, 0 live listings, and nothing submitted, certified, published,
+  or purchasable.

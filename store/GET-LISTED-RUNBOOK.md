@@ -1,5 +1,22 @@
 # Get Ample listed — owner runbook (2026-08-07)
 
+> **Correction — 2026-08-25:** with owner authorization, the agent reobserved
+> existing product `9PLRSZZMFPJH`. Product identity reports
+> `ToledoTechnologies.Hearth`; Manage app names reports only `Hearth` as
+> currently in use. No name was reserved or changed. The package-identity gate
+> is therefore resolved with the existing product's observed identity, while
+> reserving the Ample display name remains an owner-only pre-submission action.
+> Step 0's older assumption that adding the display name would assign a new
+> Ample-shaped package identity is retained below as historical guidance, not
+> current package-build instruction.
+
+> **Correction — 2026-08-19:** this runbook and the Ample identity reset landed
+> on 2026-08-19; the heading retained the 2026-08-07 research date. The opening
+> claim below that all agent work was done is also superseded: rename-gate,
+> screenshot-harness, license-notice, listing-copy, and state-reconciliation
+> fixes are prepared locally but remain uncommitted until the observed Partner
+> Center identity is supplied. No Ample AppX exists yet.
+
 Everything the agent can do is done. This is the remaining path, in order, with
 the reason each step blocks the next. Nothing here can be done by an agent:
 every item is a legal attestation, a financial credential, a commercial
@@ -11,6 +28,13 @@ outside your control — see "What actually sets the date" at the bottom.
 ---
 
 ## Step 0 — Reserve the name "Ample" (5 min) — BLOCKS EVERYTHING
+
+> **Execution correction — 2026-08-25:** this heading and the build-blocking
+> explanation below record the superseded assumption. The Ample display-name
+> reservation does **not** block AMPLE-001 build or CI: use the observed
+> existing-product identity `ToledoTechnologies.Hearth`. Reservation remains an
+> owner-only gate before submission and must never trigger another guessed
+> package-identity rewrite.
 
 Partner Center → your product → **Product identity** / **Manage app names**.
 
@@ -69,6 +93,11 @@ is changed in the app, its content, and the listing, and it is submitted for
 certification again.
 
 ## Step 4 — Candidate build (agent, ~16 min, unattended)
+
+> **Execution correction — 2026-08-25:** Step 0 no longer gates this build.
+> The exact existing-product identity is recorded and the full local gate is
+> green; AMPLE-001 proceeds with the canonical push and exact-SHA CI. Step 0
+> still must be completed by the owner before submission.
 
 Once Step 0 lands, tell the agent. It will commit the verified identity, fire
 the Windows Store MSIX workflow, download the artifact, recompute the AppX

@@ -92,7 +92,10 @@ def main() -> int:
             if sha in seen:
                 continue
             seen.add(sha)
-            merge = "merge" if len(parents.split()) > 1 else ""
+            # Keep every TSV row at nine columns without ending non-merge rows
+            # in a tab. A literal marker avoids `git diff --check` treating the
+            # structurally empty final column as trailing whitespace.
+            merge = "merge" if len(parents.split()) > 1 else "-"
             all_rows.append("\t".join([
                 repo_id, sha, clean_field(parents), adate, cdate,
                 clean_field(author), clean_field(subject), clean_field(deco), merge,

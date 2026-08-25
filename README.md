@@ -19,6 +19,18 @@ fits what remains.
 > readiness remain release gates. See store/README.md before making any
 > availability claim.
 
+> **Correction — 2026-08-19:** the preceding release-status paragraph describes
+> the historical Hearth package. The Ample rename changed the manifest; no Ample
+> AppX exists yet, and `store/identity.json` remains blocked until its package
+> identity is copied from Partner Center and explicitly verified.
+
+> **Correction — 2026-08-25:** Partner Center was reobserved. Existing product
+> `9PLRSZZMFPJH` retains exact Package/Identity/Name
+> `ToledoTechnologies.Hearth`; only `Hearth` is currently reserved. The package
+> identity is now verified for a fresh Ample-branded build, but no fresh
+> candidate existed at observation time and reserving the Ample display name
+> remains an owner-only pre-submission action.
+
 ## The core loop
 
 1. **Set the capacity you have.** Choose a daily energy budget from 4 to 24.
@@ -87,6 +99,16 @@ certification. The owner must still complete the IARC legal attestation and
 seller payout checks; Microsoft must certify the package; and a human must
 review the installed Store-signed build before publication. The detailed
 release gate is in [store/README.md](store/README.md).
+
+> **Correction — 2026-08-19:** those saved-package and identity statements are
+> historical Hearth observations from 2026-07-14, not current Ample evidence.
+> Partner Center has not been reobserved after the rename.
+
+> **Correction — 2026-08-25:** product identity, app names, and the submission
+> overview were reobserved. The exact identity is
+> `ToledoTechnologies.Hearth`, only `Hearth` is reserved, and the validated
+> package shown in Partner Center remains the historical Hearth AppX. Ample
+> listing fields were not saved or reverified.
 
 ## Technology
 

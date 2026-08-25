@@ -3,12 +3,51 @@
 _Canonical context: root HANDOFF.md. Queue rechecked 2026-07-28: HQ-06 and
 HQ-07 added; HQ-02 and HQ-05 amended._
 
+> **Current correction — 2026-08-19:** CAND-002 and every package named in the
+> existing HQ-04 text are historical Hearth artifacts and must never be
+> uploaded for Ample. No Ample AppX exists. HQ-00 below is now the first release
+> dependency; after it lands, the agent creates and records a new exact
+> candidate before any HQ-04 package action. The old renamed artifact labels
+> `ample-msix`, `ample-store-screenshots`, and `Ample 1.1.0.appx` in HQ-04 do
+> not describe run 30790687808, which actually produced Hearth-named artifacts.
+
+> **Current correction — 2026-08-25:** HQ-00 is complete. With the owner's
+> authorization, the agent reobserved product `9PLRSZZMFPJH` and recorded exact
+> Package/Identity/Name `ToledoTechnologies.Hearth` with
+> `identityVerified: true`. Manage app names showed only `Hearth`; no name was
+> reserved or changed. Reserving the Ample display name remains owner-only and
+> must happen before submission. The remaining queued estimate is **59 minutes**
+> (**50 minutes** with HQ-07's one-minute informed-risk path).
+
+## HQ-00 — Provide the observed Ample package identity — 1 minute
+
+**Completed 2026-08-25 — VER-20260825-001.** The historical instructions below
+are retained as the record of the former blocker.
+
+- **What:** Send the exact **Package/Identity/Name** string already assigned by
+  Partner Center for the Ample reservation.
+- **Why human-only:** Name reservation and Partner Center identity observation
+  are tied to the owner's account. The agent must not reserve a name or infer
+  this assigned value from a naming pattern.
+- **Direct link:**
+  <https://partner.microsoft.com/en-us/dashboard/products/9PLRSZZMFPJH/overview>
+- **Steps:** Open the product's **Product identity** page, copy only the exact
+  Package/Identity/Name value, and provide it to the agent. Do not submit,
+  publish, accept terms, or enter financial data as part of this step.
+- **Completion evidence:** `store/identity.json` contains the observed value and
+  `identityVerified: true`; a fresh CI candidate is then required.
+
 _Owner labor ceiling: 60 minutes for the full run. Current queued total:
-**59 minutes** (44 prior + 5 HQ-06 + 10 HQ-07; **50 minutes** if HQ-07 is
-resolved by the 1-minute risk acceptance). Machine wait and Microsoft review
+**60 minutes** (44 prior + 5 HQ-06 + 10 HQ-07 + 1 HQ-00; **51 minutes** if
+HQ-07 is resolved by the 1-minute risk acceptance). Machine wait and Microsoft review
 time are excluded. Do not add extra outreach or content work. Bet B is
 deliberately not queued — the explicit either/or is D038 in
 `revenue/DECISIONS.md`._
+
+_Correction 2026-08-25: the preceding total includes the now-completed one-
+minute HQ-00 and is retained as its historical calculation. Remaining queued
+owner time is **59 minutes**, or **50 minutes** with HQ-07's informed-risk
+path._
 
 The exact package, five screenshots, copy, price, release hold, public support
 page, privacy-guarded issue forms, security policy, private vulnerability
@@ -101,6 +140,11 @@ posts remain.
      and date. Never commit test records, exports, snapshots, or keys.
 
 ## HQ-04 — Submit for certification, then release the manual hold — 6 minutes
+
+> **Superseded package instruction — 2026-08-19:** do not execute the CAND-002
+> swap paragraph or its hash checks below. They remain solely as a record of the
+> pre-rename plan. HQ-04 stays blocked until the forthcoming Ample candidate and
+> its new SHA-256 are added in a dated correction.
 
 - **What:** Start Microsoft review and, only after every gate passes, perform
   the separate publication action.
@@ -241,4 +285,3 @@ Those are shipped repository work, not owner chores.
 ## Cycle 3 clarification — 2026-07-15
 
 Root HANDOFF.md is the canonical context and sequence. The 44-minute queue is unchanged. IARC answer paths below are factual preparation only: the owner must read the exact current question/help wording. Fear classification can depend on how the current tool treats emotionally distressing text, and Controlled Substance wording can distinguish prescribed medical references from illegal drugs. Do not blindly reuse a saved route or target a preferred rating.
-

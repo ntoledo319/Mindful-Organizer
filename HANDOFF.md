@@ -6,6 +6,67 @@ and the 400-line published iteration (Git history, commit `0ff209e`). Current
 coordination truth lives in `PROJECT_TRACKER.md`; this file only gets an agent
 started. Last reconciled 2026-08-04 against `origin/main` `270e650`._
 
+## 0B. Current correction — 2026-08-25
+
+_This section supersedes the 2026-08-19 resume point below without rewriting
+its historical record._
+
+- Live `git`/`gh` observation found no remote movement since 2026-08-19:
+  checked-out `feature/store-candidate-cand002`, `origin/main`, and the remote
+  feature ref remained at `c0eb360`; the protected Python-era `stash@{0}`
+  remained intact.
+- **Execution update 2026-08-25T11:32Z:** after that observation, local `main`
+  was safely fast-forwarded to `origin/main` and checked out with the prepared
+  working tree intact. The remote refs remain at `c0eb360`, and only canonical
+  `main` will be pushed for AMPLE-001. The complete local candidate gate then
+  passed at 2026-08-25T11:38Z (VER-20260825-002); commit and exact-SHA CI are
+  the remaining machine steps.
+- With the owner's authorization, Partner Center product `9PLRSZZMFPJH` was
+  reobserved. Product identity reports the exact Package/Identity/Name
+  `ToledoTechnologies.Hearth`. Manage app names reports only `Hearth` as
+  currently in use. No name was reserved or changed, and nothing was
+  submitted, published, attested, or configured for payout.
+- `store/identity.json` now records that observed package identity with
+  `identityVerified: true`. The Ample marketing/display-name reservation is a
+  separate owner action; it does not authorize changing the existing product's
+  package identity to a guessed Ample-shaped string.
+- No Ample candidate existed at the time of observation. The complete local
+  gate has since passed; resume AMPLE-001 with one canonical `main` push,
+  select CI by the exact pushed SHA, then hash and stage only that run's
+  `ample-msix` and `ample-store-screenshots` artifacts.
+
+## 0A. Current correction — 2026-08-19
+
+_This section supersedes the 2026-08-07 resume point below without rewriting
+its historical record._
+
+- Live `git` and `gh` observation: checked-out
+  `feature/store-candidate-cand002`, `origin/main`, and
+  `origin/feature/store-candidate-cand002` all began this session at `c0eb360`.
+  Local `main` remains stale at `c2b1fc2` (33 behind). `stash@{0}` still holds
+  the Python-era file-indexer work and must not be cleared.
+- Product source is now named **Ample**, but there is **no Ample candidate
+  AppX**. Every hash and package recorded below is Hearth-era evidence.
+  CAND-002 (`a5d2cf36…b18f`) and `tmp/CAND-002-SWAP/` are historical and must
+  never be submitted after the manifest rename.
+- `store/identity.json` still has `identityVerified: false`; its identity name
+  is a rename-script guess. The only unblock is the exact
+  Package/Identity/Name observed in Partner Center. Do not guess it and do not
+  build an AppX before it is recorded.
+- CI at `c0eb360` is red. Quality runs 32310869115 (main) and 32310866310
+  (feature) exposed stale renamed third-party notices. Windows runs
+  32310869046 and 32310866359 timed out because the screenshot launcher still
+  exported `HEARTH_*` while the app reads `AMPLE_*`; both produced zero
+  artifacts. The committed identity checker also ignored
+  `identityVerified`, so the screenshot failure was the only thing that
+  prevented a guessed-identity AppX.
+- The current working tree contains local fixes for that identity guard, the
+  screenshot environment, third-party notices, Store validation, regression
+  tests, and platform-first listing copy. Safe non-package gates have passed;
+  the tree remains intentionally uncommitted/unpushed until the owner supplies
+  the observed identity, after which the full gate, single canonical push,
+  exact-SHA CI observation, AppX hash record, and staging sequence resumes.
+
 ## 0. Resume point — 2026-08-07 (read this first)
 
 _Corrected 2026-08-07 after an owner-directed independent reverification. The

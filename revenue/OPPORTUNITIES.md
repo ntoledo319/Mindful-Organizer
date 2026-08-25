@@ -3,6 +3,24 @@
 _Reconfirmed 2026-07-15 for the Cycle 3 handoff. All U values are unvalidated
 four-week planning ranges, not observed revenue or promises._
 
+## Current correction — 2026-08-25
+
+The exact existing-product identity `ToledoTechnologies.Hearth` is now observed
+and verified for product `9PLRSZZMFPJH`, and the complete local candidate gate
+is green. Bet A is no longer blocked on package identity; its machine path is a
+single canonical `main` push followed by exact-SHA Windows CI, AppX hashing,
+and staging. No fresh candidate exists yet, and reserving the separate Ample
+display name remains an owner-only pre-submission action. The 2026-08-19 state
+below is retained as the historical former blocker.
+
+## Current correction — 2026-08-19
+
+The frame ranking and price hypothesis below are unchanged. References to a
+validated package and saved screenshots are historical Hearth evidence, not an
+Ample release state. Bet A is currently blocked on the exact Partner Center
+package identity followed by a fresh Ample candidate build; no current package,
+listing, traffic, or revenue exists.
+
 Legend: **T$** = days to first plausible collected dollar; **H** = owner minutes;
 **D** = distribution; **U** = plausible four-week net planning range; **R** =
 principal risk. A dash means no compliant near-term route.
@@ -136,4 +154,3 @@ evidence. Collected profit is still
 ## Cycle 3 handoff confirmation — 2026-07-15
 
 No ranking, price, demand claim or active bet changed. Root HANDOFF.md now contains the exact continuation and falsifier procedure. Collected profit remains $0.00 and the gap remains $4,000.00.
-

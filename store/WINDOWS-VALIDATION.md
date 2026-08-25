@@ -1,5 +1,52 @@
 # Exact-candidate Windows validation
 
+## Package identity observation — 2026-08-25
+
+Authenticated Partner Center observation of existing product `9PLRSZZMFPJH`
+showed:
+
+- Package/Identity/Name: `ToledoTechnologies.Hearth`
+- Package/Identity/Publisher:
+  `CN=FBC80173-0C85-481E-BC5E-A3BE88BC2020`
+- Package/Properties/PublisherDisplayName: `Toledo Technologies`
+- Manage app names: `Hearth` is the only name currently in use
+
+No name was reserved or changed. No submission, publication, IARC, payout, tax,
+or terms action was taken. `store/identity.json` now carries the observed
+package identity with `identityVerified: true`; the Ample display-name
+reservation remains an owner-only gate. This observation authorizes a fresh
+package build but does not rehabilitate any historical Hearth AppX listed below.
+
+## Ample candidate reset — 2026-08-19
+
+This section supersedes the operational use of every package record below
+without altering the Hearth-era evidence. The Hearth→Ample rename changed the
+AppX manifest, and the Partner Center package identity for Ample has not been
+observed. Therefore:
+
+- **No Ample AppX or screenshot artifact exists.** `store/identity.json` is
+  deliberately unverified, and no candidate build is authorized until the
+  owner supplies the exact Partner Center Package/Identity/Name.
+- CAND-002 (`a5d2cf36…b18f`, artifact 8846968340, run 30790687808) is
+  **historical and never-submit**, as is the staged
+  `tmp/CAND-002-SWAP/` convenience kit.
+- The six post-CAND-002 Hearth MSIX artifacts are also never-submit:
+
+  | Artifact | Run |
+  |---|---|
+  | 8847100327 | 30791027672 |
+  | 8885413072 | 30891744008 |
+  | 8987197965 | 31161190842 |
+  | 8987206429 | 31161188967 |
+  | 8987378149 | 31161652287 |
+  | 8987382023 | 31161652928 |
+
+- The first Ample workflows at `c0eb360` failed before artifact upload:
+  32310869046 (main) and 32310866359 (feature) each produced zero artifacts.
+- Sections 1–6 and the release-evidence checklist remain blocked until a fresh
+  exact-commit Ample package has its own filename, SHA-256, CI run, screenshots,
+  and manifest identity recorded in this file.
+
 This gate applies to the x64 AppX in Partner Center Submission 1. Keep the
 package hash, CI evidence, Microsoft certification result, Store-signed install
 observations, screenshots, and this checklist tied to the same release.

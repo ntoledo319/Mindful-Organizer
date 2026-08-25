@@ -1,5 +1,21 @@
 # Microsoft Store release path
 
+> **Current correction — 2026-08-25:** Partner Center product `9PLRSZZMFPJH`
+> was reobserved with exact Package/Identity/Name
+> `ToledoTechnologies.Hearth`; only `Hearth` is currently reserved. No name was
+> reserved or changed, and the Ample listing copy remains repository-only.
+> `store/identity.json` is now verified against that existing-product identity,
+> so a fresh candidate may be built. Reserving the Ample display name remains
+> owner-only and must happen before submission.
+
+> **Current correction — 2026-08-19:** the opening paragraph and Partner Center
+> state below are historical Hearth observations from 2026-07-14 that were
+> mechanically renamed in prose. No Ample AppX exists, Partner Center has not
+> been reobserved after the rename, and `store/identity.json` remains unverified.
+> CAND-002 and all earlier packages are never-submit. Resume from
+> `store/GET-LISTED-RUNBOOK.md` and the dated reset in
+> `store/WINDOWS-VALIDATION.md`.
+
 This directory is the manual submission source for Ample's reserved Microsoft
 Store product. Submission 1 now contains the exact validated 1.1.0 AppX, saved
 $14.99 US pricing, reviewed copy, categories, properties, certification notes,
@@ -7,6 +23,10 @@ and five hash-matched screenshots. It is deliberately held in draft and has not
 been submitted, certified, published, or verified purchasable.
 
 ## Launch position
+
+_Listing-copy correction 2026-08-19: the prepared Store copy now leads with
+Ample's Windows availability; privacy remains supporting proof. The older
+privacy-first sentence below records the pre-review framing._
 
 Ample launches as a **privacy-first Windows energy planner for ADHD and other
 variable-capacity days**.

@@ -1,35 +1,39 @@
 {
   "_comment": "Manual Microsoft Store submission source. The package, price, copy, screenshots, and release hold are saved in Partner Center Submission 1. No field here proves certification, publication, traffic, payout readiness, or revenue.",
+  "_stateCorrection20260819": "The preceding saved-state note describes the Hearth draft last observed on 2026-07-14. Partner Center has not been reobserved after the Ample rename; this Ample metadata is a repository draft only, and no Ample package or screenshots have been produced.",
+  "_stateCorrection20260825": "Partner Center product identity, app names, and the submission overview were reobserved on 2026-08-25: the exact package identity remains ToledoTechnologies.Hearth, only Hearth is reserved, and the validated package remains historical Hearth. These Ample listing values were not saved or reverified in Partner Center.",
   "schemaVersion": 2,
   "releaseState": "draft-not-publishable",
-  "positioning": "A privacy-first Windows energy planner for ADHD and other variable-capacity days.",
+  "positioning": "Energy planning, finally on Windows—for ADHD and other variable-capacity days.",
   "language": "en-us",
   "name": "Ample",
-  "shortDescription": "Plan a realistic day around the energy you have, with no account, cloud, ads, or record sync.",
-  "description": "Ample is a privacy-first Windows energy planner for ADHD and other variable-capacity days. It helps you make a realistic plan from the capacity you have, not the capacity a calendar assumes.\n\nCHOOSE YOUR CAPACITY\nSet a daily energy budget from 4 to 24. Ample never infers or changes that budget from a diagnosis or check-in.\n\nPLAN BY ENERGY\nGive each task a priority, expected duration, and energy demand. Ample estimates a spoon cost, subtracts completed work from the day's budget, and can show up to three open tasks whose recorded cost fits the energy left.\n\nSTART WITH TODAY\nRecent mood, energy, and sleep check-ins shape a plain-language daily briefing and one suggested practice. These are conservative local rules, not AI, diagnosis, treatment, or clinical monitoring.\n\nMAKE THE NEXT STEP SMALLER\nSmart Decompose can replace one task with a short set of starter steps in a single local transaction. Nothing is sent to a remote service.\n\nREVIEW YOUR OWN RHYTHM\nSee mood, energy, and sleep across 7, 14, or 30 days. When you request it, Ample can save a personal session-summary PDF to a location you choose. The summary is a reflection aid, not a clinical record.\n\nLOCAL AND ENCRYPTED AT REST\nAmple has no account, advertising, record sync, cloud API, or app telemetry. SQLite runs in memory while Ample is open. At rest, records are stored as authenticated AES-256-GCM snapshots with a random 256-bit key protected by Windows DPAPI through Electron safeStorage. Ample fails closed if protected key storage is unavailable. During upgrades from older versions, a temporary encrypted migration backup is retired after two verified encrypted generations.\n\nThese protections are not an absolute security guarantee. Records and the key are decrypted in memory while the app is open, and Windows may copy memory into swap, hibernation, crash, or diagnostic storage. Someone controlling the signed-in Windows session may be able to access the same credential facility. User-requested JSON and PDF exports are plaintext, and deleting old files cannot guarantee removal from SSD recovery, snapshots, or backups. Read the privacy policy before entering sensitive information.\n\nSECONDARY TOOLS\nAmple also includes local check-ins, guided breathing, grounding, a body scan, focus blocks, and a user-written crisis plan. ERP, diary-card, and medication-reference modules are preserved outside the default navigation pending dedicated opt-in and safety review. Ample does not issue medication reminders, monitor you, or guarantee crisis detection.\n\nAmple is personal organization and wellness software. It is not a medical device, healthcare or emergency service, diagnosis, treatment, or substitute for professional care. In a US crisis, call or text 988; in immediate danger, call the local emergency number.",
+  "shortDescription": "Energy planning, finally on Windows. Set a daily spoon budget and see which tasks fit—without a subscription, account, ads, record sync, or app telemetry.",
+  "description": "ENERGY PLANNING, FINALLY ON WINDOWS\n\nAmple helps you plan around the capacity you have, not the capacity a calendar assumes. Choose a daily energy budget, give tasks an estimated spoon cost, and see up to three open tasks whose recorded cost fits what remains. It is designed for ADHD and other variable-capacity days.\n\nCHOOSE YOUR CAPACITY\nSet a daily energy budget from 4 to 24. Ample never infers or changes that budget from a diagnosis or check-in.\n\nPLAN BY ENERGY\nGive each task a priority, expected duration, and energy demand. Ample estimates a spoon cost, subtracts completed work from the day's budget, and can show up to three open tasks whose recorded cost fits the energy left.\n\nMAKE THE NEXT STEP SMALLER\nSmart Decompose can replace one task with a short set of starter steps in a single local transaction. Nothing is sent to a remote service.\n\nSTART WITH TODAY\nRecent mood, energy, and sleep check-ins shape a plain-language daily briefing and one suggested practice. These are conservative local rules, not AI, diagnosis, treatment, or clinical monitoring.\n\nREVIEW YOUR OWN RHYTHM\nSee mood, energy, and sleep across 7, 14, or 30 days. When you request it, Ample can save a personal session-summary PDF to a location you choose. The summary is a reflection aid, not a clinical record.\n\nLOCAL, WITH ENCRYPTED STORAGE\nAmple has no subscription, account, advertising, record sync, cloud API, app telemetry, or remote AI service. SQLite runs in memory while Ample is open. At rest, records are stored as authenticated AES-256-GCM snapshots with a random 256-bit key protected by Windows DPAPI through Electron safeStorage. Ample fails closed if protected key storage is unavailable. During upgrades from older versions, a temporary encrypted migration backup is retired after two verified encrypted generations.\n\nThese protections are not an absolute security guarantee. Records and the key are decrypted in memory while the app is open, and Windows may copy memory into swap, hibernation, crash, or diagnostic storage. Someone controlling the signed-in Windows session may be able to access the same credential facility. User-requested JSON and PDF exports are plaintext, and deleting old files cannot guarantee removal from SSD recovery, snapshots, or backups. Read the privacy policy before entering sensitive information.\n\nSECONDARY TOOLS\nAmple also includes local check-ins, guided breathing, grounding, a body scan, focus blocks, and a user-written crisis plan. ERP, diary-card, and medication-reference modules are preserved outside the default navigation pending dedicated opt-in and safety review. Ample does not issue medication reminders, monitor you, or guarantee crisis detection.\n\nAmple is personal organization and wellness software. It is not a medical device, healthcare or emergency service, diagnosis, treatment, or substitute for professional care. In a US crisis, call or text 988; in immediate danger, call the local emergency number.",
   "productFeatures": [
-    "User-chosen 4–24 daily energy budget with estimated task costs",
-    "Up to three open tasks shown when their recorded cost fits the remaining budget",
-    "Local mood, energy, anxiety, and sleep check-ins",
-    "7, 14, and 30 day trends with user-requested PDF export",
+    "Windows desktop planning built around a user-chosen 4–24 daily energy budget",
+    "Estimated task costs and up to three open tasks whose recorded cost fits the remaining budget",
     "Transactional Smart Decompose for smaller starter steps",
+    "Local mood, energy, anxiety, and sleep check-ins",
+    "Local 7, 14, and 30 day trends with user-requested PDF export",
     "Guided breathing, grounding, body scan, and protected focus blocks",
     "Authenticated AES-256-GCM snapshots with an OS-protected random key",
-    "No account, cloud API, ads, record sync, or app telemetry"
+    "No subscription, account, cloud API, ads, record sync, or app telemetry"
   ],
   "keywords": [
-    "ADHD planner",
-    "energy planner",
     "spoon theory",
+    "pacing",
     "offline task manager",
-    "focus planner",
-    "mood journal",
-    "variable capacity"
+    "ADHD planner",
+    "no subscription",
+    "offline planner",
+    "executive function"
   ],
+  "keywordsStatus": "edited-locally-2026-08-19-not-saved-in-partner-center",
   "category": {
     "primary": "Productivity",
     "secondary": "Health + fitness",
-    "status": "saved-in-partner-center-draft"
+    "status": "saved-in-partner-center-draft",
+    "statusCorrection20260819": "Historical Hearth draft observation from 2026-07-14; not reobserved for Ample."
   },
   "markets": {
     "launch": [
@@ -42,6 +46,7 @@
     "currency": "USD",
     "amount": 14.99,
     "status": "saved-in-partner-center-draft-not-live",
+    "statusCorrection20260819": "Historical Hearth draft observation from 2026-07-14; not reobserved for Ample.",
     "customerValue": "Official x64 MSIX packaging and Microsoft Store delivery; the source remains MIT licensed."
   },
   "ageRating": {
@@ -89,6 +94,7 @@
     "package": "MSIX/AppX",
     "minimumOperatingSystem": "Windows 10.0.14316.0",
     "minimumOperatingSystemStatus": "Read from the exact validated Ample 1.1.0 AppX in Partner Center; installed-Windows verification remains open.",
+    "minimumOperatingSystemCorrection20260819": "The preceding value came from the historical Hearth package, not an Ample AppX. Reverify it against the future Ample candidate before submission.",
     "networkRequiredForCoreUse": false,
     "externalLinkExceptions": "Store, privacy, support, 988 web, tel, and sms links are handed to Windows when the user activates them.",
     "input": [

@@ -109,7 +109,7 @@ jobs:
           real=$(node store/identity.cjs --check)
           echo "real=$real" >> "$GITHUB_OUTPUT"
           if [ "$real" != "true" ]; then
-            echo "::notice::store/identity.json still contains PLACEHOLDER values — building everything except the appx package. Fill store/identity.json to produce an MSIX."
+            echo "::notice::store/identity.json is not verified from Partner Center — building everything except the appx package. Record the observed identity and set identityVerified=true to produce an MSIX."
           fi
 
       - name: Reproduce rights-clean brand assets
