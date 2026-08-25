@@ -94,6 +94,13 @@ certification again.
 
 ## Step 4 — Candidate build (agent, ~16 min, unattended)
 
+> **Candidate outcome — 2026-08-25:** AMPLE-001 is complete. Exact source
+> `3b8d225` passed Quality run 32844120492 and Windows run 32844120483. The only
+> current AppX is SHA-256 `7d6ca584…61866b`, staged with artifact 9561704379's
+> screenshots at `tmp/AMPLE-001-3b8d225/`. This supersedes both same-day build
+> instructions below; do not upload anything until the owner completes Step 0
+> and the remaining submission gates.
+
 > **Execution correction — 2026-08-25:** Step 0 no longer gates this build.
 > The exact existing-product identity is recorded and the full local gate is
 > green; AMPLE-001 proceeds with the canonical push and exact-SHA CI. Step 0

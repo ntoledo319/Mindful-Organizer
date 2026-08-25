@@ -31,6 +31,12 @@ fits what remains.
 > candidate existed at observation time and reserving the Ample display name
 > remains an owner-only pre-submission action.
 
+> **Candidate update — 2026-08-25:** exact source `3b8d225` passed Quality and
+> Windows CI. `Ample 1.1.0.appx` hashes to `7d6ca584…61866b` and is staged with
+> five exact-SHA screenshots. This is CI candidate evidence only: the package
+> is not uploaded, submitted, certified, published, or purchasable, and the
+> owner must reserve the Ample display name before submission.
+
 ## The core loop
 
 1. **Set the capacity you have.** Choose a daily energy budget from 4 to 24.

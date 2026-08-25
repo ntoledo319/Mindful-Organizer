@@ -11,6 +11,12 @@ started. Last reconciled 2026-08-04 against `origin/main` `270e650`._
 _This section supersedes the 2026-08-19 resume point below without rewriting
 its historical record._
 
+- **Execution outcome 2026-08-25T11:53Z:** AMPLE-001 is complete at exact
+  source/CI SHA `3b8d225`. Quality run 32844120492 and Windows run 32844120483
+  passed; the AppX SHA-256 is `7d6ca584…61866b`, and artifacts 9561731052 /
+  9561704379 are staged at `tmp/AMPLE-001-3b8d225/` with a hash README. This
+  supersedes the earlier same-day resume instructions below. Nothing was
+  uploaded to Partner Center, reserved, submitted, certified, or published.
 - Live `git`/`gh` observation found no remote movement since 2026-08-19:
   checked-out `feature/store-candidate-cand002`, `origin/main`, and the remote
   feature ref remained at `c0eb360`; the protected Python-era `stash@{0}`

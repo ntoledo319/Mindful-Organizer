@@ -418,3 +418,25 @@ Microsoft Store name-collision search (HQ-07 step 2) not yet run.
 - Money and publication remain unchanged: collected profit **$0.00**, gap
   **$4,000.00**, 0 live listings, and nothing submitted, certified, published,
   or purchasable.
+
+## 2026-08-25 — AMPLE-001 exact candidate produced
+
+- Exact remote source `3b8d225c1ce32be04a7940099649789876d1e353`
+  (tree `cfb17be0c06e456beb9bcf54ec2e211eb0085a5b`) passed Quality run
+  32844120492 and Windows run 32844120483.
+- Artifact `ample-msix` 9561731052 contains `Ample 1.1.0.appx`, 175,489,305
+  bytes. Independent `sha256sum` produced
+  `7d6ca584a8cee92497217ab48fbd04153f32c8f8746b4cd19135d709aa61866b`,
+  exactly matching CI's hash file.
+- The AppX manifest independently confirms package identity
+  `ToledoTechnologies.Hearth`, publisher
+  `CN=FBC80173-0C85-481E-BC5E-A3BE88BC2020`, display name `Ample`, x64, and
+  version `1.1.0.0`. The Windows DPAPI lifecycle report passed.
+- Screenshot artifact 9561704379 contains five 1920×1080 PNGs bound to exact
+  source `3b8d225`; all five hashes match its manifest. The preserved artifact
+  ZIP hashes to `06f74a6e…dbfe65`.
+- The exact kit is staged at `tmp/AMPLE-001-3b8d225/`. No Partner Center
+  package upload, display-name reservation, IARC action, payout/tax action,
+  submission, certification, publication, or live listing occurred.
+- Money remains unchanged: collected profit **$0.00**, gap **$4,000.00**, 0
+  sales, and 0 live purchasable listings.

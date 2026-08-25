@@ -1,5 +1,12 @@
 # Microsoft Store release path
 
+> **Candidate update — 2026-08-25:** AMPLE-001 is now bound to exact source
+> `3b8d225`, Windows run 32844120483, artifact 9561731052, and AppX SHA-256
+> `7d6ca584…61866b`. Five exact-SHA screenshots are artifact 9561704379. The
+> verified kit is staged at `tmp/AMPLE-001-3b8d225/`. Nothing was uploaded,
+> submitted, certified, published, or made purchasable; the owner must reserve
+> the Ample display name before submission.
+
 > **Current correction — 2026-08-25:** Partner Center product `9PLRSZZMFPJH`
 > was reobserved with exact Package/Identity/Name
 > `ToledoTechnologies.Hearth`; only `Hearth` is currently reserved. No name was

@@ -3,6 +3,13 @@
 _Canonical context: root HANDOFF.md. Queue rechecked 2026-07-28: HQ-06 and
 HQ-07 added; HQ-02 and HQ-05 amended._
 
+> **Candidate update — 2026-08-25:** AMPLE-001 is staged at
+> `tmp/AMPLE-001-3b8d225/`. Its only current AppX has SHA-256
+> `7d6ca584a8cee92497217ab48fbd04153f32c8f8746b4cd19135d709aa61866b`
+> (source `3b8d225`, Windows run 32844120483, artifact 9561731052); screenshots
+> are artifact 9561704379. Do not upload it until the owner reserves Ample and
+> reaches the package step. Never substitute CAND-002 or another artifact.
+
 > **Current correction — 2026-08-19:** CAND-002 and every package named in the
 > existing HQ-04 text are historical Hearth artifacts and must never be
 > uploaded for Ample. No Ample AppX exists. HQ-00 below is now the first release
@@ -140,6 +147,12 @@ posts remain.
      and date. Never commit test records, exports, snapshots, or keys.
 
 ## HQ-04 — Submit for certification, then release the manual hold — 6 minutes
+
+> **Current candidate — 2026-08-25:** after the owner reserves Ample and all
+> preceding gates pass, use only `tmp/AMPLE-001-3b8d225/Ample 1.1.0.appx` and
+> independently confirm SHA-256 `7d6ca584…61866b` before upload. This replaces
+> the historical CAND-002 swap procedure below; it does not authorize the agent
+> to upload, submit, certify, or publish.
 
 > **Superseded package instruction — 2026-08-19:** do not execute the CAND-002
 > swap paragraph or its hash checks below. They remain solely as a record of the

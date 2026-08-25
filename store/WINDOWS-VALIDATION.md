@@ -1,5 +1,52 @@
 # Exact-candidate Windows validation
 
+## AMPLE-001 exact candidate — 2026-08-25
+
+This is the first Ample-branded AppX after the Hearth→Ample source rename. It
+supersedes the operational use of every historical package below.
+
+| Evidence | Exact value |
+|---|---|
+| Candidate source / CI SHA | `3b8d225c1ce32be04a7940099649789876d1e353` |
+| Source tree | `cfb17be0c06e456beb9bcf54ec2e211eb0085a5b` |
+| Quality Gate | run `32844120492` — passed |
+| Windows Store workflow | run `32844120483` — passed |
+| MSIX artifact | `ample-msix`, artifact `9561731052` |
+| Screenshots artifact | `ample-store-screenshots`, artifact `9561704379` |
+| AppX filename | `Ample 1.1.0.appx` |
+| AppX size | `175489305` bytes |
+| **AppX SHA-256** | **`7d6ca584a8cee92497217ab48fbd04153f32c8f8746b4cd19135d709aa61866b`** |
+
+The downloaded AppX was hashed locally with `sha256sum`; the result exactly
+matches CI's `ample-appx.sha256.txt`. AppX manifest inspection independently
+confirmed:
+
+- Identity Name: `ToledoTechnologies.Hearth`
+- Publisher: `CN=FBC80173-0C85-481E-BC5E-A3BE88BC2020`
+- Processor architecture: `x64`
+- Package version: `1.1.0.0`
+- Display name: `Ample`
+- Publisher display name: `Toledo Technologies`
+- Minimum Windows version: `10.0.14316.0`
+
+The workflow's real Windows x64 DPAPI lifecycle validation passed. Screenshot
+artifact `9561704379` contains five 1920×1080 PNGs plus an exact-SHA manifest
+bound to `3b8d225`; all five image hashes were recomputed and matched. The
+preserved artifact ZIP SHA-256 is
+`06f74a6e2d68b3b53b0b5ed73b8ffbdb5808cb61fe8178d4884a00e924dbfe65`.
+
+The package, screenshot ZIP, extracted screenshots, CI hash, validation report,
+and a short operator README are staged at `tmp/AMPLE-001-3b8d225/`. This is a
+CI-validated candidate, **not** a Partner Center acceptance, certification,
+submission, publication, or live-Store result. The owner must reserve the Ample
+display name before submission; do not upload CAND-002 or any other artifact.
+
+The normal local `git push` was blocked by the execution environment before it
+ran. The authenticated GitHub Git Data path therefore published one commit
+whose tree (`cfb17be…`) exactly matches locally gated commit `cef09af`; only the
+remote/CI commit metadata SHA differs. Local `main` was then aligned cleanly to
+the remote candidate SHA before artifact verification.
+
 ## Package identity observation — 2026-08-25
 
 Authenticated Partner Center observation of existing product `9PLRSZZMFPJH`

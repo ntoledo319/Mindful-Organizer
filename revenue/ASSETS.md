@@ -19,6 +19,15 @@ Partner Center product `9PLRSZZMFPJH` was reobserved with exact package identity
 The identity is now verified for a fresh build, but no new candidate existed at
 observation time and Ample name reservation remains owner-only.
 
+### Candidate outcome — 2026-08-25T11:51Z
+
+AMPLE-001 now exists at exact source `3b8d225`: Windows run 32844120483 passed,
+AppX `7d6ca584…61866b` and five exact-SHA screenshots were independently
+verified and staged at `tmp/AMPLE-001-3b8d225/`. This restores a CI-validated
+smallest sellable unit, but not a submitted, certified, published, or
+purchasable product. Ample display-name reservation and all marketplace owner
+gates remain open.
+
 ## Workspace inventory
 
 There is one product codebase in the workspace: **Ample**, an

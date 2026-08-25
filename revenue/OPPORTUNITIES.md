@@ -13,6 +13,14 @@ and staging. No fresh candidate exists yet, and reserving the separate Ample
 display name remains an owner-only pre-submission action. The 2026-08-19 state
 below is retained as the historical former blocker.
 
+### Candidate outcome — 2026-08-25T11:51Z
+
+That machine path is complete: exact source `3b8d225`, Windows run 32844120483,
+and AppX `7d6ca584…61866b` now form AMPLE-001, staged with five verified
+screenshots. Bet A's remaining blockers are owner/platform gates—not package
+generation. This changes no price, demand estimate, ranking, or observed
+revenue; nothing is submitted, live, or purchasable.
+
 ## Current correction — 2026-08-19
 
 The frame ranking and price hypothesis below are unchanged. References to a

@@ -1,11 +1,11 @@
 # Ample — Project Tracker
 
 - **Schema:** project-tracker/v1 (2026-07-24)
-- **Last updated:** 2026-08-25T11:33Z (AMPLE-001 local gate green; canonical commit/CI pending)
+- **Last updated:** 2026-08-25T11:58Z (AMPLE-001 exact candidate verified, staged, and evidence-complete)
 - **Workspace root:** `/home/nick/Development/active/mindful_organizer` (REPO-01)
-- **Branch / HEAD:** checked-out `main`, `origin/main`, and `origin/feature/store-candidate-cand002` all at `c0eb360`; local `main` was fast-forwarded from stale `c2b1fc2`
-- **Working tree:** active dirty at `c0eb360` — exact identity, pipeline fixes, listing copy, tests, and state reconciliation pass the complete local gate; commit/push pending
-- **Operating mode:** RELEASE PREP / CI
+- **Branch / HEAD:** exact candidate source is `3b8d225`; this documentation-only close is its descendant on canonical `main`. Historical remote feature ref remains at `c0eb360`
+- **Working tree:** clean after this evidence close; exact ignored kit remains staged under `tmp/AMPLE-001-3b8d225/`
+- **Operating mode:** RELEASE EVIDENCE / OWNER GATES
 - **Canonical set:** [AGENTS.md](AGENTS.md) · [HANDOFF.md](HANDOFF.md) · [Docs index](docs/project/DOCS_INDEX.md) · [History](docs/project/REPO_HISTORY.md) · [Verification](docs/project/VERIFICATION_LOG.md) · [Decisions](revenue/DECISIONS.md) · [Proposals](docs/project/PROPOSALS.md) · [Migration map](docs/project/MIGRATION_MAP.md) · [Archive](docs/project/archive/)
 
 ## 0. How to use this tracker
@@ -25,17 +25,17 @@
 
 | Metric / environment | Current value | As of | Evidence |
 |---|---|---|---|
-| Product state | Source is Ample; Partner Center product `9PLRSZZMFPJH` retains exact package identity `ToledoTechnologies.Hearth`, now recorded and verified. Only Hearth is currently reserved; no fresh candidate exists yet and nothing is submitted/certified/published | 2026-08-25 | VER-20260825-001 |
-| Default-branch HEAD (`origin/main`) | `c0eb360`; checked-out local `main` was fast-forwarded to match, and the historical feature ref also matches | 2026-08-25 | live `git` + `gh`, VER-20260825-002 |
+| Product state | Source is Ample; Partner Center product `9PLRSZZMFPJH` retains verified identity `ToledoTechnologies.Hearth`. AMPLE-001 now exists and is CI-validated/staged; only Hearth is reserved and nothing is submitted/certified/published | 2026-08-25 | VER-20260825-001/003 |
+| Default-branch candidate source | `3b8d225`; this evidence-only close is its descendant and cannot change AppX bytes. Historical remote feature ref remains at `c0eb360` | 2026-08-25 | live `git` + `gh`, VER-20260825-003 |
 | Live release | none — not submitted, certified, published, or purchasable | 2026-07-14 | HIST-20260714-003 |
-| Current candidate | none. CAND-002 (`a5d2cf36…b18f`) and every other existing MSIX are historical Hearth artifacts and never-submit after the manifest rename | 2026-08-19 | D041; store/WINDOWS-VALIDATION.md |
-| Latest CI verification | **Fail** at `c0eb360`: Quality 32310869115/32310866310 (stale notices); Windows 32310869046/32310866359 (old screenshot env), zero artifacts. Committed identity checker also incorrectly accepted `identityVerified:false` | 2026-08-19 | VER-20260819-001 |
+| Current candidate | AMPLE-001 AppX `7d6ca584…61866b`, exact source `3b8d225`, Windows run 32844120483; staged with five exact-SHA screenshots. CAND-002 and all other packages remain never-submit | 2026-08-25 | VER-20260825-003; store/WINDOWS-VALIDATION.md |
+| Latest CI verification | **Pass** at exact `3b8d225`: Quality 32844120492; Windows 32844120483 including package structure/identity, Windows x64 DPAPI lifecycle, renderer smoke, and screenshots | 2026-08-25 | VER-20260825-003 |
 | Latest local verification | full pre-push gate green with observed identity: strict preflight, lint 0, typecheck ×2, 14 files/49 tests, vite build, secrets 197, store 277, docs PASS, licenses 54, audit 0, deterministic generated assets | 2026-08-25 | VER-20260825-002 |
 | Local test environment | `better-sqlite3` alternates between node and Electron ABIs depending on whether `electron-builder` last ran. In the Electron state 16/46 tests fail with `NODE_MODULE_VERSION` mismatch — environmental, CI unaffected. `npm rebuild better-sqlite3` restores `npm test` | 2026-08-07 | VER-20260807-001 |
-| Candidate package | none; no Ample AppX or screenshots artifact exists. The staged CAND-002 kit is historical and never-submit | 2026-08-19 | VER-20260819-001; store/WINDOWS-VALIDATION.md |
+| Candidate package | `Ample 1.1.0.appx`, 175489305 bytes, SHA-256 `7d6ca584a8cee92497217ab48fbd04153f32c8f8746b4cd19135d709aa61866b`; artifact 9561731052; kit `tmp/AMPLE-001-3b8d225/` | 2026-08-25 | VER-20260825-003 |
 | Collected revenue | $0.00; gap $4,000.00; 0 live listings; Day-15 gate assessment executed (D035) | 2026-07-28 | revenue/METRICS.md |
-| Major open blocker | Package identity gate resolved. AMPLE-001 is in progress; separate owner-only Ample display-name reservation, IARC, payout, submission, and publication gates remain | 2026-08-25 | VER-20260825-001; revenue/HUMAN_QUEUE.md |
-| Next recommended action | Commit and push canonical `main`, watch exact-SHA CI, hash the AppX, update evidence, and stage only that run's package + screenshots | 2026-08-25 | section 11; AMPLE-001 |
+| Major open blocker | All agent-side candidate work is complete. Separate owner-only Ample display-name reservation, IARC, payout/tax, submission, certification, signed-build review, and publication gates remain | 2026-08-25 | VER-20260825-003; revenue/HUMAN_QUEUE.md |
+| Next recommended action | Owner follows the remaining queue, beginning with Ample display-name reservation before any package upload | 2026-08-25 | section 11; revenue/HUMAN_QUEUE.md |
 
 One current row per metric; superseded values live in REPO_HISTORY.md.
 
@@ -59,7 +59,7 @@ One current row per metric; superseded values live in REPO_HISTORY.md.
 | Monetization plan, assets, opportunities | `revenue/PLAN.md`, `revenue/ASSETS.md`, `revenue/OPPORTUNITIES.md` |
 | Observed evidence (money, Store, CI) | `revenue/METRICS.md` |
 | Owner-only actions | `revenue/HUMAN_QUEUE.md` |
-| Decisions (D001–D044) | `revenue/DECISIONS.md` |
+| Decisions (D001–D045) | `revenue/DECISIONS.md` |
 | Repository/release history | `docs/project/REPO_HISTORY.md` |
 | Verification events | `docs/project/VERIFICATION_LOG.md` |
 | Documentation map | `docs/project/DOCS_INDEX.md` |
@@ -69,7 +69,7 @@ One current row per metric; superseded values live in REPO_HISTORY.md.
 
 | ID | Workstream | Derived status | Tasks (ready/blocked/other) | Last verified ref | Active tasks |
 |---|---|---|---|---|---|
-| WS-REL | Microsoft Store release (Bet A, $14.99) | blocked — fresh candidate in progress; Ample name reservation + owner gates remain | 4 ready, 4 blocked, 1 in-progress | `c0eb360` dirty + VER-20260825-002 | HQ-01…HQ-07, AMPLE-001 |
+| WS-REL | Microsoft Store release (Bet A, $14.99) | blocked — exact candidate done; Ample name reservation + owner gates remain | 4 ready, 3 blocked, 1 done | `3b8d225` + VER-20260825-003 | HQ-01…HQ-07 |
 | WS-REV | Monetization portfolio ($4,000 / Day 28) | blocked — Bet A = WS-REL; Day-15 gate executed (D035); reposition menu + kit ready; Bet B either/or pending owner (D038) | 0 active, 1 proposed | revenue/METRICS.md 2026-07-28 | — |
 | WS-DOCS | Documentation control system | done 2026-07-24 (on public main @ `59787f4`) | 2 done | VER-20260724-001…006 | — |
 | WS-READY | Market-readiness council + remediation | done; landed before rename | 1 done | VER-20260804-001 | — |
@@ -87,7 +87,7 @@ One current row per metric; superseded values live in REPO_HISTORY.md.
 | HQ-06 | Approve PROP-004 sequencing + deploy landing at certification time | revenue/HUMAN_QUEUE.md | ready | medium | human | owner approval of amended PROP-004 | Public prelaunch URL resolves signed-out; host + URL + timestamp in METRICS | METRICS entry | 2026-07-28 | HUMAN_QUEUE HQ-06 steps (host TOS re-check first — D007) |
 | HQ-07 | Trademark clearance for "Ample" (or informed risk acceptance) | revenue/HUMAN_QUEUE.md | ready | low | human | — | USPTO + Store search note in METRICS, or explicit risk acceptance in DECISIONS | METRICS/DECISIONS entry | 2026-08-19 | HUMAN_QUEUE HQ-07 steps |
 | CAND-002 | Historical Hearth replacement candidate | D040/D041 | superseded | high | agent | — | Replaced by AMPLE-001 after rename; never submit its AppX | VER-20260807-001 → AMPLE-001 | 2026-08-19 | Historical evidence only |
-| AMPLE-001 | First exact Ample Store candidate | user instruction 2026-08-19 | in-progress | critical | agent | HQ-00 done | Verified identity; full local gate; one canonical push; exact-SHA green Windows run; AppX SHA-256 + screenshots recorded and staged | VER-20260825-001/002 + new CI VER + hash | 2026-08-25 | Commit/push canonical `main`; never use CAND-002 |
+| AMPLE-001 | First exact Ample Store candidate | user instruction 2026-08-19 | done | critical | agent | HQ-00 done | Verified identity; full local gate; one canonical push; exact-SHA green Windows run; AppX SHA-256 + screenshots recorded and staged | VER-20260825-001…003 @ `3b8d225`; hash `7d6ca584…61866b` | 2026-08-25 | — |
 | COUNCIL-001 | 7-seat market-readiness council + full remediation | user instruction 2026-07-28 | done | high | agent | — | All agent-fixable gaps M1–M10 / D1 / D2 / R1 / R2 closed; every local gate green on the remediated tree | VER-20260729-001 @ working-tree:`246baac`+dirty:`f6edf2f2b6cff045` | 2026-07-29 | — |
 | RECON-001 | Working tree vs `origin/main` draft drift | HIST-20260724-001 | done | high | agent | — | Draft committed + remote merged + pushed; single authoritative tree on `main` @ `59787f4` | VER-20260724-006 @ `59787f4` | 2026-07-24 | — |
 | DOCS-001 | Documentation consolidation + control system | user instruction 2026-07-24 | done | high | agent | — | Tracker, index, history, verification log, proposals, migration map, archive, validator all green | VER-20260724-001…005 @ working-tree:`4a32b73`+dirty:`451945c517e87554` | 2026-07-24 | — |
@@ -115,7 +115,7 @@ needs-reconciliation / done / verified-stale / superseded / cancelled.
 | ID | Blocked item | Why | Unblock condition | Affected |
 |---|---|---|---|---|
 | B1 | Certification + publication | Owner-only legal attestation (IARC) and private payout setup not done | Owner completes HQ-01, HQ-02 | HQ-04 → HQ-05, WS-REL, WS-REV |
-| ~~B3~~ | ~~First Ample candidate identity~~ | **Resolved 2026-08-25:** Partner Center product `9PLRSZZMFPJH` reports exact identity `ToledoTechnologies.Hearth`; repository now has `identityVerified:true` | — | AMPLE-001 package/CI work remains in progress |
+| ~~B3~~ | ~~First Ample candidate identity~~ | **Resolved 2026-08-25:** Partner Center product `9PLRSZZMFPJH` reports exact identity `ToledoTechnologies.Hearth`; repository now has `identityVerified:true` | — | AMPLE-001 completed at VER-20260825-003 |
 | ~~B2~~ | ~~Replacement candidate (CAND-002)~~ | **Resolved 2026-08-02…08-04** — the tree was committed (`fe0fc4a`…`270e650`) and CI built the candidate. This row survived five days after its own unblock condition was met; removed from active blockers 2026-08-07 | — | — |
 
 | Risk | Likelihood | Impact | Mitigation | Owner |
@@ -124,7 +124,7 @@ needs-reconciliation / done / verified-stale / superseded / cancelled.
 | R2 — certification failure (runFullTrust, content review) | medium | delay; new candidate cycle | Truthful disclosures; preserve report; narrow fix only | owner (submit), agent (fix) |
 | R3 — Partner Center listing facts partly stale | **medium** | decisions on old listing fields | Identity, app names, and submission overview were reobserved 2026-08-25; detailed Ample listing fields remain repository-only until the owner saves them | owner+agent |
 | ~~R4~~ | — | — | **Resolved 2026-08-04** — remediation is committed and landed. Row retired 2026-08-07 | — |
-| R5 — wrong MSIX submitted | high | historical Hearth bytes certified as Ample | No current package is valid. CAND-002, its staged kit, and six later Hearth MSIX artifacts are explicitly never-submit; future staging binds exact SHA/run/hash | agent+owner |
+| R5 — wrong MSIX submitted | high | historical Hearth bytes certified as Ample | Only AMPLE-001 `7d6ca584…61866b` from run 32844120483 is current. CAND-002, its staged kit, and all other MSIX artifacts remain explicitly never-submit | agent+owner |
 | R6 — HQ-03 has no verified Windows machine (new 2026-08-07) | **low** (downgraded same day) | delays post-certification validation only | **Corrected:** HQ-03 depends on HQ-04, not the reverse — the Microsoft-signed build does not exist until after certification, so this never blocked submission. CI `windows-store.yml` already exercises the packaged AppX on `windows-latest` (DPAPI lifecycle matrix + renderer smoke + screenshots). Residual need is a human ear on Narrator | owner (post-certification) |
 | ~~R8 — "Hearth" collision~~ | resolved by rename 2026-08-19 | forced candidate reset | Historical analysis retained in `revenue/NAME-RISK-2026-08-07.md` | owner+agent |
 | R9 — Ample display name not reserved | high for submission | Listing cannot honestly use Ample until owner reserves it; package identity must not be renamed again | Build with observed `ToledoTechnologies.Hearth`; owner reserves Ample before submission | owner+agent |
@@ -139,26 +139,26 @@ observed green through `origin/main` HEAD `246baac` (VER-20260728-001…003).
 
 | Gate | Ref | Env | Result | Summary | Timestamp | VER |
 |---|---|---|---|---|---|---|
-| Quality Gate (CI) | `c0eb360` | CI ubuntu | fail | stale renamed THIRD_PARTY_NOTICES; runs 32310869115/32310866310 | 2026-08-19 | VER-20260819-001 |
-| Windows Store build (CI) | `c0eb360` | CI windows | fail | screenshot launcher used obsolete `HEARTH_*`; runs 32310869046/32310866359; zero artifacts | 2026-08-19 | VER-20260819-001 |
+| Quality Gate (CI) | `3b8d225` | CI ubuntu | pass | full gate; run 32844120492 | 2026-08-25 | VER-20260825-003 |
+| Windows Store build (CI) | `3b8d225` | CI windows | pass | run 32844120483; artifact 9561731052; AppX `7d6ca584…61866b`; screenshots 9561704379 | 2026-08-25 | VER-20260825-003 |
 | Full local candidate preflight | working-tree:`c0eb360`+dirty (exact fingerprint in log) | local (linux) | pass | strict identity preflight; lint 0; typecheck ×2; 14 files/49 tests; vite build; secrets 197; store 277; docs PASS; licenses 54; audit 0 | 2026-08-25 | VER-20260825-002 |
 | Partner Center identity | product `9PLRSZZMFPJH` | EXT-PC | pass | exact `ToledoTechnologies.Hearth`; only Hearth reserved; draft/not submitted | 2026-08-25 | VER-20260825-001 |
-| Store candidate/certification | — | CI / EXT-PC | in progress | no fresh package yet; identity gate cleared for AMPLE-001 | 2026-08-25 | VER-20260825-001 |
+| Store candidate/certification | AMPLE-001 `7d6ca584…61866b` | CI / EXT-PC | candidate pass / certification not observed | exact candidate staged; no Partner Center upload, submission, certification, or publication | 2026-08-25 | VER-20260825-003 |
 | Installed Windows pass | — | physical Windows | not observed | blocked behind HQ-03/HQ-04 | — | — |
 
-Historical green runs remain valid only for their exact Hearth refs. Current
-`c0eb360` CI is red and produced no Ample artifacts; see
-store/WINDOWS-VALIDATION.md.
+Historical green runs remain valid only for their exact Hearth refs. The prior
+`c0eb360` failure remains historical; current exact candidate evidence is bound
+only to `3b8d225` and `7d6ca584…61866b`. See store/WINDOWS-VALIDATION.md.
 
 ## 8. Environment and release state
 
 | Surface | Ref / version | State | Last verified | Evidence | Drift |
 |---|---|---|---|---|---|
-| Working tree | `main` @ `c0eb360` + identity/listing/pipeline/reconciliation diff | active dirty; identity verified and full gate green; canonical commit/push pending | 2026-08-25 | git status, VER-20260825-002 | AMPLE-001 in progress |
-| Local `cycle-2-shipped` | `246baac` | stale, 13 behind `origin/main` | 2026-08-19 | git | historical branch |
-| Local `main` | `c0eb360` + dirty | checked out; fast-forwarded to `origin/main`; candidate commit pending | 2026-08-25 | git, VER-20260825-002 | active AMPLE-001 tree |
-| `origin/main` | `c0eb360` | current Ample source; CI red | 2026-08-19 | git + gh run list | VER-20260819-001 |
-| CI | Quality + Windows runs at `c0eb360` | red; zero Ample artifacts | 2026-08-19 | VER-20260819-001 | local fixes unpushed |
+| Working tree | canonical `main` evidence close over candidate source `3b8d225` | clean after this commit; exact kit staged in ignored `tmp/` | 2026-08-25 | git status, VER-20260825-003 | none |
+| Local `cycle-2-shipped` | `246baac` | stale, 14 behind `origin/main` | 2026-08-25 | git | historical branch |
+| Local `main` | evidence-only descendant of `3b8d225` | checked out and aligned with `origin/main` after this close; candidate tree unchanged | 2026-08-25 | git, VER-20260825-003 | none |
+| `origin/main` | evidence-only descendant of `3b8d225` | exact Ample candidate source remains `3b8d225`; CI green | 2026-08-25 | git + exact-SHA gh runs | VER-20260825-003 |
+| CI | Quality 32844120492 + Windows 32844120483 | green; artifacts 9561731052 / 9561704379 | 2026-08-25 | VER-20260825-003 | none |
 | Partner Center | Existing product `9PLRSZZMFPJH`; exact identity `ToledoTechnologies.Hearth`; only Hearth reserved; draft/not submitted | identity/names/overview reobserved; detailed Ample listing fields not saved | 2026-08-25 | VER-20260825-001 | owner must reserve Ample before submission |
 | Microsoft Store live | — | does not exist | — | — | no listing |
 | Landing host | — | not deployed | — | landing/README.md | PROP-004 (HQ-06 proposes certification-time deploy) |
@@ -171,6 +171,7 @@ tag exists because tags trigger the Release Build and the Store path is manual.
 
 | Date | Item | Task | Verification | History |
 |---|---|---|---|---|
+| 2026-08-25 | First exact Ample candidate: observed identity, full local gate, exact-SHA green CI, independent AppX/screenshot hashes, and staged kit | AMPLE-001 | VER-20260825-001…003 @ `3b8d225` | HIST-20260825-001…003 |
 | 2026-07-29 | 7-seat market-readiness council (CTO/CISO/CPO/CMO/release/legal/CFO) + full remediation of every agent-fixable gap: local-day boundary, atomic toggles, IPC-trust tests, packaged-harness gate, editable decompose, task editing, onboarding budget step, pre-consent erase, nudges default off + disclosures, crisis-plan auto-save, forced-colors focus, error boundary, About diagnostics, Day-15 gate + honest money model, reposition kit, launch targets, doc sweep, notices CI | COUNCIL-001 | VER-20260729-001 (+ VER-20260728-004/005) | — |
 | 2026-07-28 | CI observed green through `origin/main` `246baac` (G2 closed); newest MSIX artifact recorded as non-candidate; post-publication doc sweep pre-drafted; third-party-notices freshness CI-enforced | market-readiness remediation D2 (council) | VER-20260728-001…005 | — |
 | 2026-07-24 | Working-tree draft reconciled with `origin/main`; pushed to `main` | RECON-001 | VER-20260724-006 | HIST-20260724-004…006 |
@@ -195,17 +196,14 @@ start without approval.
 
 ## 11. Next recommended actions
 
-**AMPLE-001 is in progress. Do not use CAND-002.**
+**AMPLE-001 is done. Do not use CAND-002 or any artifact except the exact hash
+recorded for AMPLE-001.**
 
-1. **Agent:** commit once, push canonical `main` once, and watch the exact-SHA
-   Quality + Windows workflows to completion.
-2. **Agent after green CI:** download `ample-msix` and
-   `ample-store-screenshots`, hash the contained AppX, append validation records,
-   and stage both artifacts plus a hash README under `tmp/`.
-3. **Owner later:** reserve Ample, then complete HQ-02 payout, HQ-01 IARC,
+1. **Owner:** reserve Ample, verify the staged AppX hash, then complete
+   HQ-02 payout, HQ-01 IARC,
    HQ-03/HQ-04 certification and signed-build validation, and deliberate
    publication. Agent does none of those owner-only actions.
-4. **After publication only:** execute `store/README.md` "Certification and
+2. **After publication only:** execute `store/README.md` "Certification and
    publication playbook", applying `store/POST_PUBLICATION_DOC_SWEEP.md`
    same-day.
 

@@ -21,6 +21,15 @@ IARC, payout/tax, terms, certification, and publication actions remain human-
 only. The 2026-08-19 correction below is retained as the true former-blocker
 record.
 
+### Candidate outcome — 2026-08-25T11:51Z
+
+The machine path above is complete. AMPLE-001 is exact source `3b8d225`,
+Windows run 32844120483, and AppX SHA-256 `7d6ca584…61866b`; the package and
+five exact-SHA screenshots are independently verified and staged at
+`tmp/AMPLE-001-3b8d225/`. The critical path now begins with the owner reserving
+the Ample display name, then the existing payout/IARC/submission/certification
+gates. Collected revenue remains $0 and nothing is live.
+
 ## Current correction — 2026-08-19
 
 Ample replaced Hearth in source at `8c853b2`, but the rename invalidated every

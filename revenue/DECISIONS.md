@@ -437,3 +437,14 @@ observed existing-product identity and keep `identityVerified: true`; never
 rewrite it from branding patterns. Reserving the Ample display name remains an
 owner-only pre-submission action. No reservation, submission, publication,
 attestation, payout/tax, or terms action was taken during the observation.
+
+### D045 — Bind the only current candidate to one source, run, and hash
+
+The locally gated tree was published once on canonical `main` as exact remote
+source `3b8d225`; Quality 32844120492 and Windows 32844120483 passed. Decision:
+AMPLE-001 is exclusively AppX SHA-256 `7d6ca584…61866b` from artifact
+9561731052 with screenshots artifact 9561704379. CAND-002 and every other MSIX
+remain never-submit. The evidence-only documentation close must not touch a
+Windows-workflow trigger, so it cannot mint another near-identical candidate.
+The candidate does not remove the owner-only display-name, IARC, payout,
+submission, certification, signed-build review, or publication gates.
