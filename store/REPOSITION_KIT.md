@@ -63,6 +63,14 @@ Notes:
 ≤ 21 words total — the same limits `scripts/validate-store.mjs` enforces on
 `store/listing-metadata.json`).
 
+> **Keyword correction — 2026-08-26:** the "Current saved terms" line below
+> records the pre-rename Hearth draft and is not current Ample metadata. The
+> repository's seven platform-first terms are `spoon theory`, `pacing`,
+> `offline task manager`, `ADHD planner`, `no subscription`, `offline planner`,
+> and `executive function`; none has been saved or reverified in Partner
+> Center. Treat later swaps as a post-publication experiment only after these
+> baseline terms are actually live.
+
 Current saved terms: ADHD planner · energy planner · spoon theory · offline
 task manager · focus planner · mood journal · variable capacity.
 

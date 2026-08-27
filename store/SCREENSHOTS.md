@@ -1,5 +1,14 @@
 # Microsoft Store screenshot plan
 
+> **Current candidate correction — 2026-08-26:** the status line and
+> "Accepted candidate evidence" section below record the historical Hearth
+> draft observed on 2026-07-14. AMPLE-001 has a new exact set from source
+> `3b8d225`, screenshots artifact `9561704379`, staged under
+> `tmp/AMPLE-001-3b8d225/downloads/screenshots/`. All five files are 1920 ×
+> 1080 and their hashes match that artifact's manifest. They have **not** been
+> uploaded or saved in Partner Center. Only this AMPLE-001 set may accompany
+> AppX `7d6ca584…61866b`; the older hashes remain history, not upload choices.
+
 Status: **captured, accepted, hash-recorded, and uploaded to the held Partner
 Center draft; not public**
 

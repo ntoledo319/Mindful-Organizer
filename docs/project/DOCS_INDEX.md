@@ -74,8 +74,8 @@ where the file asserts standalone truth.
 | `revenue/OPPORTUNITIES.md` | 35 monetization frames, scoring, portfolio, falsifiers | canonical (monetization proposals) | keep; loop-maintained |
 | `revenue/PLAN.md` | Active bets, arithmetic, critical path, gap | canonical (monetization plan) | line 1 root fixed 2026-07-24 (M6) |
 | `revenue/METRICS.md` | Timestamped observed-evidence ledger | canonical (observed evidence) | keep; observed facts only |
-| `revenue/HUMAN_QUEUE.md` | Owner-only actions HQ-01…HQ-05, 44 min | canonical (owner queue) | keep |
-| `revenue/DECISIONS.md` | Decision ledger D001–D034 | canonical (decisions) | reused as the project decision log; no competing file created |
+| `revenue/HUMAN_QUEUE.md` | Owner-only actions HQ-00…HQ-07; 79/70 min remaining, conditional path 60 cumulative | canonical (owner queue) | current owner-time decision is D047 |
+| `revenue/DECISIONS.md` | Decision ledger D001–D047 | canonical (decisions) | reused as the project decision log; no competing file created |
 | `revenue/npm-audit-*.json` | Raw audit output | artifact (gitignored) | regenerate on demand |
 
 ## `store/` — Microsoft Store release

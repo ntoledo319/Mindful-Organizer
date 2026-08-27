@@ -10,7 +10,7 @@ Machine-readable commit list: `history/commit-index.tsv` (regenerate with
 
 | ID | Name | Role | Local path | Canonical remote | Default branch | Relationship | History coverage | Last indexed ref |
 |---|---|---|---|---|---|---|---|---|
-| REPO-01 | Mindful-Organizer (Ample; formerly Hearth) | Primary app + docs + store ops | `/home/nick/Development/active/mindful_organizer` | `https://github.com/ntoledo319/Mindful-Organizer.git` (no credentials embedded) | `main` | — | Complete local clone; live refs re-derived 2026-08-25 | `3b8d225` |
+| REPO-01 | Mindful-Organizer (Ample; formerly Hearth) | Primary app + docs + store ops | `/home/nick/Development/active/mindful_organizer` | `https://github.com/ntoledo319/Mindful-Organizer.git` (no credentials embedded) | `main` | — | Complete local clone; live refs re-derived 2026-08-26 | `13bdea2` |
 
 Verified 2026-07-24: no submodules, no nested Git repositories (single `.git`).
 
@@ -26,19 +26,19 @@ repositories:
 
 ## 2. Current head snapshot
 
-_Mutable. Last refreshed 2026-08-25 from local refs plus authenticated `gh`
+_Mutable. Last refreshed 2026-08-26 from local refs plus authenticated `gh`
 cross-check._
 
 | Ref | SHA | State | Notes |
 |---|---|---|---|
-| `origin/main` | this evidence-only close over candidate `3b8d225c1ce32be04a7940099649789876d1e353` | current after this commit | Exact AMPLE-001 bytes remain bound to `3b8d225`; AppX `7d6ca584…61866b`; VER-20260825-003. |
+| `origin/main` | documentation-only descendants over candidate `3b8d225c1ce32be04a7940099649789876d1e353` | canonical default branch | Exact AMPLE-001 bytes remain bound to `3b8d225`; AppX `7d6ca584…61866b`; VER-20260825-003. |
 | `origin/feature/store-candidate-cand002` | `c0eb360f78fc10587a57fe6e9fcf9432b416ddf0` | live-verified 2026-08-25 | Historical branch; deliberately not pushed again and now behind default. |
 | `origin/handoff-cycle-3` | `14f9fd718433047dfc38a2cd5a28d7da171106aa` | fetched | Cycle-3 handoff branch; superseded on main (PROP-002) |
 | `origin/feature/monetization` | `8172603b62c2457696608c145511bd3fe92429d4` | fetched | Accepted-candidate preservation branch |
 | `origin/feature/revenue-cycle-0` | `09ec37eff4affcc1a0878205072a75f0cac13da5` | fetched | Diverged legacy cycle-0 docs close; do not continue |
-| local `main` (checked out) | this evidence-only close over `3b8d225c1ce32be04a7940099649789876d1e353` | aligned with `origin/main` after this commit | Candidate source unchanged; exact artifacts remain staged under ignored `tmp/` (VER-20260825-003). |
-| local `feature/store-candidate-cand002` | `c0eb360f78fc10587a57fe6e9fcf9432b416ddf0` | historical branch; matches its remote and is 1 behind default `main` | Not pushed again; use canonical `main` only for AMPLE-001. |
-| local `cycle-2-shipped` | `246baac5033001b00f586f570c3ce842218c1fb5` | stale: 14 behind | Historical branch. |
+| local `main` (checked out) | documentation-only descendants over `3b8d225c1ce32be04a7940099649789876d1e353` | canonical branch; aligned before this safety close | Candidate source unchanged; exact artifacts remain staged under ignored `tmp/` (VER-20260825-003). |
+| local `feature/store-candidate-cand002` | `c0eb360f78fc10587a57fe6e9fcf9432b416ddf0` | historical branch; matches its remote and is behind current `main` | Not pushed again; use canonical `main` only for AMPLE-001. |
+| local `cycle-2-shipped` | `246baac5033001b00f586f570c3ce842218c1fb5` | stale; behind current `main` | Historical branch. |
 | local `cycle-1-published` | `27db6c246de278fe119a46b7be2db35d9aa04a46` | local-only | Duplicate-content lineage of `4a32b73` (rebased SHAs) |
 | local `cycle-1-release-state` | `dab606e32622705ca79b7d13c14e6b1b794020bb` | local-only | Duplicate-content lineage of `5bb2611` |
 | local `feature/monetization` | `22275ec2adcdf948f0dcdc90cb0ef799ed2556fa` | local-only | Duplicate-content lineage diverged from remote `8172603` |
@@ -82,6 +82,7 @@ cross-check._
 | HIST-20260825-001 | 2026-08-25 | REPO-01 | external-state-observed | Partner Center product `9PLRSZZMFPJH` | external + local | Owner-authorized observation found exact Package/Identity/Name `ToledoTechnologies.Hearth`; only Hearth was currently reserved and the submission remained draft/not submitted. No name or submission state changed. The observed value replaced the rename-script guess and cleared the executable identity gate. | verified | VER-20260825-001, D044 |
 | HIST-20260825-002 | 2026-08-25 | REPO-01 | remote-changed | `c0eb360` → `3b8d225` (tree `cfb17be0`) | remote | AMPLE-001 source landed once on canonical `main`. Normal `git push` was policy-blocked before execution, so the authenticated Git Data path published one commit with the exact locally gated tree; local `main` was aligned cleanly afterward. The historical feature ref was not pushed. | verified | git tree comparison; VER-20260825-002/003 |
 | HIST-20260825-003 | 2026-08-25 | REPO-01 | release-built | `3b8d225`, AppX `7d6ca584…61866b` | CI + local | Quality 32844120492 and Windows 32844120483 passed. Artifact 9561731052 produced the first Ample-branded exact candidate; artifact 9561704379 produced five exact-SHA screenshots. CI hash, AppX manifest, DPAPI report, and screenshot hashes were independently verified; kit staged at `tmp/AMPLE-001-3b8d225/`. Not uploaded/submitted/certified/published. | verified | VER-20260825-003; store/WINDOWS-VALIDATION.md |
+| HIST-20260826-001 | 2026-08-26 | REPO-01 | documentation-consolidated | documentation-only close over `13bdea2` | local + remote | Re-derived clean canonical state and exact AMPLE-001 integrity, then removed current-state ambiguity without changing candidate bytes: CAND-002 staging was marked never-submit at its local source; a root `tmp/` package-selection guard was added; Store screenshot/listing/queue history received additive execution corrections; platform-first launch copy was synchronized. No Windows-workflow trigger, Partner Center write, owner attestation, financial action, submission, or publication occurred. | verified | VER-20260826-001 |
 
 Rollbacks: none recorded. Hotfixes: HIST-20260714-004 is the only in-run fix.
 Deployments: none exist (no staging/production; landing undeployed; Store in
@@ -95,7 +96,7 @@ fact rather than fabricated migration events.
 | Gap | State | Resolution path |
 |---|---|---|
 | G1 — working tree vs `origin/main` | **Resolved 2026-07-24:** draft committed (`d1c9d91`), remote merged (`59787f4`), pushed to `main` | HIST-20260724-004…006 |
-| G2 — CI for head commit | **Resolved 2026-08-25:** exact `3b8d225` Quality and Windows runs passed; artifacts and hashes recorded | VER-20260825-003; future bytes require a new exact-candidate chain |
+| G2 — candidate CI | **Resolved 2026-08-25:** exact candidate source `3b8d225` passed Quality and Windows; artifacts and hashes are recorded. Documentation-only descendants do not inherit or replace that package identity | VER-20260825-003; future package bytes require a new exact-candidate chain |
 | G3 — Partner Center | Product identity, app names, and submission overview reobserved 2026-08-25; listing fields, IARC, and payout readiness remain unverified/current owner gates | Owner completes the remaining queue without changing the observed package identity |
 | G4 — `v1.0.0` release | Tag exists; GitHub Release/artifact publication unobserved | Check GitHub Releases when network policy allows; record event |
 | G5 — branch sprawl | Local `main` was refreshed 2026-08-25; duplicate-content and historical local/remote branches remain | PROP-002 for any later branch deletion (owner approval; no deletion authorized) |
@@ -118,7 +119,7 @@ fact rather than fabricated migration events.
 
 ## 6. Incremental refresh
 
-Per-repo last-indexed ref: REPO-01 = `3b8d225` (2026-08-25, observed on `main`). On later runs:
+Per-repo last-indexed ref: REPO-01 = `13bdea2` (2026-08-26, observed on `main`). On later runs:
 fetch (if network allowed), compare heads to §2, inspect only new commits,
 append new events, regenerate `history/commit-index.tsv`, update §2. Do not
 re-narrate existing events.

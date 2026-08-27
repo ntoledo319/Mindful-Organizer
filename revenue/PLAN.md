@@ -30,6 +30,30 @@ five exact-SHA screenshots are independently verified and staged at
 the Ample display name, then the existing payout/IARC/submission/certification
 gates. Collected revenue remains $0 and nothing is live.
 
+### Continuation check — 2026-08-26
+
+Live `git`, GitHub runs/artifacts, the protected stash, and the staged kit were
+re-derived without a state change. AMPLE-001 remains the sole candidate; its
+AppX still hashes to `7d6ca584…61866b`, and no Windows rebuild is warranted.
+This continuation only removes wrong-package and stale-listing ambiguity and
+synchronizes platform-first launch drafts. The next revenue-relevant action is
+still owner-only name reservation followed by the existing account/legal and
+submission gates; collected revenue remains $0.
+
+### Owner-time correction — 2026-08-26
+
+The current queue counts the separate five-minute Ample display-name
+reservation and the runbook's conservative ten-minute IARC estimate. A
+non-duplicative review of exact AMPLE-001 CI narrows HQ-03 to 15 active human
+minutes, and the fully prepared listing/upload batch is grounded at 13 active
+minutes. Remaining work is approximately 79 minutes with the full HQ-07 screen
+or 70 minutes with its one-minute informed-risk path; deferring post-live HQ-05
+and optional HQ-06 yields 69 or 60 minutes. The sole documented full-run path
+at the hard ceiling also batches that one-line risk record into the five-minute
+reservation session: 59 remaining minutes plus the conservatively counted
+one-minute HQ-00 authorization. This is conditional arithmetic, not an agent
+recommendation to waive screening.
+
 ## Current correction — 2026-08-19
 
 Ample replaced Hearth in source at `8c853b2`, but the rename invalidated every
@@ -121,6 +145,10 @@ an enabled certification button do not count as collected revenue.
   Submission 1. The existing low IARC draft is not accepted as accurate and
   requires a TOS-compliant manual retake. The submission is deliberately **not
   submitted, not certified, not published, and not purchasable**.
+- **Status correction (2026-08-26):** the preceding Partner Center state is
+  historical Hearth evidence. AMPLE-001 is CI-validated and staged, but its
+  package, platform-first copy, seven keywords, and screenshots have not been
+  uploaded or saved in Partner Center.
 
 ## Bet B — Heavy: Ample-to-Production Electron Kit
 
@@ -185,6 +213,12 @@ an enabled certification button do not count as collected revenue.
 Only factual/legal, private-account, certification, and active-Windows evidence
 remains:
 
+> **Execution correction — 2026-08-26:** before the historical numbered path
+> below, the owner must complete HQ-07's name screen or informed-risk decision,
+> reserve the Ample display name, and use only the exact AMPLE-001 package and
+> screenshot set when saving the platform-first listing. The old sequence
+> omitted those renamed-product steps and its 59/50-minute budget is historical.
+
 1. Manually retake IARC from source-grounded disclosures, read its Terms, and
    save only if the publisher's legal and majority-age attestations are true.
 2. Resolve the missing Payout and tax role/profile section, create or confirm
@@ -200,6 +234,11 @@ remains:
 
 Exact steps and the owner budget (59 minutes queued; 50 if HQ-07 is resolved
 by risk acceptance) are in revenue/HUMAN_QUEUE.md.
+
+_Budget correction 2026-08-26: the preceding figures omit the separate name
+reservation, renamed listing/upload work, and current ten-minute IARC estimate.
+Current exact-CI-scoped totals and the sole conditional within-ceiling batching
+path are recorded in HUMAN_QUEUE and the dated correction above._
 
 ## Day-28 success criterion (restated 2026-07-28, Day 15)
 
@@ -248,6 +287,13 @@ diagnostics are in `store/CAMPAIGNS.md` (Decision rules).
   Category fields live under **Properties** (primary Productivity / secondary
   Health + fitness); a swap is registered but held as a later option.
   Trigger: impressions near zero (surfacing failure).
+
+  **Execution correction 2026-08-26:** the preceding "Current terms" are the
+  historical Hearth draft. Ample's repository baseline is `spoon theory`,
+  `pacing`, `offline task manager`, `ADHD planner`, `no subscription`,
+  `offline planner`, and `executive function`, and those terms are not yet
+  saved in Partner Center. Do not run a keyword reposition until that baseline
+  is live and has an attributable observation window.
 - **RP-3 — Listing copy variant ($0).** Partner Center → **Store listings** →
   en-US → **Short description** (≤ 200 characters) and the first screenshot
   with caption. The alternate short description and the first-screenshot

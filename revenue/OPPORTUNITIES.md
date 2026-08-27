@@ -21,6 +21,15 @@ screenshots. Bet A's remaining blockers are owner/platform gates—not package
 generation. This changes no price, demand estimate, ranking, or observed
 revenue; nothing is submitted, live, or purchasable.
 
+### Continuation check — 2026-08-26
+
+The portfolio ranking, price hypothesis, funnel, and $0 observed revenue are
+unchanged. Exact AMPLE-001 integrity was reverified and no technical candidate
+work remains. A public name screen produced follow-up-needed rather than legal
+clearance; name reservation, legal judgment, and every Store commitment remain
+with the owner. Creating another package would add a decoy without improving
+Bet A.
+
 ## Current correction — 2026-08-19
 
 The frame ranking and price hypothesis below are unchanged. References to a
@@ -44,6 +53,12 @@ principal risk. A dash means no compliant near-term route.
 | A1.5 | Official Windows package | 3–10 after owner gates | 59 total queue | **Microsoft Store** | $0–$4,001 | Legal/payout gates, certification, and unproven demand |
 | A1.6 | Bundle with a future sibling | — | >60 | None | $0 | Sibling does not exist |
 | A1.7 | White-label clinic build | 21+ | >60 | Outbound required | $0 | Claims, sales, and support burden |
+
+> **Owner-time correction — 2026-08-26:** A1.5's 59-minute table value is the
+> historical pre-rename estimate. D047 records 79/70 ordinary remaining minutes
+> after grounded CI/listing batching and a 60-minute cumulative total only for
+> the conditional risk-record/reservation batch with HQ-05/HQ-06 deferred. This
+> does not change A1.5's marketplace-first ranking or recommend risk acceptance.
 
 ## A2 — Presence and Focus Guard: seven frames
 
@@ -109,6 +124,10 @@ principal risk. A dash means no compliant near-term route.
   a screenshot-backed landing artifact, two green public-commit workflows, and
   a held Partner Center draft. No live Store page view, acquisition, purchase,
   or payout exists.
+- **Evidence correction (2026-08-26):** the Partner Center validation and held
+  listing in the preceding bullet are historical Hearth observations.
+  AMPLE-001 is CI-validated and staged with repository copy/screenshots, but it
+  has not been uploaded or saved in Partner Center.
 - **Falsifier:** one reposition after five live days with zero external signal;
   replace after four additional live days with zero signal. Treat 100 product
   page views with zero purchases as an immediate conversion failure.

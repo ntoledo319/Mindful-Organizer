@@ -23,8 +23,24 @@ HQ-07 added; HQ-02 and HQ-05 amended._
 > Package/Identity/Name `ToledoTechnologies.Hearth` with
 > `identityVerified: true`. Manage app names showed only `Hearth`; no name was
 > reserved or changed. Reserving the Ample display name remains owner-only and
-> must happen before submission. The remaining queued estimate is **59 minutes**
-> (**50 minutes** with HQ-07's one-minute informed-risk path).
+> must happen before submission. The 59/50-minute estimate below was made before
+> the renamed listing and AMPLE-001 upload work was counted; see the dated
+> 2026-08-26 calculation for the current totals.
+
+> **Owner-time correction — 2026-08-26:** entering/reviewing the Ample listing,
+> uploading the AppX, and uploading five ordered screenshots remains an
+> estimated 13-minute owner task, the separate display-name reservation is
+> estimated at five minutes, the IARC runbook estimate is ten minutes, and the
+> exact CI evidence narrows the non-duplicative HQ-03 human pass to 15 active
+> minutes. Remaining queued work therefore totals about **79 minutes** with the
+> full HQ-07 screen or **70 minutes** with its one-minute informed-risk path.
+> Deferring post-live HQ-05 and optional HQ-06 reduces the remaining critical
+> path to **69 minutes** or **60 minutes**, respectively. If—and only if—the
+> owner independently chooses the informed-risk path and records that one-line
+> decision inside the five-minute reservation batch, the estimate is **59
+> remaining / 60 cumulative minutes** after conservatively counting the
+> completed HQ-00 authorization. This is the sole documented within-ceiling
+> path and is not an agent recommendation to waive screening.
 
 ## HQ-00 — Provide the observed Ample package identity — 1 minute
 
@@ -56,6 +72,14 @@ minute HQ-00 and is retained as its historical calculation. Remaining queued
 owner time is **59 minutes**, or **50 minutes** with HQ-07's informed-risk
 path._
 
+_Correction 2026-08-26: the preceding 59/50-minute calculation omitted the
+13-minute Ample listing/package/screenshot task, the separate five-minute
+display-name reservation, and the current ten-minute IARC estimate; it also
+predated the exact-CI-supported 15-minute HQ-03 scope. Remaining totals are
+79/70 minutes for every queued item, or 69/60 minutes when post-live HQ-05 and
+optional HQ-06 are deferred. The conditional batched path above is 59 remaining
+/ 60 cumulative._
+
 The exact package, five screenshots, copy, price, release hold, public support
 page, privacy-guarded issue forms, security policy, private vulnerability
 reporting, accurate repository metadata, audience assets, and both remote CI
@@ -64,6 +88,10 @@ active Windows observation, certification, publication, and owner-authored
 posts remain.
 
 ## HQ-01 — Retake IARC manually and accept its terms — 5 minutes
+
+> **Time correction — 2026-08-26:** the five-minute heading is the historical
+> queue estimate. Use the later, more conservative **ten-minute** estimate in
+> `store/GET-LISTED-RUNBOOK.md`; current D047 arithmetic uses ten minutes.
 
 - **What:** Replace the untrusted low-rating draft with a source-grounded IARC
   questionnaire completed manually by the real publisher.
@@ -123,6 +151,20 @@ posts remain.
 
 ## HQ-03 — Choose the non-public Store test route and perform the Windows pass — 18 minutes
 
+> **Time/scope correction — 2026-08-26:** the heading is the historical
+> estimate. Exact AMPLE-001 CI already proves package structure/identity,
+> first render/preload, Windows DPAPI lifecycle, export warnings, erase/recovery,
+> consent gating, and five rendered scenes. Do not repeat those as separate
+> exercises. Budget **15 active owner minutes**, excluding machine/install wait,
+> for one combined signed-build pass: ≈2 minutes to choose/record the route and
+> launch/build facts; ≈8 minutes for one keyboard+Narrator traversal covering
+> consent/budget, a task, check-in, practice, crisis edit, real JSON/PDF save
+> dialogs, modal focus, quit/relaunch persistence, and final erase/relaunch;
+> ≈4 minutes for forced colors/high contrast, 200% text/minimum window, reduced
+> motion, light/dark, and screenshot-scene presentation; ≈1 minute to record
+> pass/fail. Do not budget below 15: CI does not prove Store installation or
+> assistive-technology behavior.
+
 - **What:** Observe the Microsoft-signed app on supported x64 Windows before a
   public release.
 - **Why human-only:** The accepted AppX is intentionally unsigned; signing it
@@ -146,13 +188,47 @@ posts remain.
   5. Record only Windows build, install route, pass/fail, installed footprint,
      and date. Never commit test records, exports, snapshots, or keys.
 
-## HQ-04 — Submit for certification, then release the manual hold — 6 minutes
+### HQ-04 prerequisite — Reserve the Ample display name — ≈5 minutes
+
+- **What:** Add **Ample** to the existing product's reserved Store names without
+  changing its observed package identity.
+- **Why human-only:** Name reservation is an account-bound Partner Center action
+  that the owner explicitly retained.
+- **Direct link:**
+  <https://partner.microsoft.com/en-us/dashboard/products/9PLRSZZMFPJH/overview>
+- **Steps:** After completing HQ-07's search or recording the owner's informed
+  risk decision, open **Product identity → Manage app names**, reserve
+  **Ample**, and confirm it appears beside the existing Hearth name. Do not
+  rewrite `ToledoTechnologies.Hearth`, create a new product, accept terms,
+  submit, or publish during this step. Record only the non-sensitive outcome
+  and date in `revenue/METRICS.md`.
+
+## HQ-04 — Finalize listing, submit, then release the hold — ≈19 minutes
 
 > **Current candidate — 2026-08-25:** after the owner reserves Ample and all
 > preceding gates pass, use only `tmp/AMPLE-001-3b8d225/Ample 1.1.0.appx` and
 > independently confirm SHA-256 `7d6ca584…61866b` before upload. This replaces
 > the historical CAND-002 swap procedure below; it does not authorize the agent
 > to upload, submit, certify, or publish.
+
+> **AMPLE-001 replacement procedure — 2026-08-26:** after Ample is reserved,
+> HQ-01 is complete, HQ-02 is payout-ready, and the HQ-03 audience route is
+> chosen, use only
+> `tmp/AMPLE-001-3b8d225/Ample 1.1.0.appx`. Confirm the full SHA-256
+> `7d6ca584a8cee92497217ab48fbd04153f32c8f8746b4cd19135d709aa61866b`,
+> upload the five matching images in this exact Store order—`01-today`,
+> `02-tasks`, `04-rhythm`, `03-reflect`, `05-onboarding`—using the captions in
+> `store/SCREENSHOTS.md`, then confirm Partner Center reports the package as
+> Validated. Save/review the platform-first copy, seven keywords, price,
+> categories, URLs, notes, and release hold. Do not change the observed package
+> identity `ToledoTechnologies.Hearth`. Stop on any filename, size, manifest,
+> or hash mismatch. Estimate: **≈13 active minutes** before the existing
+> ≈6-minute submission/release actions: 1 minute to hash, 1.5 for AppX
+> selection/upload/validation review, 3.5 for prepared copy/features/keywords,
+> 3 for ordered screenshots/captions/previews, 2 for price/market/categories/
+> URLs/notes/hold, and 2 for the completeness/saved-state sweep. Passive
+> transfer and Microsoft validation wait are excluded; stop rather than spend
+> contingency on a mismatch.
 
 > **Superseded package instruction — 2026-08-19:** do not execute the CAND-002
 > swap paragraph or its hash checks below. They remain solely as a record of the
@@ -168,6 +244,12 @@ posts remain.
   choose the HQ-03 test route before submitting.
 - **Direct link:**
   <https://partner.microsoft.com/en-us/dashboard/products/9PLRSZZMFPJH/overview>
+
+> **Historical block boundary — 2026-08-26:** the CAND-002 package-swap bullet
+> immediately below is retained only as the true pre-rename plan. It is
+> non-executable. The AMPLE-001 replacement procedure above is the sole current
+> package instruction.
+
 - **Package swap first (CAND-002) — ≈4 min:** the 2026-07-29 remediation changed
   the app bytes, so the originally accepted AppX is superseded. Before step 1,
   replace the held Submission 1 package and screenshots with CAND-002: download
@@ -178,6 +260,16 @@ posts remain.
   (full record in `store/WINDOWS-VALIDATION.md`), then upload that AppX and the
   five refreshed screenshots. **After the swap, the hash to confirm in step 1 is
   the CAND-002 hash above, not `4900f382…facdb1`.**
+
+> **Current numbered-step override — 2026-08-26:** the package/hash clauses in
+> historical step 1 below are non-executable. Current step 1 is: confirm the
+> only uploaded package is `Ample 1.1.0.appx`, Partner Center marks it
+> Validated, and its full SHA-256 is
+> `7d6ca584a8cee92497217ab48fbd04153f32c8f8746b4cd19135d709aa61866b`.
+> Step 2 must review the newly saved Ample fields and the exact screenshot order
+> in the replacement procedure above. Preserve the old numbered text solely as
+> Hearth history.
+
 - **Steps:**
   1. Confirm the package is only `Ample 1.1.0.appx`, Partner Center says
      Validated, and its source artifact SHA-256 is the accepted candidate —
@@ -252,6 +344,14 @@ posts remain.
 
 ## HQ-07 — Clear the "Ample" name, or explicitly accept the risk — 10 minutes (or 1 minute)
 
+> **Screening update — 2026-08-26:** a read-only public sweep surfaced
+> [Amplenote](https://www.amplenote.com/), an adjacent task, goal, mood, and
+> planning product. The agent could not complete an authoritative live-status
+> USPTO clearance or a reliable Microsoft Store result through the available
+> read-only interfaces. Record this as **follow-up-needed**, not
+> no-obvious-conflict. The owner should perform the official searches below;
+> this note is neither a legal conclusion nor a reservation action.
+
 - **What:** A minimum trademark/name collision check for "Ample" before a
   paid listing attaches money to the name — or an explicit, informed decision
   to accept the risk without searching.
@@ -276,6 +376,19 @@ posts remain.
      risk for the 1.1.0 launch without a search. Nothing else changes.
 
 ## Running owner-time ledger
+
+> **Current calculation — 2026-08-26:** CAND-002 retrieval is removed, but the
+> renamed listing plus AMPLE-001 AppX/five-screenshot upload is ≈13 minutes,
+> the separate display-name reservation is ≈5 minutes, the current IARC
+> estimate is ≈10 minutes, and the exact-CI-scoped HQ-03 pass is ≈15 active
+> minutes. Remaining queued work totals **≈79 minutes** with full HQ-07
+> screening or **≈70 minutes** with its one-minute informed-risk path.
+> Deferring post-live HQ-05 and optional HQ-06 yields **≈69 minutes** or
+> **≈60 minutes**. The old arithmetic and recommendation below are historical,
+> not current instructions. Only if the owner independently chooses the risk
+> path and records it inside the five-minute reservation session does that
+> critical path become 59 remaining minutes; the completed HQ-00 authorization
+> is conservatively the sixtieth minute.
 
 Queued estimates: 5 + 10 + 18 + 6 + 5 + 5 + 10 = **59 minutes**, plus the
 CAND-002 package swap in HQ-04 (**≈4 min**, added 2026-08-04 after the candidate

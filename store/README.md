@@ -23,6 +23,15 @@
 > `store/GET-LISTED-RUNBOOK.md` and the dated reset in
 > `store/WINDOWS-VALIDATION.md`.
 
+> **Execution correction — 2026-08-26:** AMPLE-001 is repository- and
+> CI-complete, but no Ample package, copy, category, price, screenshot, or
+> release-control field has been saved or revalidated in Partner Center. Any
+> operative-looking statement or checked Partner Center item below describes
+> either the historical Hearth draft observed on 2026-07-14 or repository/CI
+> readiness. It is not current Ample submission evidence. Preserve those older
+> statements as history and execute from the dated corrections plus
+> `store/GET-LISTED-RUNBOOK.md`.
+
 This directory is the manual submission source for Ample's reserved Microsoft
 Store product. Submission 1 now contains the exact validated 1.1.0 AppX, saved
 $14.99 US pricing, reviewed copy, categories, properties, certification notes,
@@ -53,6 +62,12 @@ future features.
 
 ## Current Partner Center state
 
+> **State boundary — 2026-08-26:** the field-completion list below is the
+> historical Hearth Submission 1 observation. On 2026-08-25 only product
+> identity, app names, and the draft overview were reobserved: identity remains
+> `ToledoTechnologies.Hearth`, only Hearth is reserved, and the displayed AppX
+> is historical. The Ample listing fields remain repository-only.
+
 - Product ID: 9PLRSZZMFPJH
 - Submission ID: 1152921505701225649
 - Pricing and availability: Complete
@@ -81,7 +96,8 @@ future features.
   installed smoke, and accessibility evidence checklist
 - POST_PUBLICATION_DOC_SWEEP.md — pre-drafted replacement paragraphs for every
   pre-release status line, applied on publication day (playbook step 4)
-- identity.json — reserved Partner Center package identity
+- identity.json — observed existing-product package identity; the Ample display
+  name reservation is a separate owner gate
 
 The static commercial landing artifact lives in landing/. It is intentionally
 marked pre-release and can be deployed later to an eligible zero-cost static
@@ -157,6 +173,11 @@ all visual and content checks pass.
 
 ## Hard pre-submission blockers
 
+> **Checklist boundary — 2026-08-26:** checked source/CI preparation remains
+> valid where it is tied to AMPLE-001. Checked Partner Center entry or upload
+> items below are historical Hearth observations and must be re-entered or
+> explicitly reverified by the owner for Ample before submission.
+
 ### Product and data protection
 
 - [x] Confirm every first-run consent and privacy disclosure against the exact
@@ -210,6 +231,11 @@ all visual and content checks pass.
       proposed $14.99 one-time price is saved in the held draft but is not live.
 
 ### Partner Center
+
+> **Current execution correction — 2026-08-26:** the two checked rows below
+> record the old Hearth draft, not completed Ample work. The owner still must
+> reserve Ample, upload only AMPLE-001, save/review the platform-first listing
+> and screenshots, and confirm audience/release control before certification.
 
 - [x] Select Public audience and Make this product available and discoverable in
       the Store.

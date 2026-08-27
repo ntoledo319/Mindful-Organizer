@@ -28,6 +28,15 @@ smallest sellable unit, but not a submitted, certified, published, or
 purchasable product. Ample display-name reservation and all marketplace owner
 gates remain open.
 
+### Continuation check — 2026-08-26
+
+Live `git`/GitHub and the staged kit were re-derived: canonical `main` remains
+a documentation-only descendant of exact candidate source `3b8d225`; candidate
+CI is green; the AppX still hashes to `7d6ca584…61866b`; and all five screenshot
+hashes still match. No second candidate is needed or authorized. The remaining
+asset risk is operational selection: every AppX except AMPLE-001 is now marked
+historical/never-submit at the `tmp/` staging root.
+
 ## Workspace inventory
 
 There is one product codebase in the workspace: **Ample**, an
@@ -47,6 +56,10 @@ evidence, and assistant state are not separate assets.
   A TOS-compliant manual IARC retake, seller/payout confirmation, Microsoft
   certification, Store-signed smoke/accessibility observation, and publication
   remain.
+- **Completeness correction (2026-08-26):** the preceding Partner Center
+  validation sentence records the historical Hearth draft. AMPLE-001 is
+  CI-validated and staged but has not been uploaded or validated in Partner
+  Center; the Ample listing fields remain repository-only.
 - **Distribution target:** Microsoft Store using reserved product ID
   9PLRSZZMFPJH and its built-in discovery and checkout. GitHub remains the
   public source and policy host, not the commercial checkout.
@@ -74,6 +87,11 @@ evidence, and assistant state are not separate assets.
 Launch scope: Today, Tasks, Check in, Practices, Rhythm, Crisis, and Settings.
 Smallest sellable unit: the official Windows package. Status: release candidate
 and Store draft complete; public support path prepared; not submitted or public.
+
+_Status correction 2026-08-26: “Store draft complete” above records the
+historical Hearth draft. AMPLE-001 is CI-validated and staged, but the Ample
+package, listing fields, and screenshots have not been uploaded or saved in
+Partner Center._
 
 ### A2 — Presence and Focus Guard engine
 

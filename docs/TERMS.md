@@ -63,6 +63,6 @@ Nothing in these terms limits a right that cannot legally be limited.
 
 The public support path is documented in [SUPPORT.md](SUPPORT.md). GitHub sign-in
 is required to create an issue. It is not a private, clinical, crisis, or
-emergency channel. Never post a Ample database, encrypted snapshot, key,
+emergency channel. Never post an Ample database, encrypted snapshot, key,
 plaintext export, account detail, or private wellness record in a public support
 request.

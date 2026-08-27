@@ -440,3 +440,29 @@ Microsoft Store name-collision search (HQ-07 step 2) not yet run.
   submission, certification, publication, or live listing occurred.
 - Money remains unchanged: collected profit **$0.00**, gap **$4,000.00**, 0
   sales, and 0 live purchasable listings.
+
+## 2026-08-26 — Post-candidate continuation revalidation
+
+- Live `git`/GitHub observation before this documentation-only close:
+  local `main` and `origin/main` both pointed to `13bdea2`; its Quality run
+  32845727178 passed. Exact candidate source `3b8d225` still has green Quality
+  32844120492 and Windows 32844120483; no Windows run exists for `13bdea2`.
+- Artifacts 9561731052 (`ample-msix`) and 9561704379
+  (`ample-store-screenshots`) remain available and bound to candidate source
+  `3b8d225`. No replacement artifact was selected or created.
+- The staged AppX independently recomputed to
+  `7d6ca584a8cee92497217ab48fbd04153f32c8f8746b4cd19135d709aa61866b`;
+  the preserved screenshots ZIP recomputed to
+  `06f74a6e2d68b3b53b0b5ed73b8ffbdb5808cb61fe8178d4884a00e924dbfe65`,
+  and all five PNG hashes still match the exact-SHA manifest.
+- A signed-out Store-product check still returned ProductNotFound/410, so no
+  live listing or purchase path exists.
+- A public name screen surfaced [Amplenote](https://www.amplenote.com/), an
+  adjacent productivity/task/mood-planning product. The agent interfaces did
+  not yield an authoritative live-status USPTO clearance or reliable Microsoft
+  Store search result. HQ-07 therefore remains **follow-up-needed** for the
+  owner's official searches and legal-risk judgment; no name was reserved or
+  changed.
+- No package upload, IARC interaction, payout/tax action, terms acceptance,
+  submission, certification, publication, post, or human contact occurred.
+  Collected profit remains **$0.00**; the gap remains **$4,000.00**.

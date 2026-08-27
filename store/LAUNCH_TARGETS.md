@@ -38,16 +38,15 @@ Standing rules for every destination:
   the post as a user review.
 - Draft post body:
 
-> **I built Ample: a privacy-first Windows energy planner for ADHD and
-> variable-capacity days**
+> **I built Ample: energy planning, finally on Windows**
 >
-> I built Ample. It is a Windows app for days when your capacity does not
-> match your calendar: you give each task an energy cost and duration, choose
-> a daily energy budget from 4 to 24, and Today shows up to three open tasks
-> whose recorded cost fits what is left. Check-ins, 7/14/30-day trends, and
-> a PDF export you choose to save are all local.
+> I built Ample to bring energy-budget planning to Windows for days when your
+> capacity does not match your calendar: give each task an energy cost and
+> duration, choose a daily budget from 4 to 24, and Today shows up to three
+> open tasks whose recorded cost fits what is left. Check-ins, 7/14/30-day
+> trends, and a PDF export you choose to save are all local.
 >
-> Privacy model: no account, cloud, advertising, record sync, or app
+> Privacy model: no account, cloud API, advertising, record sync, or app
 > telemetry. SQLite runs in memory while it is open; at rest it uses
 > authenticated AES-256-GCM snapshots with a random key protected by Windows.
 > Exports you request are plaintext. It is personal organization software,
@@ -99,7 +98,7 @@ Standing rules for every destination:
 
 > Hello moderators — I built Ample, a Windows energy planner based on a
 > user-chosen 4–24 daily budget with spoon-style task costs. It is local and
-> encrypted at rest, with no account or cloud. May I share it once with the
+> encrypted at rest, with no account or cloud API. May I share it once with the
 > community under your rules? I will follow any format or disclosure you
 > require, and I will not post without your approval.
 
@@ -114,10 +113,11 @@ Standing rules for every destination:
   factually; never solicit or fabricate reviews.
 - Draft listing summary (short, factual):
 
-> Ample is a privacy-first Windows energy planner for ADHD and other
+> Ample brings energy-budget planning to Windows for ADHD and other
 > variable-capacity days. Tasks get an energy cost; you choose a 4–24 daily
-> budget and see what fits. Local and encrypted at rest; no account, cloud,
-> ads, or record sync. One-time purchase; MIT-licensed source.
+> budget and see what fits. Supporting proof: local, encrypted-at-rest storage
+> with no account, cloud API, ads, record sync, or app telemetry. One-time
+> purchase; MIT-licensed source.
 
 ## 6. Product Hunt — launch platform
 

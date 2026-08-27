@@ -25,6 +25,16 @@ commitment, or a Partner Center action tied to your identity.
 **Total clicking time: roughly 50–60 minutes.** Wall-clock is longer and mostly
 outside your control — see "What actually sets the date" at the bottom.
 
+> **Time correction — 2026-08-26:** the preceding estimate omitted the
+> separate five-minute Ample reservation and the renamed listing/package/
+> screenshot work. Using this runbook's ten-minute IARC estimate plus the
+> grounded 13-minute prepared listing and 15-minute non-duplicative HQ-03 pass,
+> the full remaining queue is approximately 79 minutes with HQ-07's full screen
+> or 70 minutes with its one-minute informed-risk path. See
+> `revenue/HUMAN_QUEUE.md` and D047 for the sole conditional batching path that
+> stays at the 60-minute full-run ceiling. This is not a recommendation to waive
+> screening.
+
 ---
 
 ## Step 0 — Reserve the name "Ample" (5 min) — BLOCKS EVERYTHING
@@ -80,6 +90,15 @@ your name, which is why no agent can do it.
 
 ## Step 3 — Trademark check on "Ample" (1 min)
 
+> **Screening correction — 2026-08-26:** do not rely on the older
+> "food brands, not software" sentence below. A read-only public sweep surfaced
+> [Amplenote](https://www.amplenote.com/), an adjacent productivity product
+> covering tasks, goals, mood, and planning. The available agent interface did
+> not yield an authoritative live-status USPTO clearance or a reliable
+> Microsoft Store result. The current state is **follow-up-needed**: the owner
+> must run the official searches and make the legal-risk decision. No name was
+> reserved or changed during this screen.
+
 <https://tmsearch.uspto.gov/> — search **Ample** in classes 009 and 042.
 
 The known collisions are food brands (Ample Foods, Ample Hills Creamery), not
@@ -116,6 +135,12 @@ manifest. Do not upload it. There are six non-candidate MSIX artifacts in CI
 history; the register is in `store/WINDOWS-VALIDATION.md`.
 
 ## Step 5 — Upload package and finalize the listing (15 min)
+
+> **Time correction — 2026-08-26:** the heading is the historical estimate.
+> Because the exact AppX, full hash, five ordered screenshots/captions, copy,
+> features, keywords, price, categories, URLs, notes, and release hold are all
+> prepared, budget **13 active owner minutes** as allocated in HQ-04. Passive
+> transfer and Microsoft validation wait are excluded; stop on any mismatch.
 
 Upload the new AppX. Confirm the hash matches what the agent recorded.
 

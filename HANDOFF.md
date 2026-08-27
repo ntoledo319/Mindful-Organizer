@@ -6,6 +6,20 @@ and the 400-line published iteration (Git history, commit `0ff209e`). Current
 coordination truth lives in `PROJECT_TRACKER.md`; this file only gets an agent
 started. Last reconciled 2026-08-04 against `origin/main` `270e650`._
 
+_Reconciliation correction 2026-08-26: the preceding date/ref is historical.
+Live `main` was re-derived at the documentation evidence close `13bdea2`; the
+sole candidate remains source `3b8d225`, AppX `7d6ca584…61866b`, and the exact
+kit under `tmp/AMPLE-001-3b8d225/`. This continuation changes documentation
+only and does not authorize another package or any owner-only Store action._
+
+_Owner-time correction 2026-08-26: the separate display-name reservation,
+13-minute prepared listing/upload batch, conservative ten-minute IARC estimate,
+and exact-CI-scoped 15-minute HQ-03 pass make the remaining queue 79/70 minutes,
+or 69/60 after deferring post-live HQ-05 and optional HQ-06. D047's sole
+within-ceiling full-run path also batches the one-minute risk record with the
+five-minute reservation: 59 remaining + one conservatively counted HQ-00
+minute. Risk acceptance is not an agent recommendation._
+
 ## 0B. Current correction — 2026-08-25
 
 _This section supersedes the 2026-08-19 resume point below without rewriting

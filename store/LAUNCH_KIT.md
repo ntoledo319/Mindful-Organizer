@@ -4,6 +4,10 @@ Status: **drafts only — not authorized for posting or sending**
 
 ## Positioning canon
 
+_Positioning correction 2026-08-26: lead every launch draft with the Windows
+availability and energy-planning job. Local storage and no-account protections
+are supporting proof, not the headline. The claims boundary below is unchanged._
+
 **Audience:** Windows users with ADHD or other variable-capacity days who want a
 private, calmer way to decide what realistically fits today.
 
@@ -11,8 +15,9 @@ private, calmer way to decide what realistically fits today.
 a smaller, finishable task plan. Ample never infers or changes that budget from
 a diagnosis or check-in.
 
-**One sentence:** Ample is a privacy-first Windows energy planner that helps you
-plan around the capacity you have, with no account, cloud, ads, or record sync.
+**One sentence:** Ample brings energy-budget planning to Windows, helping you
+plan around the capacity you have; it then proves the privacy boundary with no
+account, cloud API, ads, record sync, or app telemetry.
 
 **Proof available in the product:** task energy and duration inputs, estimated
 spoon costs, a user-controlled remaining daily budget, up to three fitting open
@@ -61,12 +66,13 @@ Do not use:
 
 Draft only:
 
-> Ample is now available for Windows through the Microsoft Store. It is an
-> energy planner for ADHD and other variable-capacity days: give work an energy
-> cost, choose a daily budget from 4 to 24, and see what fits the day you have.
+> Energy planning is now available on Windows through the Microsoft Store.
+> Ample is an energy planner for ADHD and other variable-capacity days: give
+> work an energy cost, choose a daily budget from 4 to 24, and see what fits the
+> day you have.
 > Records are encrypted at rest with authenticated AES-256-GCM snapshots and a
 > key protected by Windows; exports you request are plaintext. There is no
-> account, cloud, advertising, or record sync. Ample is personal organization
+> account, cloud API, advertising, or record sync. Ample is personal organization
 > software, not medical care. [verified campaign link]
 
 Before approval, replace “now available” only after the product page is visibly
@@ -79,8 +85,8 @@ Draft only:
 
 ### Ample for Windows
 
-This release prepares the official x64 Microsoft Store package for Ample, a
-local-first energy planner for variable-capacity days.
+This release prepares the official x64 Microsoft Store package for Ample, an
+energy planner built for Windows and variable-capacity days.
 
 Core loop:
 

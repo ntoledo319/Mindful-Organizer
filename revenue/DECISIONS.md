@@ -342,6 +342,11 @@ draft obeys the `store/LAUNCH_KIT.md` claims boundary.
 
 ### D038 — Bet B sequencing put to the owner as an explicit either/or (not queued)
 
+> **Accounting correction — 2026-08-26:** the estimates and over-budget option
+> below are retained as the historical decision. D047 supersedes them: accepting
+> more than 60 owner minutes is not a valid path under the operating law, and
+> HQ-07 risk acceptance is an owner judgment, not a recommendation.
+
 Adding PROP-005 approval plus itch.io payout setup (~12 owner minutes) to the
 queue would push the total to ~71 minutes, over the 60-minute §10 law.
 Decision: no queue item is added; the choice is presented here and referenced
@@ -448,3 +453,35 @@ remain never-submit. The evidence-only documentation close must not touch a
 Windows-workflow trigger, so it cannot mint another near-identical candidate.
 The candidate does not remove the owner-only display-name, IARC, payout,
 submission, certification, signed-build review, or publication gates.
+
+## 2026-08-26 — Post-candidate continuation
+
+### D046 — Stop package churn; remove wrong-candidate ambiguity instead
+
+Live revalidation found AMPLE-001 unchanged and complete: source `3b8d225`,
+Windows run 32844120483, and AppX `7d6ca584…61866b` remain the sole candidate.
+Decision: do not generate another package merely to create activity. Use this
+cycle for documentation-only safety work: mark CAND-002 never-submit inside its
+ignored staging folder, add a root `tmp/` selection guard, distinguish
+historical Hearth Partner Center fields from current Ample readiness, and keep
+launch drafts platform-first. The public Ample name screen remains
+follow-up-needed, not clearance. Reservation and legal judgment remain owner
+actions, as do IARC, payout/tax, upload, submission, terms, certification, and
+publication.
+
+### D047 — Count every renamed-product owner step before claiming the 60-minute path
+
+The prior queue arithmetic omitted the separate Ample display-name reservation
+and understated the renamed listing/package/screenshot work. Decision: retain
+the historical totals but never present them as current. Remaining work is
+approximately 79 minutes with a full HQ-07 screen or 70 minutes with its
+one-minute informed-risk path after two grounded scope corrections: exact
+AMPLE-001 CI removes three minutes of duplicate HQ-03 smoke work (15 active
+human minutes remain; do not go lower), and the fully prepared package/copy/
+screenshot batch is 13 active minutes (passive transfer/validation wait
+excluded; do not go lower). Deferring post-live HQ-05 and optional HQ-06 yields
+69 or 60 minutes. The sole documented full-run plan at the hard ceiling also
+batches the one-line risk record into the five-minute reservation session: 59
+remaining minutes plus the conservatively counted one-minute HQ-00
+authorization. This is conditional arithmetic, not a recommendation or legal
+conclusion; full screening still requires further truthful scope reduction.
