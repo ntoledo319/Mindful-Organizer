@@ -1,5 +1,17 @@
 # Get Paulatim listed — historical Ample runbook base (2026-08-07)
 
+> **Execution outcome — 2026-08-28T09:41-04:00:** this runbook's
+> pre-certification sequence is complete. Exact PAULATIM-001 from source
+> `f2d2a417` passed Quality 33169087812 and Windows 33169087811; its AppX hash is
+> `af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`.
+> Partner Center contains only `Paulatim 1.1.1.appx` plus five matching
+> screenshots; listing, testing notes, and manual release control are saved;
+> Age ratings, tax profile, and payment profile show Complete; and the Hearth
+> package/name were removed. Submission `1152921505701225649` is **In
+> certification** at Pre-processing. Wait for Microsoft, preserve the result,
+> then run HQ-03 against the Store-signed build. Do not click **Publish now**;
+> Paulatim is not certified, published, live, or purchasable.
+
 > **Paulatim execution correction — 2026-08-28:** the owner selected and
 > authorized **Paulatim** for full certification submission. Exact Paulatim is
 > reserved on existing product `9PLRSZZMFPJH` and set as dashboard name. Keep
@@ -159,6 +171,12 @@ certification again.
 > gate, then bind its AppX and screenshots to the exact pushed SHA and record a
 > new full hash. No Paulatim package/hash exists yet.
 
+> **Candidate execution outcome — 2026-08-28:** the preceding reset records the
+> pre-CI state. Exact PAULATIM-001 now exists at source `f2d2a417`; its full AppX
+> SHA-256 is `af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`.
+> It passed both CI gates, was independently verified, and is staged at
+> `tmp/PAULATIM-001-f2d2a41/`.
+
 > **Candidate outcome — 2026-08-25:** AMPLE-001 is complete. Exact source
 > `3b8d225` passed Quality run 32844120492 and Windows run 32844120483. The only
 > current AppX is SHA-256 `7d6ca584…61866b`, staged with artifact 9561704379's
@@ -187,6 +205,10 @@ history; the register is in `store/WINDOWS-VALIDATION.md`.
 > listing and fresh screenshots, remove Hearth listing references, and preserve
 > the manual publication hold. Every earlier package is never-submit.
 
+> **Upload execution outcome — 2026-08-28:** complete. Exact PAULATIM-001,
+> platform-first copy, seven keywords, and five matching screenshots were saved;
+> the Hearth package and Hearth display-name reservation were removed.
+
 > **Time correction — 2026-08-26:** the heading is the historical estimate.
 > Because the exact AppX, full hash, five ordered screenshots/captions, copy,
 > features, keywords, price, categories, URLs, notes, and release hold are all
@@ -212,6 +234,11 @@ product that repeatedly disclaims being a medical device.
 > **Authority correction — 2026-08-28:** certification submission is delegated
 > to the agent after exact package evidence and payout-readiness reconciliation.
 > This delegation does not include **Publish now**.
+
+> **Submission execution outcome — 2026-08-28:** submission
+> `1152921505701225649` is In certification at Pre-processing. The manual hold
+> remains active; do not resubmit or click **Publish now** while Microsoft
+> review is in progress.
 
 Submit. Microsoft certification takes days. Nothing you do changes that.
 

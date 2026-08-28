@@ -1,27 +1,27 @@
 {
-  "sourceBuildRef": "8172603b62c2457696608c145511bd3fe92429d4",
+  "sourceBuildRef": "f2d2a4177fcb05d5b24405c598d0eb9b9d7f01e6",
   "containsFictionalDemoData": true,
   "files": [
     {
       "file": "01-today.png",
       "width": 1920,
       "height": 1080,
-      "bytes": 84182,
-      "sha256": "e1294c9c6bf869cc13e903932feac540da9122f46af40aa2d776a24ce2d64979"
+      "bytes": 84372,
+      "sha256": "e3da54caa4345e1bb2c9dbec5f04b8e3fb6054664e22eb0872abe88718984f4c"
     },
     {
       "file": "04-rhythm.png",
       "width": 1920,
       "height": 1080,
-      "bytes": 78326,
-      "sha256": "208e9cca284fec8bf284706f670f698a5e5cd64dc497bea7cbbbc16afb40c483"
+      "bytes": 78612,
+      "sha256": "738cc00cee1cdeddc6f4ded5e716e502eff6dc1e5e4a4b58fe34e69766cd2e66"
     },
     {
       "file": "03-reflect.png",
       "width": 1920,
       "height": 1080,
-      "bytes": 82909,
-      "sha256": "76e3888e666f2a9f3ed9effc7cc15072621551259274b98ac31723bfb3db93cc"
+      "bytes": 83248,
+      "sha256": "e11fe2d30c3b83ecf8f1e4285ab7641883c6b3f4490507ccefcd8ce825739ea0"
     }
   ]
 }

@@ -10,7 +10,7 @@ Machine-readable commit list: `history/commit-index.tsv` (regenerate with
 
 | ID | Name | Role | Local path | Canonical remote | Default branch | Relationship | History coverage | Last indexed ref |
 |---|---|---|---|---|---|---|---|---|
-| REPO-01 | Mindful-Organizer (Paulatim; formerly Ample/Hearth) | Primary app + docs + store ops | `/home/nick/Development/active/mindful_organizer` | `https://github.com/ntoledo319/Mindful-Organizer.git` (no credentials embedded) | `main` | — | Complete local clone; live refs re-derived 2026-08-28 | `886314e` |
+| REPO-01 | Mindful-Organizer (Paulatim; formerly Ample/Hearth) | Primary app + docs + store ops | `/home/nick/Development/active/mindful_organizer` | `https://github.com/ntoledo319/Mindful-Organizer.git` (no credentials embedded) | `main` | — | Complete local clone; live refs re-derived 2026-08-28 | `f2d2a417` |
 
 Verified 2026-07-24: no submodules, no nested Git repositories (single `.git`).
 
@@ -20,8 +20,8 @@ repositories:
 | ID | System | Role | Access state |
 |---|---|---|---|
 | EXT-GHA | GitHub Actions (this repo) | CI: Quality Gate, Windows Store, Release, Pages | Public run history; run IDs recorded in events |
-| EXT-PC | Microsoft Partner Center | Store draft, certification, payout | Private; Paulatim reservation/dashboard name and draft state observed 2026-08-28; product `9PLRSZZMFPJH` |
-| EXT-STORE | Microsoft Store public listing | Distribution | Does not exist yet (draft only) |
+| EXT-PC | Microsoft Partner Center | Store draft, certification, payout | Private; submission `1152921505701225649` In certification under manual publication hold; product `9PLRSZZMFPJH` |
+| EXT-STORE | Microsoft Store public listing | Distribution | Does not exist yet; certification is in progress and publication is held |
 | EXT-ITCH | itch.io | Conditional Bet B marketplace | No account/page observed |
 
 ## 2. Current head snapshot
@@ -31,12 +31,12 @@ cross-check._
 
 | Ref | SHA | State | Notes |
 |---|---|---|---|
-| `origin/main` | `886314e8f31899a4b773e5f09d20e56533bad5ac` | canonical default branch at session start | Matches local `main`; Paulatim rename is an uncommitted working-tree change. Historical AMPLE-001 remains bound to `3b8d225`. |
+| `origin/main` | `f2d2a4177fcb05d5b24405c598d0eb9b9d7f01e6` | canonical exact PAULATIM-001 source | Quality 33169087812 and Windows 33169087811 green; AppX `af8b4581…b5146`. |
 | `origin/feature/store-candidate-cand002` | `c0eb360f78fc10587a57fe6e9fcf9432b416ddf0` | live-verified 2026-08-25 | Historical branch; deliberately not pushed again and now behind default. |
 | `origin/handoff-cycle-3` | `14f9fd718433047dfc38a2cd5a28d7da171106aa` | fetched | Cycle-3 handoff branch; superseded on main (PROP-002) |
 | `origin/feature/monetization` | `8172603b62c2457696608c145511bd3fe92429d4` | fetched | Accepted-candidate preservation branch |
 | `origin/feature/revenue-cycle-0` | `09ec37eff4affcc1a0878205072a75f0cac13da5` | fetched | Diverged legacy cycle-0 docs close; do not continue |
-| local `main` (checked out) | `886314e8f31899a4b773e5f09d20e56533bad5ac` + dirty Paulatim rename | canonical branch; aligned with origin before edits | PAULATIM-001 preparation changes package-trigger paths; no new candidate exists until exact-SHA CI. |
+| local `main` (checked out) | `f2d2a4177fcb05d5b24405c598d0eb9b9d7f01e6` + docs/landing evidence close | canonical branch; exact candidate source matches origin | Current changes do not alter PAULATIM-001 bytes; no new Windows package is needed. |
 | local `feature/store-candidate-cand002` | `c0eb360f78fc10587a57fe6e9fcf9432b416ddf0` | historical branch; matches its remote and is behind current `main` | Not pushed again; use canonical `main` only for PAULATIM-001. AMPLE-001 is historical/never-submit. |
 | local `cycle-2-shipped` | `246baac5033001b00f586f570c3ce842218c1fb5` | stale; behind current `main` | Historical branch. |
 | local `cycle-1-published` | `27db6c246de278fe119a46b7be2db35d9aa04a46` | local-only | Duplicate-content lineage of `4a32b73` (rebased SHAs) |
@@ -84,6 +84,8 @@ cross-check._
 | HIST-20260825-003 | 2026-08-25 | REPO-01 | release-built | `3b8d225`, AppX `7d6ca584…61866b` | CI + local | Quality 32844120492 and Windows 32844120483 passed. Artifact 9561731052 produced the first Ample-branded exact candidate; artifact 9561704379 produced five exact-SHA screenshots. CI hash, AppX manifest, DPAPI report, and screenshot hashes were independently verified; kit staged at `tmp/AMPLE-001-3b8d225/`. Not uploaded/submitted/certified/published. | verified | VER-20260825-003; store/WINDOWS-VALIDATION.md |
 | HIST-20260826-001 | 2026-08-26 | REPO-01 | documentation-consolidated | documentation-only close over `13bdea2` | local + remote | Re-derived clean canonical state and exact AMPLE-001 integrity, then removed current-state ambiguity without changing candidate bytes: CAND-002 staging was marked never-submit at its local source; a root `tmp/` package-selection guard was added; Store screenshot/listing/queue history received additive execution corrections; platform-first launch copy was synchronized. No Windows-workflow trigger, Partner Center write, owner attestation, financial action, submission, or publication occurred. | verified | VER-20260826-001 |
 | HIST-20260828-001 | 2026-08-28 | REPO-01 | external-state-changed | Partner Center product `9PLRSZZMFPJH` | external | Owner selected Paulatim and authorized a full certification submission. Exact Paulatim was reserved and set as dashboard name; assigned package identity remained `ToledoTechnologies.Hearth`. The previously submitted Hearth draft had been canceled back to draft. Hearth display-name deletion was refused while Store-listing references remained. No Paulatim package, certification result, publication, or revenue existed. | verified | VER-20260828-001; D049 |
+| HIST-20260828-002 | 2026-08-28 | REPO-01 | product-renamed/release-built | `f2d2a417`, tree `320490a5`, AppX `af8b4581…b5146` | remote + CI + local | Paulatim visible rename landed while stable Store/data internals were preserved. Quality 33169087812 and Windows 33169087811 passed; artifacts 9684903207/9684887490 produced exact PAULATIM-001 and five screenshots; independent hashes/manifest checks passed; kit staged at `tmp/PAULATIM-001-f2d2a41/`. | verified | VER-20260828-002/003; D049/D050 |
+| HIST-20260828-003 | 2026-08-28 | REPO-01 | submission-created | product `9PLRSZZMFPJH`; submission `1152921505701225649` | external | Exact PAULATIM-001 package/listing/five screenshots saved; historical Hearth package and display-name reservation removed; Age ratings/tax/payment profiles observed Complete; submission entered certification at Pre-processing under manual publication hold. Not certified, published, live, purchasable, or revenue-producing. | verified | VER-20260828-004 |
 
 Rollbacks: none recorded. Hotfixes: HIST-20260714-004 is the only in-run fix.
 Deployments: none exist (no staging/production; landing undeployed; Store in
@@ -97,8 +99,8 @@ fact rather than fabricated migration events.
 | Gap | State | Resolution path |
 |---|---|---|
 | G1 — working tree vs `origin/main` | **Resolved 2026-07-24:** draft committed (`d1c9d91`), remote merged (`59787f4`), pushed to `main` | HIST-20260724-004…006 |
-| G2 — candidate CI | **Open for Paulatim:** AMPLE-001 is historical after the display-manifest rename; PAULATIM-001 needs a fresh exact-SHA Quality/Windows chain and hashes | Preserve VER-20260825-003 as history; create a new candidate record only from the pushed Paulatim SHA |
-| G3 — Partner Center | Paulatim reserved/dashboard name; old submission canceled to draft; package/listing replacement and payout-state reconciliation pending | Upload only exact PAULATIM-001, preserve assigned identity, then submit under D049 authority |
+| G2 — candidate CI | **Resolved 2026-08-28:** PAULATIM-001 exact source `f2d2a417` has green Quality/Windows CI, independent package/screenshot hashes, and a staged kit | VER-20260828-003 |
+| G3 — Partner Center | **In certification:** exact PAULATIM-001 is submitted under manual publication hold; signed-build validation and Microsoft's result remain pending | Preserve the result, complete HQ-03, and treat **Publish now** as a separate action |
 | G4 — `v1.0.0` release | Tag exists; GitHub Release/artifact publication unobserved | Check GitHub Releases when network policy allows; record event |
 | G5 — branch sprawl | Local `main` was refreshed 2026-08-25; duplicate-content and historical local/remote branches remain | PROP-002 for any later branch deletion (owner approval; no deletion authorized) |
 | G6 — deployments | None exist anywhere; "deployed" claims must not appear | Keep EXT-STORE absent until observed live |
@@ -120,7 +122,7 @@ fact rather than fabricated migration events.
 
 ## 6. Incremental refresh
 
-Per-repo last-indexed ref: REPO-01 = `886314e` (2026-08-28, observed on `main`). On later runs:
+Per-repo last-indexed ref: REPO-01 = `f2d2a417` (2026-08-28, observed on `main`). On later runs:
 fetch (if network allowed), compare heads to §2, inspect only new commits,
 append new events, regenerate `history/commit-index.tsv`, update §2. Do not
 re-narrate existing events.

@@ -18,6 +18,16 @@ headline.
 > historical and never-submit; only a fresh exact-SHA Paulatim CI candidate may
 > replace the canceled draft and proceed to certification.
 
+> **Execution outcome — 2026-08-28:** exact source `f2d2a417` produced
+> PAULATIM-001 (`Paulatim 1.1.1.appx`, SHA-256
+> `af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`) through
+> green Quality and Windows CI. The Paulatim package, listing, and five matching
+> screenshots were saved in Partner Center; the Hearth package and Hearth
+> display-name reservation were removed. Submission `1152921505701225649` is
+> now **In certification** under a manual publication hold. It is not certified,
+> published, live, or purchasable; Microsoft must finish review and the
+> Store-signed build must pass HQ-03 before a separate **Publish now** decision.
+
 > **Record-integrity note — 2026-08-28:** the next paragraph is retained as a
 > historical 2026-08-25 misstatement, not release evidence: it mislabeled the
 > Hearth draft as Ample. The dated corrections immediately after it supply the
@@ -134,6 +144,11 @@ release gate is in [store/README.md](store/README.md).
 > yet been saved, certified, published, or made purchasable. Partner Center
 > shows Age ratings Complete; do not retake that legal questionnaire. Private
 > payout readiness still requires a non-sensitive status reconciliation.
+
+> **Execution outcome — 2026-08-28:** the preceding correction describes the
+> pre-submission state. Partner Center now shows Age ratings, tax profile, and
+> payment profile Complete. Exact PAULATIM-001 is the only uploaded package and
+> the submission is in certification under the manual publication hold.
 
 ## Technology
 

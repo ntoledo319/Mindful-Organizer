@@ -2,6 +2,18 @@
 
 _Cycle 3 handoff update 2026-07-15. Scope is the containment root only._
 
+## Execution outcome — 2026-08-28
+
+PAULATIM-001 now exists at exact source `f2d2a417`. Quality 33169087812 and
+Windows 33169087811 passed; `Paulatim 1.1.1.appx` hashes to
+`af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`, and
+the exact kit is staged at `tmp/PAULATIM-001-f2d2a41/`. Partner Center contains
+only that package and five matching screenshots. The Hearth package/name were
+removed; Age ratings, tax, and payment profiles show Complete; submission
+`1152921505701225649` is In certification under a manual publication hold. The
+smallest sellable unit is technically staged for Microsoft review but is not
+yet certified, Store-signed/installed, published, live, or purchasable.
+
 ## Current correction — 2026-08-28
 
 The product's visible name is now **Paulatim**. Exact Paulatim is reserved on
@@ -124,6 +136,11 @@ _Status correction 2026-08-28: PAULATIM-001 replaces AMPLE-001 and is still in
 pre-CI preparation. Paulatim is reserved and IARC is Complete; no Paulatim
 package/listing/screenshots are saved, submitted, certified, or live._
 
+_Execution outcome 2026-08-28: the preceding correction records the earlier
+same-day state. Exact PAULATIM-001 is now CI-verified and submitted with its
+listing/screenshots. It is in certification under a manual publication hold;
+it is not certified, live, purchasable, or revenue-producing._
+
 ### A2 — Presence and Focus Guard engine
 
 Tray lifecycle, optional whole-screen dim, focus hold, settings, notifications,
@@ -192,13 +209,11 @@ validation, and documentation surfaces rather than product runtime code.
 ## Current bottom line
 
 The source is no longer blocked by architecture, encryption, consent, asset
-rights, listing copy, support setup, or package automation. Paulatim is not yet
-a technical release candidate because its exact 1.1.1 AppX and screenshots are
-still pending local gates and exact-SHA CI. IARC is observed Complete. The
-remaining gates are PAULATIM-001 verification, payout-readiness reconciliation,
-draft replacement, Microsoft certification, Store-signed Windows human
-observation, and a separate publication decision. No asset is purchasable, so
-collected revenue remains zero.
+rights, listing copy, support setup, package automation, account readiness, or
+submission preparation. Exact PAULATIM-001 is in Microsoft certification under
+a manual publication hold. Remaining gates are Microsoft's result, the
+Store-signed Windows human observation, and a separate publication decision.
+No asset is purchasable, so collected revenue remains zero.
 
 ## Cycle 3 continuation authority — 2026-07-15
 

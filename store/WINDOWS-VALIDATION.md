@@ -1,9 +1,42 @@
 # Exact-candidate Windows validation
 
+## PAULATIM-001 exact candidate and submission — 2026-08-28
+
+| Evidence | Exact value |
+|---|---|
+| Candidate source / CI SHA | `f2d2a4177fcb05d5b24405c598d0eb9b9d7f01e6` |
+| Source tree | `320490a5cfc1d5e409e8ce0ea2fb05147dc97e4d` |
+| Quality Gate | run `33169087812` — passed |
+| Windows Store workflow | run `33169087811` — passed |
+| MSIX artifact | `paulatim-msix`, artifact `9684903207` |
+| Screenshots artifact | `paulatim-store-screenshots`, artifact `9684887490` |
+| AppX filename | `Paulatim 1.1.1.appx` |
+| AppX size | `175489702` bytes |
+| **AppX SHA-256** | **`af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`** |
+| Screenshot ZIP SHA-256 | `a4bc6785dfc0bc08317239ecd06b1ce126a24674766852cb4aeeb4d630045e50` |
+| Staged kit | `tmp/PAULATIM-001-f2d2a41/` |
+
+The AppX and screenshot ZIP were downloaded from exact-SHA run `33169087811`,
+tested as ZIP containers, and hashed independently. The AppX checksum matches
+CI. Manifest inspection confirms identity `ToledoTechnologies.Hearth`, publisher
+`CN=FBC80173-0C85-481E-BC5E-A3BE88BC2020`, x64, version `1.1.1.0`, stable AppX
+Application.Id `Ample`, visible display `Paulatim`, executable
+`app\Paulatim.exe`, and minimum Windows version `10.0.14316.0`. All five
+1920×1080 screenshot byte counts and SHA-256 values match their exact-source
+manifest.
+
+Partner Center now contains only this Paulatim package and its five matching
+screenshots. The Hearth package and Hearth display-name reservation were
+removed. Product `9PLRSZZMFPJH`, submission `1152921505701225649`, entered **In
+certification** at Pre-processing on 2026-08-28 under the saved manual
+publication hold. This is not certification, a Store-signed installed-Windows
+pass, publication, live visibility, or purchase evidence.
+
 > **PAULATIM-001 reset — 2026-08-28:** the owner selected/reserved Paulatim and
 > authorized certification submission. The Ample candidate recorded below
 > remains valid historical evidence but is now **never-submit** because the
-> visible AppX manifest and screenshots changed. No Paulatim hash exists yet.
+> visible AppX manifest and screenshots changed. At the time of this reset no
+> Paulatim hash existed; the exact result is recorded immediately above.
 > Accept only a fresh exact-SHA `paulatim-msix` artifact whose manifest keeps
 > identity `ToledoTechnologies.Hearth`, AppX application ID `Ample`, and x64
 > version 1.1.1 while showing display name `Paulatim`. Record its hash in a new

@@ -3,6 +3,18 @@
 _Reconfirmed 2026-07-15 for the Cycle 3 handoff. All U values are unvalidated
 four-week planning ranges, not observed revenue or promises._
 
+## Execution outcome — 2026-08-28
+
+Bet A's package/listing/submission path is complete: exact PAULATIM-001 source
+`f2d2a417` passed Quality 33169087812 and Windows 33169087811; its AppX SHA-256
+is `af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`.
+Submission `1152921505701225649` is In certification under a manual publication
+hold. Tax/payment and IARC gates show Complete; the remaining known human-only
+maximum is about 27 active minutes: HQ-03 15, later publication/checkout 2, and
+optional HQ-05/HQ-06 5 each. Paulatim is not certified, live, purchasable, or
+revenue-producing, so the ranking, $14.99 hypothesis, and $0 observed revenue
+remain unchanged.
+
 ## Current correction — 2026-08-28
 
 The owner chose and reserved **Paulatim** and authorized the certification
@@ -156,6 +168,11 @@ principal risk. A dash means no compliant near-term route.
 - **Evidence correction (2026-08-28):** AMPLE-001 is never-submit after the
   Paulatim rename. Exact Paulatim is reserved and IARC is observed Complete;
   PAULATIM-001 1.1.1, its full hash, and its Store draft do not yet exist.
+- **Execution outcome (2026-08-28):** the preceding correction records the
+  earlier same-day state. Exact PAULATIM-001 and its hash now exist; its
+  package/listing/screenshots are submitted and Microsoft certification is in
+  progress under a manual publication hold. It remains non-live and has no
+  observed views, acquisitions, purchases, or payout.
 - **Falsifier:** one reposition after five live days with zero external signal;
   replace after four additional live days with zero signal. Treat 100 product
   page views with zero purchases as an immediate conversion failure.

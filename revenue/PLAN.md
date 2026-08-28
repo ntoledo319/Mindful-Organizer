@@ -8,6 +8,21 @@ blended fees), Day-15 gate assessment recorded, reposition menu pre-registered.
 macOS → Linux; AGENTS.md §1 law). Cycle-3 handoff published 2026-07-15;
 project-wide state now also lives in `PROJECT_TRACKER.md`._
 
+## Execution outcome — 2026-08-28
+
+Exact PAULATIM-001 source `f2d2a417` passed Quality 33169087812 and Windows
+33169087811. The AppX SHA-256 is
+`af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`, and the
+verified kit is `tmp/PAULATIM-001-f2d2a41/`. Partner Center now contains only
+that Paulatim package and its five matching screenshots; the listing is saved,
+the Hearth package/name were removed, and Age ratings, tax, and payment profiles
+show Complete. Submission `1152921505701225649` is In certification at
+Pre-processing under a manual publication hold. The immediate path is now:
+wait for Microsoft → preserve the result → perform HQ-03 on the Store-signed
+build → make a separate publication decision. Collected revenue remains $0;
+there is still no live or purchasable listing. Known remaining human-only work
+is at most about 27 active minutes including optional HQ-05/HQ-06.
+
 ## Current correction — 2026-08-28
 
 The owner selected **Paulatim** and explicitly authorized the agent to reserve
@@ -74,6 +89,13 @@ active minutes if payout reconciliation still uses 10 minutes, the Store-signed
 pass uses 15, later publication/checkout verification uses 2, and optional
 HQ-05/HQ-06 use 5 each. Actual prior owner minutes were not reliably timed and
 are not fabricated here.
+
+### Owner-time execution outcome — 2026-08-28
+
+Tax/payment readiness and the package/listing/certification submission are now
+complete. Known remaining human-only work is at most about 27 active minutes:
+the 15-minute Store-signed pass, 2-minute later publication/checkout step, and
+optional 5-minute HQ-05/HQ-06 tasks. Microsoft review wait is wall clock.
 
 ### Partner Center draft observation — 2026-08-27
 
@@ -187,6 +209,11 @@ an enabled certification button do not count as collected revenue.
   still needs the full local gate and exact-SHA CI before its package/listing/
   screenshots can replace the canceled draft; payout readiness still needs
   non-sensitive reconciliation before certification submission.
+- **Execution outcome (2026-08-28):** the preceding status records the earlier
+  same-day state. Exact PAULATIM-001 is now submitted; tax/payment readiness is
+  Complete; certification is in progress under the manual publication hold.
+  Only Microsoft's result, HQ-03, and a separate publication decision remain on
+  the release path.
 
 ## Bet B — Heavy: Paulatim-to-Production Electron Kit
 

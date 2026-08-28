@@ -1,10 +1,20 @@
 # Microsoft Store screenshot plan
 
+> **Paulatim execution outcome — 2026-08-28:** exact source `f2d2a417` produced
+> screenshot artifact `paulatim-store-screenshots` `9684887490`; its ZIP
+> SHA-256 and GitHub artifact digest are
+> `a4bc6785dfc0bc08317239ecd06b1ce126a24674766852cb4aeeb4d630045e50`.
+> All five images are 1920×1080, use fictional data, and match their exact-SHA
+> manifest. They were uploaded and saved in Partner Center in the Paulatim order
+> below with all five captions. The historical Hearth images were removed. The
+> submission is in certification under a manual publication hold, not public.
+
 > **Paulatim correction — 2026-08-28:** every AMPLE-001 image and hash below
 > remains historical and must never accompany Paulatim. The fresh Paulatim
 > workflow must capture a new exact-SHA five-image set. Use the Paulatim caption
 > table added below only after its manifest is downloaded and independently
-> verified; nothing in this correction claims those images exist yet.
+> verified; at the time of this correction those images did not yet exist. The
+> exact later outcome is recorded immediately above.
 
 > **Current candidate correction — 2026-08-26:** the status line and
 > "Accepted candidate evidence" section below record the historical Hearth

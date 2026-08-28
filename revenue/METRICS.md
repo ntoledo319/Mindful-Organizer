@@ -510,3 +510,30 @@ Microsoft Store name-collision search (HQ-07 step 2) not yet run.
 - No Paulatim AppX, screenshot artifact, package hash, certification result,
   publication, live listing, purchase, or external revenue exists yet.
   Collected profit remains **$0.00**; the gap remains **$4,000.00**.
+
+## 2026-08-28 — Exact Paulatim candidate and certification submission
+
+- Exact source `f2d2a4177fcb05d5b24405c598d0eb9b9d7f01e6` (tree
+  `320490a5cfc1d5e409e8ce0ea2fb05147dc97e4d`) passed Quality run 33169087812
+  and Windows Store run 33169087811.
+- Artifact `paulatim-msix` 9684903207 contains `Paulatim 1.1.1.appx`,
+  175,489,702 bytes. Independent SHA-256 is
+  `af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`, matching
+  CI's checksum. Artifact `paulatim-store-screenshots` 9684887490 has digest
+  `a4bc6785dfc0bc08317239ecd06b1ce126a24674766852cb4aeeb4d630045e50`; all five
+  1920×1080 PNG hashes match the exact-source manifest.
+- Manifest inspection confirms identity `ToledoTechnologies.Hearth`, publisher
+  `CN=FBC80173-0C85-481E-BC5E-A3BE88BC2020`, x64, version `1.1.1.0`, stable
+  application ID `Ample`, visible name `Paulatim`, and executable
+  `app\Paulatim.exe`. The exact kit is `tmp/PAULATIM-001-f2d2a41/`.
+- Partner Center product `9PLRSZZMFPJH` contains only the Paulatim package and
+  five matching screenshots. The platform-first listing, Additional Testing
+  Info, and manual release control were saved. The Hearth package and Hearth
+  display-name reservation were removed. Age ratings, tax profile, and payment
+  profile show Complete.
+- Submission `1152921505701225649` entered **In certification** at
+  Pre-processing. Partner Center states publishing begins only when **Publish
+  now** is clicked; that hold was not released. This is not certification,
+  publication, live visibility, purchase, or revenue evidence.
+- Collected profit remains **$0.00**; gap remains **$4,000.00**; observed live
+  listings, product-page traffic, purchases, acquisitions, and payouts remain 0.

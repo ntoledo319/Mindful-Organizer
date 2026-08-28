@@ -525,3 +525,16 @@ at the same architecture; reusing 1.1.0 for Paulatim can be rejected even after
 removing the old draft package. Decision: advance the fresh Paulatim package to
 1.1.1 while preserving product/package/application identity. This is a package
 uniqueness correction, not a claim that 1.1.0 was published.
+
+### D049/D050 execution outcome — 2026-08-28
+
+Exact source `f2d2a417` produced PAULATIM-001 1.1.1 through green Quality and
+Windows CI. Independent AppX SHA-256 is
+`af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`.
+Under the owner's authority, the exact package, listing, and screenshots were
+saved; the Hearth package and display-name reservation were removed; and
+submission `1152921505701225649` entered certification. The saved manual hold
+remains controlling: certification does not authorize publication, and no
+**Publish now** action occurred. Preserve these bytes through certification;
+if Microsoft reports a defect, fix only that concrete cause and establish a new
+evidence chain only when package bytes must change.

@@ -22,6 +22,18 @@ green (VER-20260828-002), including strict identity preflight, lint, typecheck,
 production audit, deterministic assets, and diff checks. The next machine step
 is one canonical commit/push followed by exact-SHA CI; no AppX exists yet._
 
+_Execution outcome 2026-08-28T09:41-04:00: that machine and Store sequence is
+complete. Exact source `f2d2a417` passed Quality run 33169087812 and Windows run
+33169087811. PAULATIM-001 is `Paulatim 1.1.1.appx`, 175,489,702 bytes, SHA-256
+`af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`, staged
+at `tmp/PAULATIM-001-f2d2a41/`. Partner Center contains only that Paulatim
+package and the five matching screenshots; the Hearth package and Hearth
+display-name reservation were removed. Tax, payment, and Age ratings show
+Complete. Submission `1152921505701225649` is **In certification** at
+Pre-processing. The manual publication hold remains active, so it is not
+certified, published, live, or purchasable. Wait for Microsoft's result, then
+perform HQ-03 on the Store-signed build; do not click **Publish now**._
+
 _Reconciliation correction 2026-08-26: the preceding date/ref is historical.
 Live `main` was re-derived at the documentation evidence close `13bdea2`; the
 sole candidate remains source `3b8d225`, AppX `7d6ca584…61866b`, and the exact

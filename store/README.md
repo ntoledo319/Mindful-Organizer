@@ -1,5 +1,17 @@
 # Microsoft Store release path
 
+> **Execution outcome — 2026-08-28:** exact PAULATIM-001 source `f2d2a417`
+> passed Quality 33169087812 and Windows 33169087811. The independently verified
+> `Paulatim 1.1.1.appx` SHA-256 is
+> `af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`; its
+> full kit is `tmp/PAULATIM-001-f2d2a41/`. The Paulatim package, platform-first
+> listing, and five matching screenshots were saved to product `9PLRSZZMFPJH`;
+> the Hearth package and Hearth name were removed; Age ratings, tax, and payment
+> profiles show Complete. Submission `1152921505701225649` is **In
+> certification** at Pre-processing under the manual publication hold. It is
+> not certified, published, live, or purchasable. Preserve the candidate bytes,
+> await Microsoft's result, complete HQ-03, and keep **Publish now** untouched.
+
 > **Current correction — 2026-08-28:** the owner selected and reserved
 > **Paulatim** on existing product `9PLRSZZMFPJH`, set it as the dashboard
 > name, and explicitly authorized the full certification submission. The
@@ -46,6 +58,10 @@
 > current state. No Paulatim package or listing has been saved yet. IARC is
 > observed Complete; PAULATIM-001 1.1.1 and payout-readiness reconciliation are
 > the remaining pre-submission dependencies.
+
+> **Outcome boundary — 2026-08-28:** the preceding boundary records the state
+> before execution. The exact package/listing/screenshots are now saved and the
+> submission is in certification; the manual publication hold remains active.
 
 This directory is the manual submission source for Ample's reserved Microsoft
 Store product. Submission 1 now contains the exact validated 1.1.0 AppX, saved
@@ -202,6 +218,13 @@ all visual and content checks pass.
 >   and certification submission.
 >
 > Do not interpret any older `[x]` below as PAULATIM-001 evidence.
+
+> **Checklist execution outcome — 2026-08-28:** every unchecked Paulatim item in
+> the reset above is now complete: the final local gate and exact-SHA CI passed;
+> the AppX/manifest and five screenshots were independently verified; tax and
+> payment profiles show Complete; and the draft was replaced and submitted with
+> the manual publication hold confirmed. Microsoft certification and HQ-03 are
+> still open; publication is still untouched.
 
 > **Checklist boundary — 2026-08-26:** checked source/CI preparation remains
 > valid where it is tied to AMPLE-001. Checked Partner Center entry or upload

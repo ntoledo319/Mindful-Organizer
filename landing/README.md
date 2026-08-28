@@ -6,9 +6,9 @@ as plain static files. It is currently truthful to the pre-release state:
 - no purchase button;
 - no fake availability, audience, review, or security claim;
 - no external font, script, tracker, cookie, form, or third-party asset;
-- three historical hash-recorded Hearth candidate screenshots containing only
-  seeded, fictional demonstration data; these must be replaced by exact-SHA
-  Paulatim frames before deployment;
+- three hash-recorded Paulatim screenshots copied from the exact PAULATIM-001
+  `f2d2a417` screenshot artifact, containing only seeded fictional data; the
+  landing page remains undeployed;
 - the implemented encrypted-at-rest boundary and its memory, OS-session,
   export, deletion, and recovery limits are visible;
 - legal and project links point to stable main-branch document locations that

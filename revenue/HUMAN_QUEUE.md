@@ -1,5 +1,18 @@
 # Human Queue
 
+> **Execution outcome — 2026-08-28T09:41-04:00:** HQ-02 and HQ-04 are complete.
+> Partner Center shows tax and payment profiles Complete without any private
+> values being recorded. Exact PAULATIM-001 source `f2d2a417` passed both CI
+> gates; `Paulatim 1.1.1.appx` hashes to
+> `af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`.
+> The package/listing/five screenshots were saved, the Hearth package/name were
+> removed, and submission `1152921505701225649` entered certification under the
+> manual publication hold. Do not repeat HQ-01, HQ-02, or HQ-04. Wait for
+> Microsoft, then perform HQ-03 on the Store-signed build. A later **Publish
+> now** click remains separate and is not implied by certification. Known
+> remaining human-only work is at most about **27 active minutes**: HQ-03 15,
+> publication/checkout 2, and optional HQ-05/HQ-06 5 each.
+
 > **Execution correction — 2026-08-28:** the owner selected **Paulatim** and
 > explicitly delegated name reservation, draft replacement, and full
 > certification submission to the agent. Paulatim is reserved on product
@@ -162,6 +175,11 @@ PAULATIM-001 1.1.1 must establish the new exact evidence chain._
 
 ## HQ-02 — Confirm seller, tax, payout, and role readiness — 10 minutes
 
+> **Completed-state correction — 2026-08-28:** Partner Center shows the tax
+> profile and payment profile **Complete**. No private financial, identity, or
+> banking values were copied into the repository. Do not repeat setup unless
+> Microsoft later reports a specific payout blocker.
+
 - **What:** Make the Store seller account capable of receiving proceeds.
 - **Why human-only:** Tax status, banking, identity, role assignment, and KYC are
   private legal and financial facts. The live account has Earnings access and
@@ -255,6 +273,15 @@ PAULATIM-001 1.1.1 must establish the new exact evidence chain._
   and date in `revenue/METRICS.md`.
 
 ## HQ-04 — Finalize listing, submit, then release the hold — ≈19 minutes
+
+> **Completed-state correction — 2026-08-28:** the certification-submission
+> portion is complete with exact PAULATIM-001. Partner Center contains only
+> `Paulatim 1.1.1.appx` (SHA-256
+> `af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`) and the
+> five matching screenshots; Hearth package/name references were removed;
+> submission `1152921505701225649` is In certification. The title's “release the
+> hold” portion remains a distinct post-certification action and has not been
+> done.
 
 > **Paulatim execution override — 2026-08-28:** every AMPLE-001 package/hash
 > clause below is non-executable. Use only fresh PAULATIM-001 1.1.1 after its
@@ -447,6 +474,12 @@ PAULATIM-001 1.1.1 must establish the new exact evidence chain._
      risk for the 1.1.0 launch without a search. Nothing else changes.
 
 ## Running owner-time ledger
+
+> **Execution calculation — 2026-08-28:** HQ-02 and HQ-04 are complete. The
+> known remaining human-only maximum is about **27 active minutes**: HQ-03 15,
+> later publication/checkout 2, and optional HQ-05/HQ-06 5 each. Certification
+> wait time is external wall clock. Previously spent owner minutes were not
+> reliably timed and are not invented here.
 
 > **Current calculation — 2026-08-28:** IARC and Paulatim reservation are
 > complete; the owner delegated package/listing/certification submission to the
