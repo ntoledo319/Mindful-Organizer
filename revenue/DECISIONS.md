@@ -485,3 +485,43 @@ batches the one-line risk record into the five-minute reservation session: 59
 remaining minutes plus the conservatively counted one-minute HQ-00
 authorization. This is conditional arithmetic, not a recommendation or legal
 conclusion; full screening still requires further truthful scope reduction.
+
+## 2026-08-27 — Partner Center draft intervention
+
+### D048 — Treat exact-name unavailability as an owner naming gate
+
+Authenticated Partner Center reported exact `Ample` unavailable and returned
+`Ample Energy Planner` available. Decision: do not reserve a fallback or save
+an internally inconsistent package/listing on the owner's behalf. Keep the
+AMPLE-001 upload and Ample-branded listing edit blocked until the owner chooses
+and reserves an available display name. The agent may still correct independent
+draft fields already approved by the owner: the observed $0 price was changed
+to $14.99 and saved. No package, screenshot, listing-name, IARC, terms,
+submission, certification, publication, or payout/tax action was taken.
+
+## 2026-08-28 — Paulatim selection and submission authority
+
+### D049 — Rename visibly to Paulatim while preserving Store/data identity
+
+The owner rejected Ample, selected **Paulatim**, and explicitly authorized the
+agent to reserve the name, create the replacement Store candidate, replace the
+draft, submit it for certification, and remove Hearth application-name/listing
+references. Partner Center returned exact Paulatim available; it was reserved
+on existing product `9PLRSZZMFPJH` and set as dashboard name. Decision: treat
+this as a visible-brand rename only. Preserve Microsoft-assigned package
+identity `ToledoTechnologies.Hearth`, AppX application ID `Ample`, Electron app
+ID `io.ampleproject.ample`, the established `Ample` user-data directory,
+`ample.*` encrypted-file names, preload/harness contracts, and export schema so
+an update cannot lose data or break package continuity. AMPLE-001 and all
+Hearth artifacts become historical/never-submit; only fresh PAULATIM-001 may be
+uploaded. Certification submission is authorized; publication remains a
+separate post-certification state change.
+
+### D050 — Use version 1.1.1 for the changed Paulatim package bytes
+
+The canceled Hearth draft already uploaded x64 version 1.1.0. Microsoft Store
+package rules require a unique full name for packages with different contents
+at the same architecture; reusing 1.1.0 for Paulatim can be rejected even after
+removing the old draft package. Decision: advance the fresh Paulatim package to
+1.1.1 while preserving product/package/application identity. This is a package
+uniqueness correction, not a claim that 1.1.0 was published.

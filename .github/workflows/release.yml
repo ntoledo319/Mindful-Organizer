@@ -18,9 +18,9 @@ jobs:
       matrix:
         include:
           - os: macos-latest
-            artifact: ample-macos
+            artifact: paulatim-macos
           - os: windows-latest
-            artifact: ample-windows
+            artifact: paulatim-windows
 
     steps:
       - uses: actions/checkout@v4

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Structural validator for the Hearth project documentation system.
+"""Structural validator for the product documentation system.
 
 Standard-library only. Exits nonzero when any structural check fails. Soft
 observations print as WARN and do not fail the run.

@@ -1,11 +1,11 @@
-# Ample — Project Tracker
+# Paulatim — Project Tracker
 
 - **Schema:** project-tracker/v1 (2026-07-24)
-- **Last updated:** 2026-08-26T20:56-04:00 (post-candidate safety reconciliation; AMPLE-001 unchanged)
+- **Last updated:** 2026-08-28 (Paulatim reserved; PAULATIM-001 rename in progress)
 - **Workspace root:** `/home/nick/Development/active/mindful_organizer` (REPO-01)
-- **Branch / HEAD:** exact candidate source is `3b8d225`; canonical `main` contains documentation-only descendants that cannot change its AppX bytes. Historical remote feature ref remains at `c0eb360`
-- **Working tree:** this documentation-only safety close changes no package trigger; the exact ignored kit remains staged under `tmp/AMPLE-001-3b8d225/`
-- **Operating mode:** RELEASE EVIDENCE / OWNER GATES
+- **Branch / HEAD:** `main` at `886314e` before the current dirty Paulatim rename; `origin/main` matched at session start. Historical AMPLE-001 source is `3b8d225`
+- **Working tree:** visible-brand rename plus compatibility guards, listing metadata, and durable state corrections; this tree intentionally triggers a fresh Windows package after gates/push
+- **Operating mode:** PAULATIM CANDIDATE / CERTIFICATION SUBMISSION
 - **Canonical set:** [AGENTS.md](AGENTS.md) · [HANDOFF.md](HANDOFF.md) · [Docs index](docs/project/DOCS_INDEX.md) · [History](docs/project/REPO_HISTORY.md) · [Verification](docs/project/VERIFICATION_LOG.md) · [Decisions](revenue/DECISIONS.md) · [Proposals](docs/project/PROPOSALS.md) · [Migration map](docs/project/MIGRATION_MAP.md) · [Archive](docs/project/archive/)
 
 ## 0. How to use this tracker
@@ -25,18 +25,18 @@
 
 | Metric / environment | Current value | As of | Evidence |
 |---|---|---|---|
-| Product state | Source is Ample; Partner Center product `9PLRSZZMFPJH` retains verified identity `ToledoTechnologies.Hearth`. AMPLE-001 now exists and is CI-validated/staged; only Hearth is reserved and nothing is submitted/certified/published | 2026-08-25 | VER-20260825-001/003 |
-| Default-branch candidate source | `3b8d225`; this evidence-only close is its descendant and cannot change AppX bytes. Historical remote feature ref remains at `c0eb360` | 2026-08-25 | live `git` + `gh`, VER-20260825-003 |
+| Product state | Visible product name is Paulatim; exact name reserved on product `9PLRSZZMFPJH` and set as dashboard name. Verified package identity stays `ToledoTechnologies.Hearth`. Prior Hearth submission was canceled to draft; no Paulatim package is submitted/certified/published | 2026-08-28 | VER-20260828-001; D049 |
+| Default-branch candidate source | none yet — PAULATIM-001 is a gated dirty-tree preparation over `main` `886314e`; historical AMPLE-001 source is `3b8d225` | 2026-08-28 | live `git`; VER-20260825-003 historical |
 | Live release | none — not submitted, certified, published, or purchasable | 2026-07-14 | HIST-20260714-003 |
-| Current candidate | AMPLE-001 AppX `7d6ca584…61866b`, exact source `3b8d225`, Windows run 32844120483; staged with five exact-SHA screenshots. CAND-002 and all other packages remain never-submit | 2026-08-25 | VER-20260825-003; store/WINDOWS-VALIDATION.md |
-| Candidate CI verification | **Pass** at exact `3b8d225`: Quality 32844120492; Windows 32844120483 including package structure/identity, Windows x64 DPAPI lifecycle, renderer smoke, and screenshots | 2026-08-25 | VER-20260825-003 |
-| Candidate local verification | full pre-push gate green with observed identity: strict preflight, lint 0, typecheck ×2, 14 files/49 tests, vite build, secrets 197, store 277, docs PASS, licenses 54, audit 0, deterministic generated assets | 2026-08-25 | VER-20260825-002 |
+| Current candidate | none until fresh PAULATIM-001 CI. AMPLE-001 `7d6ca584…61866b`, CAND-002, and every Hearth package are historical/never-submit | 2026-08-28 | D049; store/WINDOWS-VALIDATION.md |
+| Candidate CI verification | pending exact pushed PAULATIM-001 SHA; AMPLE-001 runs 32844120492 / 32844120483 remain historical evidence only | 2026-08-28 | VER-20260825-003; D049 |
+| Candidate local verification | full gate green: identity preflights; lint; typecheck ×2; 15 files/52 tests; renderer 764 modules + Electron bundles; secrets 199; Store 277; docs PASS; notices 54; audit 0; deterministic assets; diff clean | 2026-08-28 | VER-20260828-002; dirty fingerprint in log |
 | Documentation-close local verification | full non-packaging gate green: lint 0, typecheck ×2, 14 files/49 tests, renderer 764 modules + Electron bundles, secrets 197, Store 277, docs PASS, diff clean | 2026-08-26 | VER-20260826-001 |
 | Local test environment | `better-sqlite3` alternates between node and Electron ABIs depending on whether `electron-builder` last ran. In the Electron state 16/46 tests fail with `NODE_MODULE_VERSION` mismatch — environmental, CI unaffected. `npm rebuild better-sqlite3` restores `npm test` | 2026-08-07 | VER-20260807-001 |
-| Candidate package | `Ample 1.1.0.appx`, 175489305 bytes, SHA-256 `7d6ca584a8cee92497217ab48fbd04153f32c8f8746b4cd19135d709aa61866b`; artifact 9561731052; kit `tmp/AMPLE-001-3b8d225/` | 2026-08-25 | VER-20260825-003 |
+| Candidate package | pending PAULATIM-001; no filename, size, hash, run, artifact, or kit may be recorded before exact-SHA CI | 2026-08-28 | D049 |
 | Collected revenue | $0.00; gap $4,000.00; 0 live listings; Day-15 gate assessment executed (D035) | 2026-07-28 | revenue/METRICS.md |
-| Major open blocker | All agent-side candidate work is complete. The ≤60-minute owner path exists only if the owner independently chooses D047/HQ-07's one-minute risk path, records it inside the reservation batch, and defers HQ-05/HQ-06; otherwise the queue exceeds the ceiling. Remaining reservation, IARC, payout/tax, submission, certification, signed-build review, and publication gates are owner-only | 2026-08-26 | D047; VER-20260825-003; revenue/HUMAN_QUEUE.md |
-| Next recommended action | Owner decides whether to use D047's conditional ≤60-minute path; this is not an agent recommendation. Only after that decision: resolve HQ-07, reserve Ample, and begin the remaining owner gates | 2026-08-26 | section 11; revenue/HUMAN_QUEUE.md |
+| Major open blocker | Machine sequence only: commit/push the fully gated Paulatim tree once, bind PAULATIM-001 to exact-SHA green CI, then replace the draft and submit. Hearth name deletion waits until Store listing references are removed | 2026-08-28 | VER-20260828-002; D049; section 11 |
+| Next recommended action | Commit/push the verified rename tree once, then select only that exact SHA's `paulatim-msix` and screenshot artifacts | 2026-08-28 | VER-20260828-002; section 11 |
 
 One current row per metric; superseded values live in REPO_HISTORY.md.
 
@@ -60,7 +60,7 @@ One current row per metric; superseded values live in REPO_HISTORY.md.
 | Monetization plan, assets, opportunities | `revenue/PLAN.md`, `revenue/ASSETS.md`, `revenue/OPPORTUNITIES.md` |
 | Observed evidence (money, Store, CI) | `revenue/METRICS.md` |
 | Owner-only actions | `revenue/HUMAN_QUEUE.md` |
-| Decisions (D001–D047) | `revenue/DECISIONS.md` |
+| Decisions (D001–D050) | `revenue/DECISIONS.md` |
 | Repository/release history | `docs/project/REPO_HISTORY.md` |
 | Verification events | `docs/project/VERIFICATION_LOG.md` |
 | Documentation map | `docs/project/DOCS_INDEX.md` |
@@ -70,7 +70,7 @@ One current row per metric; superseded values live in REPO_HISTORY.md.
 
 | ID | Workstream | Derived status | Tasks (ready/blocked/other) | Last verified ref | Active tasks |
 |---|---|---|---|---|---|
-| WS-REL | Microsoft Store release (Bet A, $14.99) | blocked — exact candidate done; Ample reservation/owner gates remain; ≤60-minute path is conditional on D047 | 4 ready, 3 blocked, 1 done | `3b8d225` + VER-20260825-003 | HQ-01…HQ-07, D047 |
+| WS-REL | Microsoft Store release (Bet A, $14.99) | in-progress — Paulatim reserved and submission authorized; fresh candidate/listing replacement pending | 1 in-progress, 2 reconciliation/post-certification | VER-20260828-001 | PAULATIM-001, HQ-02…HQ-04 |
 | WS-REV | Monetization portfolio ($4,000 / Day 28) | blocked — Bet A = WS-REL; Day-15 gate executed (D035); reposition menu + kit ready; Bet B either/or pending owner (D038) | 0 active, 1 proposed | revenue/METRICS.md 2026-07-28 | — |
 | WS-DOCS | Documentation control system | done 2026-07-24 (on public main @ `59787f4`) | 2 done | VER-20260724-001…006 | — |
 | WS-READY | Market-readiness council + remediation | done; landed before rename | 1 done | VER-20260804-001 | — |
@@ -80,15 +80,16 @@ One current row per metric; superseded values live in REPO_HISTORY.md.
 | Task | Title | Source | Status | Priority | Owner | Deps | Acceptance | Verification | Last touched | Resume from |
 |---|---|---|---|---|---|---|---|---|---|---|
 | HQ-00 | Provide observed Package/Identity/Name | revenue/HUMAN_QUEUE.md | done | critical | agent (owner-authorized) | — | Exact Partner Center string observed; no guess | VER-20260825-001; `identityVerified:true` | 2026-08-25 | — |
-| HQ-01 | Manual IARC retake with legal attestation | revenue/HUMAN_QUEUE.md | ready | critical | human | — | Truthful ratings saved; date + regional results in METRICS | METRICS entry | 2026-07-15 | HUMAN_QUEUE HQ-01 steps + Partner Center link |
+| HQ-01 | Manual IARC retake with legal attestation | revenue/HUMAN_QUEUE.md | done | critical | human | — | Partner Center records Age ratings Complete; do not reconstruct or retake the questionnaire | VER-20260828-001; METRICS 2026-08-28 | 2026-08-28 | Exact regional ratings still need non-destructive observation only if the final review screen exposes them |
 | HQ-02 | Seller/tax/payout readiness (+ threshold/first-payout-date note) | revenue/HUMAN_QUEUE.md | ready | critical | human | — | Payout-ready boolean + non-sensitive note in METRICS | METRICS entry | 2026-07-28 | HUMAN_QUEUE HQ-02 steps; allow 48h validation |
 | HQ-03 | Choose test route; Store-signed Windows pass | revenue/HUMAN_QUEUE.md | blocked | high | human | HQ-04 (certification); route-choice sub-step is ready now | `store/WINDOWS-VALIDATION.md` + accessibility matrix completed on signed build, fictional data (incl. forced-colors focus + 200% text-scaling line items, council CPO G6) | Validation record (build, route, pass/fail, footprint, date) | 2026-07-29 | Unblock = HQ-04 certification complete; decide Public→Private audience route beforehand |
-| HQ-04 | Submit for certification; publish deliberately | revenue/HUMAN_QUEUE.md | blocked | critical | human | HQ-01, HQ-02, HQ-03 route choice, HQ-07 decision, Ample reservation, AMPLE-001, ≤60-minute plan | Certification report preserved; `Publish now` only after all gates; signed-out purchase verified | Certification result + live URL in METRICS | 2026-08-26 | Unblock = owner gates + exact candidate + compliant owner-time path |
+| HQ-04 | Finalize Paulatim listing and submit for certification | revenue/HUMAN_QUEUE.md | in-progress | critical | agent (owner-authorized) | PAULATIM-001 exact CI artifact; reconcile payout status before final submit | Replace historical draft with exact Paulatim package/listing/screenshots; delete Hearth display name when enabled; submit, but do not claim publication | VER-20260828-001 then exact CI/submission result | 2026-08-28 | Full submission authority granted; package preparation active |
 | HQ-05 | Approve and send first audience batch | store/LAUNCH_KIT.md + store/LAUNCH_TARGETS.md | blocked | medium | human | live purchasable page | Owner-posted launch batch with URLs + timestamps in METRICS | METRICS entry | 2026-07-28 | Unblock = signed-out checkout verification; destinations pre-vetted in LAUNCH_TARGETS.md |
 | HQ-06 | Approve PROP-004 sequencing + deploy landing at certification time | revenue/HUMAN_QUEUE.md | ready | medium | human | owner approval of amended PROP-004 | Public prelaunch URL resolves signed-out; host + URL + timestamp in METRICS | METRICS entry | 2026-07-28 | HUMAN_QUEUE HQ-06 steps (host TOS re-check first — D007) |
-| HQ-07 | Trademark clearance for "Ample" (or informed risk acceptance) | revenue/HUMAN_QUEUE.md | ready | low | human | — | USPTO + Store search note in METRICS, or explicit risk acceptance in DECISIONS | METRICS/DECISIONS entry | 2026-08-19 | HUMAN_QUEUE HQ-07 steps |
+| HQ-07 | Name-risk decision after exact `Ample` unavailability | revenue/HUMAN_QUEUE.md | done | low | human | — | Owner chooses/reserves an available launch name and records decision | VER-20260828-001; D049 | 2026-08-28 | Paulatim selected and reserved |
 | CAND-002 | Historical Hearth replacement candidate | D040/D041 | superseded | high | agent | — | Replaced by AMPLE-001 after rename; never submit its AppX | VER-20260807-001 → AMPLE-001 | 2026-08-19 | Historical evidence only |
-| AMPLE-001 | First exact Ample Store candidate | user instruction 2026-08-19 | done | critical | agent | HQ-00 done | Verified identity; full local gate; one canonical push; exact-SHA green Windows run; AppX SHA-256 + screenshots recorded and staged | VER-20260825-001…003 @ `3b8d225`; hash `7d6ca584…61866b` | 2026-08-25 | — |
+| AMPLE-001 | First exact Ample Store candidate | user instruction 2026-08-19 | superseded | critical | agent | — | Historical evidence complete; never submit after Paulatim rename | VER-20260825-001…003 @ `3b8d225`; hash `7d6ca584…61866b` | 2026-08-28 | Replaced by PAULATIM-001; historical evidence only |
+| PAULATIM-001 | First exact Paulatim 1.1.1 Store candidate | owner authorization 2026-08-28 | in-progress | critical | agent | stable identity preserved; exact-SHA CI | Visible Paulatim branding; unique 1.1.1 package full name; stable Store/data internals; green full local gate and exact-SHA Windows run; new AppX/screenshot hashes and kit | VER-20260828-002 local; CI pending | 2026-08-28 | Commit/push once, then exact-SHA CI/artifact verification |
 | COUNCIL-001 | 7-seat market-readiness council + full remediation | user instruction 2026-07-28 | done | high | agent | — | All agent-fixable gaps M1–M10 / D1 / D2 / R1 / R2 closed; every local gate green on the remediated tree | VER-20260729-001 @ working-tree:`246baac`+dirty:`f6edf2f2b6cff045` | 2026-07-29 | — |
 | RECON-001 | Working tree vs `origin/main` draft drift | HIST-20260724-001 | done | high | agent | — | Draft committed + remote merged + pushed; single authoritative tree on `main` @ `59787f4` | VER-20260724-006 @ `59787f4` | 2026-07-24 | — |
 | DOCS-001 | Documentation consolidation + control system | user instruction 2026-07-24 | done | high | agent | — | Tracker, index, history, verification log, proposals, migration map, archive, validator all green | VER-20260724-001…005 @ working-tree:`4a32b73`+dirty:`451945c517e87554` | 2026-07-24 | — |
@@ -98,11 +99,11 @@ needs-reconciliation / done / verified-stale / superseded / cancelled.
 
 ## 5. Active task details
 
-### HQ-04 — Certification then publication (blocked, highest risk)
+### HQ-04 — Paulatim certification submission (in progress, highest risk)
 
-- Unblock condition: HQ-01 truthful IARC saved + HQ-02 payout ready + HQ-03
-  audience route chosen + AMPLE-001 exact candidate accepted. Every Hearth AppX
-  is historical after the rename.
+- Immediate dependency: fresh PAULATIM-001 exact candidate accepted by CI and
+  Partner Center; reconcile payout readiness before the final submit click.
+  AMPLE-001 and every Hearth AppX are historical after the rename.
 - Hard rules: never replace the accepted AppX with artifact 8316167277 or
   8613344727; manual hold stays until every gate passes; certification failure →
   preserve report, fix narrow cause, new evidence chain if bytes change (never
@@ -115,8 +116,8 @@ needs-reconciliation / done / verified-stale / superseded / cancelled.
 
 | ID | Blocked item | Why | Unblock condition | Affected |
 |---|---|---|---|---|
-| B1 | Certification + publication | Owner-only legal attestation (IARC) and private payout setup not done | Owner completes HQ-01, HQ-02 | HQ-04 → HQ-05, WS-REL, WS-REV |
-| B4 | Owner-action batch | Full current queue is 79/70 minutes after exact-CI/listing scope corrections; the only ≤60-minute full-run path is 59 remaining + conservatively counted HQ-00 minute | Owner independently chooses D047's one-minute risk path, batches its record with reservation, and defers HQ-05/HQ-06; otherwise further truthful scope reduction is required | HQ-01…HQ-07, WS-REL, WS-REV |
+| B1 | Certification + publication | Private payout/tax readiness has not yet been reobserved; IARC is complete | Reconcile HQ-02, then submit the exact PAULATIM-001 draft under the manual publication hold | HQ-04 → HQ-05, WS-REL, WS-REV |
+| ~~B4~~ | ~~Owner-action batch~~ | **Resolved 2026-08-28:** the owner completed IARC, selected Paulatim, and explicitly delegated reservation, draft replacement, and certification submission to the agent. D047 remains the true historical time model. | — | Remaining human-only payout reconciliation and post-certification Windows observation stay within the 60-minute ceiling |
 | ~~B3~~ | ~~First Ample candidate identity~~ | **Resolved 2026-08-25:** Partner Center product `9PLRSZZMFPJH` reports exact identity `ToledoTechnologies.Hearth`; repository now has `identityVerified:true` | — | AMPLE-001 completed at VER-20260825-003 |
 | ~~B2~~ | ~~Replacement candidate (CAND-002)~~ | **Resolved 2026-08-02…08-04** — the tree was committed (`fe0fc4a`…`270e650`) and CI built the candidate. This row survived five days after its own unblock condition was met; removed from active blockers 2026-08-07 | — | — |
 
@@ -124,12 +125,12 @@ needs-reconciliation / done / verified-stale / superseded / cancelled.
 |---|---|---|---|---|
 | R1 — zero demand after launch (no demand evidence exists) | high | Bet A falsifier path | 5-day signal gate → pre-built reposition menu RP-1…RP-4 + `store/REPOSITION_KIT.md` (revenue/PLAN.md, D037) | agent+owner |
 | R2 — certification failure (runFullTrust, content review) | medium | delay; new candidate cycle | Truthful disclosures; preserve report; narrow fix only | owner (submit), agent (fix) |
-| R3 — Partner Center listing facts partly stale | **medium** | decisions on old listing fields | Identity, app names, and submission overview were reobserved 2026-08-25; detailed Ample listing fields remain repository-only until the owner saves them | owner+agent |
+| R3 — Partner Center listing facts partly stale | **medium** | decisions on old listing fields | Paulatim reservation/dashboard name and the canceled Hearth draft were observed 2026-08-28. Paulatim package/listing/screenshots remain repository-only until the agent replaces and saves the draft from exact PAULATIM-001 evidence | agent |
 | ~~R4~~ | — | — | **Resolved 2026-08-04** — remediation is committed and landed. Row retired 2026-08-07 | — |
-| R5 — wrong MSIX submitted | high | historical Hearth bytes certified as Ample | Only AMPLE-001 `7d6ca584…61866b` from run 32844120483 is current. CAND-002, its staged kit, and all other MSIX artifacts remain explicitly never-submit | agent+owner |
+| R5 — wrong MSIX submitted | high | historical Hearth or Ample bytes submitted as Paulatim | No current package exists. Submit only the future PAULATIM-001 1.1.1 AppX after exact-SHA CI and independent full-hash verification; AMPLE-001, CAND-002, and every AppX currently in `tmp/` are never-submit | agent |
 | R6 — HQ-03 has no verified Windows machine (new 2026-08-07) | **low** (downgraded same day) | delays post-certification validation only | **Corrected:** HQ-03 depends on HQ-04, not the reverse — the Microsoft-signed build does not exist until after certification, so this never blocked submission. CI `windows-store.yml` already exercises the packaged AppX on `windows-latest` (DPAPI lifecycle matrix + renderer smoke + screenshots). Residual need is a human ear on Narrator | owner (post-certification) |
 | ~~R8 — "Hearth" collision~~ | resolved by rename 2026-08-19 | forced candidate reset | Historical analysis retained in `revenue/NAME-RISK-2026-08-07.md` | owner+agent |
-| R9 — Ample display name not reserved | high for submission | Listing cannot honestly use Ample until owner reserves it; package identity must not be renamed again | Build with observed `ToledoTechnologies.Hearth`; owner reserves Ample before submission | owner+agent |
+| ~~R9 — display name not reserved~~ | resolved | **Resolved 2026-08-28:** exact Paulatim is reserved and set as dashboard name on product `9PLRSZZMFPJH`; package identity remains `ToledoTechnologies.Hearth` | Preserve that identity and replace remaining Hearth listing references before deleting the Hearth display name | agent |
 | R7 — session-to-session document drift (new 2026-08-07) | **high** | agents act on stale state; owner acts on wrong hash/commit | Re-derive the resume point from `git`/`gh` every session rather than trusting the prior summary. This risk has now materialised three times (RECON-001, B2/R4 survival, the 08-04 resume point) | agent |
 
 Resolved 2026-07-24 and moved to history: host-move drift + working-tree
@@ -141,28 +142,29 @@ observed green through `origin/main` HEAD `246baac` (VER-20260728-001…003).
 
 | Gate | Ref | Env | Result | Summary | Timestamp | VER |
 |---|---|---|---|---|---|---|
-| Candidate Quality Gate (CI) | `3b8d225` | CI ubuntu | pass | full gate; run 32844120492 | 2026-08-25 | VER-20260825-003 |
-| Windows Store build (CI) | `3b8d225` | CI windows | pass | run 32844120483; artifact 9561731052; AppX `7d6ca584…61866b`; screenshots 9561704379 | 2026-08-25 | VER-20260825-003 |
+| Historical AMPLE-001 Quality Gate | `3b8d225` | CI ubuntu | pass / superseded | full gate; run 32844120492; never-submit after Paulatim rename | 2026-08-25 | VER-20260825-003 |
+| Historical AMPLE-001 Windows build | `3b8d225` | CI windows | pass / superseded | run 32844120483; artifact 9561731052; AppX `7d6ca584…61866b`; never-submit | 2026-08-25 | VER-20260825-003 |
 | Documentation safety close | working-tree:`13bdea2`+dirty (exact fingerprint in log) | local linux | pass | lint; typecheck ×2; 14 files/49 tests; vite + Electron bundles; secrets 197; Store 277; docs PASS; diff clean | 2026-08-26 | VER-20260826-001 |
 | Full local candidate preflight | working-tree:`c0eb360`+dirty (exact fingerprint in log) | local (linux) | pass | strict identity preflight; lint 0; typecheck ×2; 14 files/49 tests; vite build; secrets 197; store 277; docs PASS; licenses 54; audit 0 | 2026-08-25 | VER-20260825-002 |
-| Partner Center identity | product `9PLRSZZMFPJH` | EXT-PC | pass | exact `ToledoTechnologies.Hearth`; only Hearth reserved; draft/not submitted | 2026-08-25 | VER-20260825-001 |
-| Store candidate/certification | AMPLE-001 `7d6ca584…61866b` | CI / EXT-PC | candidate pass / certification not observed | exact candidate staged; no Partner Center upload, submission, certification, or publication | 2026-08-25 | VER-20260825-003 |
+| Paulatim candidate local gate | working-tree:`886314e`+dirty (exact fingerprint in log) | local linux | pass | identity preflights; lint; typecheck ×2; 15 files/52 tests; vite + Electron bundles; secrets 199; Store 277; docs PASS; notices 54; audit 0; generated assets deterministic; diff clean | 2026-08-28 | VER-20260828-002 |
+| Partner Center draft | product `9PLRSZZMFPJH` | EXT-PC | name gate pass / draft | Paulatim reserved/dashboard name; identity exact; old submission canceled; Hearth deletion waits on listing refs | 2026-08-28 | VER-20260828-001 |
+| Store candidate/certification | PAULATIM-001 pending | local / CI / EXT-PC | in progress / not submitted | no candidate hash or Partner Center upload yet | 2026-08-28 | D049 |
 | Installed Windows pass | — | physical Windows | not observed | blocked behind HQ-03/HQ-04 | — | — |
 
-Historical green runs remain valid only for their exact Hearth refs. The prior
-`c0eb360` failure remains historical; current exact candidate evidence is bound
-only to `3b8d225` and `7d6ca584…61866b`. See store/WINDOWS-VALIDATION.md.
+Historical green runs remain valid only for their exact refs. The prior
+`c0eb360` failure and AMPLE-001 success remain history; neither supplies
+Paulatim candidate bytes. See store/WINDOWS-VALIDATION.md.
 
 ## 8. Environment and release state
 
 | Surface | Ref / version | State | Last verified | Evidence | Drift |
 |---|---|---|---|---|---|
-| Working tree | canonical `main` over candidate source `3b8d225` | documentation-only safety reconciliation; exact kit staged in ignored `tmp/` | 2026-08-26 | git status, VER-20260826-001 | no candidate drift |
+| Working tree | `main` `886314e` + dirty Paulatim rename | package-triggering visible rename with compatibility guards and docs | 2026-08-28 | git status; D049 | full gate/commit pending |
 | Local `cycle-2-shipped` | `246baac` | stale; behind current `main` | 2026-08-26 | git | historical branch |
-| Local `main` | documentation-only descendant of `3b8d225` | canonical checked-out branch; candidate source unchanged | 2026-08-26 | git, VER-20260826-001 | none |
-| `origin/main` | documentation-only descendant of `3b8d225` | exact Ample candidate source remains `3b8d225`; candidate CI green | 2026-08-26 | git + exact-SHA gh runs | VER-20260825-003 |
-| CI | candidate Quality 32844120492 + Windows 32844120483; evidence-close Quality 32845727178 | green; candidate artifacts 9561731052 / 9561704379 | 2026-08-26 | VER-20260825-003; VER-20260826-001 | none |
-| Partner Center | Existing product `9PLRSZZMFPJH`; exact identity `ToledoTechnologies.Hearth`; only Hearth reserved; draft/not submitted | identity/names/overview reobserved; detailed Ample listing fields not saved | 2026-08-25 | VER-20260825-001 | owner must reserve Ample before submission |
+| Local `main` | `886314e` + dirty | canonical checked-out branch; matched origin before edits | 2026-08-28 | git | commit pending |
+| `origin/main` | `886314e` | canonical remote before Paulatim rename | 2026-08-28 | git + gh | awaiting one gated push |
+| CI | no Paulatim run; AMPLE-001 runs remain historical | PAULATIM-001 pending exact pushed SHA | 2026-08-28 | VER-20260825-003 historical | fresh runs required |
+| Partner Center | Product `9PLRSZZMFPJH`; exact identity `ToledoTechnologies.Hearth`; Paulatim reserved/dashboard name; canceled draft | $14.99 retained; package/listing replacement not yet performed | 2026-08-28 | VER-20260828-001 | Hearth name deletion waits on listing refs |
 | Microsoft Store live | — | does not exist | — | — | no listing |
 | Landing host | — | not deployed | — | landing/README.md | PROP-004 (HQ-06 proposes certification-time deploy) |
 
@@ -200,16 +202,17 @@ start without approval.
 
 ## 11. Next recommended actions
 
-**AMPLE-001 is done. Do not use CAND-002 or any artifact except the exact hash
-recorded for AMPLE-001.**
+**Paulatim is reserved and PAULATIM-001 is in progress. AMPLE-001, CAND-002,
+and every Hearth/Ample package are historical and never-submit.**
 
-1. **Owner:** decide whether to use D047's conditional 60-minute path. It
-   requires independently choosing HQ-07's one-minute risk path, recording it
-   inside the Ample reservation batch, and deferring HQ-05/HQ-06; this is not an
-   agent recommendation to waive screening. If chosen, verify the staged AppX
-   hash and complete the remaining owner gates. Otherwise reduce owner scope
-   truthfully before starting. Agent does none of those actions.
-2. **After publication only:** execute `store/README.md` "Certification and
+1. **Agent:** commit/push the fully gated Paulatim rename once and bind the new
+   package/screenshots to that exact SHA. Download,
+   hash, inspect, and stage only the resulting `paulatim-*` artifacts.
+2. **Agent (owner-authorized):** replace the canceled Hearth draft package,
+   listing, and screenshots with PAULATIM-001; reconcile payout readiness;
+   remove Hearth listing references and delete its display name when enabled;
+   submit for certification. Do not conflate submission with publication.
+3. **After publication only:** execute `store/README.md` "Certification and
    publication playbook", applying `store/POST_PUBLICATION_DOC_SWEEP.md`
    same-day.
 

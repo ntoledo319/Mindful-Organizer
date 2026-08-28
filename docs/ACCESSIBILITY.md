@@ -1,8 +1,12 @@
-# Ample Accessibility Status
+# Paulatim Accessibility Status
 
 _Last updated: 2026-07-14_
 
-Ample is designed to reduce cognitive load, but no formal accessibility
+_Visible-name correction — 2026-08-28: the dated accessibility review remains
+the Hearth-era source record; product wording is now Paulatim. No conformance
+claim was added, and the Store-signed manual matrix remains open._
+
+Paulatim is designed to reduce cognitive load, but no formal accessibility
 conformance claim has been completed for the release candidate.
 
 ## Present in the source
@@ -42,4 +46,4 @@ high-contrast, reduced-motion, WCAG, or other formal accessibility conformance.
 
 Accessibility problems can be reported through the channel described in
 [SUPPORT.md](SUPPORT.md). Creating an issue requires GitHub sign-in. Do not
-include private Ample records in a public report.
+include private Paulatim records in a public report.

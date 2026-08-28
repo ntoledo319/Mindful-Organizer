@@ -3,7 +3,7 @@ import { pathToFileURL } from 'node:url';
 import type { IpcMainInvokeEvent } from 'electron';
 
 // Every ipcMain.handle routes through this check: only the main frame of
-// Ample's own window may call in. Under the Vite dev server that means the
+// Paulatim's own window may call in. Under the Vite dev server that means the
 // dev origin; otherwise it means exactly the packaged index.html over file:.
 // Subframes, other origins, and malformed URLs are refused.
 export function isTrustedIpcSender(event: IpcMainInvokeEvent): boolean {

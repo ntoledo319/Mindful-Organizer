@@ -1,10 +1,18 @@
-# Ample Ethics and Claims Review
+# Paulatim Ethics and Claims Review
 
 _Reviewed against the working tree on 2026-07-14._
 
+_Visible-name and gate correction — 2026-08-28: the 2026-07-14 review was for
+the Hearth-era source and is preserved as that dated fact. The visible product
+name is now Paulatim; the substantive claims boundary is unchanged. Windows CI
+now covers the packaged DPAPI lifecycle, public support is live, and the owner
+completed IARC. The current remaining gates are exact PAULATIM-001 1.1.1
+evidence, payout-readiness reconciliation, certification, Store-signed manual
+accessibility observation, and a separate publication decision._
+
 ## Current posture
 
-Ample is a personal local-first organizer, not a clinical product. Core
+Paulatim is a personal local-first organizer, not a clinical product. Core
 features and the PDF session summary have no in-app paywall or license-key gate.
 The previous Stripe test link, arbitrary `PRO-` key acceptance, and unsupported
 "clinical-grade" language were removed. No payment is collected in the app.
@@ -26,7 +34,7 @@ The previous Stripe test link, arbitrary `PRO-` key acceptance, and unsupported
 - Voice dictation was removed so journal text is not handed to a browser speech
   service while the product claims local-only records.
 - Smart Decompose replaces the original task and inserts children atomically.
-- IPC calls are restricted to Ample's own top-level renderer.
+- IPC calls are restricted to Paulatim's own top-level renderer.
 - Project and runtime dependency licenses ship with packaged builds.
 - Shipping brand assets are generated deterministically from repository-owned
   code; provenance is recorded and the earlier undocumented files are vaulted

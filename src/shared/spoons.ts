@@ -1,4 +1,4 @@
-// A small, user-controlled way to budget finite daily energy. Ample never
+// A small, user-controlled way to budget finite daily energy. Paulatim never
 // infers someone's capacity from a diagnosis, condition label, or check-in.
 // Legacy condition labels remain only as backward-compatible metadata.
 

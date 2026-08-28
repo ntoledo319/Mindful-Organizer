@@ -1,10 +1,13 @@
-# Ample Support
+# Paulatim Support
 
 _Last updated: 2026-07-14_
 
+_Visible-name correction — 2026-08-28: the support and privacy boundaries are
+unchanged; only the visible product name is now Paulatim._
+
 ## Current availability
 
-Ample is not currently released. This page is the public support landing page.
+Paulatim is not currently released. This page is the public support landing page.
 Reproducible software bugs and focused feature requests can be filed through the
 repository's privacy-guarded
 [GitHub Issue forms](https://github.com/ntoledo319/Mindful-Organizer/issues/new/choose).
@@ -15,7 +18,7 @@ and existing issues does not require one.
 
 Include:
 
-- Ample version
+- Paulatim version
 - Windows version and x64 device confirmation
 - The action immediately before the problem
 - What was expected and what happened
@@ -27,7 +30,7 @@ Never attach or paste:
 - ample.secure, ample.secure.backup, ample.secure.migration-backup, or
   ample.key
 - legacy ample.db, ample.db-wal, ample.db-shm, or journal files
-- JSON or PDF exports, because Ample exports are readable plaintext files
+- JSON or PDF exports, because Paulatim exports are readable plaintext files
 - journal, crisis-plan, ERP, diary-card, medication, mood, anxiety, or sleep
   content
 - Windows account details, payment details, tax details, credentials, or keys

@@ -1,5 +1,10 @@
 # Post-publication doc sweep — pre-drafted replacements
 
+> **Name correction — 2026-08-28:** the Ample blocks below are preserved as
+> the pre-Paulatim draft. When publication is actually observed, apply their
+> Paulatim equivalents from the then-current public files; never represent the
+> old AMPLE-001 candidate as the shipped Paulatim package.
+
 Created 2026-07-28 (market-readiness remediation D2-1). This file exists so
 playbook step 4 ("Immediately after publication", store/README.md) is a
 same-day apply, not fresh writing under time pressure.

@@ -1,8 +1,12 @@
-# Ample Purchases and Refunds
+# Paulatim Purchases and Refunds
 
 _Last updated: 2026-07-14_
 
-Ample is not currently listed as purchasable. No direct payment link,
+_Visible-name correction — 2026-08-28: the substantive purchase/refund boundary
+is unchanged; only the visible product name is now Paulatim. The app is still
+not certified, published, or purchasable._
+
+Paulatim is not currently listed as purchasable. No direct payment link,
 developer-run checkout, subscription, in-app purchase, or license-key sale is
 active.
 

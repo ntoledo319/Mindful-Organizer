@@ -33,7 +33,7 @@ describe('Store package identity guard', () => {
 
   it('rejects missing and placeholder package fields even when verification is true', () => {
     expect(hasRealIdentity({ ...observedIdentity, identityName: '' })).toBe(false);
-    expect(hasRealIdentity({ ...observedIdentity, identityName: 'PLACEHOLDER.Ample' })).toBe(false);
+    expect(hasRealIdentity({ ...observedIdentity, identityName: 'PLACEHOLDER.Paulatim' })).toBe(false);
     expect(hasRealIdentity({ ...observedIdentity, publisher: undefined })).toBe(false);
     expect(hasRealIdentity({ ...observedIdentity, publisherDisplayName: '' })).toBe(false);
   });

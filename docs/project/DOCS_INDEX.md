@@ -1,4 +1,4 @@
-# Ample Documentation Index
+# Paulatim Documentation Index
 
 _Canonical inventory of repository documentation. Established 2026-07-24
 (first-run consolidation). Verified against working tree
@@ -28,7 +28,7 @@ so), **artifact** (raw evidence/output, not prose truth).
 
 | Path | Purpose | Audience | Class | Action |
 |---|---|---|---|---|
-| `README.md` | Product front door: what Ample is, release status, dev/quality commands | users, devs, agents | canonical (product overview) | keep; continuation pointer updated 2026-07-24 |
+| `README.md` | Product front door: what Paulatim is, release status, dev/quality commands | users, devs, agents | canonical (product overview) | keep; visible rename recorded 2026-08-28 |
 | `AGENTS.md` | Revenue-loop operating doctrine: jail, constraints, memory files, gates | agents | canonical (operating constraints) | keep; §14 project-state protocol appended 2026-07-24 |
 | `CLAUDE.md` | Taste standards and brand identity | agents | canonical (taste/brand) | keep |
 | `HANDOFF.md` | Cold-start launchpad | agents | canonical (launchpad) | compressed 2026-07-24 (see MIGRATION_MAP M1/M2) |
@@ -74,8 +74,8 @@ where the file asserts standalone truth.
 | `revenue/OPPORTUNITIES.md` | 35 monetization frames, scoring, portfolio, falsifiers | canonical (monetization proposals) | keep; loop-maintained |
 | `revenue/PLAN.md` | Active bets, arithmetic, critical path, gap | canonical (monetization plan) | line 1 root fixed 2026-07-24 (M6) |
 | `revenue/METRICS.md` | Timestamped observed-evidence ledger | canonical (observed evidence) | keep; observed facts only |
-| `revenue/HUMAN_QUEUE.md` | Owner-only actions HQ-00…HQ-07; 79/70 min remaining, conditional path 60 cumulative | canonical (owner queue) | current owner-time decision is D047 |
-| `revenue/DECISIONS.md` | Decision ledger D001–D047 | canonical (decisions) | reused as the project decision log; no competing file created |
+| `revenue/HUMAN_QUEUE.md` | Owner/delegated Store actions HQ-00…HQ-07; current Paulatim authority correction at top | canonical (owner queue) | D049 delegates draft/submission work; publication remains separate |
+| `revenue/DECISIONS.md` | Decision ledger D001–D050 | canonical (decisions) | reused as the project decision log; no competing file created |
 | `revenue/npm-audit-*.json` | Raw audit output | artifact (gitignored) | regenerate on demand |
 
 ## `store/` — Microsoft Store release

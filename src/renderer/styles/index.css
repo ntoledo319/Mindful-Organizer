@@ -4,15 +4,15 @@
 
 :root {
   color-scheme: light dark;
-  --ample-brand: #b94b30;
-  --ample-warning: #966000;
-  --ample-success: #3b7051;
+  --paulatim-brand: #b94b30;
+  --paulatim-warning: #966000;
+  --paulatim-success: #3b7051;
 }
 
 .dark {
-  --ample-brand: #e27352;
-  --ample-warning: #e6b055;
-  --ample-success: #64a37d;
+  --paulatim-brand: #e27352;
+  --paulatim-warning: #e6b055;
+  --paulatim-success: #64a37d;
 }
 
 html,
@@ -74,10 +74,10 @@ body {
 @layer components {
   /* Surface Cards: Earthenware & Vellum. No glassmorphism. */
   .surface-card {
-    @apply rounded-soft border border-base-border bg-base-surface shadow-ample;
+    @apply rounded-soft border border-base-border bg-base-surface shadow-paulatim;
   }
   .dark .surface-card {
-    @apply border-night-border bg-night-surface shadow-night-ample;
+    @apply border-night-border bg-night-surface shadow-night-paulatim;
   }
 
   .field {
@@ -91,7 +91,7 @@ body {
 
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 rounded-soft bg-brand px-5 py-2.5 text-sm
-      font-medium text-white shadow-ample transition hover:bg-brand/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2
+      font-medium text-white shadow-paulatim transition hover:bg-brand/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2
       disabled:cursor-not-allowed disabled:opacity-40;
   }
   .dark .btn-primary {
@@ -114,7 +114,7 @@ body {
     @apply text-night-muted hover:bg-white/5 hover:text-night-text;
   }
   .nav-item.active {
-    @apply bg-brand text-white shadow-ample;
+    @apply bg-brand text-white shadow-paulatim;
   }
   .dark .nav-item.active {
     @apply bg-night-brand text-night-bg;

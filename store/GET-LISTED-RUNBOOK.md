@@ -1,4 +1,24 @@
-# Get Ample listed — owner runbook (2026-08-07)
+# Get Paulatim listed — historical Ample runbook base (2026-08-07)
+
+> **Paulatim execution correction — 2026-08-28:** the owner selected and
+> authorized **Paulatim** for full certification submission. Exact Paulatim is
+> reserved on existing product `9PLRSZZMFPJH` and set as dashboard name. Keep
+> Package/Identity/Name `ToledoTechnologies.Hearth`; it is Microsoft-assigned
+> and independent of display branding. The earlier Hearth submission was
+> canceled to draft. AMPLE-001 and every Hearth package are never-submit.
+> Build/verify PAULATIM-001, replace the draft package/listing/screenshots,
+> remove remaining Hearth listing references, delete the Hearth display name
+> when Partner Center enables it, and submit for certification. The historical
+> Ample steps below are non-executable evidence, not upload instructions.
+
+> **Correction — 2026-08-27:** authenticated Partner Center reports exact
+> `Ample` unavailable. `Ample Energy Planner` returned available, but it was
+> not reserved because naming/reservation remains the owner's decision. The
+> draft price was corrected from $0 to the approved $14.99 and saved;
+> Properties already matched the prepared categories/privacy record. Do not
+> upload AMPLE-001 or save Ample-branded listing fields until the owner chooses
+> and reserves an available display name. All IARC, payout/tax, terms,
+> submission, certification, and publication boundaries remain unchanged.
 
 > **Correction — 2026-08-25:** with owner authorization, the agent reobserved
 > existing product `9PLRSZZMFPJH`. Product identity reports
@@ -38,6 +58,18 @@ outside your control — see "What actually sets the date" at the bottom.
 ---
 
 ## Step 0 — Reserve the name "Ample" (5 min) — BLOCKS EVERYTHING
+
+> **Completion correction — 2026-08-28:** this historical name step is done by
+> substitution under explicit owner authority: exact Paulatim is reserved on
+> product `9PLRSZZMFPJH` and is the dashboard name. Do not reserve Ample or
+> change the observed package identity.
+
+> **Availability correction — 2026-08-27:** the exact-Ample instruction below
+> is currently non-executable: Partner Center says `Ample` is unavailable.
+> `Ample Energy Planner` was checked and returned available. The owner must
+> choose the launch display name and reserve it; the agent must not make that
+> commercial/legal naming decision. Continue only after the chosen name appears
+> under **Names for this product** beside Hearth.
 
 > **Execution correction — 2026-08-25:** this heading and the build-blocking
 > explanation below record the superseded assumption. The Ample display-name
@@ -81,6 +113,11 @@ date. Do not discover this on Sunday.
 
 ## Step 2 — IARC age rating (10 min)
 
+> **Completion correction — 2026-08-28:** the owner completed IARC and Partner
+> Center now shows Age ratings **Complete**. Do not retake or reconstruct the
+> legal questionnaire. Preserve its saved result and only observe exact regional
+> ratings if the final review screen exposes them without editing.
+
 Partner Center → submission → **Age ratings** → complete the IARC
 questionnaire.
 
@@ -89,6 +126,10 @@ attesting you are of majority age in your jurisdiction — a legal declaration i
 your name, which is why no agent can do it.
 
 ## Step 3 — Trademark check on "Ample" (1 min)
+
+> **Completion correction — 2026-08-28:** the owner rejected Ample, selected
+> Paulatim, and authorized/reserved it. This Ample screening step is historical;
+> it does not gate PAULATIM-001.
 
 > **Screening correction — 2026-08-26:** do not rely on the older
 > "food brands, not software" sentence below. A read-only public sweep surfaced
@@ -113,6 +154,11 @@ certification again.
 
 ## Step 4 — Candidate build (agent, ~16 min, unattended)
 
+> **Paulatim reset — 2026-08-28:** AMPLE-001 and every package referenced below
+> are never-submit. Build PAULATIM-001 1.1.1 only after the final full local
+> gate, then bind its AppX and screenshots to the exact pushed SHA and record a
+> new full hash. No Paulatim package/hash exists yet.
+
 > **Candidate outcome — 2026-08-25:** AMPLE-001 is complete. Exact source
 > `3b8d225` passed Quality run 32844120492 and Windows run 32844120483. The only
 > current AppX is SHA-256 `7d6ca584…61866b`, staged with artifact 9561704379's
@@ -136,6 +182,11 @@ history; the register is in `store/WINDOWS-VALIDATION.md`.
 
 ## Step 5 — Upload package and finalize the listing (15 min)
 
+> **Authority correction — 2026-08-28:** once PAULATIM-001 exact evidence
+> exists, the agent is authorized to upload its AppX, save the prepared Paulatim
+> listing and fresh screenshots, remove Hearth listing references, and preserve
+> the manual publication hold. Every earlier package is never-submit.
+
 > **Time correction — 2026-08-26:** the heading is the historical estimate.
 > Because the exact AppX, full hash, five ordered screenshots/captions, copy,
 > features, keywords, price, categories, URLs, notes, and release hold are all
@@ -157,6 +208,10 @@ apps you compete poorly against and may invite closer content review of a
 product that repeatedly disclaims being a medical device.
 
 ## Step 6 — Submit (2 min) + certification (days, not yours to control)
+
+> **Authority correction — 2026-08-28:** certification submission is delegated
+> to the agent after exact package evidence and payout-readiness reconciliation.
+> This delegation does not include **Publish now**.
 
 Submit. Microsoft certification takes days. Nothing you do changes that.
 

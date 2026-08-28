@@ -1,5 +1,5 @@
 /**
- * Ample's navigation contract.
+ * Paulatim's navigation contract.
  *
  * `core` is the small daily loop shown to every user. `utility` entries stay
  * close at hand without competing with that loop. `vaulted` capabilities are

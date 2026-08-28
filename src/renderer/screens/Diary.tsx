@@ -167,7 +167,7 @@ function NewDiaryCardModal({ open, onClose }: { open: boolean; onClose: () => vo
             role={urgesSelfHarm >= 4 ? 'alert' : 'note'}
           >
             <p>
-              Ample records this rating locally; it does not monitor it, contact anyone, or detect an emergency.
+              Paulatim records this rating locally; it does not monitor it, contact anyone, or detect an emergency.
               If you may act on a self-harm urge, use immediate human support.
             </p>
             <div className="mt-3 flex flex-wrap gap-3">
@@ -209,7 +209,7 @@ function NewDiaryCardModal({ open, onClose }: { open: boolean; onClose: () => vo
           />
         </label>
 
-        {createMutation.isError && <InlineError>Ample could not save this card. Review the fields and try again.</InlineError>}
+        {createMutation.isError && <InlineError>Paulatim could not save this card. Review the fields and try again.</InlineError>}
 
         <div className="flex justify-end gap-3 pt-4 pb-2">
           <button className="btn-ghost" onClick={onClose}>

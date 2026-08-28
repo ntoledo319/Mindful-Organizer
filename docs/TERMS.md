@@ -1,24 +1,28 @@
-# Ample Terms
+# Paulatim Terms
 
 _Last updated: 2026-07-14_
 
+_Visible-name correction — 2026-08-28: the intended Store terms are
+substantively unchanged; only the visible product name is now Paulatim. No live
+offer or publication is implied._
+
 ## Current status
 
-Ample is not currently listed as purchasable. These terms describe the intended
+Paulatim is not currently listed as purchasable. These terms describe the intended
 official Microsoft Store package and do not represent that a price, package, or
 listing is live.
 
 ## Product scope
 
-Ample is personal organization and wellness software. Its primary function is
+Paulatim is personal organization and wellness software. Its primary function is
 to help a user estimate task energy costs and plan against a daily energy budget
-the user chooses from 4 to 24. Ample does not infer or change that capacity
+the user chooses from 4 to 24. Paulatim does not infer or change that capacity
 from a diagnosis or check-in. Check-ins, trends, practices, and crisis-plan text
 remain under the user's control. ERP, diary-card, medication-reference, and
 legacy condition-label capabilities remain preserved but outside the default
 experience pending a dedicated opt-in and safety review.
 
-Ample is not a medical device, healthcare provider, emergency service,
+Paulatim is not a medical device, healthcare provider, emergency service,
 diagnosis, treatment, or substitute for professional care. Do not rely on it to
 detect, monitor, prevent, or respond to an emergency. In a US crisis, call or
 text 988; in immediate danger, call the local emergency number.
@@ -27,7 +31,7 @@ text 988; in immediate danger, call the local emergency number.
 
 The user chooses what to enter and is responsible for access to the Windows
 account, device, local backups, and exported files. SQLite runs in memory while
-Ample is open. At rest, Ample uses authenticated AES-256-GCM snapshots and a
+Paulatim is open. At rest, Paulatim uses authenticated AES-256-GCM snapshots and a
 random 256-bit key protected through the operating system's credential facility
 (DPAPI on Windows). During a legacy migration, the original plaintext files are
 removed only after encrypted copies verify; the encrypted migration backup is
@@ -40,7 +44,7 @@ controls the signed-in OS session may be able to use the same credential
 facility. User-requested JSON and PDF exports are plaintext. File deletion
 cannot guarantee removal from SSD recovery, snapshots, or backups. The exact
 storage, migration, deletion, and transmission behavior is described in the
-[privacy policy](PRIVACY.md). Do not use Ample for information you are not
+[privacy policy](PRIVACY.md). Do not use Paulatim for information you are not
 comfortable storing under that policy.
 
 ## Source and official package
@@ -63,6 +67,6 @@ Nothing in these terms limits a right that cannot legally be limited.
 
 The public support path is documented in [SUPPORT.md](SUPPORT.md). GitHub sign-in
 is required to create an issue. It is not a private, clinical, crisis, or
-emergency channel. Never post an Ample database, encrypted snapshot, key,
+emergency channel. Never post a Paulatim database, encrypted snapshot, key,
 plaintext export, account detail, or private wellness record in a public support
 request.

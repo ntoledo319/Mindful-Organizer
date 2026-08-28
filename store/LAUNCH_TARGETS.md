@@ -15,7 +15,7 @@ Standing rules for every destination:
 
 1. Re-read the destination's current rules in full immediately before
    posting.
-2. Disclose the maker relationship in the first line: "I built Ample."
+2. Disclose the maker relationship in the first line: "I built Paulatim."
 3. Post only after the Store page is observed live and purchasable in a
    private browser (HQ-04 step 6); use the destination's campaign ID from
    `store/CAMPAIGNS.md` (`owner-approved-community-<slug>`).
@@ -34,13 +34,13 @@ Standing rules for every destination:
   Third-party rule checks (2026-07) report self-promotion explicitly
   permitted with "share your project, not just a link", no repeated posting
   of the same project, and engagement with commenters expected.
-- Required disclosure: "I built Ample" in the opening line; never present
+- Required disclosure: "I built Paulatim" in the opening line; never present
   the post as a user review.
 - Draft post body:
 
-> **I built Ample: energy planning, finally on Windows**
+> **I built Paulatim: energy planning, finally on Windows**
 >
-> I built Ample to bring energy-budget planning to Windows for days when your
+> I built Paulatim to bring energy-budget planning to Windows for days when your
 > capacity does not match your calendar: give each task an energy cost and
 > duration, choose a daily budget from 4 to 24, and Today shows up to three
 > open tasks whose recorded cost fits what is left. Check-ins, 7/14/30-day
@@ -63,7 +63,7 @@ Standing rules for every destination:
 - Self-promotion summary: founder-oriented community; third-party rule
   checks (2026-05) report project and launch posts welcome with full founder
   disclosure. Re-verify before posting.
-- Required disclosure: "I built Ample" in the opening line.
+- Required disclosure: "I built Paulatim" in the opening line.
 - Draft post body: same facts as destination 1, reframed around the build —
   what was built, the local-encryption design, and the one-time-price
   choice — with one paragraph of genuine build detail before the link. Do
@@ -78,7 +78,7 @@ Standing rules for every destination:
   threads or formats; a standalone launch post may be removed. Post only
   inside the currently designated self-promotion thread, if one exists, and
   follow its format exactly.
-- Required disclosure: "I built Ample" plus exact thread-format compliance.
+- Required disclosure: "I built Paulatim" plus exact thread-format compliance.
 - Draft post body: a two-to-three-sentence version of destination 1 — what
   it does, who it is for, the privacy model in one clause, the disclosure,
   and the campaign link.
@@ -92,11 +92,11 @@ Standing rules for every destination:
   marketing channel. Do not post a project link without prior written
   moderator approval via modmail; accept "no" without argument. If approval
   is granted, follow every condition the moderators set.
-- Required disclosure: "I built Ample" and, if asked, that the app is a
+- Required disclosure: "I built Paulatim" and, if asked, that the app is a
   paid $14.99 one-time purchase with MIT-licensed source.
 - Draft modmail (not a post):
 
-> Hello moderators — I built Ample, a Windows energy planner based on a
+> Hello moderators — I built Paulatim, a Windows energy planner based on a
 > user-chosen 4–24 daily budget with spoon-style task costs. It is local and
 > encrypted at rest, with no account or cloud API. May I share it once with the
 > community under your rules? I will follow any format or disclosure you
@@ -113,7 +113,7 @@ Standing rules for every destination:
   factually; never solicit or fabricate reviews.
 - Draft listing summary (short, factual):
 
-> Ample brings energy-budget planning to Windows for ADHD and other
+> Paulatim brings energy-budget planning to Windows for ADHD and other
 > variable-capacity days. Tasks get an energy cost; you choose a 4–24 daily
 > budget and see what fits. Supporting proof: local, encrypted-at-rest storage
 > with no account, cloud API, ads, record sync, or app telemetry. One-time
@@ -127,7 +127,7 @@ Standing rules for every destination:
   Maker badge, which satisfies disclosure by design. Expect to answer
   comments on launch day — schedule it only when the owner can respond.
 - Required disclosure: automatic via the Maker badge; still say "I built
-  Ample" in the first comment.
+  Paulatim" in the first comment.
 - Draft first comment: the destination-1 facts minus the Reddit framing,
   plus one sentence on why local-first (records stay on the user's machine;
   requested exports are plaintext). Include the Store campaign link with

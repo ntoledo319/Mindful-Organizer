@@ -23,7 +23,7 @@ export function ErpTracker() {
     <div>
       <PageHeader
         title="ERP Tracker"
-        subtitle="Record exposure practice you have already chosen. Ample does not prescribe exposures or replace professional guidance."
+        subtitle="Record exposure practice you have already chosen. Paulatim does not prescribe exposures or replace professional guidance."
         action={
           <button className="btn-primary" onClick={() => setOpen(true)}>
             <PlusIcon width={16} height={16} />
@@ -36,7 +36,7 @@ export function ErpTracker() {
         <EmptyState
           illustration={<LeafIcon width={42} height={42} />}
           title="No exposures yet"
-          body="Use this space only for exposure work you have chosen, ideally with guidance from a qualified professional. Ample records what you enter; it does not evaluate treatment."
+          body="Use this space only for exposure work you have chosen, ideally with guidance from a qualified professional. Paulatim records what you enter; it does not evaluate treatment."
           action={
             <button className="btn-primary" onClick={() => setOpen(true)}>
               Log an Exposure
@@ -138,7 +138,7 @@ function NewErpModal({ open, onClose }: { open: boolean; onClose: () => void; })
     <Modal open={open} onClose={onClose} title="Log Exposure Session">
       <div className="space-y-6 pt-2 max-h-[70vh] overflow-y-auto px-1">
         <p className="rounded-soft border border-base-border bg-base-bg px-4 py-3 text-sm leading-relaxed text-text-muted dark:border-night-border dark:bg-night-bg dark:text-night-muted">
-          Record only an exposure you have deliberately chosen. Ample does not recommend exposure targets, assess safety, or replace a qualified professional.
+          Record only an exposure you have deliberately chosen. Paulatim does not recommend exposure targets, assess safety, or replace a qualified professional.
         </p>
         <label className="block">
           <span className="mb-2 block text-sm font-medium text-text-primary dark:text-night-text">Target Obsession</span>
@@ -186,7 +186,7 @@ function NewErpModal({ open, onClose }: { open: boolean; onClose: () => void; })
           />
         </label>
 
-        {createMutation.isError && <InlineError>Ample could not save this note. Review the fields and try again.</InlineError>}
+        {createMutation.isError && <InlineError>Paulatim could not save this note. Review the fields and try again.</InlineError>}
 
         <div className="flex justify-end gap-3 pt-2 pb-2">
           <button className="btn-ghost" onClick={onClose}>

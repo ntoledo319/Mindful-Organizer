@@ -60,10 +60,10 @@ export function buildPersonalDataExport(exportedAt = new Date()): Record<string,
 export async function exportAllData(parent: BrowserWindow | null): Promise<PersonalDataExportResult> {
   const now = new Date();
   const options = {
-    title: 'Export all Ample data',
+    title: 'Export all Paulatim data',
     defaultPath: join(
       app.getPath('documents'),
-      `Ample-personal-data-${now.toISOString().slice(0, 10)}.json`,
+      `Paulatim-personal-data-${now.toISOString().slice(0, 10)}.json`,
     ),
     filters: [{ name: 'JSON document', extensions: ['json'] }],
   };

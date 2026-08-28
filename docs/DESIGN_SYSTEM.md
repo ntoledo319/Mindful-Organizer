@@ -1,15 +1,19 @@
-# Ample Design System (Earthenware & Vellum)
+# Paulatim Design System (Earthenware & Vellum)
 
 _Last updated: 2026-07-14_
 
-Ample is the "warm corner of your computer." The UI must target WCAG 2.2 AA,
+_Visible-name correction — 2026-08-28: the dated design review remains the
+historical source record; current product wording is Paulatim. The visual system
+and accessibility boundaries are substantively unchanged._
+
+Paulatim is the "warm corner of your computer." The UI must target WCAG 2.2 AA,
 remain legible and tactile, and feel distinctively physical. Automated contrast
 checks and semantic markup support that target, but no absolute accessibility
 claim is made until the exact Windows package completes keyboard, Narrator,
 high-contrast, text-scaling, and reduced-motion review. It must **not** look like
 a generic tech dashboard.
 
-This document outlines the core principles defined by the Ample Design Council.
+This document outlines the core principles defined by the Paulatim Design Council.
 
 ## Core Philosophy
 

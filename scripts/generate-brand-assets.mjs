@@ -1,6 +1,6 @@
-// Deterministic, rights-clean Ample artwork generated entirely from code in
+// Deterministic, rights-clean Paulatim artwork generated entirely from code in
 // this repository. No stock art, model output, fonts, or outside source files
-// are used. The visual language mirrors the in-app AmpleMark: a warm threshold
+// are used. The visual language mirrors the in-app PaulatimMark: a warm threshold
 // held inside a calm, dark-green room.
 import { Jimp, JimpMime } from 'jimp';
 import { mkdirSync, writeFileSync } from 'node:fs';

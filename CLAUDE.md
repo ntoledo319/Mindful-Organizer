@@ -33,13 +33,15 @@ flag and rewrite:
 - Bento grid layouts copied from Vercel/Linear/Stripe marketing pages
 
 ### Project Identity
-- Brand name: **Ample** (casual / in-app). Legal: **The Ample Project**.
-- Primary domain: `ampleproject.io`.
+- Brand name: **Paulatim** (casual / in-app). Publisher: **Toledo Technologies**.
+- Domain correction (2026-08-28): no Paulatim domain has been reserved; do not
+  invent or publish one. The historical planning placeholder was
+  `ampleproject.io`.
 - This project believes: Your computer should adapt to your psychology, not the other way around. Mental health tools belong in the OS layer, not buried in browser tabs.
 - This project is for: People managing ADHD, anxiety, depression, OCD, PTSD, or bipolar who are tired of apps that track but don't act. Desktop workers who need their environment to respond to their state.
 - This project should feel like: A quiet, attentive companion that dims the lights when you're drained, closes Discord when anxiety spikes, and protects your focus like a bodyguard. Not a dashboard. Not a therapist. The warm corner of the computer.
 - This project should NEVER feel like: A wellness app. Corporate mindfulness software. A journal with ads. Anything that says "Unlock your potential" or "Supercharge your productivity."
-- Must-word: ample
+- Must-word: paulatim
 - Never-word: optimize
 
 ### Taste Verification

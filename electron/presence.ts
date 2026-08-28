@@ -14,7 +14,7 @@ import * as wellness from './wellness';
 import type { Settings, PresenceState, PresenceUpdate, QuietMode } from '../src/shared/types';
 
 // The acting layer. Everything above the data layer is a tracker; this is the
-// part of Ample that reaches past its own window and changes the room you work
+// part of Paulatim that reaches past its own window and changes the room you work
 // in — it dims the screen when your own readings say you're drained, and it
 // holds a calm hold over everything else during a focus block. It owns no data;
 // it reads the same local SQLite the rest of the app does and acts on it.
@@ -290,7 +290,7 @@ function focusHtml(endsAt: string, intention: string | null): string {
     <div class="pulse"></div>
     <div class="time" id="t">--:--</div>
     <div class="line">${line}</div>
-    <a class="exit" href="ample:end">End the block early</a>
+    <a class="exit" href="paulatim:end">End the block early</a>
     <div class="hint">or press Esc</div>
   </div>
   <script>
@@ -363,7 +363,7 @@ function maybeNudgeUrgent(): void {
   try {
     if (!Notification.isSupported()) return;
     const n = new Notification({
-      title: 'Ample is here',
+      title: 'Paulatim is here',
       body: 'A hard moment, maybe. Your crisis plan is one click away.',
       silent: true,
     });
@@ -387,7 +387,7 @@ function ensureTray(): void {
   if (tray) return;
   try {
     tray = new Tray(trayImage());
-    tray.setToolTip('Ample');
+    tray.setToolTip('Paulatim');
     refreshTrayMenu();
     tray.on('click', () => showMainWindow());
   } catch (err) {
@@ -409,7 +409,7 @@ function refreshTrayMenu(): void {
   const setMode = (m: QuietMode) => persistFromTray({ quietMode: m });
 
   const menu = Menu.buildFromTemplate([
-    { label: 'Open Ample', click: () => showMainWindow() },
+    { label: 'Open Paulatim', click: () => showMainWindow() },
     { type: 'separator' },
     {
       label: 'Quiet — dim when drained',
@@ -434,7 +434,7 @@ function refreshTrayMenu(): void {
           })),
         },
     { type: 'separator' },
-    { label: 'Quit Ample', click: () => app.quit() },
+    { label: 'Quit Paulatim', click: () => app.quit() },
   ]);
   tray.setContextMenu(menu);
 }

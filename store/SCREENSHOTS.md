@@ -1,5 +1,11 @@
 # Microsoft Store screenshot plan
 
+> **Paulatim correction — 2026-08-28:** every AMPLE-001 image and hash below
+> remains historical and must never accompany Paulatim. The fresh Paulatim
+> workflow must capture a new exact-SHA five-image set. Use the Paulatim caption
+> table added below only after its manifest is downloaded and independently
+> verified; nothing in this correction claims those images exist yet.
+
 > **Current candidate correction — 2026-08-26:** the status line and
 > "Accepted candidate evidence" section below record the historical Hearth
 > draft observed on 2026-07-14. AMPLE-001 has a new exact set from source
@@ -39,6 +45,16 @@ Official requirements:
 
 The filenames follow the driver output; the Store upload order intentionally
 puts Rhythm before Reflect.
+
+## Paulatim upload order and captions — 2026-08-28
+
+| Order | File | Screen | Caption |
+|---:|---|---|---|
+| 1 | 01-today.png | Today, light | See the energy left today, a plain-language briefing, and open tasks whose recorded cost fits the remaining budget. |
+| 2 | 02-tasks.png | Tasks, light | Give work a priority, expected duration, and energy demand; Paulatim estimates a spoon cost for the plan. |
+| 3 | 04-rhythm.png | Rhythm, dark | Review your own mood, energy, and sleep across 7, 14, or 30 days, then request a local PDF summary. |
+| 4 | 03-reflect.png | Check in, light | Record mood, energy, anxiety, sleep, or a private journal entry in the local desktop app. |
+| 5 | 05-onboarding.png | First run, light | Start without an account and review local-data consent before Paulatim stores the information you enter. |
 
 ## Accepted candidate evidence
 

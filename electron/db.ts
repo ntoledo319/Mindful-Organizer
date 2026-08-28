@@ -30,7 +30,7 @@ import {
 } from './security/secureFile';
 
 /**
- * Ample keeps SQLite in memory and persists only authenticated ciphertext.
+ * Paulatim keeps SQLite in memory and persists only authenticated ciphertext.
  *
  * - Each snapshot uses AES-256-GCM with a fresh IV.
  * - The random master key is protected by Electron safeStorage (DPAPI on
@@ -79,7 +79,7 @@ function hasEncryptedSnapshot(paths: DatabasePaths): boolean {
 function assertSecureOsKeyStore(): void {
   if (!safeStorage.isEncryptionAvailable()) {
     throw new Error(
-      'Secure local storage is unavailable. Ample will not open or create personal records without OS-backed encryption.',
+      'Secure local storage is unavailable. Paulatim will not open or create personal records without OS-backed encryption.',
     );
   }
 
@@ -88,7 +88,7 @@ function assertSecureOsKeyStore(): void {
     const secureBackends = new Set(['gnome_libsecret', 'kwallet', 'kwallet5', 'kwallet6']);
     if (!secureBackends.has(backend)) {
       throw new Error(
-        `Linux secure storage backend "${backend}" is not suitable for personal records. Configure Secret Service or KWallet before using Ample.`,
+        `Linux secure storage backend "${backend}" is not suitable for personal records. Configure Secret Service or KWallet before using Paulatim.`,
       );
     }
   }
@@ -101,7 +101,7 @@ function decodeProtectedKey(path: string): Buffer {
     return decoded;
   } catch (error) {
     throw new Error(
-      'Ample could not unlock its encrypted database key. No data was changed; sign in to the original OS account or restore its credential store.',
+      'Paulatim could not unlock its encrypted database key. No data was changed; sign in to the original OS account or restore its credential store.',
       { cause: error },
     );
   }
@@ -113,7 +113,7 @@ function loadOrCreateMasterKey(paths: DatabasePaths): Buffer {
 
   if (hasEncryptedSnapshot(paths)) {
     throw new Error(
-      'The encrypted Ample database exists but its OS-protected key is missing. Ample will not replace it or erase existing data.',
+      'The encrypted Paulatim database exists but its OS-protected key is missing. Paulatim will not replace it or erase existing data.',
     );
   }
 
@@ -156,14 +156,14 @@ function invalidateInMemoryDatabase(error: unknown): never {
     masterKey = null;
   }
   throw new Error(
-    'Ample could not durably save the encrypted database. The previous authenticated snapshot is intact; reopen the app before continuing.',
+    'Paulatim could not durably save the encrypted database. The previous authenticated snapshot is intact; reopen the app before continuing.',
     { cause: error },
   );
 }
 
 function persistCurrentDatabase(): void {
   if (!nativeDb || !masterKey || !activePaths) {
-    throw new Error('The secure Ample database is not open.');
+    throw new Error('The secure Paulatim database is not open.');
   }
   try {
     persistSnapshot(
@@ -215,7 +215,7 @@ type TransactionRunner = ((...args: unknown[]) => unknown) & {
 };
 
 function wrapTransaction(callback: TransactionCallback): TransactionRunner {
-  if (!nativeDb) throw new Error('The secure Ample database is not open.');
+  if (!nativeDb) throw new Error('The secure Paulatim database is not open.');
   const transaction = nativeDb.transaction(callback) as unknown as TransactionRunner;
   const run = (runner: (...args: unknown[]) => unknown, args: unknown[]) =>
     runDurableTransaction(transactionState, runner, args, mutationCompleted);
@@ -337,7 +337,7 @@ function initializeDatabase(): void {
 
 export function getDb(): Database.Database {
   if (!exposedDb) initializeDatabase();
-  if (!exposedDb) throw new Error('The secure Ample database did not initialize.');
+  if (!exposedDb) throw new Error('The secure Paulatim database did not initialize.');
   return exposedDb;
 }
 

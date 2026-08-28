@@ -1,4 +1,8 @@
-# Ample Proposals
+# Paulatim Proposals
+
+_Visible-name correction — 2026-08-28: current product wording is Paulatim.
+Dated Ample proposal text below is preserved as history; any future promotion
+must use the then-current product name and evidence._
 
 _Unapproved scope. Nothing here is active work; promotion requires owner
 approval (or an explicit user instruction). Monetization frame proposals live
@@ -11,7 +15,7 @@ process scope. Established 2026-07-24._
 | PROP-002 | Branch hygiene: remove duplicate-content and superseded branches | S | pending (destructive; explicit approval required) | git refs |
 | PROP-003 | Branch strategy: fast-forward local `main`, retire `cycle-*` naming | S | pending | git workflow |
 | PROP-004 | Deploy `landing/` to an eligible $0 static host after Store publication | S | pending (gated on live Store URL) | distribution |
-| PROP-005 | Bet B — Ample-to-Production Electron Kit (frame A4.6) | L | pending (conditional behind Bet A) | monetization |
+| PROP-005 | Bet B — Paulatim-to-Production Electron Kit (frame A4.6; renamed 2026-08-28) | L | pending (conditional behind Bet A) | monetization |
 
 ## PROP-001 — Reconcile working tree with origin/main
 

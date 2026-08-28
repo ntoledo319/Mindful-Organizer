@@ -23,7 +23,7 @@ if (storeReady) {
 
 module.exports = {
   appId: 'io.ampleproject.ample',
-  productName: 'Ample',
+  productName: 'Paulatim',
   // Windows CI preinstalls and checksum-verifies the exact Electron runtime so
   // screenshot capture and packaging share one proven binary. Local builds
   // retain electron-builder's normal download behavior when this is unset.
@@ -59,7 +59,7 @@ module.exports = {
     identityName: identity.identityName,
     publisher: identity.publisher,
     publisherDisplayName: identity.publisherDisplayName,
-    displayName: 'Ample',
+    displayName: 'Paulatim',
     backgroundColor: '#F5F0E6',
     showNameOnTiles: true,
     languages: ['en-US'],
@@ -68,10 +68,10 @@ module.exports = {
     oneClick: false,
     perMachine: false,
     allowToChangeInstallationDirectory: true,
-    artifactName: 'Ample-Setup-${version}.${ext}',
+    artifactName: 'Paulatim-Setup-${version}.${ext}',
   },
   portable: {
-    artifactName: 'Ample-Portable-${version}.${ext}',
+    artifactName: 'Paulatim-Portable-${version}.${ext}',
   },
   linux: {
     icon: 'build/icon.png',

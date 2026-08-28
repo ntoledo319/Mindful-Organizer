@@ -1,4 +1,4 @@
-# Ample launch kit
+# Paulatim launch kit
 
 Status: **drafts only — not authorized for posting or sending**
 
@@ -12,10 +12,10 @@ are supporting proof, not the headline. The claims boundary below is unchanged._
 private, calmer way to decide what realistically fits today.
 
 **Primary job:** let the user choose a 4–24 daily energy budget and turn it into
-a smaller, finishable task plan. Ample never infers or changes that budget from
+a smaller, finishable task plan. Paulatim never infers or changes that budget from
 a diagnosis or check-in.
 
-**One sentence:** Ample brings energy-budget planning to Windows, helping you
+**One sentence:** Paulatim brings energy-budget planning to Windows, helping you
 plan around the capacity you have; it then proves the privacy boundary with no
 account, cloud API, ads, record sync, or app telemetry.
 
@@ -67,12 +67,12 @@ Do not use:
 Draft only:
 
 > Energy planning is now available on Windows through the Microsoft Store.
-> Ample is an energy planner for ADHD and other variable-capacity days: give
+> Paulatim is an energy planner for ADHD and other variable-capacity days: give
 > work an energy cost, choose a daily budget from 4 to 24, and see what fits the
 > day you have.
 > Records are encrypted at rest with authenticated AES-256-GCM snapshots and a
 > key protected by Windows; exports you request are plaintext. There is no
-> account, cloud API, advertising, or record sync. Ample is personal organization
+> account, cloud API, advertising, or record sync. Paulatim is personal organization
 > software, not medical care. [verified campaign link]
 
 Before approval, replace “now available” only after the product page is visibly
@@ -83,9 +83,9 @@ store/CAMPAIGNS.md.
 
 Draft only:
 
-### Ample for Windows
+### Paulatim for Windows
 
-This release prepares the official x64 Microsoft Store package for Ample, an
+This release prepares the official x64 Microsoft Store package for Paulatim, an
 energy planner built for Windows and variable-capacity days.
 
 Core loop:
@@ -96,13 +96,13 @@ Core loop:
 - review local mood, energy, and sleep trends;
 - export a personal PDF summary only when requested.
 
-While open, Ample runs SQLite in memory. At rest it uses authenticated
+While open, Paulatim runs SQLite in memory. At rest it uses authenticated
 AES-256-GCM snapshots and a random key protected by the operating system. The
 privacy policy documents memory, OS-session, export, deletion, and recovery
 limits; requested JSON and PDF exports are plaintext.
 
 The source remains MIT licensed. The Store purchase covers official packaging
-and Store delivery. Ample is not a medical device or emergency service.
+and Store delivery. Paulatim is not a medical device or emergency service.
 
 Do not publish this note until the package hash, public Store URL, certification,
 support, privacy, price, and release date are all observed.
@@ -115,7 +115,7 @@ Do not mass-post the launch note. For any community:
 2. Confirm that developer promotion is allowed.
 3. Rewrite the opening around a real discussion the community permits; do not
    impersonate a customer or conceal the maker relationship.
-4. Disclose: “I built Ample.”
+4. Disclose: “I built Paulatim.”
 5. Use a unique owner-approved-community campaign ID.
 6. Have the owner review and submit it.
 
@@ -127,9 +127,9 @@ be verified immediately before any post.
 Use only as a human-reviewed response:
 
 > Thanks for reporting this. I have not reproduced or confirmed the cause yet.
-> Please share the Ample version, Windows version, the steps immediately before
+> Please share the Paulatim version, Windows version, the steps immediately before
 > the problem, and whether it repeats after a normal restart. Do not attach your
-> Ample encrypted snapshots or key, plaintext JSON or PDF exports, journal
+> Paulatim encrypted snapshots or key, plaintext JSON or PDF exports, journal
 > text, crisis-plan text, medication information, or screenshots containing
 > private records.
 

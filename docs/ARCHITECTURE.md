@@ -1,15 +1,20 @@
-# Ample Architecture
+# Paulatim Architecture
 
 _Last updated: 2026-07-14_
 
-Ample is a local-first, offline-only desktop application built on Electron,
+_Visible-name correction — 2026-08-28: the architecture review date remains
+historical. Product wording is now Paulatim; stable `ample.*` storage/API
+namespaces and the `HEARTHDB` envelope marker are intentionally unchanged for
+upgrade compatibility._
+
+Paulatim is a local-first, offline-only desktop application built on Electron,
 React, and SQLite. Its architecture prioritizes a narrow network boundary,
 authenticated local persistence, recoverability, and immediate responsiveness.
 It does not claim absolute privacy: decrypted data exists in process memory
 while the app is open, and user-requested exports are plaintext.
 
 ## The Electron Boundary
-Ample follows strict Electron security guidelines:
+Paulatim follows strict Electron security guidelines:
 - **Main Process (Node.js)**: Handles all local file system interactions,
   encrypted SQLite snapshot persistence (`better-sqlite3`), native OS
   integration (tray and screen dimming via transparent windows), and heuristic
@@ -19,7 +24,7 @@ Ample follows strict Electron security guidelines:
 
 ## State Management
 
-Ample recently migrated away from scattered local component state to a robust two-tier state architecture to prevent data desynchronization ("gutted features"):
+Paulatim recently migrated away from scattered local component state to a robust two-tier state architecture to prevent data desynchronization ("gutted features"):
 
 ### 1. Global Synchronous State (`Zustand`)
 Handled in `src/renderer/state/store.tsx`. 
@@ -38,7 +43,7 @@ Handled via `useQuery` and `useMutation` across all screens.
   - `CrisisPlan` saving and syncing.
 
 ## The Heuristics Engine
-The "acting" layer of Ample lives in `electron/wellness.ts`. This engine runs queries against the SQLite store to calculate patterns:
+The "acting" layer of Paulatim lives in `electron/wellness.ts`. This engine runs queries against the SQLite store to calculate patterns:
 - Rapid mood drops.
 - Consecutive nights of low sleep combined with high anxiety.
 - Spoons (energy) remaining vs. scheduled tasks.
@@ -53,7 +58,7 @@ never diagnoses or infers the user's energy budget from a diagnosis or check-in.
   and one rolling encrypted backup protect the last verified generation.
 - **Key protection:** A random 256-bit key is wrapped with Electron
   `safeStorage` (Windows DPAPI, macOS Keychain, or a secure Linux Secret
-  Service/KWallet backend). Ample fails closed when secure OS-backed key
+  Service/KWallet backend). Paulatim fails closed when secure OS-backed key
   storage is unavailable.
 - **Legacy migration:** A pre-encryption SQLite database is opened read-only,
   integrity checked, encrypted, and verified. The temporary encrypted migration

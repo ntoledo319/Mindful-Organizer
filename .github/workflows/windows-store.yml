@@ -69,7 +69,7 @@ jobs:
             Authorization = "Bearer $env:GH_TOKEN"
             Accept = 'application/vnd.github+json'
             'X-GitHub-Api-Version' = '2022-11-28'
-            'User-Agent' = 'Ample-Windows-CI'
+            'User-Agent' = 'Paulatim-Windows-CI'
           }
           $release = Invoke-RestMethod -Headers $headers -Uri "https://api.github.com/repos/electron/electron/releases/tags/v$version"
           $asset = $release.assets | Where-Object { $_.name -eq $artifact } | Select-Object -First 1
@@ -156,7 +156,7 @@ jobs:
       - name: Upload Store screenshots and manifest
         uses: actions/upload-artifact@v4
         with:
-          name: ample-store-screenshots
+          name: paulatim-store-screenshots
           path: store/screenshots/*
           if-no-files-found: error
           retention-days: 30
@@ -187,6 +187,7 @@ jobs:
 
           [xml]$manifest = Get-Content (Join-Path $expanded 'AppxManifest.xml')
           $expected = Get-Content store/identity.json | ConvertFrom-Json
+          $expectedPackage = Get-Content package.json | ConvertFrom-Json
           $actualIdentity = $manifest.Package.Identity
           if ($actualIdentity.Name -ne $expected.identityName) {
             throw "Identity mismatch: expected $($expected.identityName), got $($actualIdentity.Name)."
@@ -194,8 +195,25 @@ jobs:
           if ($actualIdentity.Publisher -ne $expected.publisher) {
             throw 'Publisher mismatch between AppxManifest.xml and store/identity.json.'
           }
+          if ($actualIdentity.ProcessorArchitecture -ne 'x64') {
+            throw "Architecture mismatch: expected x64, got $($actualIdentity.ProcessorArchitecture)."
+          }
+          $expectedVersion = "$($expectedPackage.version).0"
+          if ($actualIdentity.Version -ne $expectedVersion) {
+            throw "Version mismatch: expected $expectedVersion, got $($actualIdentity.Version)."
+          }
 
-          $executable = $manifest.Package.Applications.Application.Executable
+          $application = $manifest.Package.Applications.Application
+          if ($application.Id -ne 'Ample') {
+            throw "Stable AppX application ID changed: expected Ample, got $($application.Id)."
+          }
+          $packageDisplayName = [string]$manifest.Package.Properties.DisplayName
+          $tileDisplayName = [string]$application.VisualElements.DisplayName
+          if ($packageDisplayName -ne $expectedPackage.productName -or $tileDisplayName -ne $expectedPackage.productName) {
+            throw "Visible display-name mismatch: expected $($expectedPackage.productName), package=$packageDisplayName, tile=$tileDisplayName."
+          }
+
+          $executable = $application.Executable
           $executablePath = Join-Path $expanded $executable
           if (-not (Test-Path $executablePath)) {
             throw "Packaged executable is missing: $executable"
@@ -215,19 +233,19 @@ jobs:
           $validationProcess = Start-Process -FilePath $executablePath -WorkingDirectory (Split-Path $executablePath) -PassThru
           if (-not $validationProcess.WaitForExit(120000)) {
             Stop-Process -Id $validationProcess.Id -Force -ErrorAction SilentlyContinue
-            throw 'Packaged Ample did not complete its Windows data-lifecycle validation within 120 seconds.'
+            throw 'Packaged Paulatim did not complete its Windows data-lifecycle validation within 120 seconds.'
           }
           $validationProcess.Refresh()
           if ($validationProcess.ExitCode -ne 0) {
-            throw "Packaged Ample data-lifecycle validation exited with code $($validationProcess.ExitCode)."
+            throw "Packaged Paulatim data-lifecycle validation exited with code $($validationProcess.ExitCode)."
           }
           $validationReport = Join-Path $validationData 'release-validation.json'
           if (-not (Test-Path $validationReport)) {
-            throw 'Packaged Ample did not produce release-validation.json.'
+            throw 'Packaged Paulatim did not produce release-validation.json.'
           }
           $validation = Get-Content $validationReport | ConvertFrom-Json
           if ($validation.status -ne 'passed' -or $validation.platform -ne 'win32' -or $validation.architecture -ne 'x64') {
-            throw 'Packaged Ample release validation report did not record a passing Windows x64 result.'
+            throw 'Packaged Paulatim release validation report did not record a passing Windows x64 result.'
           }
           Copy-Item $validationReport 'artifacts\release-validation.json'
           Remove-Item Env:\AMPLE_RELEASE_VALIDATION -ErrorAction SilentlyContinue
@@ -241,18 +259,18 @@ jobs:
           $process = Start-Process -FilePath $executablePath -WorkingDirectory (Split-Path $executablePath) -PassThru
           if (-not $process.WaitForExit(60000)) {
             Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
-            throw 'Packaged Ample did not complete its renderer smoke check within 60 seconds.'
+            throw 'Packaged Paulatim did not complete its renderer smoke check within 60 seconds.'
           }
           $process.Refresh()
           if ($process.ExitCode -ne 0) {
-            throw "Packaged Ample smoke check exited with code $($process.ExitCode)."
+            throw "Packaged Paulatim smoke check exited with code $($process.ExitCode)."
           }
           Remove-Item Env:\AMPLE_SMOKE -ErrorAction SilentlyContinue
           Remove-Item Env:\AMPLE_DATA_DIR -ErrorAction SilentlyContinue
           Remove-Item $smokeData -Recurse -Force -ErrorAction SilentlyContinue
 
           $hash = (Get-FileHash $package.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
-          "$hash  $($package.Name)" | Set-Content 'artifacts\ample-appx.sha256.txt'
+          "$hash  $($package.Name)" | Set-Content 'artifacts\paulatim-appx.sha256.txt'
           Remove-Item $expanded -Recurse -Force
 
       - name: Collect MSIX artifact
@@ -267,7 +285,7 @@ jobs:
         if: steps.identity.outputs.real == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: ample-msix
+          name: paulatim-msix
           path: artifacts/*
           if-no-files-found: error
           retention-days: 30

@@ -27,10 +27,10 @@ export async function exportSessionSummary(
   });
   const defaultPath = join(
     app.getPath('documents'),
-    `Ample-session-summary-${generatedAt.toISOString().slice(0, 10)}.pdf`,
+    `Paulatim-session-summary-${generatedAt.toISOString().slice(0, 10)}.pdf`,
   );
   const options = {
-    title: 'Save Ample session summary',
+    title: 'Save Paulatim session summary',
     defaultPath,
     filters: [{ name: 'PDF document', extensions: ['pdf'] }],
   };

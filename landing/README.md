@@ -1,4 +1,4 @@
-# Ample static landing artifact
+# Paulatim static landing artifact
 
 This directory is a zero-dependency commercial landing page that can be served
 as plain static files. It is currently truthful to the pre-release state:
@@ -6,8 +6,9 @@ as plain static files. It is currently truthful to the pre-release state:
 - no purchase button;
 - no fake availability, audience, review, or security claim;
 - no external font, script, tracker, cookie, form, or third-party asset;
-- three hash-recorded exact-candidate screenshots containing only seeded,
-  fictional demonstration data;
+- three historical hash-recorded Hearth candidate screenshots containing only
+  seeded, fictional demonstration data; these must be replaced by exact-SHA
+  Paulatim frames before deployment;
 - the implemented encrypted-at-rest boundary and its memory, OS-session,
   export, deletion, and recovery limits are visible;
 - legal and project links point to stable main-branch document locations that
@@ -59,14 +60,17 @@ purchasable:
 
 Before any deployment, run `npm run store:validate` from the workspace root.
 
-The tracked product frames can be regenerated only when the matching accepted
-screenshot evidence is present under `tmp/artifacts/final-screenshots/`:
+The tracked product frames can be regenerated only from the independently
+verified exact-candidate screenshot directory. Never reuse the historical
+Hearth or AMPLE-001 pixels for Paulatim:
 
-    npm run landing:media
+    npm run landing:media -- \
+      --source tmp/PAULATIM-001-<sha7>/downloads/screenshots \
+      --build-ref <exact-candidate-sha>
 
 ## Measurement
 
 The page intentionally has no analytics script. The landing-primary Store
 campaign ID supplies aggregate page-view and conversion attribution in Partner
-Center without adding third-party telemetry to Ample. See
+Center without adding third-party telemetry to Paulatim. See
 store/CAMPAIGNS.md.

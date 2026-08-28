@@ -7,7 +7,7 @@ import {
   globalShortcut,
   dialog,
 } from 'electron';
-import { join, dirname, resolve } from 'node:path';
+import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readFileSync, existsSync, mkdirSync } from 'node:fs';
 import { getDb, closeDb } from './db';
@@ -17,16 +17,23 @@ import * as wellness from './wellness';
 import * as presence from './presence';
 import * as sessionSummary from './sessionSummary';
 import * as dataLifecycle from './dataLifecycle';
-import type { AmpleApi } from '../src/shared/ipc';
+import { resolveUserDataPath } from './userDataPath';
+import type { PaulatimApi } from '../src/shared/ipc';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Local screenshot/smoke harnesses set this to a contained workspace path.
-// It must be applied before the first app.getPath('userData')/getDb call.
+// Otherwise keep the pre-Paulatim on-disk namespace so an upgrade continues to
+// find the same encrypted profile after the visible productName changes.
+// This must be applied before the first app.getPath('userData')/getDb call.
 if (process.env.AMPLE_DATA_DIR) {
-  const containedDataDir = resolve(process.env.AMPLE_DATA_DIR);
+  const containedDataDir = resolveUserDataPath(app.getPath('appData'), process.env.AMPLE_DATA_DIR);
   mkdirSync(containedDataDir, { recursive: true });
   app.setPath('userData', containedDataDir);
+} else {
+  const stableUserDataDir = resolveUserDataPath(app.getPath('appData'));
+  mkdirSync(stableUserDataDir, { recursive: true });
+  app.setPath('userData', stableUserDataDir);
 }
 
 process.env.DIST = join(__dirname, '../dist');
@@ -123,14 +130,14 @@ function createWindow(): void {
             const inspect = () => {
               const root = document.querySelector('#root');
               const hasBridge = typeof window.ample?.getSettings === 'function';
-              const hasAmpleContent = (root?.textContent || '').includes('Ample');
+              const hasPaulatimContent = (root?.textContent || '').includes('Paulatim');
               const hasInteraction = Boolean(root?.querySelector('button, input, textarea'));
-              if (hasBridge && hasAmpleContent && hasInteraction) {
+              if (hasBridge && hasPaulatimContent && hasInteraction) {
                 resolve({ ok: true });
                 return;
               }
               if (Date.now() >= deadline) {
-                resolve({ ok: false, hasBridge, hasAmpleContent, hasInteraction });
+                resolve({ ok: false, hasBridge, hasPaulatimContent, hasInteraction });
                 return;
               }
               setTimeout(inspect, 100);
@@ -156,7 +163,7 @@ function createWindow(): void {
     });
   }
 
-  // With tray presence enabled, closing the window tucks Ample away instead
+  // With tray presence enabled, closing the window tucks Paulatim away instead
   // of silently killing the acting layer. The tray's Quit action still exits.
   win.on('close', (event) => {
     if (!quitting && repo.getSettings().presence) {
@@ -172,10 +179,10 @@ function createWindow(): void {
   }
 }
 
-// --- IPC: one handler per AmpleApi method --------------------------------
+// --- IPC: one handler per PaulatimApi method --------------------------------
 
 function registerIpc(): void {
-  const handlers: AmpleApi = {
+  const handlers: PaulatimApi = {
     listTasks: async (inc) => repo.listTasks(inc),
     createTask: async (i) => repo.createTask(i),
     replaceTaskWithSubtasks: async (id, subtasks) => repo.replaceTaskWithSubtasks(id, subtasks),
@@ -295,7 +302,7 @@ app.whenReady().then(async () => {
       app.exit(1);
       return;
     }
-    dialog.showErrorBox('Ample could not open secure storage', message);
+    dialog.showErrorBox('Paulatim could not open secure storage', message);
     app.exit(1);
     return;
   }

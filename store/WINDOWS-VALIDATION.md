@@ -1,5 +1,14 @@
 # Exact-candidate Windows validation
 
+> **PAULATIM-001 reset — 2026-08-28:** the owner selected/reserved Paulatim and
+> authorized certification submission. The Ample candidate recorded below
+> remains valid historical evidence but is now **never-submit** because the
+> visible AppX manifest and screenshots changed. No Paulatim hash exists yet.
+> Accept only a fresh exact-SHA `paulatim-msix` artifact whose manifest keeps
+> identity `ToledoTechnologies.Hearth`, AppX application ID `Ample`, and x64
+> version 1.1.1 while showing display name `Paulatim`. Record its hash in a new
+> dated section before any Partner Center upload.
+
 ## AMPLE-001 exact candidate — 2026-08-25
 
 This is the first Ample-branded AppX after the Hearth→Ample source rename. It
@@ -248,6 +257,32 @@ References:
 - <https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/publish-first-app>
 - <https://learn.microsoft.com/en-us/windows/msix/package/unsigned-package>
 - <https://learn.microsoft.com/en-us/windows/apps/publish/faq/get-your-app-certified>
+
+## Current PAULATIM-001 procedure — 2026-08-28
+
+The numbered Hearth procedure below is historical and non-executable. For the
+current candidate:
+
+1. Select the green Windows workflow by the exact pushed PAULATIM-001 source
+   SHA, not by recency. Download only `paulatim-msix` and
+   `paulatim-store-screenshots` from that run.
+2. Independently hash the contained Paulatim 1.1.1 AppX and inspect its manifest
+   for identity `ToledoTechnologies.Hearth`, the recorded publisher, x64,
+   version `1.1.1.0`, AppX application ID `Ample`, and visible display name
+   `Paulatim`. Require the CI hash file to match exactly.
+3. Verify all five screenshot hashes/dimensions against the same exact-SHA
+   manifest, then record the full package hash here and in
+   `docs/project/VERIFICATION_LOG.md` before any upload.
+4. In Partner Center, remove the historical draft package/listing references
+   and upload only that exact AppX plus its matching Paulatim screenshots. Age
+   ratings is already observed Complete; do not retake IARC. Preserve the
+   `Do not publish until I select Publish now` hold.
+5. Submit for certification under the owner's 2026-08-28 delegation and record
+   the submission ID/status. Do not click **Publish now**.
+6. After certification, the signed-build smoke uses the visible command
+   **Erase all Paulatim data** and records the real Store-installed result.
+
+## Historical Hearth certification procedure (non-executable)
 
 ## 1. Reconfirm candidate identity before certification
 

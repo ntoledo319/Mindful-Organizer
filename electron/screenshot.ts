@@ -58,7 +58,7 @@ const SHOTS: Shot[] = [
     route: 'tasks',
     theme: 'light',
     onboarded: true,
-    caption: 'Give work a priority, expected duration, and energy demand; Ample estimates a spoon cost for the plan.',
+    caption: 'Give work a priority, expected duration, and energy demand; Paulatim estimates a spoon cost for the plan.',
   },
   {
     file: '03-reflect.png',
@@ -78,7 +78,7 @@ const SHOTS: Shot[] = [
     file: '05-onboarding.png',
     theme: 'light',
     onboarded: false,
-    caption: 'Start without an account and review local-data consent before Ample stores the information you enter.',
+    caption: 'Start without an account and review local-data consent before Paulatim stores the information you enter.',
   },
 ];
 

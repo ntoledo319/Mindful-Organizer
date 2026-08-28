@@ -17,7 +17,7 @@ const SRC = join(root, 'resources', 'app-icon.png');
 const OUT = join(root, 'build', 'appx');
 mkdirSync(OUT, { recursive: true });
 
-const BG = 0xF5F0E6FF; // warm cream opaque — matches the Ample light theme
+const BG = 0xF5F0E6FF; // warm cream opaque — matches the Paulatim light theme
 
 const master = await Jimp.read(SRC);
 

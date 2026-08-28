@@ -1,9 +1,20 @@
 # Human Queue
 
+> **Execution correction — 2026-08-28:** the owner selected **Paulatim** and
+> explicitly delegated name reservation, draft replacement, and full
+> certification submission to the agent. Paulatim is reserved on product
+> `9PLRSZZMFPJH` and set as dashboard name. The old Hearth submission was
+> canceled to draft; Hearth cannot be deleted from app names until its Store
+> listing references are removed. AMPLE-001 and all Hearth packages are
+> historical/never-submit. The agent is preparing PAULATIM-001 and may execute
+> the package/listing/submission clicks. Publication remains a distinct later
+> action; the signed-build accessibility pass still requires real Windows
+> observation after certification.
+
 _Canonical context: root HANDOFF.md. Queue rechecked 2026-07-28: HQ-06 and
 HQ-07 added; HQ-02 and HQ-05 amended._
 
-> **Candidate update — 2026-08-25:** AMPLE-001 is staged at
+> **Historical candidate update — 2026-08-25 (superseded 2026-08-28):** AMPLE-001 is staged at
 > `tmp/AMPLE-001-3b8d225/`. Its only current AppX has SHA-256
 > `7d6ca584a8cee92497217ab48fbd04153f32c8f8746b4cd19135d709aa61866b`
 > (source `3b8d225`, Windows run 32844120483, artifact 9561731052); screenshots
@@ -41,6 +52,14 @@ HQ-07 added; HQ-02 and HQ-05 amended._
 > remaining / 60 cumulative minutes** after conservatively counting the
 > completed HQ-00 authorization. This is the sole documented within-ceiling
 > path and is not an agent recommendation to waive screening.
+
+> **Name/draft correction — 2026-08-27:** authenticated Partner Center reports
+> exact `Ample` as unavailable. `Ample Energy Planner` returned available, but
+> no name was reserved. The owner must choose whether to reserve that available
+> fallback or select another name; the agent must not choose or reserve it.
+> The draft price was independently corrected from $0 to the approved $14.99
+> and saved. Do not upload AMPLE-001 or rewrite the listing until the selected
+> name is reserved and appears in the product-name control.
 
 ## HQ-00 — Provide the observed Ample package identity — 1 minute
 
@@ -80,6 +99,15 @@ predated the exact-CI-supported 15-minute HQ-03 scope. Remaining totals are
 optional HQ-06 are deferred. The conditional batched path above is 59 remaining
 / 60 cumulative._
 
+_Correction 2026-08-28: the preceding calculations are historical. IARC and
+name reservation are complete, while package/listing/certification submission
+is now agent-delegated and consumes no further owner minutes. Known remaining
+human-only active work is at most about 37 minutes if HQ-02 still needs its full
+10 minutes, HQ-03 uses 15, a later publication/checkout check uses 2, and
+optional HQ-05/HQ-06 use 5 each. Payout support or Microsoft waits are wall
+clock, not active labor. Actual cumulative owner minutes already spent were not
+reliably timed, so the repository does not invent that observation._
+
 The exact package, five screenshots, copy, price, release hold, public support
 page, privacy-guarded issue forms, security policy, private vulnerability
 reporting, accurate repository metadata, audience assets, and both remote CI
@@ -87,7 +115,17 @@ gates are shipped. Only factual/legal attestations, private financial setup,
 active Windows observation, certification, publication, and owner-authored
 posts remain.
 
+_Readiness correction 2026-08-28: the preceding sentence describes AMPLE-001
+readiness on 2026-08-26. No exact Paulatim package, screenshots, or remote CI
+gate exists yet. Public policies/support and prepared copy remain shipped;
+PAULATIM-001 1.1.1 must establish the new exact evidence chain._
+
 ## HQ-01 — Retake IARC manually and accept its terms — 5 minutes
+
+> **Completed-state correction — 2026-08-28:** the owner completed the IARC
+> flow, and Partner Center subsequently showed Age ratings **Complete**. Do not
+> retake or reconstruct the legal questionnaire unless Partner Center requires
+> a correction; the historical preparation steps below remain evidence only.
 
 > **Time correction — 2026-08-26:** the five-minute heading is the historical
 > queue estimate. Use the later, more conservative **ten-minute** estimate in
@@ -190,6 +228,19 @@ posts remain.
 
 ### HQ-04 prerequisite — Reserve the Ample display name — ≈5 minutes
 
+> **Completion correction — 2026-08-28:** this prerequisite is resolved under
+> the owner's explicit delegation. Exact Paulatim is reserved on the existing
+> product and set as dashboard name; the assigned package identity remains
+> `ToledoTechnologies.Hearth`. The Ample instructions below are historical and
+> non-executable.
+
+> **Execution correction — 2026-08-27:** exact `Ample` cannot currently be
+> reserved because Partner Center reports it unavailable. The available,
+> unreserved fallback observed in the same product is `Ample Energy Planner`.
+> The owner must make this naming decision; after choosing, reserve only the
+> chosen available name and confirm it appears beside Hearth. The historical
+> exact-Ample instruction below is non-executable unless availability changes.
+
 - **What:** Add **Ample** to the existing product's reserved Store names without
   changing its observed package identity.
 - **Why human-only:** Name reservation is an account-bound Partner Center action
@@ -205,13 +256,18 @@ posts remain.
 
 ## HQ-04 — Finalize listing, submit, then release the hold — ≈19 minutes
 
-> **Current candidate — 2026-08-25:** after the owner reserves Ample and all
+> **Paulatim execution override — 2026-08-28:** every AMPLE-001 package/hash
+> clause below is non-executable. Use only fresh PAULATIM-001 1.1.1 after its
+> exact-SHA CI/hash record exists. The agent has explicit authority to replace
+> the draft and submit for certification; publication remains separate.
+
+> **Historical candidate — 2026-08-25 (superseded 2026-08-28):** after the owner reserves Ample and all
 > preceding gates pass, use only `tmp/AMPLE-001-3b8d225/Ample 1.1.0.appx` and
 > independently confirm SHA-256 `7d6ca584…61866b` before upload. This replaces
 > the historical CAND-002 swap procedure below; it does not authorize the agent
 > to upload, submit, certify, or publish.
 
-> **AMPLE-001 replacement procedure — 2026-08-26:** after Ample is reserved,
+> **Historical AMPLE-001 replacement procedure — 2026-08-26 (superseded 2026-08-28):** after Ample is reserved,
 > HQ-01 is complete, HQ-02 is payout-ready, and the HQ-03 audience route is
 > chosen, use only
 > `tmp/AMPLE-001-3b8d225/Ample 1.1.0.appx`. Confirm the full SHA-256
@@ -235,19 +291,20 @@ posts remain.
 > pre-rename plan. HQ-04 stays blocked until the forthcoming Ample candidate and
 > its new SHA-256 are added in a dated correction.
 
-- **What:** Start Microsoft review and, only after every gate passes, perform
-  the separate publication action.
-- **Why human-only:** Submission and publication are legal and commercial
-  commitments. Certification itself installs/runs and technically checks the
-  exact package; the saved hold prevents automatic public release.
-- **Blocked until:** HQ-01 is complete. Complete HQ-02 before expecting payouts;
-  choose the HQ-03 test route before submitting.
+- **What:** Replace the canceled draft with exact PAULATIM-001, start Microsoft
+  review under the manual publication hold, and preserve the result. Publication
+  is a separate later action.
+- **Authority:** The owner explicitly delegated draft replacement and full
+  certification submission to the agent on 2026-08-28. That does not delegate
+  private payout/tax data entry or a later **Publish now** action.
+- **Blocked until:** PAULATIM-001 has an exact-SHA green CI/hash/screenshot
+  evidence chain and HQ-02 readiness has been reobserved. HQ-01 is complete.
 - **Direct link:**
   <https://partner.microsoft.com/en-us/dashboard/products/9PLRSZZMFPJH/overview>
 
 > **Historical block boundary — 2026-08-26:** the CAND-002 package-swap bullet
 > immediately below is retained only as the true pre-rename plan. It is
-> non-executable. The AMPLE-001 replacement procedure above is the sole current
+> non-executable. The AMPLE-001 replacement procedure above was the sole current
 > package instruction.
 
 - **Package swap first (CAND-002) — ≈4 min:** the 2026-07-29 remediation changed
@@ -269,6 +326,16 @@ posts remain.
 > Step 2 must review the newly saved Ample fields and the exact screenshot order
 > in the replacement procedure above. Preserve the old numbered text solely as
 > Hearth history.
+
+> **Paulatim numbered-step override — 2026-08-28:** the preceding 2026-08-26
+> override and every package/hash clause in the numbered steps below are now
+> non-executable. Current step 1 is to upload only the independently verified
+> PAULATIM-001 1.1.1 AppX from its exact-SHA kit and confirm its full new hash;
+> no such hash exists yet. Step 2 uses the prepared Paulatim fields and fresh
+> screenshots, preserves the manual publication hold, and records Age ratings as
+> already Complete. Step 3 is agent-authorized certification submission. Steps
+> 4–6 remain post-certification/publication work; **Publish now is not authorized
+> by the current submission delegation.**
 
 - **Steps:**
   1. Confirm the package is only `Ample 1.1.0.appx`, Partner Center says
@@ -344,6 +411,10 @@ posts remain.
 
 ## HQ-07 — Clear the "Ample" name, or explicitly accept the risk — 10 minutes (or 1 minute)
 
+> **Completed-state correction — 2026-08-28:** the owner rejected Ample,
+> selected Paulatim, and exact Paulatim was reserved in Partner Center. D049
+> records the decision. The historical Ample screening steps below are closed.
+
 > **Screening update — 2026-08-26:** a read-only public sweep surfaced
 > [Amplenote](https://www.amplenote.com/), an adjacent task, goal, mood, and
 > planning product. The agent could not complete an authoritative live-status
@@ -376,6 +447,12 @@ posts remain.
      risk for the 1.1.0 launch without a search. Nothing else changes.
 
 ## Running owner-time ledger
+
+> **Current calculation — 2026-08-28:** IARC and Paulatim reservation are
+> complete; the owner delegated package/listing/certification submission to the
+> agent. Known remaining human-only work is at most about **37 active minutes**
+> under the assumptions recorded above. The 2026-08-26 and earlier calculations
+> below remain true historical planning records but are no longer operational.
 
 > **Current calculation — 2026-08-26:** CAND-002 retrieval is removed, but the
 > renamed listing plus AMPLE-001 AppX/five-screenshot upload is ≈13 minutes,

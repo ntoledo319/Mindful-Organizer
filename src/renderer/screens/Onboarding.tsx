@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { api } from '../lib/api';
 import { useStore } from '../state/store';
 import { DEFAULT_DAILY_SPOONS, MAX_DAILY_SPOONS, MIN_DAILY_SPOONS } from '@shared/spoons';
-import { AmpleMark } from '../components/icons';
+import { PaulatimMark } from '../components/icons';
 import { InlineError, Scale } from '../components/ui';
 
 // Four quiet steps: welcome, optional name, daily energy budget, and explicit
@@ -64,11 +64,11 @@ export function Onboarding() {
       <div className="flex min-h-0 flex-1 overflow-y-auto px-6 sm:px-10">
         <div className="my-auto w-full max-w-sm py-8">
           <div className="mb-8 flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-soft bg-brand text-white shadow-ample dark:bg-night-brand dark:text-night-bg">
-              <AmpleMark width={20} height={20} />
+            <span className="flex h-9 w-9 items-center justify-center rounded-soft bg-brand text-white shadow-paulatim dark:bg-night-brand dark:text-night-bg">
+              <PaulatimMark width={20} height={20} />
             </span>
             <span className="font-display text-xl font-semibold tracking-tight text-text-primary dark:text-night-text">
-              Ample
+              Paulatim
             </span>
           </div>
 
@@ -91,7 +91,7 @@ export function Onboarding() {
           {step === 1 && (
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
               <h1 className="font-display text-2xl font-semibold text-text-primary dark:text-night-text">
-                What should Ample call you?
+                What should Paulatim call you?
               </h1>
               <input
                 autoFocus
@@ -118,7 +118,7 @@ export function Onboarding() {
                 How much energy do you want to plan around?
               </h1>
               <p className="text-sm leading-relaxed text-text-muted dark:text-night-muted">
-                This is your daily budget — the number Ample plans against each morning. You choose
+                This is your daily budget — the number Paulatim plans against each morning. You choose
                 it directly; check-ins never change it behind your back, and you can adjust it
                 anytime in Settings.
               </p>
@@ -148,23 +148,23 @@ export function Onboarding() {
                   Your entries stay local and encrypted at rest.
                 </h1>
                 <p className="mt-2 text-sm leading-relaxed text-text-muted dark:text-night-muted">
-                  Ample stores the name, tasks, mood, sleep, journal, practice, ERP, diary,
+                  Paulatim stores the name, tasks, mood, sleep, journal, practice, ERP, diary,
                   medication-reference, and crisis-plan details you choose to enter. The database is encrypted with
-                  AES-256-GCM, and its key is protected by your operating-system sign-in. Ample has no account,
+                  AES-256-GCM, and its key is protected by your operating-system sign-in. Paulatim has no account,
                   record sync, analytics, or telemetry and does not upload these entries.
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-text-muted dark:text-night-muted">
                   Settings lets you export a readable copy or destroy every record, encrypted rollback snapshot,
-                  and the key that decrypts them before Ample creates a fresh empty store. A JSON or PDF you export
-                  is not encrypted by Ample after you choose its location.
+                  and the key that decrypts them before Paulatim creates a fresh empty store. A JSON or PDF you export
+                  is not encrypted by Paulatim after you choose its location.
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-text-muted dark:text-night-muted">
-                  Ample can send operating-system notifications when a focus block ends or a hard moment shows
+                  Paulatim can send operating-system notifications when a focus block ends or a hard moment shows
                   in your own signals. They are off by default and controlled in Settings — and like any OS
                   notification, they can be visible on a lock screen.
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-text-muted dark:text-night-muted">
-                  Closing Ample's window keeps it running in your system tray — Quit lives there, and you can
+                  Closing Paulatim's window keeps it running in your system tray — Quit lives there, and you can
                   turn this off in Settings.
                 </p>
               </div>
@@ -176,12 +176,12 @@ export function Onboarding() {
                   onChange={(event) => setPrivacyAcknowledged(event.target.checked)}
                 />
                 <span className="text-sm leading-relaxed text-text-primary dark:text-night-text">
-                  I understand these data practices and consent to Ample storing the information I choose to enter
+                  I understand these data practices and consent to Paulatim storing the information I choose to enter
                   in its encrypted local database.
                 </span>
               </label>
               <p className="text-xs leading-relaxed text-text-muted dark:text-night-muted">
-                Ample is a personal reflection tool, not a medical device or a substitute for professional care.
+                Paulatim is a personal reflection tool, not a medical device or a substitute for professional care.
               </p>
               <a
                 href="https://github.com/ntoledo319/Mindful-Organizer/blob/main/docs/PRIVACY.md"
@@ -191,7 +191,7 @@ export function Onboarding() {
               >
                 Read the full privacy policy (opens in your browser)
               </a>
-              {finishError && <InlineError>Ample could not save these choices. Try again.</InlineError>}
+              {finishError && <InlineError>Paulatim could not save these choices. Try again.</InlineError>}
               <div className="flex gap-2">
                 {!settings?.onboarded && (
                   <button className="btn-ghost" onClick={() => setStep(2)}>
@@ -199,7 +199,7 @@ export function Onboarding() {
                   </button>
                 )}
                 <button className="btn-primary" onClick={() => void finish()} disabled={!privacyAcknowledged || isFinishing}>
-                  {isFinishing ? 'Saving…' : settings?.onboarded ? 'Continue to Ample' : 'Light the ample'}
+                  {isFinishing ? 'Saving…' : settings?.onboarded ? 'Continue to Paulatim' : 'Start using Paulatim'}
                 </button>
               </div>
               <PreConsentErase />
@@ -237,7 +237,7 @@ function PreConsentErase() {
           className="rounded-soft text-xs font-medium text-text-muted underline decoration-text-muted/40 underline-offset-4 hover:text-semantic-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-error dark:text-night-muted"
           onClick={() => setArmed(true)}
         >
-          Don't want to consent? Erase all Ample data instead
+          Don't want to consent? Erase all Paulatim data instead
         </button>
       </div>
     );
@@ -246,7 +246,7 @@ function PreConsentErase() {
   return (
     <div className="rounded-soft border border-semantic-error/30 bg-semantic-error/5 p-4">
       <p className="text-sm leading-relaxed text-text-primary dark:text-night-text">
-        This destroys every Ample record, encrypted rollback snapshot, and the key that decrypts them,
+        This destroys every Paulatim record, encrypted rollback snapshot, and the key that decrypts them,
         then returns to a fresh empty store. It cannot be undone.
       </p>
       <label className="mt-3 block text-sm text-text-primary dark:text-night-text">
@@ -281,7 +281,7 @@ function PreConsentErase() {
       </div>
       {state === 'error' && (
         <p className="mt-3 text-sm text-semantic-error">
-          Ample could not verify complete cleanup. Close and reopen Ample; it will resume the requested deletion before opening storage.
+          Paulatim could not verify complete cleanup. Close and reopen Paulatim; it will resume the requested deletion before opening storage.
         </p>
       )}
     </div>

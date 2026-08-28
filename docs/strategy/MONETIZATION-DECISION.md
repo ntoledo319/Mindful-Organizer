@@ -4,11 +4,16 @@
 > `revenue/PLAN.md` and `revenue/OPPORTUNITIES.md`. This file is preserved for
 > history; see `docs/project/DOCS_INDEX.md`.
 
+> **Record-integrity correction — 2026-08-28:** the 2026-07-14 decision below
+> was made for Hearth. A later rename sweep changed that historical word to
+> Ample; the original Hearth wording is restored here. Current Paulatim truth
+> lives only in the canonical revenue files linked above.
+
 _Decision date: 2026-07-14._
 
 ## Selected fast bet
 
-Prepare an official Ample Windows package for a one-time **$14.99** Microsoft
+Prepare an official Hearth Windows package for a one-time **$14.99** Microsoft
 Store listing. The Store supplies discovery and payment. The source remains MIT;
 the paid value is a maintained, packaged, Store-delivered build.
 

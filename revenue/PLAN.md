@@ -8,6 +8,17 @@ blended fees), Day-15 gate assessment recorded, reposition menu pre-registered.
 macOS → Linux; AGENTS.md §1 law). Cycle-3 handoff published 2026-07-15;
 project-wide state now also lives in `PROJECT_TRACKER.md`._
 
+## Current correction — 2026-08-28
+
+The owner selected **Paulatim** and explicitly authorized the agent to reserve
+it, prepare the replacement package/listing, and submit the existing Partner
+Center product for certification. Exact Paulatim is reserved on product
+`9PLRSZZMFPJH` and is its dashboard name; the Microsoft-assigned package
+identity remains `ToledoTechnologies.Hearth`. The prior Hearth submission was
+canceled back to draft. AMPLE-001 and all Hearth packages are now historical
+and never-submit. PAULATIM-001 is being prepared from the current dirty tree;
+it has no AppX/hash/CI evidence yet. Collected revenue remains $0.
+
 ## Current correction — 2026-08-25
 
 Partner Center product `9PLRSZZMFPJH` was reobserved with exact package
@@ -53,6 +64,28 @@ at the hard ceiling also batches that one-line risk record into the five-minute
 reservation session: 59 remaining minutes plus the conservatively counted
 one-minute HQ-00 authorization. This is conditional arithmetic, not an agent
 recommendation to waive screening.
+
+### Owner-time correction — 2026-08-28
+
+The 2026-08-26 arithmetic above is historical. IARC and Paulatim reservation are
+complete, and the owner explicitly delegated package/listing/certification
+submission to the agent. Known remaining human-only work is at most about 37
+active minutes if payout reconciliation still uses 10 minutes, the Store-signed
+pass uses 15, later publication/checkout verification uses 2, and optional
+HQ-05/HQ-06 use 5 each. Actual prior owner minutes were not reliably timed and
+are not fabricated here.
+
+### Partner Center draft observation — 2026-08-27
+
+Authenticated name availability now supplies a narrower current blocker:
+**Ample** is unavailable, while **Ample Energy Planner** returned available.
+No name was reserved; the owner must choose the launch display name before the
+package and Ample-branded listing can be saved consistently. The draft price
+was observed at $0 and corrected/saved to the approved $14.99 one-time price.
+Properties already matched Productivity / Health + fitness and the current
+privacy URL. AMPLE-001, screenshots, and listing copy were not uploaded or
+changed; no submission, certification, publication, IARC, terms, or payout/tax
+action occurred. Collected revenue remains $0.
 
 ## Current correction — 2026-08-19
 
@@ -107,9 +140,9 @@ payment-provider balance at purchase time. Sources:
 Potential, draft pricing, CI artifacts, accrued-but-unpaid Store earnings, and
 an enabled certification button do not count as collected revenue.
 
-## Bet A — Fast: official Ample Windows package
+## Bet A — Fast: official Paulatim Windows package
 
-- **Offer:** Ample 1.1.0 as a one-time $14.99 Microsoft Store purchase. The MIT
+- **Offer:** Paulatim 1.1.1 as a one-time $14.99 Microsoft Store purchase. The MIT
   source remains free; the purchase covers the maintained packaged app and
   Store delivery.
 - **Target arithmetic (baseline, verified):** ADA v8.11 §6(b)(i) sets the
@@ -149,8 +182,13 @@ an enabled certification button do not count as collected revenue.
   historical Hearth evidence. AMPLE-001 is CI-validated and staged, but its
   package, platform-first copy, seven keywords, and screenshots have not been
   uploaded or saved in Partner Center.
+- **Status correction (2026-08-28):** AMPLE-001 is historical/never-submit.
+  Paulatim is reserved and Age ratings is observed Complete. PAULATIM-001 1.1.1
+  still needs the full local gate and exact-SHA CI before its package/listing/
+  screenshots can replace the canceled draft; payout readiness still needs
+  non-sensitive reconciliation before certification submission.
 
-## Bet B — Heavy: Ample-to-Production Electron Kit
+## Bet B — Heavy: Paulatim-to-Production Electron Kit
 
 - **Offer:** a genuinely new $249 developer kit with a clean demo, threat model,
   encrypted local-storage migration pattern, sender-validated IPC, packaging,
@@ -209,6 +247,13 @@ an enabled certification button do not count as collected revenue.
    private vulnerability reporting is enabled.
 
 ## Remaining critical path
+
+> **Paulatim override — 2026-08-28:** the historical Ample/IARC/name sequence
+> below is superseded. IARC is complete, Paulatim is reserved, and draft/
+> certification submission is delegated to the agent. Current sequence:
+> PAULATIM-001 1.1.1 full gate → exact-SHA CI/hash/screenshots → reconcile
+> payout readiness → replace the canceled draft → submit for certification.
+> Publication and Store-signed accessibility validation remain later states.
 
 Only factual/legal, private-account, certification, and active-Windows evidence
 remains:

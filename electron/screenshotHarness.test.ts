@@ -8,7 +8,7 @@ const launcherPath = fileURLToPath(
 const launcherSource = readFileSync(launcherPath, 'utf8');
 
 describe('Store screenshot launcher', () => {
-  it('uses the Ample harness contract expected by the Electron main process', () => {
+  it('uses the Paulatim harness contract expected by the Electron main process', () => {
     for (const variable of [
       'AMPLE_SCREENSHOT',
       'AMPLE_DATA_DIR',

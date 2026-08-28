@@ -134,7 +134,7 @@ export function Tasks() {
 
       {(toggleMutation.isError || deleteMutation.isError) && (
         <div className="mb-5">
-          <InlineError>Ample could not update this task. Try the action again.</InlineError>
+          <InlineError>Paulatim could not update this task. Try the action again.</InlineError>
         </div>
       )}
 
@@ -161,7 +161,7 @@ export function Tasks() {
         <EmptyState
           illustration={<TaskIcon width={42} height={42} />}
           title="A clear slate"
-          body="Nothing is on the list right now. Add one next step and Ample will show how it fits the energy budget for today."
+          body="Nothing is on the list right now. Add one next step and Paulatim will show how it fits the energy budget for today."
           action={
             <button className="btn-primary" onClick={() => setOpen(true)}>
               Add the first one
@@ -348,7 +348,7 @@ function TaskFormModal({
       });
       onClose();
     } catch {
-      setSubmitError(editing ? 'Ample could not save these changes. Review the fields and try again.' : 'Ample could not add this task. Review the fields and try again.');
+      setSubmitError(editing ? 'Paulatim could not save these changes. Review the fields and try again.' : 'Paulatim could not add this task. Review the fields and try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -485,7 +485,7 @@ function DecomposeModal({
             Add at least one step, or cancel to keep the original task.
           </p>
         )}
-        {isError && <InlineError>Ample could not replace this task. Your steps are unchanged — try again.</InlineError>}
+        {isError && <InlineError>Paulatim could not replace this task. Your steps are unchanged — try again.</InlineError>}
         <div className="flex justify-end gap-3 pt-2">
           <button className="btn-ghost" onClick={onClose}>
             Cancel

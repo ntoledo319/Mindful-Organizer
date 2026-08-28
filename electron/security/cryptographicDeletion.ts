@@ -31,7 +31,7 @@ export function completeCryptographicDeletion(paths: CryptographicDeletionPaths)
   // can no longer be decrypted. Every remnant is still attempted.
   const failures = removeBestEffort([paths.key, ...paths.remnants]);
   if (failures.length > 0) {
-    throw new Error(`Ample erased the encryption key but could not remove every remnant. ${failures.join(' | ')}`);
+    throw new Error(`Paulatim erased the encryption key but could not remove every remnant. ${failures.join(' | ')}`);
   }
   unlinkSync(paths.marker);
 }

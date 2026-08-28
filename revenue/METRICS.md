@@ -466,3 +466,47 @@ Microsoft Store name-collision search (HQ-07 step 2) not yet run.
 - No package upload, IARC interaction, payout/tax action, terms acceptance,
   submission, certification, publication, post, or human contact occurred.
   Collected profit remains **$0.00**; the gap remains **$4,000.00**.
+
+## 2026-08-27 — Partner Center draft intervention
+
+- Authenticated Partner Center product `9PLRSZZMFPJH`, submission
+  `1152921505701225649`, remains **In draft**. No certification or publication
+  action was taken.
+- **Manage app names:** exact `Ample` returned **not available**. `Ample Energy
+  Planner` returned available (green availability result), but it was not
+  reserved because the owner retained the reservation and naming decision.
+  `Hearth` remains the only reserved/in-use name.
+- **Pricing and availability:** the held draft was observed at **$0** despite
+  older Hearth-era records. The already approved one-time US price was changed
+  to **$14.99** and saved; Partner Center returned to the application overview
+  with Pricing and availability still Complete and displayed the expected
+  warning that tax and payout information must be updated before charging
+  money. No tax or payout data was opened or entered.
+- **Properties:** Productivity primary, Health + fitness secondary, and the
+  repository privacy-policy URL were reobserved. Unsupported product,
+  accessibility, AI, and hardware declarations remained unchecked; no
+  Properties change was saved.
+- The package remains the historical validated `Hearth 1.1.0.appx`. AMPLE-001,
+  its five screenshots, and the platform-first listing fields were not
+  uploaded or saved. No IARC, terms, submission, certification, publication,
+  contact, or human-authored post occurred.
+- Collected profit remains **$0.00**; the gap remains **$4,000.00**.
+
+## 2026-08-28 — Paulatim reservation and draft reset
+
+- The owner selected **Paulatim** and explicitly authorized its reservation,
+  replacement Store draft, certification submission, and removal of Hearth
+  listing/name references.
+- On existing Partner Center product `9PLRSZZMFPJH`, exact `Paulatim` returned
+  available and was reserved. It was then set as the dashboard name. The
+  Microsoft-assigned package identity remains `ToledoTechnologies.Hearth`.
+- The earlier Hearth submission had entered certification and was canceled;
+  the application returned to **In draft** before the Paulatim rename. The
+  overview showed Age ratings Complete after the owner-completed IARC flow, but
+  questionnaire answers were not reconstructed or silently changed.
+- Partner Center would not delete `Hearth` while the Store listing still
+  referenced it. Removal is deferred until the historical package/listing is
+  replaced by the exact Paulatim candidate.
+- No Paulatim AppX, screenshot artifact, package hash, certification result,
+  publication, live listing, purchase, or external revenue exists yet.
+  Collected profit remains **$0.00**; the gap remains **$4,000.00**.

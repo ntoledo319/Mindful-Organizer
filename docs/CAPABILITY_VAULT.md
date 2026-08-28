@@ -1,6 +1,10 @@
-# Ample capability vault
+# Paulatim capability vault
 
 _Last updated: 2026-07-14_
+
+_Visible-name correction — 2026-08-28: the dated capability review remains the
+historical source record; current product wording is Paulatim. No vaulted
+capability was restored, removed, or widened by the rename._
 
 The launch experience is intentionally narrower than the source tree. A
 capability marked **vaulted** is preserved, not deleted: its types, storage,

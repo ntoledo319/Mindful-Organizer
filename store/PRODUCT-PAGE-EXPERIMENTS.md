@@ -48,7 +48,7 @@ ratings, badges, testimonials, or a fake Windows frame.
 Run only if the candidate reproduces the documented deterministic asset set and
 Experiment 1 is complete.
 
-**Question:** Does a simpler small-size Ample mark improve search-result entry
+**Question:** Does a simpler small-size Paulatim mark improve search-result entry
 without reducing recognition?
 
 - Control: accepted 300 × 300 Store icon.

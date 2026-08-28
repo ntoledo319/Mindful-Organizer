@@ -1,10 +1,26 @@
-# Hearth Mission Handoff
+# Paulatim Mission Handoff
 
 _Cold-start launchpad. Compressed 2026-07-24: supersedes the 528-line local
 draft (archived at `docs/project/archive/pre-consolidation/2026-07-24/HANDOFF.local-draft-2026-07-15.md`)
 and the 400-line published iteration (Git history, commit `0ff209e`). Current
 coordination truth lives in `PROJECT_TRACKER.md`; this file only gets an agent
 started. Last reconciled 2026-08-04 against `origin/main` `270e650`._
+
+_Current correction 2026-08-28: the owner selected **Paulatim**, explicitly
+authorized its reservation and full certification submission, and authorized
+removal of the old Hearth draft/name references. Exact Paulatim is now reserved
+on existing product `9PLRSZZMFPJH` and set as dashboard name; the assigned
+package identity remains `ToledoTechnologies.Hearth`. The earlier Hearth
+submission was canceled back to draft. AMPLE-001 (`7d6ca584…61866b`) and every
+Hearth package are historical/never-submit. A fresh PAULATIM-001 source commit,
+exact-SHA Windows artifact, listing, and screenshot set are in preparation; no
+Paulatim package has yet been submitted or certified._
+
+_Execution update 2026-08-28T07:49-04:00: the full PAULATIM-001 local gate is
+green (VER-20260828-002), including strict identity preflight, lint, typecheck,
+52 tests, renderer/Electron build, secrets, Store/docs validation, notices,
+production audit, deterministic assets, and diff checks. The next machine step
+is one canonical commit/push followed by exact-SHA CI; no AppX exists yet._
 
 _Reconciliation correction 2026-08-26: the preceding date/ref is historical.
 Live `main` was re-derived at the documentation evidence close `13bdea2`; the
@@ -19,6 +35,19 @@ or 69/60 after deferring post-live HQ-05 and optional HQ-06. D047's sole
 within-ceiling full-run path also batches the one-minute risk record with the
 five-minute reservation: 59 remaining + one conservatively counted HQ-00
 minute. Risk acceptance is not an agent recommendation._
+
+_Partner Center correction 2026-08-27: exact `Ample` is unavailable. `Ample
+Energy Planner` returned available but remains unreserved pending the owner's
+choice. The held draft price was corrected from $0 to the approved $14.99 and
+saved; existing categories/privacy fields were already correct. AMPLE-001 and
+its screenshots were not uploaded, and no listing-name, IARC, payout/tax,
+terms, submission, certification, or publication action occurred. Resume by
+obtaining the owner's one-click name reservation, then use only AMPLE-001._
+
+_Execution correction 2026-08-28: the preceding 2026-08-27 resume instruction
+is historical and non-executable. Paulatim is now reserved and IARC is observed
+Complete. **Do not upload AMPLE-001.** Finish and verify PAULATIM-001 1.1.1,
+then replace the draft using only that exact-SHA AppX and screenshot set._
 
 ## 0B. Current correction — 2026-08-25
 
@@ -209,7 +238,7 @@ Details: `revenue/PLAN.md`, `revenue/OPPORTUNITIES.md`, `revenue/METRICS.md`.
 
 ## 3. Product truth (one paragraph)
 
-Hearth 1.1.0 is an Electron 43 / React 18 / TypeScript Windows desktop energy
+Paulatim is an Electron 43 / React 18 / TypeScript Windows desktop energy
 planner for ADHD and other variable-capacity days: user-chosen 4–24 daily
 budget, honestly costed tasks, up to three fitting recommendations, local
 check-ins, trends, practices, focus controls, a user-written crisis plan, and
@@ -222,6 +251,13 @@ or crisis detector. Full claims boundary: `README.md`, `docs/PRIVACY.md`,
 `store/LAUNCH_KIT.md`.
 
 ## 4. Non-negotiable release facts
+
+> **Current operational boundary — 2026-08-28:** the dated candidate bullets
+> below are retained as historical evidence only. No existing AppX is current.
+> PAULATIM-001 1.1.1 must first pass the full local gate and exact-SHA Windows
+> CI; only its independently verified package may replace the draft. IARC is
+> already Complete, submission work is agent-authorized, and publication remains
+> a separate later action.
 
 - Candidate lineage (as of 2026-08-04): the **Partner Center guard hash** is
   still the old accepted AppX — source `8172603b62c2457696608c145511bd3fe92429d4`,

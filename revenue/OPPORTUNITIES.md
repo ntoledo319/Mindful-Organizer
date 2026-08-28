@@ -3,6 +3,15 @@
 _Reconfirmed 2026-07-15 for the Cycle 3 handoff. All U values are unvalidated
 four-week planning ranges, not observed revenue or promises._
 
+## Current correction — 2026-08-28
+
+The owner chose and reserved **Paulatim** and authorized the certification
+submission. This resolves D048's naming gate but invalidates AMPLE-001 as an
+upload candidate because its manifest and screenshots show Ample. Bet A now
+depends on a fresh PAULATIM-001 exact-SHA CI package, replacement listing, and
+Partner Center submission. It does not change the $14.99 price hypothesis,
+ranking, funnel assumptions, or observed $0 revenue.
+
 ## Current correction — 2026-08-25
 
 The exact existing-product identity `ToledoTechnologies.Hearth` is now observed
@@ -30,6 +39,16 @@ clearance; name reservation, legal judgment, and every Store commitment remain
 with the owner. Creating another package would add a decoy without improving
 Bet A.
 
+### Partner Center draft observation — 2026-08-27
+
+The exact Store display name **Ample** is unavailable. Partner Center returned
+**Ample Energy Planner** as available, but no name was reserved pending the
+owner's decision. The already approved $14.99 one-time price was corrected from
+$0 and saved in the held draft; Properties already matched the repository
+category/privacy record. This changes Bet A's immediate blocker from a routine
+Ample reservation to an owner naming decision. It does not change the ranking,
+demand assumptions, candidate bytes, or observed $0 revenue.
+
 ## Current correction — 2026-08-19
 
 The frame ranking and price hypothesis below are unchanged. References to a
@@ -42,7 +61,7 @@ Legend: **T$** = days to first plausible collected dollar; **H** = owner minutes
 **D** = distribution; **U** = plausible four-week net planning range; **R** =
 principal risk. A dash means no compliant near-term route.
 
-## A1 — Full Ample app: seven frames
+## A1 — Full Paulatim app: seven frames
 
 | # | Frame | T$ | H | D | U | R |
 |---|---|---:|---:|---|---:|---|
@@ -50,7 +69,7 @@ principal risk. A dash means no compliant near-term route.
 | A1.2 | Paid session-summary output | 21+ | >60 | No marketplace | $0–$200 | Sensitive intake and fulfillment |
 | A1.3 | Sell existing source | 7+ | 20 | Asset marketplace | $0–$100 | Source is already public MIT |
 | A1.4 | Extract a paid component | 14+ | 20 | Asset marketplace | $0–$200 | New documentation and differentiation |
-| A1.5 | Official Windows package | 3–10 after owner gates | 59 total queue | **Microsoft Store** | $0–$4,001 | Legal/payout gates, certification, and unproven demand |
+| A1.5 | Official Windows package | 3–10 after package/Store gates | ≤37 remaining human minutes; submission delegated | **Microsoft Store** | $0–$4,001 | Payout reconciliation, certification, and unproven demand |
 | A1.6 | Bundle with a future sibling | — | >60 | None | $0 | Sibling does not exist |
 | A1.7 | White-label clinic build | 21+ | >60 | Outbound required | $0 | Claims, sales, and support burden |
 
@@ -60,6 +79,12 @@ principal risk. A dash means no compliant near-term route.
 > the conditional risk-record/reservation batch with HQ-05/HQ-06 deferred. This
 > does not change A1.5's marketplace-first ranking or recommend risk acceptance.
 
+> **Owner-time correction — 2026-08-28:** IARC and Paulatim reservation are
+> complete, and package/listing/certification submission is agent-delegated.
+> The table now shows the conservative known remaining human-only maximum: HQ-02
+> 10 + HQ-03 15 + later publication/checkout 2 + optional HQ-05/HQ-06 5 each =
+> 37 active minutes. Actual prior minutes were not reliably timed.
+
 ## A2 — Presence and Focus Guard: seven frames
 
 | # | Frame | T$ | H | D | U | R |
@@ -68,7 +93,7 @@ principal risk. A dash means no compliant near-term route.
 | A2.2 | Paid focus-plan output | 14+ | 20 | No audience | $0–$75 | Easy to substitute |
 | A2.3 | Sell engine code | 14+ | 20 | Asset marketplace | $0–$150 | Public antecedent and extraction work |
 | A2.4 | Standalone Focus Guard app | 14–21 | 15 | Microsoft Store | $0–$150 | New identity and certification |
-| A2.5 | Bundle inside Ample | Same as A1.5 | Included | Microsoft Store | Included in A1.5 | No independent price signal |
+| A2.5 | Bundle inside Paulatim | Same as A1.5 | Included | Microsoft Store | Included in A1.5 | No independent price signal |
 | A2.6 | Productized focus setup | 21+ | >60 | Outbound required | $0 | Human service delivery |
 | A2.7 | White-label focus utility | 21+ | >60 | Outbound required | $0 | Sales and support labor |
 
@@ -110,7 +135,7 @@ principal risk. A dash means no compliant near-term route.
 
 ## Active portfolio
 
-### Bet A — Fast: official Ample Microsoft Store package
+### Bet A — Fast: official Paulatim Microsoft Store package
 
 - **Frame:** A1.5.
 - **Draft price:** $14.99 one time.
@@ -128,11 +153,14 @@ principal risk. A dash means no compliant near-term route.
   listing in the preceding bullet are historical Hearth observations.
   AMPLE-001 is CI-validated and staged with repository copy/screenshots, but it
   has not been uploaded or saved in Partner Center.
+- **Evidence correction (2026-08-28):** AMPLE-001 is never-submit after the
+  Paulatim rename. Exact Paulatim is reserved and IARC is observed Complete;
+  PAULATIM-001 1.1.1, its full hash, and its Store draft do not yet exist.
 - **Falsifier:** one reposition after five live days with zero external signal;
   replace after four additional live days with zero signal. Treat 100 product
   page views with zero purchases as an immediate conversion failure.
 
-### Bet B — Heavy: Ample-to-Production Electron Kit
+### Bet B — Heavy: Paulatim-to-Production Electron Kit
 
 - **Frame:** A4.6.
 - **Draft price:** $249 one time.

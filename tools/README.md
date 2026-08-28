@@ -14,10 +14,18 @@ evidence chain.
 Executes a product rename sweep. Dry run by default.
 
 ```
-node tools/rename-product.mjs --to <NewName>
-node tools/rename-product.mjs --to <NewName> --apply
-node tools/rename-product.mjs --to <NewName> --identity ToledoTechnologies.<NewName> --apply
+node tools/rename-product.mjs --from <OldName> --to <NewName>
+node tools/rename-product.mjs --from <OldName> --to <NewName> --apply
 ```
+
+> **Current identity rule — 2026-08-28:** a visible rename does not authorize a
+> package-identity rename. Product `9PLRSZZMFPJH` was observed with assigned
+> identity `ToledoTechnologies.Hearth`; Paulatim keeps that exact value. Never
+> synthesize `ToledoTechnologies.<NewName>`. The optional `--identity` argument
+> exists only to preserve an exact value already observed in Partner Center.
+> Stable app/storage/API namespaces are excluded from the normal sweep; the
+> narrowly allowlisted `--restore-stable-internals` mode is a repair tool for an
+> interrupted older sweep, not part of the normal rename sequence.
 
 Current blast radius against `Hearth` (measured 2026-08-07):
 
@@ -37,10 +45,9 @@ own rules table, and letting the sweep rewrite them would corrupt it.
 
 ### What the script cannot do
 
-1. Reserve a name in Partner Center. Owner action.
-2. Decide whether `identityName` may change on reserved product `9PLRSZZMFPJH`
-   or whether a new product reservation is needed. That determines whether the
-   held submission is edited or replaced, and it is the expensive unknown.
+1. Reserve a name in Partner Center or observe an assigned identity.
+2. Change `identityName` based on a naming pattern. For this product the value
+   is observed and fixed at `ToledoTechnologies.Hearth`.
 3. Regenerate brand assets — run `npm run icons && npm run winstore-assets`.
 4. Build, commit, or push.
 

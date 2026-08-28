@@ -2,6 +2,16 @@
 
 _Cycle 3 handoff update 2026-07-15. Scope is the containment root only._
 
+## Current correction — 2026-08-28
+
+The product's visible name is now **Paulatim**. Exact Paulatim is reserved on
+existing Store product `9PLRSZZMFPJH`, while the stable assigned identity
+remains `ToledoTechnologies.Hearth`. All AMPLE-001 and Hearth package/screenshot
+evidence below is historical and never-submit. The source has been renamed with
+stable app/storage identifiers preserved, but PAULATIM-001 does not exist until
+the fresh exact-SHA CI cycle completes. The buyer capability, $14.99 offer, and
+smallest sellable unit are otherwise unchanged.
+
 ## Current correction — 2026-08-19
 
 The completeness and exact-release sections below describe the Hearth-era
@@ -37,16 +47,28 @@ hashes still match. No second candidate is needed or authorized. The remaining
 asset risk is operational selection: every AppX except AMPLE-001 is now marked
 historical/never-submit at the `tmp/` staging root.
 
+### Partner Center draft observation — 2026-08-27
+
+Authenticated Partner Center now reports the exact display name **Ample** as
+unavailable. **Ample Energy Planner** returned available, but it was not
+reserved because the owner retained that decision. The draft price was
+observed at $0 and was corrected and saved to the already approved $14.99
+one-time price; the existing Productivity / Health + fitness categories and
+privacy URL were rechecked and left unchanged. AMPLE-001 and its screenshots
+remain staged locally and were not uploaded. No listing-name change,
+submission, certification, publication, IARC, terms, or payout/tax action
+occurred.
+
 ## Workspace inventory
 
-There is one product codebase in the workspace: **Ample**, an
+There is one product codebase in the workspace: **Paulatim**, an
 Electron/React/TypeScript Windows desktop application backed by in-memory SQLite
 and encrypted local snapshots. Generated dependencies, caches, build output,
 evidence, and assistant state are not separate assets.
 
-## Codebase: Ample
+## Codebase: Paulatim
 
-- **Buyer sentence:** Ample is a calm private Windows organizer that helps a
+- **Buyer sentence:** Paulatim is a calm private Windows organizer that helps a
   person choose an energy budget, plan tasks that fit it, check in, and review
   their own rhythm without an account or cloud record sync.
 - **Completeness:** Release-candidate source, tests, deterministic assets,
@@ -60,6 +82,10 @@ evidence, and assistant state are not separate assets.
   validation sentence records the historical Hearth draft. AMPLE-001 is
   CI-validated and staged but has not been uploaded or validated in Partner
   Center; the Ample listing fields remain repository-only.
+- **Completeness correction (2026-08-28):** AMPLE-001 is now historical and
+  never-submit. Paulatim is reserved and Age ratings is observed Complete, but
+  PAULATIM-001 1.1.1 has not yet completed exact-SHA CI or been uploaded. Payout
+  readiness still needs a non-sensitive live reconciliation before submission.
 - **Distribution target:** Microsoft Store using reserved product ID
   9PLRSZZMFPJH and its built-in discovery and checkout. GitHub remains the
   public source and policy host, not the commercial checkout.
@@ -77,12 +103,13 @@ evidence, and assistant state are not separate assets.
   export warnings are covered by automated Windows lifecycle validation.
 - **Single capability a stranger could pay for:** A maintained, packaged,
   Store-delivered offline Windows planner built around user-chosen capacity.
-- **Smallest sellable unit:** The official x64 Ample 1.1.0 Store package at a
-  one-time $14.99 price, with honest wellness and local-data boundaries.
+- **Smallest sellable unit:** The future official x64 Paulatim 1.1.1 Store
+  package at a one-time $14.99 price, with honest wellness and local-data
+  boundaries. No sellable package exists until PAULATIM-001 is verified.
 
 ## Separable asset map
 
-### A1 — Full Ample desktop app
+### A1 — Full Paulatim desktop app
 
 Launch scope: Today, Tasks, Check in, Practices, Rhythm, Crisis, and Settings.
 Smallest sellable unit: the official Windows package. Status: release candidate
@@ -93,11 +120,15 @@ historical Hearth draft. AMPLE-001 is CI-validated and staged, but the Ample
 package, listing fields, and screenshots have not been uploaded or saved in
 Partner Center._
 
+_Status correction 2026-08-28: PAULATIM-001 replaces AMPLE-001 and is still in
+pre-CI preparation. Paulatim is reserved and IARC is Complete; no Paulatim
+package/listing/screenshots are saved, submitted, certified, or live._
+
 ### A2 — Presence and Focus Guard engine
 
 Tray lifecycle, optional whole-screen dim, focus hold, settings, notifications,
 and escape routes. Smallest sellable unit: a narrowly extracted Focus Guard
-utility. Status: bundled into Ample; standalone frame is reserve-only.
+utility. Status: bundled into Paulatim; standalone frame is reserve-only.
 
 ### A3 — Adaptive planning engine
 
@@ -160,16 +191,14 @@ validation, and documentation surfaces rather than product runtime code.
 
 ## Current bottom line
 
-The product is no longer blocked by architecture, encryption, consent, asset
-rights, package generation, listing copy, screenshots, support setup, public
-repository presentation, vulnerability intake, CI, or core Partner Center data
-entry. It is a high-quality technical release candidate,
-but it is not a live listing. Because the accepted AppX is intentionally
-unsigned, Microsoft certification—not a locally altered test signature—is the
-exact-package technical gate. The remaining blockers are manual IARC/legal
-attestation, seller payout setup, certification, Store-signed Windows human
-observation, and publication. No asset is yet purchasable, so collected revenue
-remains zero.
+The source is no longer blocked by architecture, encryption, consent, asset
+rights, listing copy, support setup, or package automation. Paulatim is not yet
+a technical release candidate because its exact 1.1.1 AppX and screenshots are
+still pending local gates and exact-SHA CI. IARC is observed Complete. The
+remaining gates are PAULATIM-001 verification, payout-readiness reconciliation,
+draft replacement, Microsoft certification, Store-signed Windows human
+observation, and a separate publication decision. No asset is purchasable, so
+collected revenue remains zero.
 
 ## Cycle 3 continuation authority — 2026-07-15
 

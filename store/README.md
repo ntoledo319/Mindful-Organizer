@@ -1,5 +1,14 @@
 # Microsoft Store release path
 
+> **Current correction — 2026-08-28:** the owner selected and reserved
+> **Paulatim** on existing product `9PLRSZZMFPJH`, set it as the dashboard
+> name, and explicitly authorized the full certification submission. The
+> Microsoft-assigned package identity remains `ToledoTechnologies.Hearth`.
+> AMPLE-001 and every Hearth package are now historical and **never-submit**;
+> they cannot be relabeled. A fresh exact-SHA Paulatim package and screenshot
+> set must replace the canceled Hearth draft before certification. The dated
+> Ample statements below are preserved as facts from their own dates.
+
 > **Candidate update — 2026-08-25:** AMPLE-001 is now bound to exact source
 > `3b8d225`, Windows run 32844120483, artifact 9561731052, and AppX SHA-256
 > `7d6ca584…61866b`. Five exact-SHA screenshots are artifact 9561704379. The
@@ -32,6 +41,12 @@
 > statements as history and execute from the dated corrections plus
 > `store/GET-LISTED-RUNBOOK.md`.
 
+> **Adjacent execution boundary — 2026-08-28:** the opening paragraph
+> immediately below is the historical Hearth/Ample draft description, not the
+> current state. No Paulatim package or listing has been saved yet. IARC is
+> observed Complete; PAULATIM-001 1.1.1 and payout-readiness reconciliation are
+> the remaining pre-submission dependencies.
+
 This directory is the manual submission source for Ample's reserved Microsoft
 Store product. Submission 1 now contains the exact validated 1.1.0 AppX, saved
 $14.99 US pricing, reviewed copy, categories, properties, certification notes,
@@ -44,11 +59,11 @@ _Listing-copy correction 2026-08-19: the prepared Store copy now leads with
 Ample's Windows availability; privacy remains supporting proof. The older
 privacy-first sentence below records the pre-review framing._
 
-Ample launches as a **privacy-first Windows energy planner for ADHD and other
+Paulatim launches as a **privacy-first Windows energy planner for ADHD and other
 variable-capacity days**.
 
 The primary job is simple: let someone choose a 4–24 daily energy budget and put
-a realistic amount of work into the day they actually have. Ample never infers
+a realistic amount of work into the day they actually have. Paulatim never infers
 or changes that capacity from a diagnosis or check-in. Check-ins, practices,
 rhythm, and crisis-plan text are secondary tools. ERP notes, diary cards,
 medication-reference modules, and legacy condition-label metadata remain
@@ -60,7 +75,7 @@ source remains MIT licensed. A purchase pays for an official packaged binary and
 Store delivery, not exclusive source code, clinical capability, or guaranteed
 future features.
 
-## Current Partner Center state
+## Historical Partner Center state (superseded 2026-08-28)
 
 > **State boundary — 2026-08-26:** the field-completion list below is the
 > historical Hearth Submission 1 observation. On 2026-08-25 only product
@@ -96,8 +111,8 @@ future features.
   installed smoke, and accessibility evidence checklist
 - POST_PUBLICATION_DOC_SWEEP.md — pre-drafted replacement paragraphs for every
   pre-release status line, applied on publication day (playbook step 4)
-- identity.json — observed existing-product package identity; the Ample display
-  name reservation is a separate owner gate
+- identity.json — observed existing-product package identity; the separate
+  Paulatim display-name reservation was verified on 2026-08-28
 
 The static commercial landing artifact lives in landing/. It is intentionally
 marked pre-release and can be deployed later to an eligible zero-cost static
@@ -136,20 +151,20 @@ testing in an active Windows desktop session.
 
 ## Verified source behavior
 
-The source now runs SQLite in memory while Ample is open and persists
+The source now runs SQLite in memory while Paulatim is open and persists
 versioned, authenticated AES-256-GCM snapshots at rest. Each successful write
 uses a fresh random IV. A random 256-bit key is protected by Electron
 `safeStorage`—DPAPI on Windows—and the app fails closed if secure OS-backed key
 storage is unavailable.
 
-Legacy migration is deliberately conservative: Ample verifies an encrypted
+Legacy migration is deliberately conservative: Paulatim verifies an encrypted
 migration backup and encrypted primary before removing plaintext database files.
 The migration backup is temporary and is retired after two verified encrypted
 generations. The rolling encrypted backup remains. This source-level result is
 not a substitute for testing the exact packaged Windows migration path.
 
 The limits remain part of every release claim: records and the key are decrypted
-in process memory while Ample is open; the OS may copy memory to swap,
+in process memory while Paulatim is open; the OS may copy memory to swap,
 hibernation, crash, or diagnostic storage; control of the signed-in OS session
 weakens the boundary; JSON and PDF exports are plaintext by user choice; and
 deleting old files cannot guarantee removal from SSD recovery, snapshots, or
@@ -172,6 +187,21 @@ different builds. Follow SCREENSHOTS.md and retain the generated files only afte
 all visual and content checks pass.
 
 ## Hard pre-submission blockers
+
+> **PAULATIM-001 checklist reset — 2026-08-28:** every exact-package,
+> screenshot, generated-asset, and CI checkmark below is historical evidence for
+> Hearth/AMPLE-001 and does not transfer. Current release state:
+>
+> - [x] observed identity preserved; Paulatim reserved/dashboard name; IARC
+>   observed Complete; public policy/support URLs prepared;
+> - [ ] full final local gate on Paulatim 1.1.1;
+> - [ ] exact-SHA Quality and Windows workflows;
+> - [ ] independently verified AppX hash/manifest plus five matching screenshots;
+> - [ ] payout-readiness reconciliation;
+> - [ ] draft package/listing replacement, manual publication hold confirmation,
+>   and certification submission.
+>
+> Do not interpret any older `[x]` below as PAULATIM-001 evidence.
 
 > **Checklist boundary — 2026-08-26:** checked source/CI preparation remains
 > valid where it is tied to AMPLE-001. Checked Partner Center entry or upload
@@ -237,6 +267,12 @@ all visual and content checks pass.
 > reserve Ample, upload only AMPLE-001, save/review the platform-first listing
 > and screenshots, and confirm audience/release control before certification.
 
+> **Paulatim execution correction — 2026-08-28:** the preceding Ample upload
+> instruction is historical and non-executable. Paulatim is reserved and IARC
+> is Complete. After exact-SHA verification, upload only PAULATIM-001 1.1.1,
+> save the Paulatim listing/fresh screenshots, remove Hearth references, retain
+> the manual publication hold, and submit under the owner's delegated authority.
+
 - [x] Select Public audience and Make this product available and discoverable in
       the Store.
 - [x] Enter the reviewed description, product features, seven keywords,
@@ -288,7 +324,7 @@ preview. The owner then clicks **Publish now**.
 1. Verify the exact public page and paid checkout in a signed-out browser
    (expected pattern `https://apps.microsoft.com/detail/9PLRSZZMFPJH`; do not
    distribute the URL before observation). Change no call to action to “Get
-   Ample” until the page is visibly purchasable.
+   Paulatim” until the page is visibly purchasable.
 2. Record the observed Store URL, price, timestamp, package/version, and status
    in `revenue/METRICS.md`.
 3. Replace the null Store URL in `store/listing-metadata.json` and set its live

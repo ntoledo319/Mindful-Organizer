@@ -1,10 +1,15 @@
-# Ample Blind-Spots Ledger
+# Hearth Blind-Spots Ledger
 
 > **Historical (2026-07-24):** preserved for record. **Correction:** item 3 is
 > stale — at-rest snapshots are now AES-256-GCM encrypted with a DPAPI-protected
 > key (decision D014, `docs/ARCHITECTURE.md`, verified by Windows CI
 > VER-20260714-002). The broader "local-only is not the same as secure" warning
 > and the remaining items still stand.
+
+> **Record-integrity correction — 2026-08-28:** this is a 2026-07-14 Hearth
+> ledger. A later rename sweep changed its historical title to Ample; the
+> original name is restored. Current Paulatim state lives in the tracker and
+> canonical revenue files.
 
 _Reconciled with the working tree on 2026-07-14._
 
