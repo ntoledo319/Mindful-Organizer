@@ -10,7 +10,7 @@ Machine-readable commit list: `history/commit-index.tsv` (regenerate with
 
 | ID | Name | Role | Local path | Canonical remote | Default branch | Relationship | History coverage | Last indexed ref |
 |---|---|---|---|---|---|---|---|---|
-| REPO-01 | Mindful-Organizer (Paulatim; formerly Ample/Hearth) | Primary app + docs + store ops | `/home/nick/Development/active/mindful_organizer` | `https://github.com/ntoledo319/Mindful-Organizer.git` (no credentials embedded) | `main` | — | Complete local clone; live refs re-derived 2026-08-28 | `f2d2a417` |
+| REPO-01 | Mindful-Organizer (Paulatim; formerly Ample/Hearth) | Primary app + docs + store ops | `/home/nick/Development/active/mindful_organizer` | `https://github.com/ntoledo319/Mindful-Organizer.git` (no credentials embedded) | `main` | — | Complete local clone; live refs re-derived 2026-08-28 | `ad9d22a` |
 
 Verified 2026-07-24: no submodules, no nested Git repositories (single `.git`).
 
@@ -31,12 +31,12 @@ cross-check._
 
 | Ref | SHA | State | Notes |
 |---|---|---|---|
-| `origin/main` | `f2d2a4177fcb05d5b24405c598d0eb9b9d7f01e6` | canonical exact PAULATIM-001 source | Quality 33169087812 and Windows 33169087811 green; AppX `af8b4581…b5146`. |
+| `origin/main` | `ad9d22a` + this documentation-only correction | synchronized evidence-close line | Exact PAULATIM-001 source is `f2d2a417`; Quality 33177707087 passed on the evidence parent; this correction cannot alter package bytes. |
 | `origin/feature/store-candidate-cand002` | `c0eb360f78fc10587a57fe6e9fcf9432b416ddf0` | live-verified 2026-08-25 | Historical branch; deliberately not pushed again and now behind default. |
 | `origin/handoff-cycle-3` | `14f9fd718433047dfc38a2cd5a28d7da171106aa` | fetched | Cycle-3 handoff branch; superseded on main (PROP-002) |
 | `origin/feature/monetization` | `8172603b62c2457696608c145511bd3fe92429d4` | fetched | Accepted-candidate preservation branch |
 | `origin/feature/revenue-cycle-0` | `09ec37eff4affcc1a0878205072a75f0cac13da5` | fetched | Diverged legacy cycle-0 docs close; do not continue |
-| local `main` (checked out) | `f2d2a4177fcb05d5b24405c598d0eb9b9d7f01e6` + docs/landing evidence close | canonical branch; exact candidate source matches origin | Current changes do not alter PAULATIM-001 bytes; no new Windows package is needed. |
+| local `main` (checked out) | `ad9d22a` + this documentation-only correction | canonical branch; synchronized with origin after close | Candidate source `f2d2a417` and submitted bytes are unchanged; no new Windows package is needed. |
 | local `feature/store-candidate-cand002` | `c0eb360f78fc10587a57fe6e9fcf9432b416ddf0` | historical branch; matches its remote and is behind current `main` | Not pushed again; use canonical `main` only for PAULATIM-001. AMPLE-001 is historical/never-submit. |
 | local `cycle-2-shipped` | `246baac5033001b00f586f570c3ce842218c1fb5` | stale; behind current `main` | Historical branch. |
 | local `cycle-1-published` | `27db6c246de278fe119a46b7be2db35d9aa04a46` | local-only | Duplicate-content lineage of `4a32b73` (rebased SHAs) |
@@ -86,6 +86,7 @@ cross-check._
 | HIST-20260828-001 | 2026-08-28 | REPO-01 | external-state-changed | Partner Center product `9PLRSZZMFPJH` | external | Owner selected Paulatim and authorized a full certification submission. Exact Paulatim was reserved and set as dashboard name; assigned package identity remained `ToledoTechnologies.Hearth`. The previously submitted Hearth draft had been canceled back to draft. Hearth display-name deletion was refused while Store-listing references remained. No Paulatim package, certification result, publication, or revenue existed. | verified | VER-20260828-001; D049 |
 | HIST-20260828-002 | 2026-08-28 | REPO-01 | product-renamed/release-built | `f2d2a417`, tree `320490a5`, AppX `af8b4581…b5146` | remote + CI + local | Paulatim visible rename landed while stable Store/data internals were preserved. Quality 33169087812 and Windows 33169087811 passed; artifacts 9684903207/9684887490 produced exact PAULATIM-001 and five screenshots; independent hashes/manifest checks passed; kit staged at `tmp/PAULATIM-001-f2d2a41/`. | verified | VER-20260828-002/003; D049/D050 |
 | HIST-20260828-003 | 2026-08-28 | REPO-01 | submission-created | product `9PLRSZZMFPJH`; submission `1152921505701225649` | external | Exact PAULATIM-001 package/listing/five screenshots saved; historical Hearth package and display-name reservation removed; Age ratings/tax/payment profiles observed Complete; submission entered certification at Pre-processing under manual publication hold. Not certified, published, live, purchasable, or revenue-producing. | verified | VER-20260828-004 |
+| HIST-20260828-004 | 2026-08-28 | REPO-01 | documentation-consolidated | `ad9d22a15ae79ea4e6207b28b98c3942f736ce0c`, tree `719de7ba` | remote + CI | Exact submission evidence, current Store state, Paulatim landing screenshots, package-selection guards, and the six revenue files were synchronized without changing any Windows-workflow trigger path. Quality run 33177707087 passed; no new MSIX run was created. | verified | VER-20260828-005/006 |
 
 Rollbacks: none recorded. Hotfixes: HIST-20260714-004 is the only in-run fix.
 Deployments: none exist (no staging/production; landing undeployed; Store in
@@ -122,7 +123,7 @@ fact rather than fabricated migration events.
 
 ## 6. Incremental refresh
 
-Per-repo last-indexed ref: REPO-01 = `f2d2a417` (2026-08-28, observed on `main`). On later runs:
+Per-repo last-indexed ref: REPO-01 = `ad9d22a` (2026-08-28, observed on `main`). On later runs:
 fetch (if network allowed), compare heads to §2, inspect only new commits,
 append new events, regenerate `history/commit-index.tsv`, update §2. Do not
 re-narrate existing events.

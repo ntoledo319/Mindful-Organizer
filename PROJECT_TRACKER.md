@@ -3,8 +3,8 @@
 - **Schema:** project-tracker/v1 (2026-07-24)
 - **Last updated:** 2026-08-28 (PAULATIM-001 submitted; Microsoft certification in progress under a manual publication hold)
 - **Workspace root:** `/home/nick/Development/active/mindful_organizer` (REPO-01)
-- **Branch / HEAD:** `main` and `origin/main` at exact PAULATIM-001 source `f2d2a4177fcb05d5b24405c598d0eb9b9d7f01e6` (tree `320490a5cfc1d5e409e8ce0ea2fb05147dc97e4d`)
-- **Working tree:** documentation evidence close plus three landing screenshots copied from the exact PAULATIM-001 screenshot artifact; no package-trigger path is intentionally changed
+- **Branch / HEAD:** `main` and `origin/main` are synchronized on this documentation-only successor to green evidence commit `ad9d22a`; exact PAULATIM-001 source remains `f2d2a4177fcb05d5b24405c598d0eb9b9d7f01e6` (tree `320490a5cfc1d5e409e8ce0ea2fb05147dc97e4d`)
+- **Working tree:** this final self-reference correction follows the committed evidence close; no package-trigger path or PAULATIM-001 byte changed
 - **Operating mode:** MICROSOFT CERTIFICATION WAIT / MANUAL PUBLICATION HOLD
 - **Canonical set:** [AGENTS.md](AGENTS.md) · [HANDOFF.md](HANDOFF.md) · [Docs index](docs/project/DOCS_INDEX.md) · [History](docs/project/REPO_HISTORY.md) · [Verification](docs/project/VERIFICATION_LOG.md) · [Decisions](revenue/DECISIONS.md) · [Proposals](docs/project/PROPOSALS.md) · [Migration map](docs/project/MIGRATION_MAP.md) · [Archive](docs/project/archive/)
 
@@ -151,6 +151,7 @@ observed green through `origin/main` HEAD `246baac` (VER-20260728-001…003).
 | Paulatim exact candidate | `f2d2a417` | CI ubuntu + windows + local linux | pass | Quality 33169087812; Windows 33169087811; artifacts 9684903207/9684887490; AppX `af8b4581…b5146`; five screenshot hashes match | 2026-08-28 | VER-20260828-003 |
 | Partner Center submission | product `9PLRSZZMFPJH`; submission `1152921505701225649` | EXT-PC | In certification / Pre-processing | only Paulatim package/name; listing and five screenshots saved; age/tax/payment Complete; manual publication hold | 2026-08-28 | VER-20260828-004 |
 | Evidence close local gate | working-tree:`f2d2a417`+dirty (21 docs/landing paths) | local linux | pass | full non-packaging suite; no package command; Windows-trigger exclusion checked separately | 2026-08-28 | VER-20260828-005 |
+| Evidence close Quality Gate | `ad9d22a` | CI ubuntu | pass | run 33177707087; notices, secrets, Store/landing validation, audit, lint, typecheck, tests, and build green; no Windows workflow triggered | 2026-08-28 | VER-20260828-006 |
 | Installed Windows pass | — | physical Windows | not observed | blocked behind HQ-03/HQ-04 | — | — |
 
 Historical green runs remain valid only for their exact refs. The prior
@@ -161,10 +162,10 @@ Paulatim candidate bytes. See store/WINDOWS-VALIDATION.md.
 
 | Surface | Ref / version | State | Last verified | Evidence | Drift |
 |---|---|---|---|---|---|
-| Working tree | `main` `f2d2a417` + docs/landing evidence close | exact candidate source is cleanly committed; current changes do not alter candidate bytes | 2026-08-28 | git status; VER-20260828-003/004 | docs close pending |
+| Working tree | documentation-only successor to `ad9d22a` | exact candidate source and submitted bytes unchanged | 2026-08-28 | git status; VER-20260828-003…006 | final state correction only |
 | Local `cycle-2-shipped` | `246baac` | stale; behind current `main` | 2026-08-26 | git | historical branch |
-| Local `main` | `f2d2a417` + docs/landing evidence close | canonical checked-out branch; exact candidate commit matches origin | 2026-08-28 | git | evidence commit pending |
-| `origin/main` | `f2d2a417` | canonical exact PAULATIM-001 source | 2026-08-28 | git + gh | candidate CI green |
+| Local `main` | documentation-only successor to `ad9d22a` | synchronized with origin after close; PAULATIM-001 source remains `f2d2a417` | 2026-08-28 | git | none |
+| `origin/main` | documentation-only successor to `ad9d22a` | evidence close; no Windows-trigger path since exact candidate source | 2026-08-28 | git + gh | none |
 | CI | exact source `f2d2a417` | Quality 33169087812 and Windows 33169087811 green | 2026-08-28 | VER-20260828-003 | none |
 | Partner Center | Product `9PLRSZZMFPJH`; submission `1152921505701225649`; exact identity `ToledoTechnologies.Hearth`; only Paulatim name/package | In certification / Pre-processing; $14.99; manual publication hold | 2026-08-28 | VER-20260828-004 | certification result pending |
 | Microsoft Store live | — | does not exist | — | — | no listing |
