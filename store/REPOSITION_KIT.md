@@ -12,6 +12,13 @@ exists. Every option requires a new Partner Center submission that passes
 certification before it takes effect, and every click is made by the owner
 (submissions are legal/commercial acts — same pattern as HQ-04).
 
+> **Live-baseline correction — 2026-08-31:** the preceding saved-draft wording
+> preserves the pre-publication state. The United States base price is now live
+> at $14.99, and no sale is scheduled. The seven platform-first search terms
+> named below were saved with PAULATIM-001 and passed certification. Any
+> reposition remains a new owner-controlled submission and must wait for actual
+> five-day signal evidence.
+
 Claims boundary: every draft obeys the claims blacklist in
 `store/LAUNCH_KIT.md` — no AI/clinical/therapeutic or medical-device
 language; no "best", "first", "revolutionary", "guaranteed", or "effortless";
@@ -71,20 +78,37 @@ Notes:
 > Center. Treat later swaps as a post-publication experiment only after these
 > baseline terms are actually live.
 
+> **Keyword publication outcome — 2026-08-31:** the preceding note records the
+> Ample-era state. The seven terms—`spoon theory`, `pacing`, `offline task
+> manager`, `ADHD planner`, `no subscription`, `offline planner`, and
+> `executive function`—were saved for Paulatim and certified. They are the live
+> baseline; do not reposition before the observation window produces evidence.
+
 Current saved terms: ADHD planner · energy planner · spoon theory · offline
 task manager · focus planner · mood journal · variable capacity.
 
-Candidate replacements, grounded in the ADHD/spoon-theory niche. Swap at most
-2–3 terms per revision so the acquisitions report can attribute the effect:
+The preceding line and table are the historical Hearth baseline and its
+pre-Paulatin swap ideas; they are not executable against the live seven-term
+Paulatim baseline.
 
-| Swap out | Swap in | Rationale |
+| Historical swap out | Historical swap in | Rationale at the time |
 |---|---|---|
 | mood journal | ADHD task manager | Buyers search the task job, not the diary |
 | focus planner | energy budget | Matches the product's own vocabulary |
 | offline task manager | spoon counter | Spoon-theory niche term buyers use |
 
-All candidates fit the 40-character and 21-word limits in every listed
-combination. Category note: primary **Productivity** / secondary
+**Current Paulatim procedure — 2026-08-31:** if the five-day evidence gate
+shows a surfacing failure, first re-derive candidate terms from the live seven
+terms and the then-observed Store data/current search environment. The
+2026-08-07 review explicitly had no keyword-volume source, so this kit does not
+invent a ready swap today. Replace at most 2–3 live terms per revision, record
+the exact before/after set, and preserve `spoon theory`, `offline task manager`,
+and `ADHD planner` unless new evidence directly contradicts their documented
+rationale.
+
+The historical candidates fit the 40-character and 21-word limits in every
+listed combination, but that does not make them current recommendations.
+Category note: primary **Productivity** / secondary
 **Health + fitness** are set under **Properties**, not the listing page; a
 category swap is a separate, later option — do not bundle it with a keyword
 swap. When a revision is executed, update `store/listing-metadata.json` in
@@ -104,12 +128,13 @@ live copy; current live draft is a different, also-truthful sentence):
 
 > Give every task an energy cost, choose a daily budget from 4 to 24, and see
 > what fits the day you actually have. Local and encrypted at rest. No
-> account, cloud, ads, or record sync.
+> separate Paulatim account, cloud, ads, or record sync.
 
 Every claim in the draft is demonstrable in the packaged product today:
 task energy costs, the user-chosen 4–24 daily budget, the fitting-tasks view,
-local encrypted-at-rest storage, and the absence of account, cloud,
-advertising, and record sync.
+local encrypted-at-rest storage, and the absence of a separate Paulatim
+account, cloud service, advertising, and record sync. Microsoft may require a
+Microsoft account for Store acquisition or installation.
 
 First-screenshot reframe plan:
 

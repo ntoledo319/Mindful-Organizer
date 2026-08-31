@@ -17,8 +17,11 @@ Standing rules for every destination:
    posting.
 2. Disclose the maker relationship in the first line: "I built Paulatim."
 3. Post only after the Store page is observed live and purchasable in a
-   private browser (HQ-04 step 6); use the destination's campaign ID from
-   `store/CAMPAIGNS.md` (`owner-approved-community-<slug>`).
+   private browser (HQ-04 step 6) **and HQ-08 has intentionally resolved and
+   publicly reverified both the App website and Support URI plus the qualified
+   account wording**; use the
+   destination's campaign ID from `store/CAMPAIGNS.md`
+   (`owner-approved-community-<slug>`).
 4. Obey the claims blacklist in `store/LAUNCH_KIT.md`: no AI/clinical/
    therapeutic claims, no "best/first/revolutionary/guaranteed", no user
    counts or outcomes, privacy claims only in the exact documented
@@ -46,13 +49,13 @@ Standing rules for every destination:
 > open tasks whose recorded cost fits what is left. Check-ins, 7/14/30-day
 > trends, and a PDF export you choose to save are all local.
 >
-> Privacy model: no account, cloud API, advertising, record sync, or app
+> Privacy model: no separate Paulatim account, cloud API, advertising, record sync, or app
 > telemetry. SQLite runs in memory while it is open; at rest it uses
 > authenticated AES-256-GCM snapshots with a random key protected by Windows.
 > Exports you request are plaintext. It is personal organization software,
 > not medical care.
 >
-> The source is MIT licensed. The $14.99 Microsoft Store purchase covers the
+> The source is MIT licensed. The $14.99 United States Microsoft Store purchase covers the
 > maintained packaged app and Store delivery.
 > [verified Store link with owner-approved-community-sideproject campaign ID]
 
@@ -98,7 +101,7 @@ Standing rules for every destination:
 
 > Hello moderators — I built Paulatim, a Windows energy planner based on a
 > user-chosen 4–24 daily budget with spoon-style task costs. It is local and
-> encrypted at rest, with no account or cloud API. May I share it once with the
+> encrypted at rest, with no separate Paulatim account or cloud API. May I share it once with the
 > community under your rules? I will follow any format or disclosure you
 > require, and I will not post without your approval.
 
@@ -116,8 +119,8 @@ Standing rules for every destination:
 > Paulatim brings energy-budget planning to Windows for ADHD and other
 > variable-capacity days. Tasks get an energy cost; you choose a 4–24 daily
 > budget and see what fits. Supporting proof: local, encrypted-at-rest storage
-> with no account, cloud API, ads, record sync, or app telemetry. One-time
-> purchase; MIT-licensed source.
+> with no separate Paulatim account, cloud API, ads, record sync, or app
+> telemetry. One-time United States Store purchase; MIT-licensed source.
 
 ## 6. Product Hunt — launch platform
 

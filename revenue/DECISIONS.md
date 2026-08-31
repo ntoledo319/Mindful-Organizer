@@ -558,3 +558,23 @@ canonical page <https://apps.microsoft.com/detail/9PLRSZZMFPJH> then resolved
 signed out and Microsoft's live catalog exposed a $14.99 USD `Purchase` action.
 This establishes one live purchasable listing, not a completed sale or revenue.
 The five-day signal clock starts 2026-08-31; collected profit remains $0.00.
+
+### D052 — Qualify availability/account claims and decide both live Store links
+
+The signed-out catalog recheck found three boundaries that the first
+publication record did not state precisely: the $14.99 purchase action is
+enabled in the United States launch market but not in checked GB/CA/DE/AU
+markets; Microsoft may require a Microsoft account for Store acquisition or
+installation even though Paulatim has no separate in-app account; and both
+`appWebsiteUrl` and `SupportUri` point to the generic Toledo Technologies site,
+which has no Paulatim-specific product or support content.
+
+Decision: qualify repository copy as United States availability and “no
+separate Paulatim account.” The live short description, description, final
+feature bullet, and fifth screenshot caption still use unqualified account
+wording, so the next separately authorized listing-only update must reconcile
+those four surfaces too. Treat both customer-facing Store links as HQ-08:
+SupportUri should point to the public support document, while App website needs
+an explicit owner choice once a verified Paulatim destination exists. This
+repository correction does not authorize a Partner Center edit, new submission,
+publication, domain purchase, outreach, or package change.

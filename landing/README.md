@@ -1,8 +1,8 @@
 # Paulatim static landing artifact
 
 This directory is a zero-dependency commercial landing page that can be served
-as plain static files. Its copy is synchronized to the 2026-08-31 public Store
-release, but the landing page itself remains undeployed:
+as plain static files. Its copy is synchronized to the 2026-08-31 United States
+Store release, but the landing page itself remains undeployed:
 
 - the purchase links target the signed-out, observed Microsoft Store page with
   the documented `landing-primary` campaign ID;

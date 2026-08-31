@@ -557,10 +557,21 @@ Microsoft Store name-collision search (HQ-07 step 2) not yet run.
   price/list price, a `Purchase` action, nine image records, and release
   timestamp `2026-08-31T12:47:05.3548026Z`. This proves a public purchase path;
   it does not prove a completed customer transaction.
+- The paid purchase action was observed in the United States Store market.
+  Checks of GB, CA, DE, and AU did not expose an enabled purchase action or
+  price, matching the configured United States-only launch market. No broader
+  geographic availability is claimed.
 - The signed-out page exposed `https://toledotechnologies.com/` as both the
-  publisher website and `SupportUri`. That generic studio page is not the
-  intended Paulatim support page (`docs/SUPPORT.md`); the live-field mismatch
-  is recorded as follow-up, not silently represented as correct.
+  payload's `appWebsiteUrl` and `SupportUri`. That generic studio page is not
+  a Paulatim product/support destination; both customer-facing fields require
+  an explicit owner decision under HQ-08, with SupportUri intended to become
+  `docs/SUPPORT.md`.
+- Microsoft's installation terms may require a Microsoft account for Store
+  acquisition or installation. The product claim is narrower: Paulatim has no
+  separate in-app account. The live short description, long description, final
+  product-feature bullet, and fifth screenshot caption still use the earlier
+  unqualified account wording; the repository's qualified replacements are not
+  live until a separately authorized HQ-08 update is publicly reverified.
 - Physical-Windows installation, installed footprint, keyboard, Narrator,
   forced-colors, 200% scaling, reduced-motion, and modal-focus checks remain
   unobserved under HQ-03. No accessibility declaration is claimed.
@@ -568,3 +579,5 @@ Microsoft Store name-collision search (HQ-07 step 2) not yet run.
   accrued proceeds, payouts, and collected profit remain **unobserved / $0.00**.
   Gap to the collected-profit target remains **$4,000.00**. The five-day signal
   clock begins 2026-08-31.
+- Tax/payment profile readiness is Complete, but no first-payout date is
+  observed because there is no observed sale, accrual, or threshold event.

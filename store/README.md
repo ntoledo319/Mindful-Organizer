@@ -3,16 +3,18 @@
 > **Publication outcome — 2026-08-31:** Microsoft certified exact
 > PAULATIM-001. Under the owner's explicit publication direction, **Publish
 > now** was executed; the signed-out page and Microsoft's live catalog show an
-> active $14.99 USD purchase action at
+> active $14.99 USD purchase action in the United States Store market at
 > <https://apps.microsoft.com/detail/9PLRSZZMFPJH>. Product ID remains
 > `9PLRSZZMFPJH`; exact package hash remains
 > `af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`.
 > Do not mint or submit another package. HQ-03's physical-Windows accessibility
 > observation remains open, and no sale, payout, or collected revenue has been
-> observed. The live page currently uses the generic Toledo Technologies site
-> as the Paulatim SupportUri. That listing-only correction is owner-controlled
-> HQ-08 and requires fresh explicit authority before outreach; it does not need
-> or authorize any package-byte change.
+> observed. The live payload currently uses the generic Toledo Technologies
+> site for both `appWebsiteUrl` and `SupportUri`. Choosing the App website and
+> correcting Support URI is owner-controlled HQ-08, which must also qualify
+> the live “no account” copy as no separate Paulatim/in-app account. It requires
+> fresh explicit authority before outreach and does not need or authorize any
+> package-byte change.
 
 > **Execution outcome — 2026-08-28:** exact PAULATIM-001 source `f2d2a417`
 > passed Quality 33169087812 and Windows 33169087811. The independently verified
@@ -85,7 +87,8 @@ been submitted, certified, published, or verified purchasable.
 
 > **Publication correction — 2026-08-31:** the preceding paragraph is retained
 > as historical pre-Paulatim draft prose. Current Paulatim 1.1.1 is certified,
-> public, and purchasable for $14.99 at the canonical Store URL above.
+> public, and purchasable for $14.99 in the United States Store market at the
+> canonical Store URL above.
 
 ## Launch position
 
@@ -96,6 +99,11 @@ privacy-first sentence below records the pre-review framing._
 Paulatim launches as a **privacy-first Windows energy planner for ADHD and other
 variable-capacity days**.
 
+> **Current positioning correction — 2026-08-31:** the preceding sentence is
+> the preserved pre-review framing. Current Store and launch copy leads with
+> Paulatim's Windows energy-planning opening; local storage and the
+> no-separate-Paulatim-account boundary are supporting proof, not the headline.
+
 The primary job is simple: let someone choose a 4–24 daily energy budget and put
 a realistic amount of work into the day they actually have. Paulatim never infers
 or changes that capacity from a diagnosis or check-in. Check-ins, practices,
@@ -104,7 +112,7 @@ medication-reference modules, and legacy condition-label metadata remain
 preserved outside the default experience pending dedicated opt-in and safety
 review.
 
-The proposed offer is a one-time **$14.99** x64 Microsoft Store package. The
+The live United States offer is a one-time **$14.99** x64 Microsoft Store package. The
 source remains MIT licensed. A purchase pays for an official packaged binary and
 Store delivery, not exclusive source code, clinical capability, or guaranteed
 future features.
@@ -286,7 +294,7 @@ all visual and content checks pass.
 > **Publication checklist outcome — 2026-08-31:** the price, public Store page,
 > purchase action, seller/tax/payment readiness, certification, and publication
 > are complete. Current follow-up consists of owner-controlled HQ-08 for the
-> incorrect live SupportUri plus installed footprint/manual Windows accessibility
+> two generic live Store links plus installed footprint/manual Windows accessibility
 > under HQ-03. Historical unchecked certification/upload rows below must not be
 > repeated.
 
@@ -307,8 +315,9 @@ all visual and content checks pass.
       privacy-guarded issue forms.
 - [ ] **Live-state correction 2026-08-31:** the preceding checked item records
       the intended/saved draft value, but the public Store currently exposes the
-      generic publisher website as SupportUri. HQ-08 requires fresh owner
-      authority before correcting and publicly reverifying that Store field.
+      generic studio site as both `appWebsiteUrl` and `SupportUri`. HQ-08
+      requires fresh owner authority to decide the former, correct the latter,
+      and publicly reverify both fields.
 - [ ] Confirm seller, tax, and payout readiness before certification; the
       proposed $14.99 one-time price is saved in the held draft but is not live.
 
@@ -393,15 +402,19 @@ preview. The owner then clicks **Publish now**.
    live in store/POST_PUBLICATION_DOC_SWEEP.md — apply them same-day with the
    observed Store URL and price instead of writing fresh copy under time
    pressure.
-5. Deploy `landing/` to an eligible zero-cost static host (never GitHub Pages —
-   D007), then wire the source-specific links in CAMPAIGNS.md.
+5. Optionally, after owner approval under HQ-06, deploy `landing/` to an
+   eligible zero-cost static host (never GitHub Pages — D007). The Store link is
+   already wired in the undeployed artifact; record and verify the public host
+   only if deployment occurs.
 6. Run full verification, publish the doc/link changes, and record evidence.
 7. Record Store page views, acquisitions, installs, usage, health, reviews,
    refunds, and payout evidence as they arrive. Do not install third-party
    analytics merely to create a launch chart, and do not run a product-page
    experiment until traffic can compare one asset change against the baseline
    (PRODUCT-PAGE-EXPERIMENTS.md).
-8. The owner executes HQ-05. No agent posts or contacts humans.
+8. After HQ-08 publicly verifies both Store link fields and the corrected
+   account wording, the owner may execute HQ-05. No agent posts or contacts
+   humans.
 
 Owner-only actions remain governed by revenue/HUMAN_QUEUE.md. Draft launch copy
 does not authorize posting, messaging, promising, pricing, or publishing as the

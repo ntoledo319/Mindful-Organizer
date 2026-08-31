@@ -16,14 +16,15 @@ _Publication outcome 2026-08-31: Microsoft certified exact PAULATIM-001
 `af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`). Under
 the owner's explicit publication direction, **Publish now** was executed. The
 signed-out page and Microsoft's live catalog show Paulatim by Toledo
-Technologies with an active $14.99 USD purchase action at
+Technologies with an active $14.99 USD purchase action in the United States Store market at
 <https://apps.microsoft.com/detail/9PLRSZZMFPJH>. Do not create another package
 or repeat IARC, payout setup, submission, certification, or publication. Resume
 with HQ-03's 15-minute physical-Windows accessibility pass, optional owner-only
-HQ-05/HQ-06, and the five-day signal check. Microsoft's page uses the generic
-publisher site as the Paulatim SupportUri; that separate Store-state correction
-is owner-controlled HQ-08 and requires fresh explicit authority. No sale or
-revenue is yet observed._
+HQ-05/HQ-06, and the five-day signal check. Microsoft's payload uses the
+generic studio site for both `appWebsiteUrl` and `SupportUri`; deciding the App
+website, correcting Support URI, and qualifying the live account wording is
+owner-controlled HQ-08 and requires fresh explicit authority before outreach.
+No sale or revenue is yet observed._
 
 _Current correction 2026-08-28: the owner selected **Paulatim**, explicitly
 authorized its reservation and full certification submission, and authorized
@@ -277,13 +278,18 @@ Paulatim is an Electron 43 / React 18 / TypeScript Windows desktop energy
 planner for ADHD and other variable-capacity days: user-chosen 4–24 daily
 budget, honestly costed tasks, up to three fitting recommendations, local
 check-ins, trends, practices, focus controls, a user-written crisis plan, and
-requested JSON/PDF exports. Local-only: no account, cloud, ads, sync,
+requested JSON/PDF exports. Local-only: no separate Paulatim account, cloud, ads, sync,
 telemetry, or remote AI. SQLite in memory while open; versioned AES-256-GCM
 snapshots at rest with the random key protected by Windows DPAPI via Electron
 `safeStorage`; fails closed without protected key storage. It is personal
 organization software — never a medical device, diagnosis, treatment, monitor,
 or crisis detector. Full claims boundary: `README.md`, `docs/PRIVACY.md`,
 `store/LAUNCH_KIT.md`.
+
+_Store-listing clarification 2026-08-31: the live Store still uses the phrase
+“no account.” It means Paulatim has no separate in-app account; Microsoft may
+require a Microsoft account for Store acquisition or installation. HQ-08 owns
+the separately authorized public-copy correction._
 
 ## 4. Non-negotiable release facts
 
@@ -391,6 +397,14 @@ Electron automatically. Neither state indicates a code problem.
 
 The 2026-08-04 resume point asserted "there is no agent work left." That was
 false, and stating it prevented the next session from looking. Current list:
+
+> **Publication reconciliation — 2026-08-31:** the pricing/positioning
+> re-derivation completed with D043, and the post-publication documentation
+> sweep completed in HIST-20260831-003. Those two bullets below are retained as
+> the open list observed on 2026-08-07, not current work. Current machine work is
+> signal reobservation and documentation hygiene; HQ-03, HQ-05, HQ-06, HQ-08,
+> domain/hosting decisions, and stash disposition remain owner-controlled or
+> require owner input.
 
 **Done this session (2026-08-07):**
 

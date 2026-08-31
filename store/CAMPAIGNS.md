@@ -15,7 +15,11 @@ listing.
 > prepared/pre-live campaign state. The canonical link is now signed-out
 > verified and purchasable; the Store link is active. Owner-authored launch
 > posts remain unsent and gated by HQ-05, with owner-controlled HQ-08 required
-> to correct the live generic SupportUri before outreach.
+> to review both customer-facing Store links and the account wording before
+> outreach. The live
+> `appWebsiteUrl` and `SupportUri` currently point to the generic studio site;
+> the latter must be corrected to the public Paulatim support page, while the
+> former needs an explicit owner choice.
 
 Microsoft Store custom campaign IDs allow Partner Center to separate page views
 and conversions from different links without adding third-party analytics to

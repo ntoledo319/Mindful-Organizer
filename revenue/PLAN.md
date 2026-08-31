@@ -12,12 +12,12 @@ project-wide state now also lives in `PROJECT_TRACKER.md`._
 
 Bet A is live and purchasable. Microsoft certified exact PAULATIM-001 and the
 owner-authorized **Publish now** action produced a signed-out public page and
-an active $14.99 USD catalog purchase action at
+an active $14.99 USD catalog purchase action in the United States Store market at
 <https://apps.microsoft.com/detail/9PLRSZZMFPJH>. The five-day external-signal
 clock starts today. Collected profit remains $0.00 because no purchase or
 payout has been observed. Remaining agent work is post-publication evidence
 and signal monitoring; remaining human work is HQ-03 (15 minutes), the
-owner-controlled HQ-08 support correction (5 minutes), plus optional HQ-05/HQ-06
+owner-controlled HQ-08 Store-link/account-copy reconciliation (5 minutes), plus optional HQ-05/HQ-06
 (5 minutes each).
 
 ## Execution outcome — 2026-08-28
@@ -174,9 +174,15 @@ payment-provider balance at purchase time. Sources:
 Potential, draft pricing, CI artifacts, accrued-but-unpaid Store earnings, and
 an enabled certification button do not count as collected revenue.
 
+_Payout-timing correction — 2026-08-31: the mid-August/mid-September scenario
+above was a 2026-07-28 pre-launch model and is not a current payout forecast.
+Tax/payment profile readiness is Complete, but no sale, threshold attainment,
+accrual, payout schedule, or first-payout date has been observed. Do not guess a
+date until Partner Center supplies one after real proceeds exist._
+
 ## Bet A — Fast: official Paulatim Windows package
 
-- **Offer:** Paulatim 1.1.1 as a one-time $14.99 Microsoft Store purchase. The MIT
+- **Offer:** Paulatim 1.1.1 as a one-time $14.99 United States Microsoft Store purchase. The MIT
   source remains free; the purchase covers the maintained packaged app and
   Store delivery.
 - **Target arithmetic (baseline, verified):** ADA v8.11 §6(b)(i) sets the
@@ -201,8 +207,13 @@ an enabled certification button do not count as collected revenue.
   threshold. August sales accrue in August but pay out mid-August at the
   earliest, realistically mid-September — after Day 28. Bet A dollars are
   accrued-not-collected inside the mission window (see Money state).
-- **Funnel:** Microsoft Store search, Productivity and Health + fitness
-  discovery, and owner-approved launch links → product page → Store checkout.
+- **Payout timing correction (2026-08-31):** the preceding bullet is the
+  pre-launch Day-28 scenario. With an August 31 launch and no observed sale,
+  accrual, threshold event, or schedule, the first payout date is unobserved.
+- **Funnel:** Microsoft Store search and publicly observed Productivity
+  discovery, plus owner-approved launch links → product page → Store checkout.
+  Health + fitness is saved/certified as the secondary Partner Center category
+  but was not separately exposed by the signed-out catalog response.
 - **Falsifier:** after five live days with no external signal, allow one
   positioning, price, or channel change; after four more live days with no
   signal, replace the bet. Also investigate immediately at 100 observed product
@@ -228,7 +239,7 @@ an enabled certification button do not count as collected revenue.
   the release path.
 - **Publication outcome (2026-08-31):** Microsoft certification passed and the
   owner-authorized publication is live at the canonical Store URL. The listing
-  is purchasable at $14.99. HQ-03 remains a post-publication validation gap;
+  is purchasable for $14.99 in the United States market. HQ-03 remains a post-publication validation gap;
   Store traffic, purchases, and payout are not yet observed.
 
 ## Bet B — Heavy: Paulatim-to-Production Electron Kit
@@ -293,12 +304,17 @@ an enabled certification button do not count as collected revenue.
    29345863949 both passed. Repository description/topics are now truthful and
    private vulnerability reporting is enabled.
 
+_Record-integrity correction — 2026-08-31: item 1 preserves a mechanically
+renamed line. The forms shipped in the 2026-07-14 event were Hearth/Windows
+forms; they were renamed later. This does not change their privacy boundary._
+
 ## Remaining critical path
 
 > **Publication correction — 2026-08-31:** the historical pre-publication path
 > below is complete. The current path is: record the public release → complete
-> HQ-03 on a physical x64 Windows Store installation → optionally execute the
-> owner-authored HQ-05 launch batch and HQ-06 landing deployment → inspect
+> HQ-03 on a physical x64 Windows Store installation → resolve owner-controlled
+> HQ-08 for both customer-facing Store links and the account wording before outreach → optionally
+> execute the owner-authored HQ-05 launch batch and HQ-06 landing deployment → inspect
 > Partner Center signal at the five-day gate. Do not create another package or
 > repeat IARC, payout setup, submission, certification, or publication.
 
@@ -426,8 +442,9 @@ draft state as cash.
 
 _Gap-response correction — 2026-08-31: certification and publication are now
 complete. The next revenue-relevant work is honest Store-signal monitoring
-through the 2026-09-05 five-day gate. HQ-03 remains a validation task, and the
-live support URI must not be changed without fresh owner authority under HQ-08.
+through the 2026-09-05 five-day gate. HQ-03 remains a validation task, and
+neither live Store link field may be changed without fresh owner authority
+under HQ-08.
 No sale, payout, or collected revenue has yet been observed._
 
 ## Cycle 3 canonical continuation — 2026-07-15

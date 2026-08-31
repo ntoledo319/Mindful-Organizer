@@ -4,7 +4,8 @@
 
 Microsoft certified exact PAULATIM-001 without a byte change. Under the
 owner's explicit publication direction, **Publish now** was executed; the
-signed-out page and live catalog show an active $14.99 USD purchase action at
+signed-out page and live catalog show an active $14.99 USD purchase action in
+the United States Store market at
 <https://apps.microsoft.com/detail/9PLRSZZMFPJH>. The certified/public package
 remains `Paulatim 1.1.1.appx`, 175,489,702 bytes, SHA-256
 `af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146` from

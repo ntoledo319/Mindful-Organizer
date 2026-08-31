@@ -2,12 +2,12 @@
 
 > **Publication outcome — 2026-08-31:** Microsoft certification passed and the
 > owner-authorized publication is complete. The signed-out Store page and an
-> active $14.99 USD purchase action were observed at
+> active $14.99 USD purchase action in the United States Store market were observed at
 > <https://apps.microsoft.com/detail/9PLRSZZMFPJH>. Do not repeat HQ-01, HQ-02,
 > HQ-04, or the publication/checkout steps. HQ-03 is now ready and remains the
 > only required human validation (15 active minutes); HQ-05 and HQ-06 remain
 > optional owner actions at 5 minutes each. HQ-08 is a separate five-minute
-> owner-controlled Store support-field correction before outreach. Known
+> owner-controlled reconciliation of the Store links and account wording before outreach. Known
 > remaining human work is therefore at most **30 active minutes**. Actual cumulative owner time already
 > spent was not reliably timed and is not fabricated.
 
@@ -196,6 +196,11 @@ certification, checkout, or publication step._
 > profile and payment profile **Complete**. No private financial, identity, or
 > banking values were copied into the repository. Do not repeat setup unless
 > Microsoft later reports a specific payout blocker.
+
+> **Payout-evidence correction — 2026-08-31:** readiness is complete, but step
+> 4 did not and could not establish a first-payout date: no sale, accrued
+> proceeds, threshold event, or Partner Center payment schedule has been
+> observed. Keep that date unobserved until real proceeds create it.
 
 - **What:** Make the Store seller account capable of receiving proceeds.
 - **Why human-only:** Tax status, banking, identity, role assignment, and KYC are
@@ -419,6 +424,9 @@ certification, checkout, or publication step._
 
 - **What:** Make the smallest owner-authored launch posts after the Store page
   is purchasable.
+- **Blocked until:** HQ-08 resolves both customer-facing Store link fields and
+  the ambiguous account wording, and the public catalog is rechecked. Do not
+  direct people to known generic links or amplify misleading copy.
 - **Why human-only:** Posting as the owner or contacting people is forbidden
   without explicit human review and action.
 - **Source:** `store/LAUNCH_KIT.md`, `store/CAMPAIGNS.md`, and the
@@ -502,12 +510,17 @@ certification, checkout, or publication step._
   1. Record in `revenue/DECISIONS.md` that you accept the name-collision
      risk for the 1.1.0 launch without a search. Nothing else changes.
 
-## HQ-08 — Authorize and correct the live Store support URI — 5 minutes
+## HQ-08 — Authorize and reconcile Store links and account wording — 5 minutes
 
-- **What:** Separately authorize or personally make the listing-only change
-  that replaces the live generic `https://toledotechnologies.com/` SupportUri
-  with the public Paulatim `docs/SUPPORT.md` URL. Leave the publisher website
-  unchanged.
+- **What:** Separately authorize or personally make the listing-only changes
+  for the two customer-facing fields that both currently point to generic
+  `https://toledotechnologies.com/`: replace `SupportUri` with the public
+  Paulatim `docs/SUPPORT.md` URL, and explicitly decide whether `appWebsiteUrl`
+  should remain the studio page or change to a dedicated Paulatim destination
+  after one exists. In the same listing-only update, qualify the live short
+  description, description, final feature bullet, and fifth screenshot caption
+  so “no account” means no separate Paulatim/in-app account, not no Microsoft
+  account.
 - **Why human-only:** This is a new Partner Center state change after
   publication and may create another submission/publication cycle. The prior
   authority to submit and publish PAULATIM-001 does not silently authorize it;
@@ -517,14 +530,22 @@ certification, checkout, or publication step._
 - **Steps:**
   1. Explicitly authorize this separate listing update and sign in to Partner
      Center, or make the change yourself.
-  2. Change only the Paulatim support URL to
+  2. Change the Paulatim support URL to
      `https://github.com/ntoledo319/Mindful-Organizer/blob/main/docs/SUPPORT.md`.
+  3. For **App website**, make an explicit choice: intentionally keep the
+     generic studio URL, or replace it with a verified public Paulatim URL.
+     A domain idea, undeployed landing artifact, or 404 path is not a URL.
+  4. Review the short description, description, product features, and fifth
+     screenshot caption against `store/listing-metadata.json` and
+     `store/SCREENSHOTS.md`. Replace each unqualified “no account” claim with
+     “no separate Paulatim account” or the equivalent in-app-account wording.
      Do not alter package, price, identity, declarations, or audience.
-  3. If Partner Center requires a new submission or publication confirmation,
+  5. If Partner Center requires a new submission or publication confirmation,
      treat that as part of this explicit HQ-08 action—not as continuing package
      authority. Record the resulting status without guessing.
-  4. After propagation, verify the signed-out Store catalog and add the result
-     to `revenue/METRICS.md` before HQ-05 outreach.
+  6. After propagation, verify both URL fields and the corrected copy in the
+     signed-out Store catalog and add the result to `revenue/METRICS.md` before
+     HQ-05 outreach.
 
 ## Running owner-time ledger
 

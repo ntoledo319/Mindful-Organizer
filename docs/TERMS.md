@@ -10,9 +10,12 @@ _Publication correction — 2026-08-31: Paulatim 1.1.1 is now available through
 the Microsoft Store for $14.99 USD. The substantive product, privacy, warranty,
 and support boundaries below are unchanged._
 
+_Market correction — 2026-08-31: the observed $14.99 offer is in the United
+States Store market; no availability in another market is claimed._
+
 ## Current status
 
-Paulatim is available on the Microsoft Store for $14.99 USD at
+Paulatim is available in the United States on the Microsoft Store for $14.99 USD at
 <https://apps.microsoft.com/detail/9PLRSZZMFPJH>. These terms govern the
 official Microsoft Store package.
 

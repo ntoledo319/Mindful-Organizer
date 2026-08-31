@@ -9,6 +9,13 @@
 > below with all five captions. The historical Hearth images were removed. The
 > submission is in certification under a manual publication hold, not public.
 
+> **Publication outcome — 2026-08-31:** the preceding sentence records the
+> certification-time state. Microsoft certified exact PAULATIM-001, and these
+> five Paulatim images and their saved captions are now public. The live fifth
+> caption still says “without an account”; the qualified replacement proposed
+> below is not live and requires a separately authorized listing-only update.
+> Do not upload or relabel any historical Hearth or AMPLE-001 image.
+
 > **Paulatim correction — 2026-08-28:** every AMPLE-001 image and hash below
 > remains historical and must never accompany Paulatim. The fresh Paulatim
 > workflow must capture a new exact-SHA five-image set. Use the Paulatim caption
@@ -25,8 +32,15 @@
 > uploaded or saved in Partner Center. Only this AMPLE-001 set may accompany
 > AppX `7d6ca584…61866b`; the older hashes remain history, not upload choices.
 
-Status: **captured, accepted, hash-recorded, and uploaded to the held Partner
-Center draft; not public**
+> **Record-integrity correction — 2026-08-31:** the 2026-07-14 accepted
+> candidate and saved captions in the historical table below were Hearth
+> branded. A later mechanical rename changed two retained caption lines to
+> “Ample”; those labels are not evidence that the July screenshots were Ample.
+> The separate 2026-08-28 Paulatim table is the shipped/public set.
+
+Historical 2026-07-14 status: **captured, accepted, hash-recorded, and uploaded
+to the held Partner Center draft; not public.** The 2026-08-31 publication
+outcome above is current.
 
 The source driver in electron/screenshot.ts creates five desktop PNG files at
 1920 × 1080. The data is a deterministic fictional demo owned by the screenshot
@@ -65,6 +79,13 @@ puts Rhythm before Reflect.
 | 3 | 04-rhythm.png | Rhythm, dark | Review your own mood, energy, and sleep across 7, 14, or 30 days, then request a local PDF summary. |
 | 4 | 03-reflect.png | Check in, light | Record mood, energy, anxiety, sleep, or a private journal entry in the local desktop app. |
 | 5 | 05-onboarding.png | First run, light | Start without an account and review local-data consent before Paulatim stores the information you enter. |
+
+> **Proposed copy correction — 2026-08-31:** on the next separately authorized
+> listing-only update, replace the preceding fifth caption with “Start without
+> a separate Paulatim account and review local-data consent before Paulatim
+> stores the information you enter.” Microsoft may require a Microsoft account
+> for Store acquisition or installation. Do not describe this proposal as live
+> until the public catalog is reobserved.
 
 ## Accepted candidate evidence
 

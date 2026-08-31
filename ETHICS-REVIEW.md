@@ -10,6 +10,17 @@ completed IARC. The current remaining gates are exact PAULATIM-001 1.1.1
 evidence, payout-readiness reconciliation, certification, Store-signed manual
 accessibility observation, and a separate publication decision._
 
+_Publication re-audit — 2026-08-31: exact PAULATIM-001 passed package CI and
+Microsoft certification and is publicly purchasable for $14.99 in the United
+States Store market. Partner Center showed Age ratings, tax, and payment
+profiles Complete. The historical release-gate list below is therefore closed
+except for the explicitly unobserved physical-Windows keyboard, Narrator,
+forced-colors, scaling, and reduced-motion pass (HQ-03). Separately, both live
+Store link fields currently point to the generic studio site; the Support URI
+must be corrected and the App website explicitly decided under owner-controlled
+HQ-08 before outreach. No sale, payout, accessibility conformance, or clinical
+outcome is claimed._
+
 ## Current posture
 
 Paulatim is a personal local-first organizer, not a clinical product. Core
@@ -63,3 +74,7 @@ The source is MIT-licensed. The proposed $14.99 Microsoft Store edition would
 sell packaging and Store convenience, not exclusive code or clinical outcomes.
 No forecast, conversion claim, testimonial, or revenue result may be stated as
 observed until it is actually observed.
+
+_Commercial outcome — 2026-08-31: the preceding “proposed” statement records
+the pre-publication boundary. The one-time $14.99 United States Store offer is
+now live; no purchase, payout, or collected revenue has been observed._

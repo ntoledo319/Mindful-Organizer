@@ -7,7 +7,8 @@ the Hearth-era source record; product wording is now Paulatim. No conformance
 claim was added, and the Store-signed manual matrix remains open._
 
 _Publication correction — 2026-08-31: Microsoft certified exact PAULATIM-001
-and Paulatim 1.1.1 is publicly available. Certification evidence is preserved,
+and Paulatim 1.1.1 is publicly available in the United States Store market.
+Certification evidence is preserved,
 but the physical-Windows keyboard, Narrator, forced-colors, contrast, scaling,
 reduced-motion, and modal-focus matrix remains unobserved. No Store or formal
 accessibility conformance declaration is claimed._

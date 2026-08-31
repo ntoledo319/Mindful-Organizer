@@ -10,7 +10,7 @@ Machine-readable commit list: `history/commit-index.tsv` (regenerate with
 
 | ID | Name | Role | Local path | Canonical remote | Default branch | Relationship | History coverage | Last indexed ref |
 |---|---|---|---|---|---|---|---|---|
-| REPO-01 | Mindful-Organizer (Paulatim; formerly Ample/Hearth) | Primary app + docs + store ops | `/home/nick/Development/active/mindful_organizer` | `https://github.com/ntoledo319/Mindful-Organizer.git` (no credentials embedded) | `main` | — | Complete local clone; live refs re-derived 2026-08-31 | commit index through `5cfc573`; this evidence-only successor recorded separately |
+| REPO-01 | Mindful-Organizer (Paulatim; formerly Ample/Hearth) | Primary app + docs + store ops | `/home/nick/Development/active/mindful_organizer` | `https://github.com/ntoledo319/Mindful-Organizer.git` (no credentials embedded) | `main` | — | Complete local clone; live refs re-derived 2026-08-31 | commit index through `5ad1d21`; current docs-audit successor recorded separately |
 
 Verified 2026-07-24: no submodules, no nested Git repositories (single `.git`).
 
@@ -31,12 +31,12 @@ cross-check._
 
 | Ref | SHA | State | Notes |
 |---|---|---|---|
-| `origin/main` | evidence-only successor to `5cfc57304ed95cedace1de45649c1128ad5b5876` | synchronized post-publication line | Quality 33401339453 passed on exact docs tree `010c7074`; no Windows run occurred and PAULATIM-001 bytes are unchanged. |
+| `origin/main` | `5ad1d217b9f432caeeaccd02af9da6dd111c2f17` | synchronized evidence-close baseline | Quality 33401875798 passed on exact tree `e715ae3f`; no Windows run occurred and PAULATIM-001 bytes are unchanged. |
 | `origin/feature/store-candidate-cand002` | `c0eb360f78fc10587a57fe6e9fcf9432b416ddf0` | live-verified 2026-08-25 | Historical branch; deliberately not pushed again and now behind default. |
 | `origin/handoff-cycle-3` | `14f9fd718433047dfc38a2cd5a28d7da171106aa` | fetched | Cycle-3 handoff branch; superseded on main (PROP-002) |
 | `origin/feature/monetization` | `8172603b62c2457696608c145511bd3fe92429d4` | fetched | Accepted-candidate preservation branch |
 | `origin/feature/revenue-cycle-0` | `09ec37eff4affcc1a0878205072a75f0cac13da5` | fetched | Diverged legacy cycle-0 docs close; do not continue |
-| local `main` (checked out) | evidence-only successor to `5cfc57304ed95cedace1de45649c1128ad5b5876` | clean; synchronized with origin after close | Candidate source `f2d2a417` and submitted bytes are unchanged; no new Windows package is needed. |
+| local `main` (checked out) | `5ad1d217b9f432caeeaccd02af9da6dd111c2f17` + docs audit | synchronized baseline; documentation successor in progress | Candidate source `f2d2a417` and certified bytes are unchanged; no new Windows package is needed. |
 | local `feature/store-candidate-cand002` | `c0eb360f78fc10587a57fe6e9fcf9432b416ddf0` | historical branch; matches its remote and is behind current `main` | Not pushed again; use canonical `main` only for PAULATIM-001. AMPLE-001 is historical/never-submit. |
 | local `cycle-2-shipped` | `246baac5033001b00f586f570c3ce842218c1fb5` | stale; behind current `main` | Historical branch. |
 | local `cycle-1-published` | `27db6c246de278fe119a46b7be2db35d9aa04a46` | local-only | Duplicate-content lineage of `4a32b73` (rebased SHAs) |
@@ -90,6 +90,7 @@ cross-check._
 | HIST-20260831-001 | 2026-08-31 | REPO-01 | release-certified/published | product `9PLRSZZMFPJH`; submission `1152921505701225649`; AppX `af8b4581…b5146` | external | Microsoft certified exact PAULATIM-001. Under explicit owner publication direction, Publish now was executed; Partner Center moved to In publishing, then the signed-out Store page and live catalog exposed Paulatim by Toledo Technologies with an active $14.99 USD Purchase action. No package bytes changed; physical-Windows HQ-03 and revenue remain unobserved. | verified | VER-20260831-001; D051 |
 | HIST-20260831-002 | 2026-08-31 | REPO-01 | workflow-safety | `cfbcaac` → `1c0d164` | remote + CI | The Windows Store push filter was narrowed to package-affecting paths, then a normal-message identical-tree baseline isolated the later post-publication close from the earlier skip-annotated commit. Quality 33398564825 passed; no Windows workflow ran and no package bytes changed. | verified | VER-20260831-002; git + gh |
 | HIST-20260831-003 | 2026-08-31 | REPO-01 | documentation-consolidated | `1c0d164` → `5cfc573` (tree `010c7074`) | remote + CI | Public launch, legal/support/accessibility status, live Store/catalog facts, campaign links, owner queue, exact package guards, and all six revenue files were synchronized. Full local gate fingerprint `43dd2a1431758787` and Quality 33401339453 passed; no Windows workflow ran. | verified | VER-20260831-003/004 |
+| HIST-20260831-004 | 2026-08-31 | REPO-01 | documentation-consolidated | `5ad1d217` (tree `e715ae3f`) | remote + CI | Final public-launch evidence close recorded the exact Quality result without changing package inputs. Quality 33401875798 passed; no Windows workflow ran. | verified | VER-20260831-005 |
 
 Rollbacks: none recorded. Hotfixes: HIST-20260714-004 is the only in-run fix.
 Deployments: the Microsoft Store listing is live as of HIST-20260831-001; the
@@ -126,9 +127,9 @@ fact rather than fabricated migration events.
 
 ## 6. Incremental refresh
 
-Per-repo commit index is refreshed through REPO-01 `5cfc573`; this
-evidence-only successor records its exact Quality result without changing the
-indexed release tree (2026-08-31). On later runs:
+Per-repo commit index is refreshed through REPO-01 `5ad1d21`; the current
+documentation-audit successor is recorded as a dirty/current state until its
+exact commit exists (2026-08-31). On later runs:
 fetch (if network allowed), compare heads to §2, inspect only new commits,
 append new events, regenerate `history/commit-index.tsv`, update §2. Do not
 re-narrate existing events.

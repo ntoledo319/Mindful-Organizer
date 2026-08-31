@@ -11,6 +11,9 @@ pre-publication state. Paulatim 1.1.x is now the current Microsoft Store release
 line at <https://apps.microsoft.com/detail/9PLRSZZMFPJH>. Security fixes are
 evaluated against the current source and that Store release._
 
+_Market correction — 2026-08-31: public paid availability was observed in the
+United States Store market; no availability in another market is claimed._
+
 ## Report a vulnerability privately
 
 Use GitHub's

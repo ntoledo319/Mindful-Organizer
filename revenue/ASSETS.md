@@ -6,7 +6,7 @@ _Cycle 3 handoff update 2026-07-15. Scope is the containment root only._
 
 Microsoft certified exact PAULATIM-001 and, under the owner's explicit
 publication direction, the manual hold was released. Paulatim 1.1.1 is now
-publicly available for $14.99 USD at
+publicly available for $14.99 USD in the United States Store market at
 <https://apps.microsoft.com/detail/9PLRSZZMFPJH>. Microsoft's live catalog
 exposes a purchase action, so the official Windows package is now a sellable
 unit. No purchase, payout, or collected revenue has yet been observed. The
@@ -93,7 +93,7 @@ evidence, and assistant state are not separate assets.
 
 - **Buyer sentence:** Paulatim is a calm private Windows organizer that helps a
   person choose an energy budget, plan tasks that fit it, check in, and review
-  their own rhythm without an account or cloud record sync.
+  their own rhythm without a separate Paulatim account or cloud record sync.
 - **Completeness:** Release-candidate source, tests, deterministic assets,
   package validation, DPAPI lifecycle automation, Store screenshots, support
   forms, a security policy, and the commercial product tour are complete. The
@@ -113,7 +113,8 @@ evidence, and assistant state are not separate assets.
   historical. Exact PAULATIM-001 passed CI and Microsoft certification and is
   publicly purchasable at $14.99. IARC and tax/payment readiness are Complete;
   only the physical-Windows HQ-03 validation remains open. Separately, HQ-08
-  records the owner-controlled correction for the live generic SupportUri.
+  records the owner-controlled correction for the two live generic Store links
+  and four public copy surfaces with ambiguous account wording.
 - **Distribution target:** Microsoft Store using reserved product ID
   9PLRSZZMFPJH and its built-in discovery and checkout. GitHub remains the
   public source and policy host, not the commercial checkout.
@@ -238,7 +239,7 @@ Store-signed Windows human observation, and a separate publication decision.
 No asset is purchasable, so collected revenue remains zero.
 
 _Publication correction 2026-08-31: the preceding sentence is superseded.
-Paulatim is now purchasable through the Microsoft Store; collected revenue
+Paulatim is now purchasable through the United States Microsoft Store; collected revenue
 still remains zero because no sale or payout has been observed._
 
 ## Cycle 3 continuation authority — 2026-07-15

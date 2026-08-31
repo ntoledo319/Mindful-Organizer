@@ -9,8 +9,8 @@
 Paulatim brings energy-budget planning to Windows for ADHD and other
 variable-capacity days. It gives tasks an estimated energy cost, keeps a finite
 daily “spoon” budget, and shows a small set of open tasks whose recorded cost
-fits what remains. Its local, no-account design is supporting proof, not the
-headline.
+fits what remains. Its local design, with no separate Paulatim account, is
+supporting proof, not the headline.
 
 > **Release status correction — 2026-08-28:** Paulatim is reserved on existing
 > Partner Center product `9PLRSZZMFPJH`, and the source/listing rename is in
@@ -38,6 +38,11 @@ headline.
 > The physical-Windows
 > keyboard, Narrator, forced-colors, scaling, and reduced-motion pass remains
 > unobserved, so no Store accessibility declaration is claimed.
+
+> **Market/account correction — 2026-08-31:** the observed $14.99 purchase
+> action is for the United States Store market. “No account” in product copy
+> means no separate Paulatim or in-app account; Microsoft may require a
+> Microsoft account for Store acquisition or installation.
 
 > **Record-integrity note — 2026-08-28:** the next paragraph is retained as a
 > historical 2026-08-25 misstatement, not release evidence: it mislabeled the
@@ -89,8 +94,8 @@ and action.
 
 ## Privacy model
 
-Paulatim has no account, cloud API, advertising, record sync, app telemetry, or
-remote AI service. While the app is open, SQLite runs in memory. At rest, Paulatim
+Paulatim has no separate in-app account, cloud API, advertising, record sync,
+app telemetry, or remote AI service. While the app is open, SQLite runs in memory. At rest, Paulatim
 writes versioned, authenticated AES-256-GCM snapshots with a fresh random IV for
 each successful write. A random 256-bit key is protected through Electron
 `safeStorage`—Windows DPAPI on Windows—and Paulatim fails closed when protected key
@@ -127,7 +132,7 @@ local emergency number.
 
 ## What the paid Store package provides
 
-Paulatim 1.1.1 is available on the
+Paulatim 1.1.1 is available in the United States on the
 [Microsoft Store](https://apps.microsoft.com/detail/9PLRSZZMFPJH?cid=github-readme)
 for a one-time $14.99 USD purchase. The purchase pays
 for the official x64 package and Store delivery; the source remains MIT

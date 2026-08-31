@@ -13,9 +13,11 @@ process scope. Established 2026-07-24._
 |---|---|---|---|---|
 | PROP-001 | Reconcile working tree with `origin/main` | S | **executed 2026-07-24** (merge `59787f4`) | git state |
 | PROP-002 | Branch hygiene: remove duplicate-content and superseded branches | S | pending (destructive; explicit approval required) | git refs |
-| PROP-003 | Branch strategy: fast-forward local `main`, retire `cycle-*` naming | S | pending | git workflow |
-| PROP-004 | Deploy `landing/` to an eligible $0 static host after Store publication | S | pending (gated on live Store URL) | distribution |
-| PROP-005 | Bet B — Paulatim-to-Production Electron Kit (frame A4.6; renamed 2026-08-28) | L | pending (conditional behind Bet A) | monetization |
+| PROP-003 | Branch strategy: fast-forward local `main`, retire `cycle-*` naming | S | partially executed 2026-08-25 (main synchronized; branch deletion remains PROP-002) | git workflow |
+| PROP-004 | Deploy `landing/` to an eligible $0 static host after Store publication | S | pending owner approval; live-Store gate met 2026-08-31 | distribution |
+| PROP-005 | Bet B — Paulatim-to-Production Electron Kit (frame A4.6; renamed 2026-08-28) | L | pending / conditional under D038; no longer blocked by Bet A certification | monetization |
+| PROP-006 | Lead with privacy, not ADHD | S | superseded by D043: Windows/platform first, privacy as proof | positioning |
+| PROP-007 | Retire the $4,000 / Day-28 mission target | S | pending owner decision; AGENTS.md still controls | operating mission |
 
 ## PROP-001 — Reconcile working tree with origin/main
 
@@ -45,6 +47,11 @@ process scope. Established 2026-07-24._
 
 ## PROP-003 — Branch strategy
 
+> **Execution correction — 2026-08-31:** local `main` was synchronized with
+> `origin/main` on 2026-08-25 and remains the checked-out canonical line. The
+> stale-ref problem described below is resolved. Deleting historical branches
+> remains separate destructive scope under PROP-002 and is not authorized.
+
 - **What:** fast-forward local `main` to `origin/main` (0 ahead, 17 behind),
   work on `main` or short-lived feature branches, stop creating `cycle-*`
   bookkeeping branches; adjust workflow branch triggers only if conventions
@@ -55,14 +62,23 @@ process scope. Established 2026-07-24._
 
 ## PROP-004 — Landing deployment (post-publication)
 
+> **Publication correction — 2026-08-31:** the Store URL prerequisite is met
+> and the landing artifact contains the observed U.S. purchase link. Deployment
+> remains optional and owner-controlled under HQ-06; a host/TOS decision and
+> public URL do not yet exist.
+
 - **What:** deploy the scriptless `landing/` artifact to an eligible $0 static
   host (Cloudflare Pages / Netlify after a current-TOS re-check) once the Store
   page is observed live.
 - **Why:** D007 rejected GitHub Pages for commercial hosting; the artifact is
-  ready but has no purchase link until the listing exists.
+  ready and now contains the observed purchase link but remains undeployed.
 - **Prerequisites:** live Store URL (HQ-04), campaign IDs (store/CAMPAIGNS.md).
 
 ## PROP-005 — Bet B: Ample-to-Production Electron Kit
+
+> **Status correction — 2026-08-31:** the visible name is Paulatim and Bet A is
+> certified/live. This proposal remains conditional only because D038 did not
+> queue its seller rail or build scope; certification is no longer its blocker.
 
 - **What:** genuinely new $249 developer kit (frame A4.6 in
   `revenue/OPPORTUNITIES.md`): clean demo, threat model, encrypted-storage
@@ -73,6 +89,10 @@ process scope. Established 2026-07-24._
   `revenue/PLAN.md`.
 
 ## PROP-006 — Lead with privacy, not with ADHD (2026-08-07)
+
+> **Disposition — 2026-08-19:** D043 superseded this proposal after the
+> discovery review: current copy leads with the unique Windows/platform opening
+> and uses privacy as supporting proof. No separate approval remains pending.
 
 - **What:** reframe the Store listing's leading claim and the HQ-05 launch
   targets around *local-only, no account, no telemetry, one-time purchase,
@@ -102,6 +122,10 @@ process scope. Established 2026-07-24._
   `README.md` already make them.
 
 ## PROP-007 — Close out the $4,000 / Day-28 target (2026-08-07)
+
+> **Current status — 2026-08-31:** still pending owner decision. The listing is
+> now live, but AGENTS.md continues to define the $4,000 collected-profit
+> mission, so an agent cannot retire it. Collected profit remains $0.00.
 
 - **What:** formally retire the $4,000-collected-by-Day-28 goal in
   `revenue/PLAN.md` and replace it with: a live purchasable listing, first

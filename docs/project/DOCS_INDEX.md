@@ -5,6 +5,11 @@ _Canonical inventory of repository documentation. Established 2026-07-24
 `4a32b73+dirty:1cbebb903119c043` and `origin/main` `e0fc9e0`. Update the row when
 a document's role, owner, or path changes._
 
+_Inventory reconciliation — 2026-08-31: the tracked documentation set was
+re-audited after publication. Eight previously omitted operating/research/tool
+documents are now indexed below; generated screenshot metadata and package /
+TypeScript configuration files remain outside this prose inventory._
+
 Classification vocabulary: **canonical** (owns its truth), **supporting**
 (context, audits, procedures subordinate to a canonical owner), **generated**
 (machine-built; do not hand-edit), **superseded-pointer** (retained link
@@ -32,7 +37,7 @@ so), **artifact** (raw evidence/output, not prose truth).
 | `AGENTS.md` | Revenue-loop operating doctrine: jail, constraints, memory files, gates | agents | canonical (operating constraints) | keep; §14 project-state protocol appended 2026-07-24 |
 | `CLAUDE.md` | Taste standards and brand identity | agents | canonical (taste/brand) | keep |
 | `HANDOFF.md` | Cold-start launchpad | agents | canonical (launchpad) | compressed 2026-07-24 (see MIGRATION_MAP M1/M2) |
-| `ETHICS-REVIEW.md` | Claims/ethics audit, 2026-07-14 | release reviewers | supporting (point-in-time audit) | re-audit after any publication change |
+| `ETHICS-REVIEW.md` | Claims/ethics audit, 2026-07-14 + publication re-audit | release reviewers | supporting (point-in-time audit) | publication re-audit completed 2026-08-31; rerun after claim/release changes |
 | `SECURITY.md` | Security policy, private vuln reporting | researchers, users | canonical (security policy) | keep |
 | `THIRD_PARTY_NOTICES.md` | Runtime license notices | legal | generated (`npm run licenses`) | regenerate only |
 | `LICENSE` | MIT license | legal | canonical | keep |
@@ -48,7 +53,7 @@ so), **artifact** (raw evidence/output, not prose truth).
 | `docs/TERMS.md` | Terms of use | users, Store | canonical (terms) | keep |
 | `docs/REFUNDS.md` | Purchase/refund policy | users, Store | canonical (refunds) | keep |
 | `docs/ACCESSIBILITY.md` | Accessibility status + required pre-declaration matrix | users, release | canonical (accessibility status) | no conformance claim until HQ-03 pass |
-| `docs/SUPPORT.md` | Intended public Paulatim support page | users | canonical (support) | live Store SupportUri mismatch observed 2026-08-31; owner-controlled HQ-08 requires fresh authority |
+| `docs/SUPPORT.md` | Intended public Paulatim support page | users | canonical (support) | live App website + Support URI both use generic studio site; owner-controlled HQ-08 requires fresh authority |
 
 ## `docs/strategy/` — monetization strategy (legacy layer)
 
@@ -74,8 +79,10 @@ where the file asserts standalone truth.
 | `revenue/OPPORTUNITIES.md` | 35 monetization frames, scoring, portfolio, falsifiers | canonical (monetization proposals) | keep; loop-maintained |
 | `revenue/PLAN.md` | Active bets, arithmetic, critical path, gap | canonical (monetization plan) | line 1 root fixed 2026-07-24 (M6) |
 | `revenue/METRICS.md` | Timestamped observed-evidence ledger | canonical (observed evidence) | keep; observed facts only |
-| `revenue/HUMAN_QUEUE.md` | Owner/delegated Store actions HQ-00…HQ-08; current Paulatim outcome at top | canonical (owner queue) | HQ-03 ready; HQ-05/HQ-06 optional; HQ-08 owner-controlled; publication complete under D051 |
-| `revenue/DECISIONS.md` | Decision ledger D001–D051 | canonical (decisions) | reused as the project decision log; no competing file created |
+| `revenue/HUMAN_QUEUE.md` | Owner/delegated Store actions HQ-00…HQ-08; current Paulatim outcome at top | canonical (owner queue) | HQ-03 ready; HQ-05/HQ-06 optional; HQ-08 owner-controlled for links/account copy; publication complete under D051 |
+| `revenue/DECISIONS.md` | Decision ledger D001–D052 | canonical (decisions) | reused as the project decision log; no competing file created |
+| `revenue/MARKET-ANALYSIS-2026-08-07.md` | Comparable-set and price-band research | marketing, owner | supporting (point-in-time research) | preserve date/source boundary; recheck before price changes |
+| `revenue/NAME-RISK-2026-08-07.md` | Hearth name-risk research | owner, release | historical (superseded by Paulatim) | retain; not legal clearance for Paulatim |
 | `revenue/npm-audit-*.json` | Raw audit output | artifact (gitignored) | regenerate on demand |
 
 ## `store/` — Microsoft Store release
@@ -83,11 +90,16 @@ where the file asserts standalone truth.
 | Path | Purpose | Class | Action |
 |---|---|---|---|
 | `store/README.md` | Release path, Partner Center state, blockers, post-certification playbook | canonical (Store release) | playbook merged from handoff 2026-07-24 (M4) |
+| `store/GET-LISTED-RUNBOOK.md` | Operator sequence for Store preparation/release | supporting (Store procedure) | historical steps fenced; current Paulatim/public corrections control |
 | `store/WINDOWS-VALIDATION.md` | Exact-candidate validation + installed smoke/accessibility procedure | canonical (Windows validation) | keep; execute at HQ-03 |
 | `store/SCREENSHOTS.md` | Screenshot plan, hashes, acceptance checks | canonical (screenshots) | keep |
 | `store/CAMPAIGNS.md` | Campaign link IDs and measurement rules | canonical (campaign plan) | Store link live; owner-authored sends remain gated |
 | `store/LAUNCH_KIT.md` | Owner-approved launch drafts (nothing sent) | canonical (launch drafts) | owner sends only (HQ-05) |
+| `store/LAUNCH_TARGETS.md` | Candidate owner-posted destinations and rule checks | supporting (outreach targets) | recheck live rules; HQ-08 must resolve before outreach |
+| `store/REPOSITION_KIT.md` | Pre-registered post-launch Store experiments | supporting (experiment procedure) | execute only after signal gate + owner approval |
 | `store/PRODUCT-PAGE-EXPERIMENTS.md` | Post-launch page experiments | canonical (experiments) | gated on live traffic |
+| `store/POST_PUBLICATION_DOC_SWEEP.md` | Pre-drafted publication transition copy | historical (executed template) | applied 2026-08-31; retained as release-process history |
+| `store/DISCOVERY-REVIEW-2026-08-07.md` | Windows/competitor discovery review | marketing | supporting (point-in-time research) | D043 adopted platform-first conclusion; recheck before reposition |
 | `store/listing-metadata.json` | Structured listing copy/state | canonical (listing data) | live URL/price observed 2026-08-31 |
 | `store/identity.json` / `identity.cjs` | Reserved package identity + checker | canonical (Store identity) | `npm run store:check` must print true |
 
@@ -99,6 +111,7 @@ where the file asserts standalone truth.
 | `build/README.md` | electron-builder resources note | supporting | keep |
 | `resources/BRAND_PROVENANCE.md` | Shipping-art provenance/rights | canonical (art rights) | keep |
 | `resources/vault/README.md` | Asset-vault policy | canonical (asset vault) | keep |
+| `tools/README.md` | Repository-local rename/tool operating notes | agents, devs | supporting (tooling) | stable-identity warnings control visible renames |
 | `.github/pull_request_template.md`, `.github/ISSUE_TEMPLATE/*` | PR/issue forms (privacy-guarded) | canonical (intake forms) | keep |
 | `.github/workflows/*.yml` | Quality Gate, Release Build, Windows Store, Pages | canonical (CI definitions) | `pages.yml` must never point at commercial landing |
 | `.claude/` (agents, commands, skills, memory — ~30 files) | Taste-enforcement tooling | supporting (agent tooling) | keep; tracked despite `.gitignore` entry |

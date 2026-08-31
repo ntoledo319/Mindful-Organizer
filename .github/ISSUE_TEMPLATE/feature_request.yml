@@ -39,7 +39,7 @@ body:
     attributes:
       label: Product boundaries
       options:
-        - label: The proposal can remain local-first and work without an account or cloud record sync.
+        - label: The proposal can remain local-first and work without a separate Paulatim account or cloud record sync.
         - label: The proposal does not require Paulatim to infer diagnosis, treatment, crisis risk, or daily capacity.
   - type: textarea
     id: accessibility

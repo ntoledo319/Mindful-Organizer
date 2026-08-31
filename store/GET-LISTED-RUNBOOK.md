@@ -3,11 +3,14 @@
 > **Publication outcome — 2026-08-31:** this listing runbook is complete.
 > Microsoft certified exact PAULATIM-001 and the owner-authorized **Publish
 > now** action produced a signed-out public page plus an active $14.99 USD
-> purchase action at <https://apps.microsoft.com/detail/9PLRSZZMFPJH>. Do not
+> purchase action in the United States Store market at
+> <https://apps.microsoft.com/detail/9PLRSZZMFPJH>. Do not
 > rerun any reservation, IARC, payout, upload, submission, certification, or
 > publication step and do not build another AppX. The only required residual
 > validation is HQ-03 on physical x64 Windows; optional distribution work is
-> HQ-05/HQ-06 and the five-day signal check.
+> HQ-05/HQ-06 and the five-day signal check. Before outreach, owner-controlled
+> HQ-08 must decide/reverify both the App website and Support URI and qualify
+> the four public Store-copy surfaces that currently say “no account.”
 
 > **Execution outcome — 2026-08-28T09:41-04:00:** this runbook's
 > pre-certification sequence is complete. Exact PAULATIM-001 from source
@@ -207,6 +210,11 @@ CAND-002 (`a5d2cf36…b18f`) is now **historical** — the rename changed the Ap
 manifest. Do not upload it. There are six non-candidate MSIX artifacts in CI
 history; the register is in `store/WINDOWS-VALIDATION.md`.
 
+> **Artifact-count correction — 2026-08-31:** “six” above is the six
+> post-CAND-002 Hearth decoy artifacts called out by the 2026-08-07 audit, not
+> the total number of non-candidate MSIX records in all CI history. Every
+> non-PAULATIM-001 AppX remains historical/never-submit.
+
 ## Step 5 — Upload package and finalize the listing (15 min)
 
 > **Authority correction — 2026-08-28:** once PAULATIM-001 exact evidence
@@ -253,12 +261,17 @@ Submit. Microsoft certification takes days. Nothing you do changes that.
 
 ## Step 7 — After certification
 
+> **Publication outcome — 2026-08-31:** certification and publication are
+> complete. The doc sweep ran; landing deployment remains optional and
+> owner-controlled under HQ-06. Do not repeat package, IARC, submission, or
+> publication steps.
+
 - Install the Store-signed build and run the accessibility pass
   (`docs/ACCESSIBILITY.md`). This needs an x64 Windows machine — confirm you
   have one before you get here.
-- Deploy the landing page (`landing/`) only once the listing is genuinely live
-  and purchasable.
-- Run `store/POST_PUBLICATION_DOC_SWEEP.md`.
+- Optionally deploy the landing page (`landing/`) only with owner approval; the
+  listing is now genuinely live and purchasable in the United States market.
+- `store/POST_PUBLICATION_DOC_SWEEP.md` was executed on 2026-08-31.
 
 ---
 
@@ -275,3 +288,7 @@ Day 28 is 2026-08-10. **$4,000 collected by then is not reachable** and has not
 been since before this session. Carrying it as a live gap manufactures urgency
 that `AGENTS.md` §2 forbids — see PROP-007. The honest replacement target is a
 live purchasable listing plus a first real demand signal.
+
+> **Payout-state correction — 2026-08-31:** the listing is now live, but no
+> sale, threshold event, accrual, payout schedule, or first-payout date has been
+> observed. The historical timing scenario above is not a current forecast.

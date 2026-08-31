@@ -9,9 +9,13 @@ _Publication correction — 2026-08-31: Paulatim 1.1.1 is publicly available
 through the Microsoft Store. The support and privacy boundaries remain
 unchanged._
 
+_Market/account correction — 2026-08-31: the observed paid listing is for the
+United States Store market. Paulatim itself has no separate in-app account;
+Microsoft may require a Microsoft account for Store acquisition or install._
+
 ## Current availability
 
-Paulatim is available on the Microsoft Store at
+Paulatim is available in the United States on the Microsoft Store at
 <https://apps.microsoft.com/detail/9PLRSZZMFPJH>. This page is the public
 support landing page.
 Reproducible software bugs and focused feature requests can be filed through the

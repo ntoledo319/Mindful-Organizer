@@ -2,10 +2,18 @@
 
 Status: **drafts only — not authorized for posting or sending**
 
+> **Publication accuracy correction — 2026-08-31:** Paulatim is live for
+> $14.99 in the United States Store market. In every draft, “no account” means
+> no separate Paulatim/in-app account; Microsoft may require a Microsoft account
+> for Store acquisition or installation. Do not send any launch draft until the
+> owner-controlled HQ-08 review resolves both customer-facing Store links and
+> the live unqualified account wording: the current App website and Support URI
+> both point to the generic studio site.
+
 ## Positioning canon
 
 _Positioning correction 2026-08-26: lead every launch draft with the Windows
-availability and energy-planning job. Local storage and no-account protections
+availability and energy-planning job. Local storage and the no-separate-account boundary
 are supporting proof, not the headline. The claims boundary below is unchanged._
 
 **Audience:** Windows users with ADHD or other variable-capacity days who want a
@@ -17,7 +25,7 @@ a diagnosis or check-in.
 
 **One sentence:** Paulatim brings energy-budget planning to Windows, helping you
 plan around the capacity you have; it then proves the privacy boundary with no
-account, cloud API, ads, record sync, or app telemetry.
+separate Paulatim account, cloud API, ads, record sync, or app telemetry.
 
 **Proof available in the product:** task energy and duration inputs, estimated
 spoon costs, a user-controlled remaining daily budget, up to three fitting open
@@ -34,7 +42,7 @@ Use:
 
 - local-first or privacy-first, immediately paired with the exact storage
   disclosure;
-- no account, cloud API, advertising, record sync, or app telemetry;
+- no separate Paulatim account, cloud API, advertising, record sync, or app telemetry;
 - SQLite in memory while open; versioned, authenticated AES-256-GCM snapshots at
   rest; and a random 256-bit key protected by Windows DPAPI through Electron
   `safeStorage`;
@@ -66,13 +74,14 @@ Do not use:
 
 Draft only:
 
-> Energy planning is now available on Windows through the Microsoft Store.
+> Energy planning is now available on Windows through the United States
+> Microsoft Store.
 > Paulatim is an energy planner for ADHD and other variable-capacity days: give
 > work an energy cost, choose a daily budget from 4 to 24, and see what fits the
 > day you have.
 > Records are encrypted at rest with authenticated AES-256-GCM snapshots and a
 > key protected by Windows; exports you request are plaintext. There is no
-> account, cloud API, advertising, or record sync. Paulatim is personal organization
+> separate Paulatim account, cloud API, advertising, or record sync. Paulatim is personal organization
 > software, not medical care. [verified campaign link]
 
 Before approval, replace “now available” only after the product page is visibly
@@ -85,8 +94,9 @@ Draft only:
 
 ### Paulatim for Windows
 
-This release prepares the official x64 Microsoft Store package for Paulatim, an
-energy planner built for Windows and variable-capacity days.
+Paulatim 1.1.1 is available in the United States Microsoft Store for a one-time
+$14.99 purchase. It is an energy planner built for Windows and
+variable-capacity days.
 
 Core loop:
 
@@ -104,8 +114,10 @@ limits; requested JSON and PDF exports are plaintext.
 The source remains MIT licensed. The Store purchase covers official packaging
 and Store delivery. Paulatim is not a medical device or emergency service.
 
-Do not publish this note until the package hash, public Store URL, certification,
-support, privacy, price, and release date are all observed.
+Do not publish this note until the owner has approved it, both live Store link
+fields and the account wording have been reviewed under HQ-08, and the package
+hash, public Store URL, certification, support, privacy, price, and release date
+remain observed.
 
 ## Community note
 
@@ -143,6 +155,11 @@ Never request the local database through a public issue.
 - [ ] Privacy, terms, refund, and the support landing page work without sign-in;
       the support page clearly discloses that filing an issue requires GitHub
       sign-in.
+- [ ] The live App website and Support URI each point to an intentional,
+      product-appropriate destination; do not treat the generic studio page as
+      Paulatim support.
+- [ ] Availability language says United States, and “no account” is qualified
+      as no separate Paulatim/in-app account.
 - [ ] Screenshots and feature bullets match the live package.
 - [ ] Campaign links land on the correct product.
 - [ ] Partner Center acquisition, usage, health, reviews, and payout reports are
