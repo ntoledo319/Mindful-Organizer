@@ -148,4 +148,5 @@ REPO-01	d0769ddf5a7628be26e75dce251464dc7410dccd	ad9d22a15ae79ea4e6207b28b98c394
 REPO-01	cfbcaac8246ba675a1894f03f3a529f26fbe2ab8	d0769ddf5a7628be26e75dce251464dc7410dccd	2026-08-31T09:04:37-04:00	2026-08-31T09:04:37-04:00	ntoledo319	ci(store): exclude listing-only updates from packaging [skip actions]		-
 REPO-01	1c0d164f5869d09f9a802ff8d02c053168199b8b	cfbcaac8246ba675a1894f03f3a529f26fbe2ab8	2026-08-31T09:43:36-04:00	2026-08-31T09:43:36-04:00	ntoledo319	chore(ci): establish post-release documentation baseline		-
 REPO-01	5cfc57304ed95cedace1de45649c1128ad5b5876	1c0d164f5869d09f9a802ff8d02c053168199b8b	2026-08-31T10:13:00-04:00	2026-08-31T10:13:00-04:00	ntoledo319	docs(release): record Paulatim public launch		-
-REPO-01	5ad1d217b9f432caeeaccd02af9da6dd111c2f17	5cfc57304ed95cedace1de45649c1128ad5b5876	2026-08-31T10:18:35-04:00	2026-08-31T10:18:35-04:00	ntoledo319	docs(release): record public launch verification	HEAD -> main, origin/main, origin/HEAD	-
+REPO-01	5ad1d217b9f432caeeaccd02af9da6dd111c2f17	5cfc57304ed95cedace1de45649c1128ad5b5876	2026-08-31T10:18:35-04:00	2026-08-31T10:18:35-04:00	ntoledo319	docs(release): record public launch verification		-
+REPO-01	889100c76abe3e862bdfc6e2b0164f2db174e7f5	5ad1d217b9f432caeeaccd02af9da6dd111c2f17	2026-08-31T19:32:59-04:00	2026-08-31T19:32:59-04:00	ntoledo319	docs: reconcile Paulatim live listing truth		-
