@@ -3,6 +3,17 @@
 _Reconfirmed 2026-07-15 for the Cycle 3 handoff. All U values are unvalidated
 four-week planning ranges, not observed revenue or promises._
 
+## Publication outcome — 2026-08-31
+
+Bet A is live. Microsoft certified exact PAULATIM-001 and the owner-authorized
+publication produced a signed-out public page with an active $14.99 USD
+purchase action at <https://apps.microsoft.com/detail/9PLRSZZMFPJH>. The
+five-day external-signal clock starts on 2026-08-31. Product-page views,
+acquisitions, purchases, payouts, and collected revenue remain unobserved; the
+physical-Windows accessibility pass is still open. Known remaining human work
+is at most 30 active minutes: HQ-03 15, owner-controlled HQ-08 5, and optional
+HQ-05/HQ-06 5 each.
+
 ## Execution outcome — 2026-08-28
 
 Bet A's package/listing/submission path is complete: exact PAULATIM-001 source
@@ -81,7 +92,7 @@ principal risk. A dash means no compliant near-term route.
 | A1.2 | Paid session-summary output | 21+ | >60 | No marketplace | $0–$200 | Sensitive intake and fulfillment |
 | A1.3 | Sell existing source | 7+ | 20 | Asset marketplace | $0–$100 | Source is already public MIT |
 | A1.4 | Extract a paid component | 14+ | 20 | Asset marketplace | $0–$200 | New documentation and differentiation |
-| A1.5 | Official Windows package | 3–10 after package/Store gates | ≤37 remaining human minutes; submission delegated | **Microsoft Store** | $0–$4,001 | Payout reconciliation, certification, and unproven demand |
+| A1.5 | Official Windows package | live since 2026-08-31 | ≤30 remaining human minutes | **Microsoft Store** | $0–$4,001 | Unproven demand, support-link correction, and residual installed-Windows validation |
 | A1.6 | Bundle with a future sibling | — | >60 | None | $0 | Sibling does not exist |
 | A1.7 | White-label clinic build | 21+ | >60 | Outbound required | $0 | Claims, sales, and support burden |
 
@@ -173,6 +184,10 @@ principal risk. A dash means no compliant near-term route.
   package/listing/screenshots are submitted and Microsoft certification is in
   progress under a manual publication hold. It remains non-live and has no
   observed views, acquisitions, purchases, or payout.
+- **Publication outcome (2026-08-31):** Microsoft certified exact
+  PAULATIM-001 and the public $14.99 Store purchase path is live. No views,
+  acquisitions, purchases, payout, or collected revenue have yet been
+  observed; the five-day signal clock now governs.
 - **Falsifier:** one reposition after five live days with zero external signal;
   replace after four additional live days with zero signal. Treat 100 product
   page views with zero purchases as an immediate conversion failure.

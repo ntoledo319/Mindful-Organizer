@@ -1,5 +1,14 @@
 # Get Paulatim listed — historical Ample runbook base (2026-08-07)
 
+> **Publication outcome — 2026-08-31:** this listing runbook is complete.
+> Microsoft certified exact PAULATIM-001 and the owner-authorized **Publish
+> now** action produced a signed-out public page plus an active $14.99 USD
+> purchase action at <https://apps.microsoft.com/detail/9PLRSZZMFPJH>. Do not
+> rerun any reservation, IARC, payout, upload, submission, certification, or
+> publication step and do not build another AppX. The only required residual
+> validation is HQ-03 on physical x64 Windows; optional distribution work is
+> HQ-05/HQ-06 and the five-day signal check.
+
 > **Execution outcome — 2026-08-28T09:41-04:00:** this runbook's
 > pre-certification sequence is complete. Exact PAULATIM-001 from source
 > `f2d2a417` passed Quality 33169087812 and Windows 33169087811; its AppX hash is

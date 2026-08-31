@@ -28,6 +28,17 @@ headline.
 > published, live, or purchasable; Microsoft must finish review and the
 > Store-signed build must pass HQ-03 before a separate **Publish now** decision.
 
+> **Publication outcome — 2026-08-31:** Microsoft certified exact PAULATIM-001
+> (`Paulatim 1.1.1.appx`, SHA-256
+> `af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`).
+> After the owner's explicit publication direction, **Publish now** was used and
+> the signed-out Store page plus Microsoft's live catalog were observed with an
+> active **$14.99 USD** purchase action on the
+> [Microsoft Store](https://apps.microsoft.com/detail/9PLRSZZMFPJH?cid=github-readme).
+> The physical-Windows
+> keyboard, Narrator, forced-colors, scaling, and reduced-motion pass remains
+> unobserved, so no Store accessibility declaration is claimed.
+
 > **Record-integrity note — 2026-08-28:** the next paragraph is retained as a
 > historical 2026-08-25 misstatement, not release evidence: it mislabeled the
 > Hearth draft as Ample. The dated corrections immediately after it supply the
@@ -114,7 +125,18 @@ reminders, diagnose a condition, provide treatment, or replace professional or
 emergency care. In a US crisis, call or text 988; in immediate danger, call the
 local emergency number.
 
-## What the paid Store package would provide
+## What the paid Store package provides
+
+Paulatim 1.1.1 is available on the
+[Microsoft Store](https://apps.microsoft.com/detail/9PLRSZZMFPJH?cid=github-readme)
+for a one-time $14.99 USD purchase. The purchase pays
+for the official x64 package and Store delivery; the source remains MIT
+licensed. Microsoft certification and automated Windows package/lifecycle
+checks passed. Manual assistive-technology and presentation checks remain an
+open post-publication validation item.
+
+The paragraphs and corrections below preserve the release path that preceded
+publication.
 
 The source is MIT licensed and stays public. The proposed one-time Microsoft
 Store purchase pays for an official x64 MSIX package and Store delivery, not
@@ -199,7 +221,7 @@ certification, signing, installation, security, or usability result.
     resources/           Deterministically generated shipping brand assets and provenance
     scripts/             Icon, Store-asset, and third-party-notice generation
     store/               Manual Store listing, launch, campaign, and screenshot plans
-    landing/             Zero-dependency pre-release commercial landing artifact
+    landing/             Zero-dependency undeployed commercial landing artifact
     docs/                Architecture, design, privacy, terms, refunds, and accessibility
     revenue/             Durable monetization state and evidence ledger
 

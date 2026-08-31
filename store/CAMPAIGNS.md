@@ -11,6 +11,12 @@ Do not distribute that link until the observed public page is checked in a
 private browser. A reserved ID and a successful package build are not a live
 listing.
 
+> **Publication correction — 2026-08-31:** the preceding block preserves the
+> prepared/pre-live campaign state. The canonical link is now signed-out
+> verified and purchasable; the Store link is active. Owner-authored launch
+> posts remain unsent and gated by HQ-05, with owner-controlled HQ-08 required
+> to correct the live generic SupportUri before outreach.
+
 Microsoft Store custom campaign IDs allow Partner Center to separate page views
 and conversions from different links without adding third-party analytics to
 Paulatim. The campaign ID is public in the URL; it must never contain a name,
@@ -35,6 +41,10 @@ so reports remain comparable.
 | owner-launch-note | One launch note on an owner-controlled channel | Human review and send required |
 | owner-approved-community-<slug> | One community whose rules explicitly permit the post | Human review and send required |
 | product-update-<yyyymm> | A later, truthful release update | Human review and send required |
+
+_Publication correction 2026-08-31: the live-page condition above is now met.
+`github-readme` is wired; `landing-primary` is wired only in the undeployed
+artifact and cannot measure until HQ-06 deploys it._
 
 Do not reuse one community ID across different communities, and do not create a
 campaign ID for organic Store search or browse traffic.

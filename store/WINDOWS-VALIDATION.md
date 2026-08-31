@@ -1,5 +1,21 @@
 # Exact-candidate Windows validation
 
+## Certification and publication outcome — 2026-08-31
+
+Microsoft certified exact PAULATIM-001 without a byte change. Under the
+owner's explicit publication direction, **Publish now** was executed; the
+signed-out page and live catalog show an active $14.99 USD purchase action at
+<https://apps.microsoft.com/detail/9PLRSZZMFPJH>. The certified/public package
+remains `Paulatim 1.1.1.appx`, 175,489,702 bytes, SHA-256
+`af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146` from
+source `f2d2a417`. Do not create or substitute another package.
+
+This result proves Microsoft certification and public availability. It does
+**not** prove the still-unobserved physical-Windows install footprint,
+keyboard, Narrator, forced-colors, 200% scaling, reduced-motion, or modal-focus
+checks. Complete HQ-03 against the Store-delivered build and record the result
+without backdating it as a pre-publication pass.
+
 ## PAULATIM-001 exact candidate and submission — 2026-08-28
 
 | Evidence | Exact value |
@@ -31,6 +47,11 @@ removed. Product `9PLRSZZMFPJH`, submission `1152921505701225649`, entered **In
 certification** at Pre-processing on 2026-08-28 under the saved manual
 publication hold. This is not certification, a Store-signed installed-Windows
 pass, publication, live visibility, or purchase evidence.
+
+> **Outcome correction — 2026-08-31:** the preceding sentence remains the true
+> 2026-08-28 submission state. Certification, publication, live visibility, and
+> the public purchase action were subsequently observed as recorded above;
+> installed-Windows human validation remains open.
 
 > **PAULATIM-001 reset — 2026-08-28:** the owner selected/reserved Paulatim and
 > authorized certification submission. The Ample candidate recorded below
@@ -252,6 +273,14 @@ Expect **one final** MSIX build from the commit that narrows the filter, since
 `.github/workflows/windows-store.yml` is itself a trigger path. After that,
 documentation work stops producing packages.
 
+> **Trigger correction — 2026-08-31:** the preceding paragraph and inclusion
+> of `store/listing-metadata.json` record the 2026-08-07 filter state. Commit
+> `cfbcaac` now excludes listing metadata; the Store workflow is limited to its
+> own file, package/config inputs, runtime/source/scripts/resources, and
+> `store/identity.json`/`store/identity.cjs`. Its skip-annotated push created no
+> MSIX. Identical-tree baseline `1c0d164` then passed Quality 33398564825 with
+> no Windows run. No final/new MSIX is expected for this documentation close.
+
 The Windows workflow passed a sentinel-guarded real safeStorage/DPAPI lifecycle
 matrix for fresh encrypted persistence, corrupt-primary recovery, plaintext
 export warnings, key-first erase, interrupted erase, representative legacy
@@ -292,6 +321,12 @@ References:
 - <https://learn.microsoft.com/en-us/windows/apps/publish/faq/get-your-app-certified>
 
 ## Current PAULATIM-001 procedure — 2026-08-28
+
+> **Publication override — 2026-08-31:** steps 1–5 below were executed for the
+> exact candidate and are now historical/non-executable. PAULATIM-001 is
+> Microsoft-certified and public. Do not download it as a new candidate,
+> upload it again, resubmit it, replace it, rebuild it, or repeat publication.
+> Step 6 alone remains open as HQ-03, using the public Store-delivered build.
 
 The numbered Hearth procedure below is historical and non-executable. For the
 current candidate:

@@ -1,5 +1,19 @@
 # Microsoft Store release path
 
+> **Publication outcome — 2026-08-31:** Microsoft certified exact
+> PAULATIM-001. Under the owner's explicit publication direction, **Publish
+> now** was executed; the signed-out page and Microsoft's live catalog show an
+> active $14.99 USD purchase action at
+> <https://apps.microsoft.com/detail/9PLRSZZMFPJH>. Product ID remains
+> `9PLRSZZMFPJH`; exact package hash remains
+> `af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`.
+> Do not mint or submit another package. HQ-03's physical-Windows accessibility
+> observation remains open, and no sale, payout, or collected revenue has been
+> observed. The live page currently uses the generic Toledo Technologies site
+> as the Paulatim SupportUri. That listing-only correction is owner-controlled
+> HQ-08 and requires fresh explicit authority before outreach; it does not need
+> or authorize any package-byte change.
+
 > **Execution outcome — 2026-08-28:** exact PAULATIM-001 source `f2d2a417`
 > passed Quality 33169087812 and Windows 33169087811. The independently verified
 > `Paulatim 1.1.1.appx` SHA-256 is
@@ -69,6 +83,10 @@ $14.99 US pricing, reviewed copy, categories, properties, certification notes,
 and five hash-matched screenshots. It is deliberately held in draft and has not
 been submitted, certified, published, or verified purchasable.
 
+> **Publication correction — 2026-08-31:** the preceding paragraph is retained
+> as historical pre-Paulatim draft prose. Current Paulatim 1.1.1 is certified,
+> public, and purchasable for $14.99 at the canonical Store URL above.
+
 ## Launch position
 
 _Listing-copy correction 2026-08-19: the prepared Store copy now leads with
@@ -130,10 +148,10 @@ future features.
 - identity.json — observed existing-product package identity; the separate
   Paulatim display-name reservation was verified on 2026-08-28
 
-The static commercial landing artifact lives in landing/. It is intentionally
-marked pre-release and can be deployed later to an eligible zero-cost static
-host. It must not be deployed with a purchase button until the Store listing is
-actually live.
+The static commercial landing artifact lives in landing/. Its copy now reflects
+the observed live Store release and campaign link, but the page itself remains
+undeployed. It may be deployed later to an eligible zero-cost static host after
+the deployment checklist and owner-controlled host setup.
 
 ## Build and package evidence
 
@@ -265,6 +283,13 @@ all visual and content checks pass.
 
 ### Listing and conversion
 
+> **Publication checklist outcome — 2026-08-31:** the price, public Store page,
+> purchase action, seller/tax/payment readiness, certification, and publication
+> are complete. Current follow-up consists of owner-controlled HQ-08 for the
+> incorrect live SupportUri plus installed footprint/manual Windows accessibility
+> under HQ-03. Historical unchecked certification/upload rows below must not be
+> repeated.
+
 - [x] Confirm Productivity as the primary category and Health + fitness as the
       secondary category.
 - [x] Confirm a United States / en-US first release or complete additional
@@ -280,10 +305,19 @@ all visual and content checks pass.
       their public URLs.
 - [x] Set the support URL to the public support page and link from there to the
       privacy-guarded issue forms.
+- [ ] **Live-state correction 2026-08-31:** the preceding checked item records
+      the intended/saved draft value, but the public Store currently exposes the
+      generic publisher website as SupportUri. HQ-08 requires fresh owner
+      authority before correcting and publicly reverifying that Store field.
 - [ ] Confirm seller, tax, and payout readiness before certification; the
       proposed $14.99 one-time price is saved in the held draft but is not live.
 
 ### Partner Center
+
+> **Publication checklist outcome — 2026-08-31:** exact PAULATIM-001 passed
+> certification and is public. All upload, legal-declaration, submission, and
+> release-control actions in this historical checklist are complete. Do not use
+> the old unchecked boxes as current instructions.
 
 > **Current execution correction — 2026-08-26:** the two checked rows below
 > record the old Hearth draft, not completed Ample work. The owner still must

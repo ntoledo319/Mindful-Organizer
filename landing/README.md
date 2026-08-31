@@ -1,10 +1,12 @@
 # Paulatim static landing artifact
 
 This directory is a zero-dependency commercial landing page that can be served
-as plain static files. It is currently truthful to the pre-release state:
+as plain static files. Its copy is synchronized to the 2026-08-31 public Store
+release, but the landing page itself remains undeployed:
 
-- no purchase button;
-- no fake availability, audience, review, or security claim;
+- the purchase links target the signed-out, observed Microsoft Store page with
+  the documented `landing-primary` campaign ID;
+- no fake audience, review, revenue, or security claim;
 - no external font, script, tracker, cookie, form, or third-party asset;
 - three hash-recorded Paulatim screenshots copied from the exact PAULATIM-001
   `f2d2a417` screenshot artifact, containing only seeded fictional data; the
@@ -34,29 +36,31 @@ primary commercial host under the repository's current terms decision.
 No deployment is authorized by this artifact. Account sign-in, domain changes,
 and any final public publish action remain owner-controlled when required.
 
-## Live-transition checklist
+## Live-transition outcome
 
-After Store certification and only after the product page is visibly
-purchasable:
+Completed locally on 2026-08-31 after the Store page and live $14.99 purchase
+action were observed:
 
-1. Replace the “Store release pending” span in index.html with a link to:
+1. The “Store release pending” span was replaced with:
 
        https://apps.microsoft.com/detail/9PLRSZZMFPJH?cid=landing-primary
 
 2. Keep the protection and limits copy synchronized with the exact released
    data lifecycle, including migration-backup retirement after two verified
    encrypted generations.
-3. Change “proposed” price/package language only to observed live terms.
-4. Add the deployed canonical URL and matching Open Graph URL. JSON-LD
+3. “Proposed” price/package language was changed only to the observed $14.99
+   Store terms.
+4. After deployment, add the deployed canonical URL and matching Open Graph URL. JSON-LD
    structured data (the store validator's application/ld+json carve-out), a
    sitemap, and absolute og:image URLs are also due at deploy time, once the
    domain is known.
-5. Verify privacy, terms, refunds, accessibility, support, source, and Store
-   links in a private browser.
-6. Validate HTML, run keyboard and screen-reader checks, test 320 px through
+5. The Store link resolved signed out; reverify privacy, terms, refunds,
+   accessibility, support, and source links after the documentation commit is
+   public.
+6. Before deployment, validate HTML, run keyboard and screen-reader checks, test 320 px through
    large desktop widths, and run a no-cache performance check.
-7. Record the host, public URL, publish time, and campaign ID in the evidence
-   ledger.
+7. After deployment, record the host, public URL, publish time, and campaign ID
+   in the evidence ledger.
 
 Before any deployment, run `npm run store:validate` from the workspace root.
 

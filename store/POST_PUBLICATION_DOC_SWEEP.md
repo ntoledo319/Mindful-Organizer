@@ -1,5 +1,13 @@
 # Post-publication doc sweep — pre-drafted replacements
 
+> **Execution outcome — 2026-08-31:** the public Store page and Microsoft's
+> live $14.99 USD purchase action were observed, then the Paulatim equivalents
+> of this sweep were applied to README, legal/support/security status,
+> structured listing state, landing copy, Store records, revenue memory, and
+> the project tracker. The manual Windows/accessibility pass was not completed
+> and is deliberately omitted from release claims. The historical Ample
+> templates below remain the original pre-draft, not current instructions.
+
 > **Name correction — 2026-08-28:** the Ample blocks below are preserved as
 > the pre-Paulatim draft. When publication is actually observed, apply their
 > Paulatim equivalents from the then-current public files; never represent the

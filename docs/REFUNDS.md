@@ -1,16 +1,21 @@
 # Paulatim Purchases and Refunds
 
-_Last updated: 2026-07-14_
+_Last updated: 2026-08-31_
 
 _Visible-name correction — 2026-08-28: the substantive purchase/refund boundary
 is unchanged; only the visible product name is now Paulatim. The app is still
 not certified, published, or purchasable._
 
-Paulatim is not currently listed as purchasable. No direct payment link,
-developer-run checkout, subscription, in-app purchase, or license-key sale is
-active.
+_Publication correction — 2026-08-31: Paulatim 1.1.1 is publicly available
+through the Microsoft Store for $14.99 USD. Microsoft, not the developer,
+processes purchases and eligible refunds._
 
-If an official paid Microsoft Store package is released:
+Paulatim is available on the Microsoft Store for $14.99 USD at
+<https://apps.microsoft.com/detail/9PLRSZZMFPJH>. No developer-run checkout,
+subscription, in-app purchase, or license-key sale exists; Microsoft processes
+every purchase.
+
+For the official paid Microsoft Store package:
 
 - the displayed one-time price covers the official packaged binary and Store
   delivery while the source remains MIT licensed;

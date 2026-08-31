@@ -1,13 +1,19 @@
 # Paulatim Accessibility Status
 
-_Last updated: 2026-07-14_
+_Last updated: 2026-08-31_
 
 _Visible-name correction — 2026-08-28: the dated accessibility review remains
 the Hearth-era source record; product wording is now Paulatim. No conformance
 claim was added, and the Store-signed manual matrix remains open._
 
+_Publication correction — 2026-08-31: Microsoft certified exact PAULATIM-001
+and Paulatim 1.1.1 is publicly available. Certification evidence is preserved,
+but the physical-Windows keyboard, Narrator, forced-colors, contrast, scaling,
+reduced-motion, and modal-focus matrix remains unobserved. No Store or formal
+accessibility conformance declaration is claimed._
+
 Paulatim is designed to reduce cognitive load, but no formal accessibility
-conformance claim has been completed for the release candidate.
+conformance claim has been completed for the current Store release.
 
 ## Present in the source
 
@@ -37,9 +43,11 @@ assistive technology.
 - Test Windows text scaling, browser zoom, and the minimum supported window size
 - Verify the implemented reduced-motion behavior across every release flow
 - Check focus visibility and restoration after every dialog and route change
-- Preserve the Microsoft Store certification result for the exact submission
-  package; if an installable test-signed equivalent is used for local WACK,
-  label it as supporting evidence rather than the accepted package hash
+
+Completed platform evidence: Microsoft certification passed on 2026-08-31 for
+the exact submitted package. This does not replace any manual check above. If
+an installable test-signed equivalent is ever used for local WACK, label it as
+supporting evidence rather than the accepted package hash.
 
 Until those checks pass, the Store listing must not declare screen-reader,
 high-contrast, reduced-motion, WCAG, or other formal accessibility conformance.

@@ -8,6 +8,18 @@ blended fees), Day-15 gate assessment recorded, reposition menu pre-registered.
 macOS → Linux; AGENTS.md §1 law). Cycle-3 handoff published 2026-07-15;
 project-wide state now also lives in `PROJECT_TRACKER.md`._
 
+## Publication outcome — 2026-08-31
+
+Bet A is live and purchasable. Microsoft certified exact PAULATIM-001 and the
+owner-authorized **Publish now** action produced a signed-out public page and
+an active $14.99 USD catalog purchase action at
+<https://apps.microsoft.com/detail/9PLRSZZMFPJH>. The five-day external-signal
+clock starts today. Collected profit remains $0.00 because no purchase or
+payout has been observed. Remaining agent work is post-publication evidence
+and signal monitoring; remaining human work is HQ-03 (15 minutes), the
+owner-controlled HQ-08 support correction (5 minutes), plus optional HQ-05/HQ-06
+(5 minutes each).
+
 ## Execution outcome — 2026-08-28
 
 Exact PAULATIM-001 source `f2d2a417` passed Quality 33169087812 and Windows
@@ -214,6 +226,10 @@ an enabled certification button do not count as collected revenue.
   Complete; certification is in progress under the manual publication hold.
   Only Microsoft's result, HQ-03, and a separate publication decision remain on
   the release path.
+- **Publication outcome (2026-08-31):** Microsoft certification passed and the
+  owner-authorized publication is live at the canonical Store URL. The listing
+  is purchasable at $14.99. HQ-03 remains a post-publication validation gap;
+  Store traffic, purchases, and payout are not yet observed.
 
 ## Bet B — Heavy: Paulatim-to-Production Electron Kit
 
@@ -239,6 +255,10 @@ an enabled certification button do not count as collected revenue.
 - **Current status:** conditional and not built. It stays behind Bet A's
   certification path so the run does not dilute the shortest route to a first
   external dollar.
+- **Status correction (2026-08-31):** Bet A is certified and live. Bet B
+  remains conditional under D038 because it is unbuilt, has no seller rail or
+  demand evidence, and would consume scarce owner scope—not because Bet A is
+  waiting on certification.
 
 ## What shipped this cycle
 
@@ -274,6 +294,13 @@ an enabled certification button do not count as collected revenue.
    private vulnerability reporting is enabled.
 
 ## Remaining critical path
+
+> **Publication correction — 2026-08-31:** the historical pre-publication path
+> below is complete. The current path is: record the public release → complete
+> HQ-03 on a physical x64 Windows Store installation → optionally execute the
+> owner-authored HQ-05 launch batch and HQ-06 landing deployment → inspect
+> Partner Center signal at the five-day gate. Do not create another package or
+> repeat IARC, payout setup, submission, certification, or publication.
 
 > **Paulatim override — 2026-08-28:** the historical Ample/IARC/name sequence
 > below is superseded. IARC is complete, Paulatim is reserved, and draft/
@@ -313,6 +340,9 @@ Current exact-CI-scoped totals and the sole conditional within-ceiling batching
 path are recorded in HUMAN_QUEUE and the dated correction above._
 
 ## Day-28 success criterion (restated 2026-07-28, Day 15)
+
+_Outcome 2026-08-31: criterion 1 below is achieved. Criteria 2 and 3 remain
+unobserved; a live page or purchase action is not collected revenue._
 
 The $4,000 collected-cash target is not reachable through Bet A inside the
 window: the Day-15 gate assessment (`revenue/METRICS.md`, 2026-07-28) shows
@@ -393,6 +423,12 @@ executed late on Day 15 (D035); the Day-21 gate (2026-08-03) recomputes the
 gap from collected proceeds and applies the pre-registered reposition menu
 above without counting downloads, impressions, accrued-unpaid earnings, or
 draft state as cash.
+
+_Gap-response correction — 2026-08-31: certification and publication are now
+complete. The next revenue-relevant work is honest Store-signal monitoring
+through the 2026-09-05 five-day gate. HQ-03 remains a validation task, and the
+live support URI must not be changed without fresh owner authority under HQ-08.
+No sale, payout, or collected revenue has yet been observed._
 
 ## Cycle 3 canonical continuation — 2026-07-15
 

@@ -1,5 +1,16 @@
 # Human Queue
 
+> **Publication outcome — 2026-08-31:** Microsoft certification passed and the
+> owner-authorized publication is complete. The signed-out Store page and an
+> active $14.99 USD purchase action were observed at
+> <https://apps.microsoft.com/detail/9PLRSZZMFPJH>. Do not repeat HQ-01, HQ-02,
+> HQ-04, or the publication/checkout steps. HQ-03 is now ready and remains the
+> only required human validation (15 active minutes); HQ-05 and HQ-06 remain
+> optional owner actions at 5 minutes each. HQ-08 is a separate five-minute
+> owner-controlled Store support-field correction before outreach. Known
+> remaining human work is therefore at most **30 active minutes**. Actual cumulative owner time already
+> spent was not reliably timed and is not fabricated.
+
 > **Execution outcome — 2026-08-28T09:41-04:00:** HQ-02 and HQ-04 are complete.
 > Partner Center shows tax and payment profiles Complete without any private
 > values being recorded. Exact PAULATIM-001 source `f2d2a417` passed both CI
@@ -133,6 +144,12 @@ readiness on 2026-08-26. No exact Paulatim package, screenshots, or remote CI
 gate exists yet. Public policies/support and prepared copy remain shipped;
 PAULATIM-001 1.1.1 must establish the new exact evidence chain._
 
+_Publication correction 2026-08-31: PAULATIM-001, its five screenshots, both
+candidate CI gates, IARC, tax/payment readiness, certification, and publication
+are complete. The only required human validation still open is HQ-03; HQ-05
+and HQ-06 are optional. Do not repeat any package, legal, financial,
+certification, checkout, or publication step._
+
 ## HQ-01 — Retake IARC manually and accept its terms — 5 minutes
 
 > **Completed-state correction — 2026-08-28:** the owner completed the IARC
@@ -206,6 +223,16 @@ PAULATIM-001 1.1.1 must establish the new exact evidence chain._
      identity documents, or support-contact details.
 
 ## HQ-03 — Choose the non-public Store test route and perform the Windows pass — 18 minutes
+
+> **Post-publication correction — 2026-08-31:** the 18-minute heading and
+> non-public-route sequence are the historical plan. Exact candidate CI supports
+> the later documented **15 active minute** checklist. The public-first route
+> was used before this check because the configured public submission offered
+> no private Store-signed install path on the Linux host and the owner explicitly
+> directed publication after certification. Install Paulatim from the now-live
+> public Store page on physical x64 Windows and perform the 15-minute checklist.
+> Record any defect immediately; do not represent this delayed observation as a
+> pre-publication pass.
 
 > **Time/scope correction — 2026-08-26:** the heading is the historical
 > estimate. Exact AMPLE-001 CI already proves package structure/identity,
@@ -282,6 +309,11 @@ PAULATIM-001 1.1.1 must establish the new exact evidence chain._
 > submission `1152921505701225649` is In certification. The title's “release the
 > hold” portion remains a distinct post-certification action and has not been
 > done.
+
+> **Publication completion — 2026-08-31:** Microsoft certification passed; the
+> owner explicitly directed publication; **Publish now** was executed; and the
+> signed-out public page plus $14.99 purchase action were observed. The entire
+> HQ-04 path is complete and must not be repeated. HQ-03 remains open.
 
 > **Paulatim execution override — 2026-08-28:** every AMPLE-001 package/hash
 > clause below is non-executable. Use only fresh PAULATIM-001 1.1.1 after its
@@ -404,23 +436,20 @@ PAULATIM-001 1.1.1 must establish the new exact evidence chain._
   4. Record URLs and timestamps, then inspect Store acquisition data often
      enough to enforce the five-day signal gate.
 
-## HQ-06 — Approve landing deploy sequencing and enable the $0 static host — 5 minutes
+## HQ-06 — Optionally deploy the live-aware landing page — 5 minutes
 
-- **What:** Approve the PROP-004 sequencing amendment (deploy at
-  certification-submit time, not post-publication) and enable a $0 static
-  host for the scriptless `landing/` artifact; record the public URL.
-- **Why human-only:** Amending PROP-004 is an owner approval (D039), and
-  creating a hosting account/project is an external commitment tied to the
-  owner's identity.
+- **What:** Decide whether to deploy the now-live-aware, scriptless `landing/`
+  artifact on a $0 static host and, if approved, record the public URL.
+- **Why human-only:** The old certification-time sequencing question is moot.
+  Deployment approval and creating a hosting account/project remain external
+  commitments tied to the owner's identity.
 - **Direct links:** <https://pages.cloudflare.com/> or
   <https://www.netlify.com/>; proposal text in
   `docs/project/PROPOSALS.md` (PROP-004).
 - **Steps:**
-  1. Approve or reject the sequencing amendment: deploy the landing page when
-     HQ-04's certification submission goes in, so the page is established
-     before the Store page is live. The page's prelaunch state is truthful
-     ("Store release pending") and is enforced by
-     `scripts/validate-store.mjs` while the listing remains a draft.
+  1. The earlier certification-time sequencing amendment is now moot because
+     the Store is live. Approve or reject deploying the currently live-aware
+     landing artifact; it remains truthful and undeployed either way.
   2. Use **Cloudflare Pages or Netlify** per PROP-004. D007 rejected GitHub
      Pages for commercial hosting; use GitHub Pages only if you first
      re-check its current terms and record the reversal of D007 in
@@ -432,9 +461,9 @@ PAULATIM-001 1.1.1 must establish the new exact evidence chain._
      (every claim demonstrable today; the artifact is already tracker-,
      form-, script-, cookie-, and remote-asset-free by validator).
   5. Record the public URL and date in `revenue/METRICS.md`.
-  6. Do **not** wire any `?cid=landing-primary` link until the Store page is
-     observed live and purchasable (HQ-04 step 6). The store validator fails
-     the build if that link appears while the listing is in draft state.
+  6. The `?cid=landing-primary` link is already wired after signed-out Store
+     verification. Confirm it still resolves before deploying; do not add a
+     second analytics or tracking layer.
 
 ## HQ-07 — Clear the "Ample" name, or explicitly accept the risk — 10 minutes (or 1 minute)
 
@@ -473,7 +502,37 @@ PAULATIM-001 1.1.1 must establish the new exact evidence chain._
   1. Record in `revenue/DECISIONS.md` that you accept the name-collision
      risk for the 1.1.0 launch without a search. Nothing else changes.
 
+## HQ-08 — Authorize and correct the live Store support URI — 5 minutes
+
+- **What:** Separately authorize or personally make the listing-only change
+  that replaces the live generic `https://toledotechnologies.com/` SupportUri
+  with the public Paulatim `docs/SUPPORT.md` URL. Leave the publisher website
+  unchanged.
+- **Why human-only:** This is a new Partner Center state change after
+  publication and may create another submission/publication cycle. The prior
+  authority to submit and publish PAULATIM-001 does not silently authorize it;
+  the current browser session also requires the owner's Microsoft sign-in.
+- **Direct link:**
+  <https://partner.microsoft.com/en-us/dashboard/products/9PLRSZZMFPJH/overview>
+- **Steps:**
+  1. Explicitly authorize this separate listing update and sign in to Partner
+     Center, or make the change yourself.
+  2. Change only the Paulatim support URL to
+     `https://github.com/ntoledo319/Mindful-Organizer/blob/main/docs/SUPPORT.md`.
+     Do not alter package, price, identity, declarations, or audience.
+  3. If Partner Center requires a new submission or publication confirmation,
+     treat that as part of this explicit HQ-08 action—not as continuing package
+     authority. Record the resulting status without guessing.
+  4. After propagation, verify the signed-out Store catalog and add the result
+     to `revenue/METRICS.md` before HQ-05 outreach.
+
 ## Running owner-time ledger
+
+> **Current calculation — 2026-08-31:** certification, publication, and the
+> checkout observation are complete. Known remaining human work is at most
+> **30 active minutes**: required HQ-03 15, owner-controlled HQ-08 5, plus
+> optional HQ-05 and HQ-06 at 5 each. The 27/37-minute 2026-08-28 calculations below are preserved planning
+> history and are no longer operational.
 
 > **Execution calculation — 2026-08-28:** HQ-02 and HQ-04 are complete. The
 > known remaining human-only maximum is about **27 active minutes**: HQ-03 15,

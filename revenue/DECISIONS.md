@@ -538,3 +538,23 @@ remains controlling: certification does not authorize publication, and no
 **Publish now** action occurred. Preserve these bytes through certification;
 if Microsoft reports a defect, fix only that concrete cause and establish a new
 evidence chain only when package bytes must change.
+
+## 2026-08-31 — Paulatim public release
+
+### D051 — Publish the certified public-first submission under explicit owner direction
+
+Partner Center certified exact PAULATIM-001 and showed the submission Ready to
+publish. The configured Public audience route did not expose a private
+Store-signed installation path on the Linux host, so HQ-03 could not precede a
+public release without a new audience/submission cycle. The owner explicitly
+said the product was ready to publish, continuing the earlier full-submit
+authority. Decision: preserve the exact certified bytes, release the manual
+hold, verify the signed-out public page and Microsoft catalog immediately, and
+keep HQ-03 as a plainly disclosed post-publication validation gap. Do not claim
+manual accessibility conformance or create another package to simulate it.
+
+Execution outcome: **Publish now** moved the submission to In publishing; the
+canonical page <https://apps.microsoft.com/detail/9PLRSZZMFPJH> then resolved
+signed out and Microsoft's live catalog exposed a $14.99 USD `Purchase` action.
+This establishes one live purchasable listing, not a completed sale or revenue.
+The five-day signal clock starts 2026-08-31; collected profit remains $0.00.

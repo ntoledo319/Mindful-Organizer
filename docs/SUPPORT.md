@@ -1,13 +1,19 @@
 # Paulatim Support
 
-_Last updated: 2026-07-14_
+_Last updated: 2026-08-31_
 
 _Visible-name correction — 2026-08-28: the support and privacy boundaries are
 unchanged; only the visible product name is now Paulatim._
 
+_Publication correction — 2026-08-31: Paulatim 1.1.1 is publicly available
+through the Microsoft Store. The support and privacy boundaries remain
+unchanged._
+
 ## Current availability
 
-Paulatim is not currently released. This page is the public support landing page.
+Paulatim is available on the Microsoft Store at
+<https://apps.microsoft.com/detail/9PLRSZZMFPJH>. This page is the public
+support landing page.
 Reproducible software bugs and focused feature requests can be filed through the
 repository's privacy-guarded
 [GitHub Issue forms](https://github.com/ntoledo319/Mindful-Organizer/issues/new/choose).

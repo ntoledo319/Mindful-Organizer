@@ -1,16 +1,20 @@
 # Paulatim Terms
 
-_Last updated: 2026-07-14_
+_Last updated: 2026-08-31_
 
 _Visible-name correction — 2026-08-28: the intended Store terms are
 substantively unchanged; only the visible product name is now Paulatim. No live
 offer or publication is implied._
 
+_Publication correction — 2026-08-31: Paulatim 1.1.1 is now available through
+the Microsoft Store for $14.99 USD. The substantive product, privacy, warranty,
+and support boundaries below are unchanged._
+
 ## Current status
 
-Paulatim is not currently listed as purchasable. These terms describe the intended
-official Microsoft Store package and do not represent that a price, package, or
-listing is live.
+Paulatim is available on the Microsoft Store for $14.99 USD at
+<https://apps.microsoft.com/detail/9PLRSZZMFPJH>. These terms govern the
+official Microsoft Store package.
 
 ## Product scope
 
@@ -49,11 +53,11 @@ comfortable storing under that policy.
 
 ## Source and official package
 
-The source code is available under the repository's MIT license. If an official
-Microsoft Store package becomes available, its one-time listed price pays for
-that packaged binary and Store delivery. A purchase does not remove the source
-license, transfer intellectual-property rights, create a healthcare
-relationship, or promise a particular future feature or update.
+The source code is available under the repository's MIT license. The official
+Microsoft Store package's one-time listed price pays for that packaged binary
+and Store delivery. A purchase does not remove the source license, transfer
+intellectual-property rights, create a healthcare relationship, or promise a
+particular future feature or update.
 
 Store billing, delivery, eligible refunds, and applicable consumer protections
 remain governed by Microsoft and local law.

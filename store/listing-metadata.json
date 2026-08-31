@@ -4,8 +4,9 @@
   "_stateCorrection20260825": "Partner Center product identity, app names, and the submission overview were reobserved on 2026-08-25: the exact package identity remains ToledoTechnologies.Hearth, only Hearth is reserved, and the validated package remains historical Hearth. These Ample listing values were not saved or reverified in Partner Center.",
   "_stateCorrection20260828": "The owner selected Paulatim and explicitly authorized reservation and submission. Exact Paulatim was reserved on existing product 9PLRSZZMFPJH and set as its dashboard name. The Microsoft-assigned package identity remains ToledoTechnologies.Hearth. The previously submitted Hearth draft was canceled back to draft before this rename; a fresh Paulatim package and listing must replace every Hearth/Ample candidate before certification.",
   "_packageVersionCorrection20260828": "Build Paulatim as 1.1.1. The canceled Hearth draft already used x64 version 1.1.0 with different bytes; Microsoft requires a unique package full name for changed contents at the same architecture.",
+  "_publicationCorrection20260831": "The comment and earlier corrections above preserve their dated Hearth/Ample/draft states. Microsoft later certified exact PAULATIM-001. After explicit owner direction, Publish now was used; the signed-out Store page and live catalog showed Paulatim, Toledo Technologies, an active $14.99 USD purchase action, and product ID 9PLRSZZMFPJH. Manual installed-Windows accessibility remains unobserved.",
   "schemaVersion": 2,
-  "releaseState": "draft-not-publishable",
+  "releaseState": "live",
   "positioning": "Energy planning, finally on Windows—for ADHD and other variable-capacity days.",
   "language": "en-us",
   "name": "Paulatim",
@@ -30,11 +31,11 @@
     "offline planner",
     "executive function"
   ],
-  "keywordsStatus": "reviewed-for-paulatim-2026-08-28-not-saved-in-partner-center",
+  "keywordsStatus": "saved-in-partner-center-2026-08-28-and-certified-2026-08-31",
   "category": {
     "primary": "Productivity",
     "secondary": "Health + fitness",
-    "status": "saved-in-partner-center-draft",
+    "status": "live-observed-2026-08-31",
     "statusCorrection20260819": "Historical Hearth draft observation from 2026-07-14; not reobserved for Ample."
   },
   "markets": {
@@ -47,14 +48,15 @@
     "model": "one-time",
     "currency": "USD",
     "amount": 14.99,
-    "status": "saved-in-partner-center-draft-not-live",
+    "status": "live-observed-2026-08-31",
     "statusCorrection20260819": "Historical Hearth draft observation from 2026-07-14; not reobserved for Ample.",
     "customerValue": "Official x64 MSIX packaging and Microsoft Store delivery; the source remains MIT licensed."
   },
   "ageRating": {
     "status": "complete-observed-in-partner-center-2026-08-28",
     "statusCorrection20260828": "The Partner Center overview was reobserved with Age ratings Complete after the owner completed the IARC flow. Preserve those observed answers; do not reconstruct or silently retake the legal questionnaire.",
-    "claimedRating": null,
+    "claimedRating": "ESRB Everyone 10+ — Violent References",
+    "publicRatingObserved20260831": "The signed-out Microsoft Store page displayed ESRB Everyone 10+ with Violent References.",
     "contentToDisclose": [
       "Personal wellness and mental-health language",
       "US 988 crisis-resource links",
@@ -85,8 +87,7 @@
       "End-to-end Windows keyboard and screen-reader pass",
       "High-contrast and color-contrast audit",
       "Text scaling and minimum-window audit",
-      "Manual reduced-motion pass across release flows",
-      "Microsoft Store certification result"
+      "Manual reduced-motion pass across release flows"
     ]
   },
   "systemRequirements": {
@@ -99,6 +100,7 @@
     "minimumOperatingSystemStatus": "Read from the exact validated Ample 1.1.0 AppX in Partner Center; installed-Windows verification remains open.",
     "minimumOperatingSystemCorrection20260819": "The preceding value came from the historical Hearth package, not an Ample AppX. Reverify it against the future Ample candidate before submission.",
     "minimumOperatingSystemCorrection20260828": "The Ample validation is now historical after the Paulatim manifest rename. Reverify this value against the exact Paulatim candidate before submission.",
+    "minimumOperatingSystemPublication20260831": "Exact PAULATIM-001 declares Windows 10.0.14316.0 and passed Microsoft certification; installed-Windows verification remains open.",
     "networkRequiredForCoreUse": false,
     "externalLinkExceptions": "Store, privacy, support, 988 web, tel, and sms links are handed to Windows when the user activates them.",
     "input": [
@@ -106,7 +108,7 @@
       "Mouse or trackpad"
     ],
     "storageRequirement": null,
-    "storageRequirementStatus": "Measure the exact release package plus a representative local database before submission."
+    "storageRequirementStatus": "Measure installed footprint plus a representative local database during the remaining physical-Windows validation."
   },
   "copyrightAndTrademarkInfo": "Copyright © 2026 Nicholas Toledo. Published by Toledo Technologies.",
   "urls": {
@@ -116,11 +118,14 @@
     "source": "https://github.com/ntoledo319/Mindful-Organizer",
     "support": "https://github.com/ntoledo319/Mindful-Organizer/blob/main/docs/SUPPORT.md",
     "plannedSupport": "https://github.com/ntoledo319/Mindful-Organizer/blob/main/docs/SUPPORT.md",
+    "livePublisherWebsiteObserved": "https://toledotechnologies.com/",
+    "liveSupportUriObserved": "https://toledotechnologies.com/",
+    "supportUriStatus": "live-catalog-mismatch-observed-2026-08-31-owner-controlled-follow-up-required",
     "issueTracker": "https://github.com/ntoledo319/Mindful-Organizer/issues/new/choose",
-    "storeListing": null,
+    "storeListing": "https://apps.microsoft.com/detail/9PLRSZZMFPJH",
     "storeListingPattern": "https://apps.microsoft.com/detail/9PLRSZZMFPJH"
   },
-  "urlPublicationGate": "Final policies and the public support page are on main. The privacy-guarded issue forms require GitHub sign-in. Verify every listing URL in a private browser before certification, and keep storeListing null until the public page is observed.",
+  "urlPublicationGate": "The signed-out Store URL was observed live on 2026-08-31. The public page exposes the generic Toledo Technologies site as both publisher website and SupportUri, while this source specifies the GitHub Paulatim support page; HQ-08 requires fresh owner authority for that listing-only correction before outreach. Final policies are on main and privacy-guarded issue forms require GitHub sign-in.",
   "screenshotPlan": "store/SCREENSHOTS.md",
   "campaignPlan": "store/CAMPAIGNS.md",
   "experimentPlan": "store/PRODUCT-PAGE-EXPERIMENTS.md",

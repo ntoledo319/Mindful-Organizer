@@ -537,3 +537,34 @@ Microsoft Store name-collision search (HQ-07 step 2) not yet run.
   publication, live visibility, purchase, or revenue evidence.
 - Collected profit remains **$0.00**; gap remains **$4,000.00**; observed live
   listings, product-page traffic, purchases, acquisitions, and payouts remain 0.
+
+## 2026-08-31 — Paulatim certification and public release
+
+- Partner Center showed exact submission `1152921505701225649` **Ready to
+  publish** with every certification stage green and only
+  `Paulatim 1.1.1.appx` in the package section. The exact release candidate
+  remains PAULATIM-001 from source `f2d2a417`, 175,489,702 bytes, SHA-256
+  `af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`.
+- Under the owner's explicit publication direction, **Publish now** was
+  executed. Partner Center moved to **In publishing** and stated that the
+  certified product had started publishing.
+- At approximately 2026-08-31 08:56 EDT, the canonical signed-out page resolved
+  publicly at <https://apps.microsoft.com/detail/9PLRSZZMFPJH> with title
+  Paulatim, publisher Toledo Technologies, Productivity category, the
+  Windows-first short description, Paulatim screenshots, and ESRB Everyone
+  10+ / Violent References.
+- Microsoft's live catalog returned product ID `9PLRSZZMFPJH`, a USD $14.99
+  price/list price, a `Purchase` action, nine image records, and release
+  timestamp `2026-08-31T12:47:05.3548026Z`. This proves a public purchase path;
+  it does not prove a completed customer transaction.
+- The signed-out page exposed `https://toledotechnologies.com/` as both the
+  publisher website and `SupportUri`. That generic studio page is not the
+  intended Paulatim support page (`docs/SUPPORT.md`); the live-field mismatch
+  is recorded as follow-up, not silently represented as correct.
+- Physical-Windows installation, installed footprint, keyboard, Narrator,
+  forced-colors, 200% scaling, reduced-motion, and modal-focus checks remain
+  unobserved under HQ-03. No accessibility declaration is claimed.
+- Observed product-page views, acquisitions, completed purchases, refunds,
+  accrued proceeds, payouts, and collected profit remain **unobserved / $0.00**.
+  Gap to the collected-profit target remains **$4,000.00**. The five-day signal
+  clock begins 2026-08-31.

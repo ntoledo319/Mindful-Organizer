@@ -2,6 +2,17 @@
 
 _Cycle 3 handoff update 2026-07-15. Scope is the containment root only._
 
+## Publication outcome — 2026-08-31
+
+Microsoft certified exact PAULATIM-001 and, under the owner's explicit
+publication direction, the manual hold was released. Paulatim 1.1.1 is now
+publicly available for $14.99 USD at
+<https://apps.microsoft.com/detail/9PLRSZZMFPJH>. Microsoft's live catalog
+exposes a purchase action, so the official Windows package is now a sellable
+unit. No purchase, payout, or collected revenue has yet been observed. The
+physical-Windows keyboard/Narrator/presentation pass remains an explicit
+post-publication validation gap, not a claimed capability.
+
 ## Execution outcome — 2026-08-28
 
 PAULATIM-001 now exists at exact source `f2d2a417`. Quality 33169087812 and
@@ -98,6 +109,11 @@ evidence, and assistant state are not separate assets.
   never-submit. Paulatim is reserved and Age ratings is observed Complete, but
   PAULATIM-001 1.1.1 has not yet completed exact-SHA CI or been uploaded. Payout
   readiness still needs a non-sensitive live reconciliation before submission.
+- **Completeness correction (2026-08-31):** the preceding corrections are
+  historical. Exact PAULATIM-001 passed CI and Microsoft certification and is
+  publicly purchasable at $14.99. IARC and tax/payment readiness are Complete;
+  only the physical-Windows HQ-03 validation remains open. Separately, HQ-08
+  records the owner-controlled correction for the live generic SupportUri.
 - **Distribution target:** Microsoft Store using reserved product ID
   9PLRSZZMFPJH and its built-in discovery and checkout. GitHub remains the
   public source and policy host, not the commercial checkout.
@@ -118,6 +134,8 @@ evidence, and assistant state are not separate assets.
 - **Smallest sellable unit:** The future official x64 Paulatim 1.1.1 Store
   package at a one-time $14.99 price, with honest wellness and local-data
   boundaries. No sellable package exists until PAULATIM-001 is verified.
+- **Sellable-unit correction (2026-08-31):** exact PAULATIM-001 is now the
+  certified, live $14.99 Store package. No purchase or payout is yet observed.
 
 ## Separable asset map
 
@@ -140,6 +158,10 @@ _Execution outcome 2026-08-28: the preceding correction records the earlier
 same-day state. Exact PAULATIM-001 is now CI-verified and submitted with its
 listing/screenshots. It is in certification under a manual publication hold;
 it is not certified, live, purchasable, or revenue-producing._
+
+_Publication outcome 2026-08-31: Microsoft certified that exact package and
+the owner-authorized publication completed. The official Store package is live
+and purchasable at $14.99; sales and collected revenue remain unobserved._
 
 ### A2 — Presence and Focus Guard engine
 
@@ -214,6 +236,10 @@ submission preparation. Exact PAULATIM-001 is in Microsoft certification under
 a manual publication hold. Remaining gates are Microsoft's result, the
 Store-signed Windows human observation, and a separate publication decision.
 No asset is purchasable, so collected revenue remains zero.
+
+_Publication correction 2026-08-31: the preceding sentence is superseded.
+Paulatim is now purchasable through the Microsoft Store; collected revenue
+still remains zero because no sale or payout has been observed._
 
 ## Cycle 3 continuation authority — 2026-07-15
 

@@ -6,6 +6,25 @@ and the 400-line published iteration (Git history, commit `0ff209e`). Current
 coordination truth lives in `PROJECT_TRACKER.md`; this file only gets an agent
 started. Last reconciled 2026-08-04 against `origin/main` `270e650`._
 
+_Reconciliation correction 2026-08-31: current git/CI, certification, and the
+signed-out public Store record were re-derived for the publication close. Use
+`PROJECT_TRACKER.md` for mutable refs and current actions; the 2026-08-04 line
+above is retained as historical provenance._
+
+_Publication outcome 2026-08-31: Microsoft certified exact PAULATIM-001
+(`Paulatim 1.1.1.appx`, SHA-256
+`af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`). Under
+the owner's explicit publication direction, **Publish now** was executed. The
+signed-out page and Microsoft's live catalog show Paulatim by Toledo
+Technologies with an active $14.99 USD purchase action at
+<https://apps.microsoft.com/detail/9PLRSZZMFPJH>. Do not create another package
+or repeat IARC, payout setup, submission, certification, or publication. Resume
+with HQ-03's 15-minute physical-Windows accessibility pass, optional owner-only
+HQ-05/HQ-06, and the five-day signal check. Microsoft's page uses the generic
+publisher site as the Paulatim SupportUri; that separate Store-state correction
+is owner-controlled HQ-08 and requires fresh explicit authority. No sale or
+revenue is yet observed._
+
 _Current correction 2026-08-28: the owner selected **Paulatim**, explicitly
 authorized its reservation and full certification submission, and authorized
 removal of the old Hearth draft/name references. Exact Paulatim is now reserved
@@ -248,6 +267,10 @@ Active bet: one-time **$14.99** Microsoft Store purchase (planning net $12.7415
 at the documented 15% fee; 314 sales ≈ $4,000.83 — arithmetic, not demand).
 Details: `revenue/PLAN.md`, `revenue/OPPORTUNITIES.md`, `revenue/METRICS.md`.
 
+_Publication correction 2026-08-31: there is now **1 live paid listing** at
+$14.99. Collected revenue remains $0.00 because no purchase or payout has been
+observed; a purchase action is availability evidence, not a completed sale._
+
 ## 3. Product truth (one paragraph)
 
 Paulatim is an Electron 43 / React 18 / TypeScript Windows desktop energy
@@ -270,6 +293,13 @@ or crisis detector. Full claims boundary: `README.md`, `docs/PRIVACY.md`,
 > CI; only its independently verified package may replace the draft. IARC is
 > already Complete, submission work is agent-authorized, and publication remains
 > a separate later action.
+
+> **Publication operational boundary — 2026-08-31:** the preceding boundary is
+> preserved as the pre-release rule. PAULATIM-001 is now the sole certified and
+> public package; its full hash is `af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`.
+> Every AppX named in the historical bullets below remains non-executable.
+> Install only from the public Microsoft Store for HQ-03; do not upload, swap,
+> rebuild, resubmit, or republish any package.
 
 - Candidate lineage (as of 2026-08-04): the **Partner Center guard hash** is
   still the old accepted AppX — source `8172603b62c2457696608c145511bd3fe92429d4`,
