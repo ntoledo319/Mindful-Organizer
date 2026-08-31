@@ -4,7 +4,7 @@
 - **Last updated:** 2026-08-31 (PAULATIM-001 certified and publicly purchasable; post-publication validation/signal monitoring active)
 - **Workspace root:** `/home/nick/Development/active/mindful_organizer` (REPO-01)
 - **Branch / HEAD:** `main` is a documentation-only successor to exact PAULATIM-001 source `f2d2a4177fcb05d5b24405c598d0eb9b9d7f01e6` (tree `320490a5cfc1d5e409e8ce0ea2fb05147dc97e4d`); re-derive the mutable documentation HEAD from `git`
-- **Working tree:** post-publication records only; exact certified package bytes remain unchanged
+- **Working tree:** clean after the post-publication evidence close; exact certified package bytes remain unchanged
 - **Operating mode:** LIVE / POST-PUBLICATION VALIDATION AND SIGNAL MONITORING
 - **Canonical set:** [AGENTS.md](AGENTS.md) · [HANDOFF.md](HANDOFF.md) · [Docs index](docs/project/DOCS_INDEX.md) · [History](docs/project/REPO_HISTORY.md) · [Verification](docs/project/VERIFICATION_LOG.md) · [Decisions](revenue/DECISIONS.md) · [Proposals](docs/project/PROPOSALS.md) · [Migration map](docs/project/MIGRATION_MAP.md) · [Archive](docs/project/archive/)
 
@@ -155,6 +155,7 @@ observed green through `origin/main` HEAD `246baac` (VER-20260728-001…003).
 | Paulatim certification + public release | product `9PLRSZZMFPJH`; exact PAULATIM-001 | EXT-PC + signed-out Store/catalog | pass / live | certification stages green; Publish now executed; public title/publisher/screenshots; active $14.99 Purchase action | 2026-08-31 | VER-20260831-001 |
 | Post-release trigger-safety baseline | `1c0d164` | CI ubuntu + trigger audit | pass | Quality 33398564825 green; identical package tree; no Windows workflow run | 2026-08-31 | VER-20260831-002 |
 | Post-publication documentation close | working-tree:`bcefdd4`+dirty (exact fingerprint in log) | local linux | pass | full non-packaging suite; 25 docs/listing/landing paths; no Windows-trigger path; no package command | 2026-08-31 | VER-20260831-003 |
+| Post-publication documentation Quality | `5cfc573` | CI ubuntu + trigger audit | pass | Quality 33401339453 green; exact verified tree; no Windows workflow run | 2026-08-31 | VER-20260831-004 |
 | Evidence close local gate | working-tree:`f2d2a417`+dirty (21 docs/landing paths) | local linux | pass | full non-packaging suite; no package command; Windows-trigger exclusion checked separately | 2026-08-28 | VER-20260828-005 |
 | Evidence close Quality Gate | `ad9d22a` | CI ubuntu | pass | run 33177707087; notices, secrets, Store/landing validation, audit, lint, typecheck, tests, and build green; no Windows workflow triggered | 2026-08-28 | VER-20260828-006 |
 | Installed Windows pass | public Store build | physical Windows | ready / not observed | HQ-04 is complete; execute the scoped 15-minute HQ-03 pass without implying it preceded publication | — | — |
@@ -167,11 +168,11 @@ Paulatim candidate bytes. See store/WINDOWS-VALIDATION.md.
 
 | Surface | Ref / version | State | Last verified | Evidence | Drift |
 |---|---|---|---|---|---|
-| Working tree | post-publication documentation close over baseline `1c0d164` | dirty tracked paths are docs/listing/landing only; certified bytes unchanged | 2026-08-31 | git status + trigger-path diff | final local gate and remote close pending |
+| Working tree | evidence-only successor to `5cfc573` | clean after final evidence publication; certified bytes unchanged | 2026-08-31 | git status + tree comparison | none |
 | Local `cycle-2-shipped` | `246baac` | stale; behind current `main` | 2026-08-26 | git | historical branch |
-| Local `main` | checked-out post-release documentation tree | local history contains the duplicate trigger-safety merge; PAULATIM-001 source remains `f2d2a417` | 2026-08-31 | git | reconcile to the final remote documentation tree after close |
-| `origin/main` | `1c0d164` | normal-message CI baseline established after the narrowed Store trigger; dirty documentation successor is not yet remote | 2026-08-31 | git + gh | final documentation successor pending |
-| CI | PAULATIM-001 source `f2d2a417`; post-release baseline `1c0d164` | candidate Quality/Windows green; baseline Quality 33398564825 green; no Windows run on the identical-tree baseline | 2026-08-31 | VER-20260828-003; VER-20260831-002 | final documentation Quality pending |
+| Local `main` | evidence-only successor to `5cfc573` | synchronized with origin after close; PAULATIM-001 source remains `f2d2a417` | 2026-08-31 | git | none |
+| `origin/main` | `5cfc573` plus this evidence-only successor | public post-publication docs plus exact CI record; no package input changed | 2026-08-31 | git + gh | none |
+| CI | PAULATIM-001 source `f2d2a417`; documentation head `5cfc573` | candidate Quality/Windows green; documentation Quality 33401339453 green; no Windows run for the close | 2026-08-31 | VER-20260828-003; VER-20260831-004 | none |
 | Partner Center | Product `9PLRSZZMFPJH`; submission `1152921505701225649`; exact identity `ToledoTechnologies.Hearth`; only Paulatim name/package | certification passed; publication initiated; $14.99 | 2026-08-31 | VER-20260831-001 | UI last observed In publishing while public edge was already live |
 | Microsoft Store live | `https://apps.microsoft.com/detail/9PLRSZZMFPJH` | public; active $14.99 USD Purchase action | 2026-08-31 | VER-20260831-001 | page/catalog live; sales metrics not yet observed |
 | Landing host | — | not deployed | — | landing/README.md | HQ-06 is an optional live-aware deployment; certification-time sequencing is moot |
