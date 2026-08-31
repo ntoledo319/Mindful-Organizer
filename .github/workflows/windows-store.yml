@@ -22,12 +22,12 @@ on:
       # that must never be submitted. Every extra build is another near-identical
       # decoy sitting above the real candidate in the Actions list.
       #
-      # Only files that can change the AppX bytes belong here. store/*.md is
-      # documentation and still gets validated on every push by the Quality Gate
-      # (tests.yml has no path filter and runs npm run store:validate).
+      # Only files that can change the AppX bytes belong here. Store Markdown
+      # and listing metadata are intentionally excluded: publication-state,
+      # price, keyword, and live-URL updates are validated on every push by the
+      # Quality Gate, but must not mint a near-identical package artifact.
       - "store/identity.json"
       - "store/identity.cjs"
-      - "store/listing-metadata.json"
 
 permissions:
   contents: read
