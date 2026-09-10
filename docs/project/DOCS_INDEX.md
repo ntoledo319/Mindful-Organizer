@@ -10,6 +10,12 @@ re-audited after publication. Eight previously omitted operating/research/tool
 documents are now indexed below; generated screenshot metadata and package /
 TypeScript configuration files remain outside this prose inventory._
 
+_Release-closeout inventory correction — 2026-09-10: no document role, owner,
+or path changed. Current action cells now reflect the overdue/unobserved Store
+signal gates, open HQ-03/HQ-08/HQ-09 work, and the new dated decision,
+verification, and history records. The older inventory-verification references
+above remain their own point-in-time evidence._
+
 Classification vocabulary: **canonical** (owns its truth), **supporting**
 (context, audits, procedures subordinate to a canonical owner), **generated**
 (machine-built; do not hand-edit), **superseded-pointer** (retained link
@@ -53,7 +59,7 @@ so), **artifact** (raw evidence/output, not prose truth).
 | `docs/TERMS.md` | Terms of use | users, Store | canonical (terms) | keep |
 | `docs/REFUNDS.md` | Purchase/refund policy | users, Store | canonical (refunds) | keep |
 | `docs/ACCESSIBILITY.md` | Accessibility status + required pre-declaration matrix | users, release | canonical (accessibility status) | no conformance claim until HQ-03 pass |
-| `docs/SUPPORT.md` | Intended public Paulatim support page | users | canonical (support) | live App website + Support URI both use generic studio site; owner-controlled HQ-08 requires fresh authority |
+| `docs/SUPPORT.md` | Intended public Paulatim support page | users | canonical (support) | verified public target; live App website + Support URI still use the generic studio site; authorized HQ-08 awaits the Store-enabled account |
 
 ## `docs/strategy/` — monetization strategy (legacy layer)
 
@@ -79,8 +85,8 @@ where the file asserts standalone truth.
 | `revenue/OPPORTUNITIES.md` | 35 monetization frames, scoring, portfolio, falsifiers | canonical (monetization proposals) | keep; loop-maintained |
 | `revenue/PLAN.md` | Active bets, arithmetic, critical path, gap | canonical (monetization plan) | line 1 root fixed 2026-07-24 (M6) |
 | `revenue/METRICS.md` | Timestamped observed-evidence ledger | canonical (observed evidence) | keep; observed facts only |
-| `revenue/HUMAN_QUEUE.md` | Owner/delegated Store actions HQ-00…HQ-08; current Paulatim outcome at top | canonical (owner queue) | HQ-03 ready; HQ-05/HQ-06 optional; HQ-08 owner-controlled for links/account copy; publication complete under D051 |
-| `revenue/DECISIONS.md` | Decision ledger D001–D052 | canonical (decisions) | reused as the project decision log; no competing file created |
+| `revenue/HUMAN_QUEUE.md` | Owner/delegated Store actions HQ-00…HQ-09; current Paulatim outcome at top | canonical (owner queue) | HQ-03 open; HQ-08 authorized but account-blocked; HQ-09 Store-enabled account/signal observation blocked; HQ-05/HQ-06 optional; publication complete |
+| `revenue/DECISIONS.md` | Decision ledger D001–D053 | canonical (decisions) | reused as the project decision log; no competing file created |
 | `revenue/MARKET-ANALYSIS-2026-08-07.md` | Comparable-set and price-band research | marketing, owner | supporting (point-in-time research) | preserve date/source boundary; recheck before price changes |
 | `revenue/NAME-RISK-2026-08-07.md` | Hearth name-risk research | owner, release | historical (superseded by Paulatim) | retain; not legal clearance for Paulatim |
 | `revenue/npm-audit-*.json` | Raw audit output | artifact (gitignored) | regenerate on demand |
@@ -90,8 +96,8 @@ where the file asserts standalone truth.
 | Path | Purpose | Class | Action |
 |---|---|---|---|
 | `store/README.md` | Release path, Partner Center state, blockers, post-certification playbook | canonical (Store release) | playbook merged from handoff 2026-07-24 (M4) |
-| `store/GET-LISTED-RUNBOOK.md` | Operator sequence for Store preparation/release | supporting (Store procedure) | historical steps fenced; current Paulatim/public corrections control |
-| `store/WINDOWS-VALIDATION.md` | Exact-candidate validation + installed smoke/accessibility procedure | canonical (Windows validation) | keep; execute at HQ-03 |
+| `store/GET-LISTED-RUNBOOK.md` | Operator sequence for Store preparation/release | supporting (Store procedure) | release steps complete; September 5/9 signal gates overdue/unevaluated; HQ-03/HQ-08/HQ-09 remain |
+| `store/WINDOWS-VALIDATION.md` | Exact-candidate validation + installed smoke/accessibility procedure | canonical (Windows validation) | exact kit reverified 2026-09-10; HQ-03 remains unobserved |
 | `store/SCREENSHOTS.md` | Screenshot plan, hashes, acceptance checks | canonical (screenshots) | keep |
 | `store/CAMPAIGNS.md` | Campaign link IDs and measurement rules | canonical (campaign plan) | Store link live; owner-authored sends remain gated |
 | `store/LAUNCH_KIT.md` | Owner-approved launch drafts (nothing sent) | canonical (launch drafts) | owner sends only (HQ-05) |
@@ -100,7 +106,7 @@ where the file asserts standalone truth.
 | `store/PRODUCT-PAGE-EXPERIMENTS.md` | Post-launch page experiments | canonical (experiments) | gated on live traffic |
 | `store/POST_PUBLICATION_DOC_SWEEP.md` | Pre-drafted publication transition copy | historical (executed template) | applied 2026-08-31; retained as release-process history |
 | `store/DISCOVERY-REVIEW-2026-08-07.md` | Windows/competitor discovery review | marketing | supporting (point-in-time research) | D043 adopted platform-first conclusion; recheck before reposition |
-| `store/listing-metadata.json` | Structured listing copy/state | canonical (listing data) | live URL/price observed 2026-08-31 |
+| `store/listing-metadata.json` | Structured listing copy/state | canonical (listing data) | public $14.99 U.S. listing reobserved; generic links/four account-copy surfaces remain until HQ-08 is publicly reverified |
 | `store/identity.json` / `identity.cjs` | Reserved package identity + checker | canonical (Store identity) | `npm run store:check` must print true |
 
 ## Remaining docs

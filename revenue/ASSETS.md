@@ -2,6 +2,14 @@
 
 _Cycle 3 handoff update 2026-07-15. Scope is the containment root only._
 
+## Release-closeout correction — 2026-09-10
+
+The official $14.99 United States Store package remains a live sellable unit.
+Current purchases, proceeds, payouts, and collected revenue were not observed in
+private Partner Center, so this audit does not restate zero as a current fact.
+Exact package continuity remains owned by `store/WINDOWS-VALIDATION.md`; HQ-03
+and HQ-08 remain open.
+
 ## Publication outcome — 2026-08-31
 
 Microsoft certified exact PAULATIM-001 and, under the owner's explicit

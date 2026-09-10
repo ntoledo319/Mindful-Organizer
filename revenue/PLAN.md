@@ -8,6 +8,17 @@ blended fees), Day-15 gate assessment recorded, reposition menu pre-registered.
 macOS → Linux; AGENTS.md §1 law). Cycle-3 handoff published 2026-07-15;
 project-wide state now also lives in `PROJECT_TRACKER.md`._
 
+## Release-closeout correction — 2026-09-10
+
+Bet A remains publicly purchasable for $14.99 USD in the United States Store
+market. Current private Partner Center demand/revenue was not observed, so the
+five-day gate due 2026-09-05 and the four-additional-day gate due 2026-09-09 are
+overdue and unevaluated; no zero-signal reposition or replacement is inferred.
+HQ-09 is the immediate evidence dependency. HQ-08 remains a listing-truth fix
+and HQ-03 remains an unobserved physical-Windows validation. Exact package and
+repository continuity are referenced from `store/WINDOWS-VALIDATION.md` and
+VER-20260910-001; no package work is authorized or needed.
+
 ## Publication outcome — 2026-08-31
 
 Bet A is live and purchasable. Microsoft certified exact PAULATIM-001 and the
@@ -148,10 +159,11 @@ Center work was allowed by section 1.6. No autonomous human contact occurred.
 ## Money state
 
 - Target collected profit: **$4,000.00**
-- Collected profit observed in Partner Center: **$0.00**
-- Accrued net earnings observed: **$0.00** (no sales exist; nothing has accrued)
-- Processor or marketplace fees observed: **$0.00**
-- Current gap: **$4,000.00**
+- Latest ledgered collected-profit value: **$0.00**, not reobserved in private
+  Partner Center on 2026-09-10
+- September 10 accrued proceeds, fees, refunds, payouts, and collected amount:
+  **not observed**
+- Last-observed gap: **$4,000.00**; exact September 10 gap: **not reverified**
 
 **Accrued net earnings vs collected cash.** The mission target is collected
 cash. Under the Microsoft App Developer Agreement (ADA) v8.11 (published
@@ -446,6 +458,12 @@ through the 2026-09-05 five-day gate. HQ-03 remains a validation task, and
 neither live Store link field may be changed without fresh owner authority
 under HQ-08.
 No sale, payout, or collected revenue has yet been observed._
+
+_Gate-status correction — 2026-09-10: both the September 5 first gate and the
+September 9 follow-up gate are overdue. Private signal was not observed, so
+neither gate has an evidentiary result. Observe first under HQ-09; then apply
+D037. The owner has now delegated HQ-08, which may proceed as a
+correctness/support repair and does not consume the single demand reposition._
 
 ## Cycle 3 canonical continuation — 2026-07-15
 

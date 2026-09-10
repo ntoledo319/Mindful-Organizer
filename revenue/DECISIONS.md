@@ -578,3 +578,16 @@ SupportUri should point to the public support document, while App website needs
 an explicit owner choice once a verified Paulatim destination exists. This
 repository correction does not authorize a Partner Center edit, new submission,
 publication, domain purchase, outreach, or package change.
+
+## 2026-09-10 — Post-launch signal evidence boundary
+
+### D053 — Do not turn an overdue, unobserved Store gate into zero demand
+
+The five-live-day gate due 2026-09-05 and its four-additional-day follow-up due
+2026-09-09 elapsed before current private Partner Center demand/revenue was
+observed. Decision: keep both outcomes unevaluated. First observe the product's
+applicable August 31–September 10 reporting interval and record values or an
+explicit not-exposed/not-yet-final state in `revenue/METRICS.md`; only then apply
+D037's one-reposition/replace rule. Absence of access or observation is not zero
+signal. HQ-08 is a truth/support correction, not the single demand-driven
+reposition allowed by D037.

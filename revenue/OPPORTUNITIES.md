@@ -3,6 +3,14 @@
 _Reconfirmed 2026-07-15 for the Cycle 3 handoff. All U values are unvalidated
 four-week planning ranges, not observed revenue or promises._
 
+## Release-closeout correction — 2026-09-10
+
+The frame ranking and $14.99 hypothesis are unchanged. The first signal gate due
+2026-09-05 and replacement gate due 2026-09-09 are overdue but cannot be scored:
+current private views, acquisitions, purchases, and revenue were not observed.
+No D037 reposition or reserve-bet activation follows from missing observation.
+HQ-08 remains a listing-truth correction; it is not a demand experiment.
+
 ## Publication outcome — 2026-08-31
 
 Bet A is live. Microsoft certified exact PAULATIM-001 and the owner-authorized

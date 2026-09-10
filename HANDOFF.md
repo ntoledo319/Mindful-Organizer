@@ -11,6 +11,14 @@ signed-out public Store record were re-derived for the publication close. Use
 `PROJECT_TRACKER.md` for mutable refs and current actions; the 2026-08-04 line
 above is retained as historical provenance._
 
+_Release-closeout correction 2026-09-10: current ref/CI/worktree truth is in
+`PROJECT_TRACKER.md` and VER-20260910-001; exact package continuity is in
+`store/WINDOWS-VALIDATION.md`; public/private signal evidence is in the
+2026-09-10 `revenue/METRICS.md` entry. The Store remains publicly purchasable in
+the United States, but private demand/revenue was not observed, so the September
+5/9 gates are overdue and unevaluated. HQ-08 and HQ-03 remain incomplete. Do not
+infer zero signal, call the worktree clean, or create another package._
+
 _Publication outcome 2026-08-31: Microsoft certified exact PAULATIM-001
 (`Paulatim 1.1.1.appx`, SHA-256
 `af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`). Under

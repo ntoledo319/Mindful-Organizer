@@ -1,10 +1,10 @@
 # Paulatim — Project Tracker
 
 - **Schema:** project-tracker/v1 (2026-07-24)
-- **Last updated:** 2026-08-31 (PAULATIM-001 certified and publicly purchasable; post-publication validation/signal monitoring active)
+- **Last updated:** 2026-09-10 (public listing reobserved; overdue signal gates remain unevaluated pending Store-enabled account access)
 - **Workspace root:** `/home/nick/Development/active/mindful_organizer` (REPO-01)
-- **Branch / HEAD:** `main` is an evidence-only successor to exact documentation-truth commit `889100c76abe3e862bdfc6e2b0164f2db174e7f5` (tree `08c0ea17eedd143e82d00dd3a6f7ee6ed5c30fe1`), itself a documentation-only descendant of PAULATIM-001 source `f2d2a417`; re-derive the mutable successor SHA from `git`
-- **Working tree:** clean after the documentation-truth evidence close; exact certified package bytes remain unchanged
+- **Branch / HEAD:** baseline `main` and `origin/main` are exact `8308da9ba66510bc9ec50b655ea3467aead28dab` (tree `c1638c4418e506a56d75fd62d480e1dbe79c8a0e`), an evidence-only descendant of PAULATIM-001 source `f2d2a417`; this closeout delta is not a package source
+- **Working tree:** dirty with this release-closeout documentation delta plus pre-existing `.gitignore` and untracked `.claude` work; those user-owned paths and the exact certified package bytes are preserved
 - **Operating mode:** LIVE / POST-PUBLICATION VALIDATION AND SIGNAL MONITORING
 - **Canonical set:** [AGENTS.md](AGENTS.md) · [HANDOFF.md](HANDOFF.md) · [Docs index](docs/project/DOCS_INDEX.md) · [History](docs/project/REPO_HISTORY.md) · [Verification](docs/project/VERIFICATION_LOG.md) · [Decisions](revenue/DECISIONS.md) · [Proposals](docs/project/PROPOSALS.md) · [Migration map](docs/project/MIGRATION_MAP.md) · [Archive](docs/project/archive/)
 
@@ -25,19 +25,19 @@
 
 | Metric / environment | Current value | As of | Evidence |
 |---|---|---|---|
-| Product state | Paulatim 1.1.1 is Microsoft-certified and exposed with an active $14.99 USD purchase action in the United States Store market at `https://apps.microsoft.com/detail/9PLRSZZMFPJH` | 2026-08-31 | VER-20260831-001; D051/D052 |
+| Product state | Paulatim 1.1.1 remains Microsoft-certified and exposed with an active $14.99 USD purchase action in the United States Store market at `https://apps.microsoft.com/detail/9PLRSZZMFPJH` | 2026-09-10 | VER-20260910-001; revenue/METRICS.md |
 | Default-branch candidate source | PAULATIM-001 source `f2d2a4177fcb05d5b24405c598d0eb9b9d7f01e6`; tree `320490a5cfc1d5e409e8ce0ea2fb05147dc97e4d` | 2026-08-28 | VER-20260828-003 |
-| Live release | Paulatim 1.1.1 / product `9PLRSZZMFPJH`; signed-out page and live catalog verified | 2026-08-31 | VER-20260831-001 |
-| Current candidate | PAULATIM-001: `Paulatim 1.1.1.appx`, 175,489,702 bytes, SHA-256 `af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`. AMPLE-001, CAND-002, and every other package are historical/never-submit | 2026-08-28 | VER-20260828-003; store/WINDOWS-VALIDATION.md |
+| Live release | Paulatim 1.1.1 / product `9PLRSZZMFPJH`; signed-out page and live catalog reverified | 2026-09-10 | VER-20260910-001 |
+| Current candidate | PAULATIM-001: `Paulatim 1.1.1.appx`, 175,489,702 bytes, SHA-256 `af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`, independently reverified in the staged kit. AMPLE-001, CAND-002, and every other package are historical/never-submit | 2026-09-10 | VER-20260910-001; store/WINDOWS-VALIDATION.md |
 | Candidate CI verification | Quality 33169087812 and Windows 33169087811 passed on exact source `f2d2a417`; artifacts 9684903207 / 9684887490 independently verified | 2026-08-28 | VER-20260828-003 |
 | Candidate local verification | full gate green: identity preflights; lint; typecheck ×2; 15 files/52 tests; renderer 764 modules + Electron bundles; secrets 199; Store 277; docs PASS; notices 54; audit 0; deterministic assets; diff clean | 2026-08-28 | VER-20260828-002; dirty fingerprint in log |
 | Documentation-truth-audit local verification | full non-packaging gate green: identity strict; lint 0; typecheck ×2; 15 files/52 tests; renderer 764 modules + Electron bundles; secrets 199; Store 274; docs PASS; notices 54; audit 0; diff clean; no Windows-trigger path | 2026-08-31 | VER-20260831-006; exact dirty fingerprint in log |
-| Documentation-truth-audit Quality | exact commit `889100c`, tree `08c0ea17`; Quality 33451146452 green; no Windows Store run | 2026-08-31 | VER-20260831-007 |
+| Documentation-truth-audit Quality | exact head `8308da9`, tree `c1638c44`; Quality 33451392582 green; no Windows Store run | 2026-09-10 | VER-20260910-001 |
 | Local test environment | `better-sqlite3` alternates between node and Electron ABIs depending on whether `electron-builder` last ran. In the Electron state 16/46 tests fail with `NODE_MODULE_VERSION` mismatch — environmental, CI unaffected. `npm rebuild better-sqlite3` restores `npm test` | 2026-08-07 | VER-20260807-001 |
 | Candidate package | Exact kit: `tmp/PAULATIM-001-f2d2a41/`; AppX hash `af8b4581…b5146`; screenshot ZIP hash `a4bc6785…45e50`; these are evidence for the sole certified/public package and must not be re-uploaded | 2026-08-31 | VER-20260828-003/004; VER-20260831-001 |
-| Collected revenue | $0.00; gap $4,000.00; 1 live purchasable listing; views/acquisitions/purchases/payouts unobserved; five-day signal clock began 2026-08-31 | 2026-08-31 | revenue/METRICS.md |
-| Major open operational gaps | Live `appWebsiteUrl` and `SupportUri` both point to the generic studio site; four Store-copy surfaces use ambiguous account wording; HQ-03 physical-Windows accessibility remains unobserved | 2026-08-31 | VER-20260831-001; D052; section 11 |
-| Next recommended action | Complete HQ-03 and monitor first external signal through the 2026-09-05 gate; HQ-08 requires fresh owner authority to reconcile Store links and account wording before outreach | 2026-08-31 | D051/D052; section 11 |
+| Collected revenue | September 10 private views, acquisitions, purchases, proceeds, payouts, and collected amount were not observed; the last ledgered $0.00 / $4,000.00 gap is historical, not reverified | 2026-09-10 | revenue/METRICS.md; D053 |
+| Major open operational gaps | Both live URL fields use the generic studio site; four Store-copy surfaces use ambiguous account wording; HQ-03 remains unobserved; September 5/9 signal gates are overdue/unevaluated | 2026-09-10 | VER-20260910-001; D052/D053; section 11 |
+| Next recommended action | Unblock HQ-09 and observe the full Partner Center reporting interval; execute/reverify authorized HQ-08; complete or explicitly hand off HQ-03 | 2026-09-10 | D053; section 11 |
 
 One current row per metric; superseded values live in REPO_HISTORY.md.
 
@@ -61,7 +61,7 @@ One current row per metric; superseded values live in REPO_HISTORY.md.
 | Monetization plan, assets, opportunities | `revenue/PLAN.md`, `revenue/ASSETS.md`, `revenue/OPPORTUNITIES.md` |
 | Observed evidence (money, Store, CI) | `revenue/METRICS.md` |
 | Owner-only actions | `revenue/HUMAN_QUEUE.md` |
-| Decisions (D001–D052) | `revenue/DECISIONS.md` |
+| Decisions (D001–D053) | `revenue/DECISIONS.md` |
 | Repository/release history | `docs/project/REPO_HISTORY.md` |
 | Verification events | `docs/project/VERIFICATION_LOG.md` |
 | Documentation map | `docs/project/DOCS_INDEX.md` |
@@ -71,8 +71,8 @@ One current row per metric; superseded values live in REPO_HISTORY.md.
 
 | ID | Workstream | Derived status | Tasks (ready/blocked/other) | Last verified ref | Active tasks |
 |---|---|---|---|---|---|
-| WS-REL | Microsoft Store release (Bet A, $14.99) | live in U.S. market — exact Paulatim release publicly purchasable; residual HQ-03 and owner-controlled Store-link/account-copy reconciliation open | 1 ready validation, 2 optional/post-live tasks, 1 blocked Store-listing correction | VER-20260831-001; D052 | HQ-03, HQ-05, HQ-06, HQ-08 |
-| WS-REV | Monetization portfolio ($4,000 / Day 28) | active — Bet A live; five-day signal gate due 2026-09-05; Bet B remains conditional (D038) | 1 active, 1 proposed | revenue/METRICS.md 2026-08-31 | WS-REL |
+| WS-REL | Microsoft Store release (Bet A, $14.99) | live in U.S. market — exact Paulatim release publicly purchasable; residual HQ-03 and authorized but account-blocked HQ-08 remain | 1 ready validation, 2 optional/post-live tasks, 2 account-blocked tasks | VER-20260910-001; D052/D053 | HQ-03, HQ-05, HQ-06, HQ-08, HQ-09 |
+| WS-REV | Monetization portfolio ($4,000 / Day 28) | active — Bet A live; September 5/9 gates overdue/unevaluated because current private signal is absent; Bet B remains conditional (D038) | 1 active, 1 proposed | revenue/METRICS.md 2026-09-10 | WS-REL |
 | WS-DOCS | Documentation control system | done 2026-07-24 (on public main @ `59787f4`) | 2 done | VER-20260724-001…006 | — |
 | WS-READY | Market-readiness council + remediation | done; landed before rename | 1 done | VER-20260804-001 | — |
 
@@ -91,7 +91,8 @@ One current row per metric; superseded values live in REPO_HISTORY.md.
 | CAND-002 | Historical Hearth replacement candidate | D040/D041 | superseded | high | agent | — | Replaced by AMPLE-001 after rename; never submit its AppX | VER-20260807-001 → AMPLE-001 | 2026-08-19 | Historical evidence only |
 | AMPLE-001 | First exact Ample Store candidate | user instruction 2026-08-19 | superseded | critical | agent | — | Historical evidence complete; never submit after Paulatim rename | VER-20260825-001…003 @ `3b8d225`; hash `7d6ca584…61866b` | 2026-08-28 | Replaced by PAULATIM-001; historical evidence only |
 | PAULATIM-001 | First exact Paulatim 1.1.1 Store candidate | owner authorization 2026-08-28 | done | critical | agent | — | Visible Paulatim branding; unique 1.1.1 package; stable Store/data internals; exact-SHA green CI; independently verified AppX/screenshots; staged kit | VER-20260828-002/003 @ `f2d2a417`; AppX `af8b4581…b5146` | 2026-08-31 | Preserve the exact certified/public bytes; do not resubmit or rebuild |
-| HQ-08 | Reconcile live Paulatim links + account wording | revenue/HUMAN_QUEUE.md | blocked | high | human | fresh explicit authorization + authenticated Partner Center session | Support URI targets `docs/SUPPORT.md`; owner chooses the App website destination; short description/description/feature/caption qualify “no account”; all reverified publicly | public catalog recheck + METRICS entry | 2026-08-31 | Both links use the generic studio site and four public copy surfaces retain ambiguous wording; a new submission/publication cycle may be required; agent may only reobserve until separately authorized |
+| HQ-08 | Reconcile live Paulatim links + account wording | revenue/HUMAN_QUEUE.md | blocked | high | agent (owner-authorized) | Store-enabled Partner Center account/tenant + Save/submit confirmation | Support URI targets `docs/SUPPORT.md`; optional Website is blank unless a dedicated verified destination exists; short description/description/feature/caption qualify “no account”; all reverified publicly | public catalog recheck + METRICS entry | 2026-09-10 | Authority supplied; visible account has no Apps and games workspace. Resume after owner selects the Store-enabled account; do not touch Packages, price, identity, declarations, or audience |
+| HQ-09 | Expose and observe current Partner Center signal | revenue/HUMAN_QUEUE.md | blocked | high | human → agent | owner selects Store-enabled account/tenant | Exact August 31–September 10 aggregates or not-exposed states are recorded; overdue gates adjudicated without inferred zeros | METRICS entry + decision/tracker update | 2026-09-10 | Visible account exposes account settings but not Apps and games or product `9PLRSZZMFPJH`; switch account/tenant, then agent observes read-only metrics |
 | COUNCIL-001 | 7-seat market-readiness council + full remediation | user instruction 2026-07-28 | done | high | agent | — | All agent-fixable gaps M1–M10 / D1 / D2 / R1 / R2 closed; every local gate green on the remediated tree | VER-20260729-001 @ working-tree:`246baac`+dirty:`f6edf2f2b6cff045` | 2026-07-29 | — |
 | RECON-001 | Working tree vs `origin/main` draft drift | HIST-20260724-001 | done | high | agent | — | Draft committed + remote merged + pushed; single authoritative tree on `main` @ `59787f4` | VER-20260724-006 @ `59787f4` | 2026-07-24 | — |
 | DOCS-001 | Documentation consolidation + control system | user instruction 2026-07-24 | done | high | agent | — | Tracker, index, history, verification log, proposals, migration map, archive, validator all green | VER-20260724-001…005 @ working-tree:`4a32b73`+dirty:`451945c517e87554` | 2026-07-24 | — |
@@ -126,16 +127,17 @@ needs-reconciliation / done / verified-stale / superseded / cancelled.
 
 | Risk | Likelihood | Impact | Mitigation | Owner |
 |---|---|---|---|---|
-| R1 — zero demand after launch (no demand evidence exists) | high | Bet A falsifier path | 5-day signal gate → pre-built reposition menu RP-1…RP-4 + `store/REPOSITION_KIT.md` (revenue/PLAN.md, D037) | agent+owner |
+| R1 — demand unknown after launch; overdue gates unevaluated | high | Bet A falsifier path cannot be applied truthfully | Unblock HQ-09, observe the applicable Partner Center interval, then apply D037 once from evidence | agent+owner |
 | ~~R2 — certification failure~~ | resolved 2026-08-31 | Microsoft certified exact PAULATIM-001 | Preserve the exact report/package evidence; no new candidate needed | agent |
-| R3 — Partner Center/live-listing facts can drift | **low** | decisions on stale fields | Package/submission facts reobserved at certification; signed-out page/catalog, price, rating, and purchase action observed 2026-08-31 | agent |
+| R3 — Partner Center/live-listing facts can drift | **medium** | decisions on stale fields | Public listing reobserved 2026-09-10; private Store workspace was unavailable in the visible account, so private signal remains explicitly unobserved | agent+owner |
 | ~~R4~~ | — | — | **Resolved 2026-08-04** — remediation is committed and landed. Row retired 2026-08-07 | — |
 | R5 — wrong MSIX submitted | resolved | historical Hearth or Ample bytes submitted as Paulatim | Partner Center contains only PAULATIM-001 `af8b4581…b5146`; preserve it unchanged. AMPLE-001, CAND-002, and every other AppX remain never-submit | agent |
 | R6 — HQ-03 has no verified Windows machine (new 2026-08-07) | **low** (downgraded same day) | delays post-certification validation only | **Corrected:** HQ-03 depends on HQ-04, not the reverse — the Microsoft-signed build does not exist until after certification, so this never blocked submission. CI `windows-store.yml` already exercises the packaged AppX on `windows-latest` (DPAPI lifecycle matrix + renderer smoke + screenshots). Residual need is a human ear on Narrator | owner (post-certification) |
 | ~~R8 — "Hearth" collision~~ | resolved by rename 2026-08-19 | forced candidate reset | Historical analysis retained in `revenue/NAME-RISK-2026-08-07.md` | owner+agent |
 | ~~R9 — display name not reserved~~ | resolved | **Resolved 2026-08-28:** exact Paulatim is reserved and set as dashboard name on product `9PLRSZZMFPJH`; package identity remains `ToledoTechnologies.Hearth` | Hearth listing references were removed and its display-name reservation was deleted; preserve the stable package identity | agent |
 | R7 — session-to-session document drift (new 2026-08-07) | **high** | agents act on stale state; owner acts on wrong hash/commit | Re-derive the resume point from `git`/`gh` every session rather than trusting the prior summary. This risk has now materialised three times (RECON-001, B2/R4 survival, the 08-04 resume point) | agent |
-| R10 — live Store links / account wording mismatch | **medium** | Store visitors reach a generic studio page, and “no account” can be mistaken for no Microsoft account requirement | Owner explicitly authorizes/executes HQ-08 in an authenticated Partner Center session; then reverify both links and the corrected copy before outreach | owner; agent may reobserve only until authorized |
+| R10 — live Store links / account wording mismatch | **medium** | Store visitors reach a generic studio page, and “no account” can be mistaken for no Microsoft account requirement | Authority is supplied; select the Store-enabled Partner Center account, execute metadata-only HQ-08, then publicly reverify before outreach | agent+owner |
+| R11 — development/build dependency audit | **medium** | Current full audit reports 13 dev-only findings (9 high, 3 moderate, 1 low); shipped production closure is 0 | Remediate in a separate dependency/package cycle because lockfile changes trigger a new Windows artifact; never substitute that artifact for PAULATIM-001 without a new release decision | agent |
 
 Resolved 2026-07-24 and moved to history: host-move drift + working-tree
 reconciliation (HIST-20260724-001…006), stale node_modules repair
@@ -159,6 +161,7 @@ observed green through `origin/main` HEAD `246baac` (VER-20260728-001…003).
 | Post-publication documentation Quality | `5cfc573` | CI ubuntu + trigger audit | pass | Quality 33401339453 green; exact verified tree; no Windows workflow run | 2026-08-31 | VER-20260831-004 |
 | Post-publication evidence close | `5ad1d21` | CI ubuntu + trigger audit | pass | Quality 33401875798 green; final launch evidence only; no Windows workflow run | 2026-08-31 | VER-20260831-005 |
 | Documentation truth audit | `889100c` | CI ubuntu + trigger audit | pass | Quality 33451146452 green; exact locally gated tree `08c0ea17`; no Windows workflow run | 2026-08-31 | VER-20260831-006/007 |
+| Release-closeout baseline | `8308da9` (tree `c1638c44`) | local linux + CI ubuntu + public Store | pass / constrained | local/origin exact; Quality 33451392582 green; exact AppX hash preserved; live $14.99 U.S. purchase path; private Store signal and HQ-03 unobserved | 2026-09-10 | VER-20260910-001 |
 | Evidence close local gate | working-tree:`f2d2a417`+dirty (21 docs/landing paths) | local linux | pass | full non-packaging suite; no package command; Windows-trigger exclusion checked separately | 2026-08-28 | VER-20260828-005 |
 | Evidence close Quality Gate | `ad9d22a` | CI ubuntu | pass | run 33177707087; notices, secrets, Store/landing validation, audit, lint, typecheck, tests, and build green; no Windows workflow triggered | 2026-08-28 | VER-20260828-006 |
 | Installed Windows pass | public Store build | physical Windows | ready / not observed | HQ-04 is complete; execute the scoped 15-minute HQ-03 pass without implying it preceded publication | — | — |
@@ -171,13 +174,13 @@ Paulatim candidate bytes. See store/WINDOWS-VALIDATION.md.
 
 | Surface | Ref / version | State | Last verified | Evidence | Drift |
 |---|---|---|---|---|---|
-| Working tree | evidence-only successor to exact docs commit `889100c` | clean after documentation truth close; certified bytes unchanged | 2026-08-31 | git status + tree comparison | none |
+| Working tree | baseline `8308da9`; release-closeout delta | dirty with intended tracked closeout files plus preserved pre-existing `.gitignore`/`.claude` paths; certified bytes unchanged | 2026-09-10 | git status + fingerprints | pre-existing user work excluded from closeout commit |
 | Local `cycle-2-shipped` | `246baac` | stale; behind current `main` | 2026-08-26 | git | historical branch |
-| Local `main` | evidence-only successor to `889100c76abe3e862bdfc6e2b0164f2db174e7f5` | synchronized with origin after close; PAULATIM-001 source remains `f2d2a417` | 2026-08-31 | git | none |
-| `origin/main` | evidence-only successor to `889100c76abe3e862bdfc6e2b0164f2db174e7f5` | public documentation truth close; no package input changed | 2026-08-31 | git + gh | none |
-| CI | PAULATIM-001 source `f2d2a417`; substantive documentation head `889100c` | candidate Quality/Windows green; documentation Quality 33451146452 green; no Windows run after candidate | 2026-08-31 | VER-20260828-003; VER-20260831-007 | none |
-| Partner Center | Product `9PLRSZZMFPJH`; submission `1152921505701225649`; exact identity `ToledoTechnologies.Hearth`; only Paulatim name/package | certification passed; publication initiated; $14.99 | 2026-08-31 | VER-20260831-001 | UI last observed In publishing while public edge was already live |
-| Microsoft Store live | `https://apps.microsoft.com/detail/9PLRSZZMFPJH` | public; active $14.99 USD Purchase action | 2026-08-31 | VER-20260831-001 | page/catalog live; sales metrics not yet observed |
+| Local `main` | `8308da9ba66510bc9ec50b655ea3467aead28dab` at baseline | synchronized with origin before this tracked closeout delta; PAULATIM-001 source remains `f2d2a417` | 2026-09-10 | git; VER-20260910-001 | intended closeout changes uncommitted |
+| `origin/main` | `8308da9ba66510bc9ec50b655ea3467aead28dab` (tree `c1638c4418e506a56d75fd62d480e1dbe79c8a0e`) | public documentation evidence successor; no package input changed | 2026-09-10 | git + gh | closeout delta not yet pushed |
+| CI | PAULATIM-001 source `f2d2a417`; documentation head `8308da9` | candidate Quality/Windows green; Quality 33451392582 green; no Windows run after candidate | 2026-09-10 | VER-20260828-003; VER-20260910-001 | closeout CI pending |
+| Partner Center | Product `9PLRSZZMFPJH`; submission `1152921505701225649`; exact identity `ToledoTechnologies.Hearth`; only Paulatim name/package at certification | 2026-08-31 certification/publication evidence remains valid; current visible account has no Store workspace | 2026-09-10 | VER-20260831-001; VER-20260910-001 | private demand/revenue and HQ-08 state unobserved |
+| Microsoft Store live | `https://apps.microsoft.com/detail/9PLRSZZMFPJH` | public; active $14.99 USD Purchase action; generic links and four copy defects remain | 2026-09-10 | VER-20260910-001 | private sales metrics not observed |
 | Landing host | — | not deployed | — | landing/README.md | HQ-06 is an optional live-aware deployment; certification-time sequencing is moot |
 
 Implemented ≠ committed ≠ pushed ≠ tagged ≠ built ≠ submitted ≠ certified ≠
@@ -188,6 +191,7 @@ tag exists because tags trigger the Release Build and the Store path is manual.
 
 | Date | Item | Task | Verification | History |
 |---|---|---|---|---|
+| 2026-09-10 | Re-derived exact git/CI/package/public Store state and recorded overdue signal gates without inventing private metrics | release-closeout baseline | VER-20260910-001 @ `8308da9` | HIST-20260910-001 |
 | 2026-08-31 | Reconciled U.S.-only availability, Microsoft-vs-Paulatim account wording, public/configured categories, Store URLs/copy, proposal state, payout uncertainty, and post-publication owner actions without changing package bytes | documentation truth audit | VER-20260831-006/007 @ `889100c` | HIST-20260831-005 |
 | 2026-08-31 | Microsoft certified exact PAULATIM-001; owner-authorized publication completed; signed-out Store page and $14.99 purchase action observed | HQ-04 / Bet A live | VER-20260831-001 | HIST-20260831-001 |
 | 2026-08-28 | Exact Paulatim candidate passed both CI gates; independently verified package/screenshots staged; listing saved; Hearth package/name removed; submission entered certification under manual publication hold | PAULATIM-001 + HQ-02/HQ-04 | VER-20260828-003/004 @ `f2d2a417` | HIST-20260828-002/003 |
@@ -224,17 +228,18 @@ without the stated approval.
 historical and never-submit. Do not create another package for documentation or
 post-publication work.**
 
-1. **Complete HQ-03:** install from the public Store on physical x64 Windows
-   and record the 15-minute keyboard/Narrator/presentation validation honestly.
-2. **Monitor signal:** inspect Store views/acquisitions/purchases without
-   inventing zeros; apply the first five-day gate on 2026-09-05.
-3. **Owner-controlled Store-listing correction:** before outreach, the owner
-   must separately authorize/execute HQ-08. SupportUri must point to public
-   Paulatim support, `appWebsiteUrl` needs an explicit destination decision,
-   and four public copy surfaces must clarify that Paulatim has no separate
-   in-app account. The listing-only update may require a new
-   submission/publication cycle; do not infer authority from the completed
-   PAULATIM-001 release. No package-byte change is needed.
+1. **Unblock HQ-09:** in the visible Partner Center window, select the account
+   or tenant where **Apps and games** exposes product `9PLRSZZMFPJH`; then let
+   the agent record exact August 31–September 10 aggregates and adjudicate the
+   overdue September 5/9 gates without inferred zeros.
+2. **Execute authorized HQ-08:** metadata only. Point SupportUri to public
+   Paulatim support; leave optional Website blank unless a dedicated verified
+   destination exists; apply the repository-approved account wording; do not
+   touch Packages, price, identity, declarations, or audience. Publicly
+   reverify before outreach.
+3. **Complete or hand off HQ-03:** install from the public Store on physical
+   x64 Windows and record the keyboard/Narrator/presentation validation
+   honestly; Linux/CI cannot supply this human observation.
 4. **Optional owner distribution:** HQ-05 may send reviewed launch drafts;
    HQ-06 may deploy the now-live-aware static landing after host approval.
 5. **Preserve the evidence chain:** never replace exact PAULATIM-001 or treat a

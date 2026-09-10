@@ -1,5 +1,13 @@
 # Microsoft Store release path
 
+> **Release-closeout correction — 2026-09-10:** the package, certification, and
+> publication sequence remains complete and must not be repeated. Operational
+> closeout is not complete: HQ-08's live listing correction and HQ-03's physical
+> Windows pass remain open, while the September 5/9 signal gates are overdue but
+> unevaluated because current private Partner Center metrics were not observed.
+> Use `revenue/METRICS.md`, `revenue/HUMAN_QUEUE.md`, and
+> `PROJECT_TRACKER.md` for current state.
+
 > **Publication outcome — 2026-08-31:** Microsoft certified exact
 > PAULATIM-001. Under the owner's explicit publication direction, **Publish
 > now** was executed; the signed-out page and Microsoft's live catalog show an

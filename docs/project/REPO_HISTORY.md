@@ -10,7 +10,7 @@ Machine-readable commit list: `history/commit-index.tsv` (regenerate with
 
 | ID | Name | Role | Local path | Canonical remote | Default branch | Relationship | History coverage | Last indexed ref |
 |---|---|---|---|---|---|---|---|---|
-| REPO-01 | Mindful-Organizer (Paulatim; formerly Ample/Hearth) | Primary app + docs + store ops | `/home/nick/Development/active/mindful_organizer` | `https://github.com/ntoledo319/Mindful-Organizer.git` (no credentials embedded) | `main` | — | Complete local clone; live refs re-derived 2026-08-31 | commit index through `889100c`; final evidence-only successor recorded separately |
+| REPO-01 | Mindful-Organizer (Paulatim; formerly Ample/Hearth) | Primary app + docs + store ops | `/home/nick/Development/active/mindful_organizer` | `https://github.com/ntoledo319/Mindful-Organizer.git` (no credentials embedded) | `main` | — | Complete local clone; live refs re-derived 2026-09-10 | commit index through `8308da9`; later closeout successor recorded separately |
 
 Verified 2026-07-24: no submodules, no nested Git repositories (single `.git`).
 
@@ -20,23 +20,23 @@ repositories:
 | ID | System | Role | Access state |
 |---|---|---|---|
 | EXT-GHA | GitHub Actions (this repo) | CI: Quality Gate, Windows Store, Release, Pages | Public run history; run IDs recorded in events |
-| EXT-PC | Microsoft Partner Center | Store draft, certification, payout | Private; exact submission `1152921505701225649` certified and publication initiated 2026-08-31; product `9PLRSZZMFPJH` |
-| EXT-STORE | Microsoft Store public listing | Distribution | Live and exposed with a $14.99 USD Purchase action at `https://apps.microsoft.com/detail/9PLRSZZMFPJH` |
+| EXT-PC | Microsoft Partner Center | Store draft, certification, payout | Private; exact submission `1152921505701225649` certified and publication initiated 2026-08-31; the account visible 2026-09-10 did not expose Apps and games, so current private signal remains unobserved |
+| EXT-STORE | Microsoft Store public listing | Distribution | Live and reobserved 2026-09-10 with a $14.99 USD Purchase action at `https://apps.microsoft.com/detail/9PLRSZZMFPJH` |
 | EXT-ITCH | itch.io | Conditional Bet B marketplace | No account/page observed |
 
 ## 2. Current head snapshot
 
-_Mutable. Last refreshed 2026-08-31 from local refs plus authenticated `gh`
+_Mutable. Last refreshed 2026-09-10 from local refs plus authenticated `gh`
 cross-check._
 
 | Ref | SHA | State | Notes |
 |---|---|---|---|
-| `origin/main` | evidence-only successor to `889100c76abe3e862bdfc6e2b0164f2db174e7f5` | synchronized documentation-truth close | Quality 33451146452 passed on exact substantive tree `08c0ea17`; no Windows run occurred and PAULATIM-001 bytes are unchanged. |
+| `origin/main` | `8308da9ba66510bc9ec50b655ea3467aead28dab` (tree `c1638c4418e506a56d75fd62d480e1dbe79c8a0e`) | synchronized documentation-truth evidence successor | Quality 33451392582 passed on the exact head; no Windows run occurred and PAULATIM-001 bytes are unchanged. |
 | `origin/feature/store-candidate-cand002` | `c0eb360f78fc10587a57fe6e9fcf9432b416ddf0` | live-verified 2026-08-25 | Historical branch; deliberately not pushed again and now behind default. |
 | `origin/handoff-cycle-3` | `14f9fd718433047dfc38a2cd5a28d7da171106aa` | fetched | Cycle-3 handoff branch; superseded on main (PROP-002) |
 | `origin/feature/monetization` | `8172603b62c2457696608c145511bd3fe92429d4` | fetched | Accepted-candidate preservation branch |
 | `origin/feature/revenue-cycle-0` | `09ec37eff4affcc1a0878205072a75f0cac13da5` | fetched | Diverged legacy cycle-0 docs close; do not continue |
-| local `main` (checked out) | evidence-only successor to `889100c76abe3e862bdfc6e2b0164f2db174e7f5` | clean; synchronized with origin after close | Candidate source `f2d2a417` and certified bytes are unchanged; no new Windows package is needed. |
+| local `main` (checked out) | `8308da9ba66510bc9ec50b655ea3467aead28dab` (tree `c1638c4418e506a56d75fd62d480e1dbe79c8a0e`) at baseline | synchronized with origin; dirty with enumerated pre-existing `.gitignore`/`.claude` paths plus this closeout delta | Candidate source `f2d2a417` and certified bytes are unchanged; closeout work does not need a Windows package. |
 | local `feature/store-candidate-cand002` | `c0eb360f78fc10587a57fe6e9fcf9432b416ddf0` | historical branch; matches its remote and is behind current `main` | Not pushed again; use canonical `main` only for PAULATIM-001. AMPLE-001 is historical/never-submit. |
 | local `cycle-2-shipped` | `246baac5033001b00f586f570c3ce842218c1fb5` | stale; behind current `main` | Historical branch. |
 | local `cycle-1-published` | `27db6c246de278fe119a46b7be2db35d9aa04a46` | local-only | Duplicate-content lineage of `4a32b73` (rebased SHAs) |
@@ -92,6 +92,7 @@ cross-check._
 | HIST-20260831-003 | 2026-08-31 | REPO-01 | documentation-consolidated | `1c0d164` → `5cfc573` (tree `010c7074`) | remote + CI | Public launch, legal/support/accessibility status, live Store/catalog facts, campaign links, owner queue, exact package guards, and all six revenue files were synchronized. Full local gate fingerprint `43dd2a1431758787` and Quality 33401339453 passed; no Windows workflow ran. | verified | VER-20260831-003/004 |
 | HIST-20260831-004 | 2026-08-31 | REPO-01 | documentation-consolidated | `5ad1d217` (tree `e715ae3f`) | remote + CI | Final public-launch evidence close recorded the exact Quality result without changing package inputs. Quality 33401875798 passed; no Windows workflow ran. | verified | VER-20260831-005 |
 | HIST-20260831-005 | 2026-08-31 | REPO-01 | documentation-consolidated | `889100c` (tree `08c0ea17`) | remote + CI | Re-derived live git/CI/Store truth and reconciled U.S.-only availability, Microsoft-vs-Paulatim account language, public/configured categories, Store links/copy, owner queue, payout uncertainty, and proposal state. Full local fingerprint `43753acd5d1c91ed` and Quality 33451146452 passed; no Windows workflow ran and no package or Partner Center state changed. | verified | VER-20260831-006/007 |
+| HIST-20260910-001 | 2026-09-10 | REPO-01 | history-reconciled | `8308da9ba66510bc9ec50b655ea3467aead28dab` (tree `c1638c4418e506a56d75fd62d480e1dbe79c8a0e`) | local + remote + CI | Re-derived the previously prose-only final evidence successor: local `main` and `origin/main` matched exact `8308da9`; Quality 33451392582 passed; no Windows Store workflow or package-byte change followed. Pre-existing `.gitignore` and untracked `.claude` worktree changes were observed and preserved. | verified | VER-20260910-001; git + gh |
 
 Rollbacks: none recorded. Hotfixes: HIST-20260714-004 is the only in-run fix.
 Deployments: the Microsoft Store listing is live as of HIST-20260831-001; the
@@ -111,6 +112,8 @@ fact rather than fabricated migration events.
 | G5 — branch sprawl | Local `main` was refreshed 2026-08-25; duplicate-content and historical local/remote branches remain | PROP-002 for any later branch deletion (owner approval; no deletion authorized) |
 | G6 — deployments | Microsoft Store is live; static landing remains undeployed | Keep Store and landing deployment states distinct; HQ-06 governs any landing host |
 | G7 — old GitHub branches | `handoff-cycle-3` content already on main; branch itself not deleted | Fold into PROP-002 |
+| G8 — live listing metadata | Open: both public URL fields still use the generic studio site and four account-copy surfaces remain unqualified | Execute authorized HQ-08 from the Store-enabled account, without touching Packages; then publicly reverify |
+| G9 — post-launch evidence | Open: HQ-03 remains unobserved and the September 5/9 signal gates are overdue/unevaluated because current private metrics were not observed | Complete HQ-03 on physical Windows and unblock HQ-09 for exact Partner Center aggregates |
 
 ## 5. Lineage notes
 
@@ -128,9 +131,9 @@ fact rather than fabricated migration events.
 
 ## 6. Incremental refresh
 
-Per-repo commit index is refreshed through REPO-01 `889100c`; the final
-evidence-only successor records that commit's exact Quality result without
-changing the indexed substantive tree (2026-08-31). On later runs:
+Per-repo commit index is refreshed through REPO-01 `8308da9`; later closeout
+successors are recorded explicitly without treating them as package sources.
+On later runs:
 fetch (if network allowed), compare heads to §2, inspect only new commits,
 append new events, regenerate `history/commit-index.tsv`, update §2. Do not
 re-narrate existing events.

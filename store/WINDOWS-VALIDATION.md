@@ -1,5 +1,16 @@
 # Exact-candidate Windows validation
 
+## Release continuity recheck — 2026-09-10
+
+The staged `tmp/PAULATIM-001-f2d2a41/Paulatim 1.1.1.appx` independently
+recomputed to SHA-256
+`af8b458149d4c00de7f02d4f4c73a4b786d14dbbd391b0db7e1750d4bf4b5146`.
+PAULATIM-001 remains tied to source `f2d2a417`; current default-branch head
+`8308da9` is an evidence-only descendant with green Quality run 33451392582,
+not a replacement package source. No rebuild, upload, or resubmission occurred.
+The Store-delivered physical-Windows/Narrator/accessibility/footprint pass remains
+unobserved under HQ-03; see `docs/ACCESSIBILITY.md` for that boundary.
+
 ## Certification and publication outcome — 2026-08-31
 
 Microsoft certified exact PAULATIM-001 without a byte change. Under the

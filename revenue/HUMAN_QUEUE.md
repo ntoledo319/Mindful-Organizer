@@ -1,5 +1,12 @@
 # Human Queue
 
+> **Release-closeout correction — 2026-09-10:** HQ-03 and HQ-08 remain open.
+> Current Partner Center demand/revenue is also unobserved because the account
+> visible at this audit point did not expose the Store workspace; HQ-09 records
+> that exact unblock. The September 5 and September 9 signal gates are overdue
+> but unevaluated, not zero-signal. Do not mark any of these tasks done without
+> their own dated evidence.
+
 > **Publication outcome — 2026-08-31:** Microsoft certification passed and the
 > owner-authorized publication is complete. The signed-out Store page and an
 > active $14.99 USD purchase action in the United States Store market were observed at
@@ -512,6 +519,15 @@ certification, checkout, or publication step._
 
 ## HQ-08 — Authorize and reconcile Store links and account wording — 5 minutes
 
+> **Authority correction — 2026-09-10:** the owner explicitly delegated all
+> remaining release-closeout work to the agent. Fresh authority is therefore no
+> longer the operational blocker. The visible Partner Center account does not
+> expose **Apps and games** or product `9PLRSZZMFPJH`; select the Store-enabled
+> account/tenant under HQ-09, then the agent can prepare this metadata-only
+> update. Save/submission still requires the normal confirmation at the action
+> boundary. The package, price, identity, declarations, and audience remain out
+> of scope for this correction.
+
 - **What:** Separately authorize or personally make the listing-only changes
   for the two customer-facing fields that both currently point to generic
   `https://toledotechnologies.com/`: replace `SupportUri` with the public
@@ -547,7 +563,42 @@ certification, checkout, or publication step._
      signed-out Store catalog and add the result to `revenue/METRICS.md` before
      HQ-05 outreach.
 
+## HQ-09 — Expose and observe current Partner Center signal — 5 minutes
+
+- **What:** Select the Partner Center account/tenant that exposes **Apps and
+  games** product `9PLRSZZMFPJH`, then observe aggregate demand and revenue for
+  the August 31–September 10 interval so the overdue signal gates can be
+  evaluated.
+- **Why human-only:** Account/tenant selection is identity-bound and the current
+  authenticated account does not expose the Store workspace. After the owner
+  selects the correct account, the agent may perform the read-only observation
+  under the current release-closeout authority. Never record credentials,
+  customer identities, tax, banking, or payout-account detail.
+- **Direct link:**
+  <https://partner.microsoft.com/en-us/dashboard/products/9PLRSZZMFPJH/overview>
+- **Steps:**
+  1. Switch to the account/tenant where **Apps and games** and product
+     `9PLRSZZMFPJH` are visible; stop if the product ID does not match.
+  2. Open the product's Insights/analytics view and use the full available
+     interval beginning 2026-08-31. Record aggregate impressions or page views,
+     acquisitions, and completed purchases exactly as displayed; record
+     unavailable or delayed fields as such, never as zero.
+  3. Open the aggregate Earnings/payment view and record accrued proceeds, fees,
+     refunds, payouts, and collected amount only if displayed for the same
+     product/period.
+  4. Append the dated observation to `revenue/METRICS.md`, then evaluate the
+     2026-09-05 and 2026-09-09 gates against evidence.
+- **Completion evidence:** a dated METRICS entry with the exact reporting
+  interval and values/not-exposed states, plus the corresponding tracker and
+  decision update.
+
 ## Running owner-time ledger
+
+> **Release-closeout calculation — 2026-09-10:** the conservative remaining
+> manual-work ceiling is **35 active minutes**: HQ-03 15, HQ-08 5, HQ-09 5, and
+> optional HQ-05/HQ-06 5 each. The owner has delegated HQ-08 execution, but
+> account selection and physical Windows observation remain identity/device
+> bound. Already-spent owner time is still not backfilled or invented.
 
 > **Current calculation — 2026-08-31:** certification, publication, and the
 > checkout observation are complete. Known remaining human work is at most

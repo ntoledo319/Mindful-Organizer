@@ -581,3 +581,33 @@ Microsoft Store name-collision search (HQ-07 step 2) not yet run.
   clock begins 2026-08-31.
 - Tax/payment profile readiness is Complete, but no first-payout date is
   observed because there is no observed sale, accrual, or threshold event.
+
+## 2026-09-10 — Release-closeout reobservation and overdue signal gates
+
+- At 2026-09-10T08:36Z, the signed-out Microsoft Store page/catalog still
+  exposed Paulatim at <https://apps.microsoft.com/detail/9PLRSZZMFPJH> with a
+  $14.99 USD purchase action in the United States market. This confirms
+  continued public availability, not a completed transaction.
+- The public payload still exposed `https://toledotechnologies.com/` as both
+  `appWebsiteUrl` and `SupportUri`. The live short description, long
+  description, final product-feature bullet, and fifth screenshot caption still
+  used the earlier unqualified account wording. HQ-08 therefore remained open.
+- Current private Partner Center product-page views, acquisitions, completed
+  purchases, refunds, accrued proceeds, fees, payouts, and collected profit were
+  not observed in this audit. The authenticated account exposed account settings
+  but not the **Apps and games** workspace or product `9PLRSZZMFPJH`. Do not
+  convert that missing observation to zero. The previously ledgered `$0.00` and
+  `$4,000.00` gap remain dated historical observations; the exact September 10
+  collected amount and gap were not reverified.
+- GitHub's 14-day traffic endpoint returned 6 repository views / 4 unique
+  viewers. The post-launch portion was 2 views / 2 uniques on September 1 and
+  zero views September 2–9. It also returned 80 clones / 45 unique cloners and
+  one referrer, Microsoft's certification service (3 visits / 1 unique). These
+  repository figures are operational context, not Store impressions,
+  acquisitions, purchases, or a reliable demand substitute.
+- The five-live-day gate due 2026-09-05 and the four-additional-day gate due
+  2026-09-09 are overdue but unevaluated. No D037 reposition or replacement is
+  selected until the applicable private metrics and date range are observed.
+- Repository/package continuity is recorded in VER-20260910-001 and
+  `store/WINDOWS-VALIDATION.md`. HQ-03 physical-Windows behavior and installed
+  footprint remain unobserved.

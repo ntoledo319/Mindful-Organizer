@@ -1,5 +1,13 @@
 # Get Paulatim listed — historical Ample runbook base (2026-08-07)
 
+> **Release-closeout correction — 2026-09-10:** the package, certification, and
+> publication sequence remains complete and must not be repeated. Operational
+> closeout is not complete: HQ-08's live listing correction and HQ-03's physical
+> Windows pass remain open, while the September 5/9 signal gates are overdue but
+> unevaluated because current private Partner Center metrics were not observed.
+> Use `revenue/METRICS.md`, `revenue/HUMAN_QUEUE.md`, and
+> `PROJECT_TRACKER.md` for current state.
+
 > **Publication outcome — 2026-08-31:** this listing runbook is complete.
 > Microsoft certified exact PAULATIM-001 and the owner-authorized **Publish
 > now** action produced a signed-out public page plus an active $14.99 USD
