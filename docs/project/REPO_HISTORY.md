@@ -10,7 +10,7 @@ Machine-readable commit list: `history/commit-index.tsv` (regenerate with
 
 | ID | Name | Role | Local path | Canonical remote | Default branch | Relationship | History coverage | Last indexed ref |
 |---|---|---|---|---|---|---|---|---|
-| REPO-01 | Mindful-Organizer (Paulatim; formerly Ample/Hearth) | Primary app + docs + store ops | `/home/nick/Development/active/mindful_organizer` | `https://github.com/ntoledo319/Mindful-Organizer.git` (no credentials embedded) | `main` | — | Complete local clone; live refs re-derived 2026-09-10 | commit index through `8308da9`; later closeout successor recorded separately |
+| REPO-01 | Mindful-Organizer (Paulatim; formerly Ample/Hearth) | Primary app + docs + store ops | `/home/nick/Development/active/mindful_organizer` | `https://github.com/ntoledo319/Mindful-Organizer.git` (no credentials embedded) | `main` | — | Complete local clone; live refs re-derived 2026-09-10 | commit index through `f284a90`; later evidence-only successor recorded separately |
 
 Verified 2026-07-24: no submodules, no nested Git repositories (single `.git`).
 
@@ -31,12 +31,12 @@ cross-check._
 
 | Ref | SHA | State | Notes |
 |---|---|---|---|
-| `origin/main` | `8308da9ba66510bc9ec50b655ea3467aead28dab` (tree `c1638c4418e506a56d75fd62d480e1dbe79c8a0e`) | synchronized documentation-truth evidence successor | Quality 33451392582 passed on the exact head; no Windows run occurred and PAULATIM-001 bytes are unchanged. |
+| `origin/main` | `f284a90561099a1db0dbc2ff79ae8f44aac5b799` (tree `1c6eecc8d66037ade8c041ab2a40c1f2f247c7e9`) | synchronized release-closeout documentation | Quality 34458078633 passed on the exact head; no Windows run occurred and PAULATIM-001 bytes are unchanged. |
 | `origin/feature/store-candidate-cand002` | `c0eb360f78fc10587a57fe6e9fcf9432b416ddf0` | live-verified 2026-08-25 | Historical branch; deliberately not pushed again and now behind default. |
 | `origin/handoff-cycle-3` | `14f9fd718433047dfc38a2cd5a28d7da171106aa` | fetched | Cycle-3 handoff branch; superseded on main (PROP-002) |
 | `origin/feature/monetization` | `8172603b62c2457696608c145511bd3fe92429d4` | fetched | Accepted-candidate preservation branch |
 | `origin/feature/revenue-cycle-0` | `09ec37eff4affcc1a0878205072a75f0cac13da5` | fetched | Diverged legacy cycle-0 docs close; do not continue |
-| local `main` (checked out) | `8308da9ba66510bc9ec50b655ea3467aead28dab` (tree `c1638c4418e506a56d75fd62d480e1dbe79c8a0e`) at baseline | synchronized with origin; dirty with enumerated pre-existing `.gitignore`/`.claude` paths plus this closeout delta | Candidate source `f2d2a417` and certified bytes are unchanged; closeout work does not need a Windows package. |
+| local `main` (checked out) | `f284a90561099a1db0dbc2ff79ae8f44aac5b799` (tree `1c6eecc8d66037ade8c041ab2a40c1f2f247c7e9`) | synchronized with origin; dirty only with enumerated pre-existing `.gitignore`/`.claude` paths plus this evidence-close delta | Candidate source `f2d2a417` and certified bytes are unchanged; closeout work does not need a Windows package. |
 | local `feature/store-candidate-cand002` | `c0eb360f78fc10587a57fe6e9fcf9432b416ddf0` | historical branch; matches its remote and is behind current `main` | Not pushed again; use canonical `main` only for PAULATIM-001. AMPLE-001 is historical/never-submit. |
 | local `cycle-2-shipped` | `246baac5033001b00f586f570c3ce842218c1fb5` | stale; behind current `main` | Historical branch. |
 | local `cycle-1-published` | `27db6c246de278fe119a46b7be2db35d9aa04a46` | local-only | Duplicate-content lineage of `4a32b73` (rebased SHAs) |
@@ -93,6 +93,7 @@ cross-check._
 | HIST-20260831-004 | 2026-08-31 | REPO-01 | documentation-consolidated | `5ad1d217` (tree `e715ae3f`) | remote + CI | Final public-launch evidence close recorded the exact Quality result without changing package inputs. Quality 33401875798 passed; no Windows workflow ran. | verified | VER-20260831-005 |
 | HIST-20260831-005 | 2026-08-31 | REPO-01 | documentation-consolidated | `889100c` (tree `08c0ea17`) | remote + CI | Re-derived live git/CI/Store truth and reconciled U.S.-only availability, Microsoft-vs-Paulatim account language, public/configured categories, Store links/copy, owner queue, payout uncertainty, and proposal state. Full local fingerprint `43753acd5d1c91ed` and Quality 33451146452 passed; no Windows workflow ran and no package or Partner Center state changed. | verified | VER-20260831-006/007 |
 | HIST-20260910-001 | 2026-09-10 | REPO-01 | history-reconciled | `8308da9ba66510bc9ec50b655ea3467aead28dab` (tree `c1638c4418e506a56d75fd62d480e1dbe79c8a0e`) | local + remote + CI | Re-derived the previously prose-only final evidence successor: local `main` and `origin/main` matched exact `8308da9`; Quality 33451392582 passed; no Windows Store workflow or package-byte change followed. Pre-existing `.gitignore` and untracked `.claude` worktree changes were observed and preserved. | verified | VER-20260910-001; git + gh |
+| HIST-20260910-002 | 2026-09-10 | REPO-01 | documentation-consolidated | `f284a90561099a1db0dbc2ff79ae8f44aac5b799` (tree `1c6eecc8d66037ade8c041ab2a40c1f2f247c7e9`) | remote + CI | Published the dated release-closeout truth layer, overdue-gate boundary, HQ-08 authority/account blocker, HQ-09, exact package continuity, and approved listing source. Quality 34458078633 passed; only Quality ran, no Windows artifact was created, and pre-existing user work stayed outside the commit. | verified | VER-20260910-002/003 |
 
 Rollbacks: none recorded. Hotfixes: HIST-20260714-004 is the only in-run fix.
 Deployments: the Microsoft Store listing is live as of HIST-20260831-001; the
@@ -131,7 +132,7 @@ fact rather than fabricated migration events.
 
 ## 6. Incremental refresh
 
-Per-repo commit index is refreshed through REPO-01 `8308da9`; later closeout
+Per-repo commit index is refreshed through REPO-01 `f284a90`; later evidence-only
 successors are recorded explicitly without treating them as package sources.
 On later runs:
 fetch (if network allowed), compare heads to §2, inspect only new commits,
