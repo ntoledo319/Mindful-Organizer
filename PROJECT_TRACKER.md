@@ -3,8 +3,8 @@
 - **Schema:** project-tracker/v1 (2026-07-24)
 - **Last updated:** 2026-09-10 (public listing reobserved; overdue signal gates remain unevaluated pending Store-enabled account access)
 - **Workspace root:** `/home/nick/Development/active/mindful_organizer` (REPO-01)
-- **Branch / HEAD:** `main` and `origin/main` are exact release-closeout commit `f284a90561099a1db0dbc2ff79ae8f44aac5b799` (tree `1c6eecc8d66037ade8c041ab2a40c1f2f247c7e9`), an evidence-only descendant of PAULATIM-001 source `f2d2a417`; this evidence-close delta is not a package source
-- **Working tree:** dirty with this evidence-close delta plus pre-existing `.gitignore` and untracked `.claude` work; those user-owned paths and the exact certified package bytes are preserved
+- **Branch / HEAD:** `main` is an evidence-only successor to exact release-closeout verification commit `c8ec3a3d84065fb95b3a3e16154c6a90126ba716` (tree `3e092dc7b43583013ed293a62b0b31e9a3debc64`), itself an evidence-only descendant of PAULATIM-001 source `f2d2a417`; re-derive the mutable successor SHA from `git`
+- **Working tree:** after the evidence close, only the pre-existing `.gitignore` and untracked `.claude` work remain dirty; those user-owned paths and the exact certified package bytes are preserved
 - **Operating mode:** LIVE / POST-PUBLICATION VALIDATION AND SIGNAL MONITORING
 - **Canonical set:** [AGENTS.md](AGENTS.md) · [HANDOFF.md](HANDOFF.md) · [Docs index](docs/project/DOCS_INDEX.md) · [History](docs/project/REPO_HISTORY.md) · [Verification](docs/project/VERIFICATION_LOG.md) · [Decisions](revenue/DECISIONS.md) · [Proposals](docs/project/PROPOSALS.md) · [Migration map](docs/project/MIGRATION_MAP.md) · [Archive](docs/project/archive/)
 
@@ -32,7 +32,7 @@
 | Candidate CI verification | Quality 33169087812 and Windows 33169087811 passed on exact source `f2d2a417`; artifacts 9684903207 / 9684887490 independently verified | 2026-08-28 | VER-20260828-003 |
 | Candidate local verification | full gate green: identity preflights; lint; typecheck ×2; 15 files/52 tests; renderer 764 modules + Electron bundles; secrets 199; Store 277; docs PASS; notices 54; audit 0; deterministic assets; diff clean | 2026-08-28 | VER-20260828-002; dirty fingerprint in log |
 | Documentation-truth-audit local verification | full non-packaging gate green: identity strict; lint 0; typecheck ×2; 15 files/52 tests; renderer 764 modules + Electron bundles; secrets 199; Store 274; docs PASS; notices 54; audit 0; diff clean; no Windows-trigger path | 2026-08-31 | VER-20260831-006; exact dirty fingerprint in log |
-| Release-closeout Quality | exact commit `f284a90`, tree `1c6eecc8`; Quality 34458078633 green; no Windows Store run or new artifact | 2026-09-10 | VER-20260910-003 |
+| Release-closeout Quality | exact verification commit `c8ec3a3`, tree `3e092dc7`; Quality 34458468235 green; no Windows Store run or new artifact | 2026-09-10 | VER-20260910-004 |
 | Local test environment | `better-sqlite3` alternates between node and Electron ABIs depending on whether `electron-builder` last ran. In the Electron state 16/46 tests fail with `NODE_MODULE_VERSION` mismatch — environmental, CI unaffected. `npm rebuild better-sqlite3` restores `npm test` | 2026-08-07 | VER-20260807-001 |
 | Candidate package | Exact kit: `tmp/PAULATIM-001-f2d2a41/`; AppX hash `af8b4581…b5146`; screenshot ZIP hash `a4bc6785…45e50`; these are evidence for the sole certified/public package and must not be re-uploaded | 2026-08-31 | VER-20260828-003/004; VER-20260831-001 |
 | Collected revenue | September 10 private views, acquisitions, purchases, proceeds, payouts, and collected amount were not observed; the last ledgered $0.00 / $4,000.00 gap is historical, not reverified | 2026-09-10 | revenue/METRICS.md; D053 |
@@ -163,6 +163,7 @@ observed green through `origin/main` HEAD `246baac` (VER-20260728-001…003).
 | Documentation truth audit | `889100c` | CI ubuntu + trigger audit | pass | Quality 33451146452 green; exact locally gated tree `08c0ea17`; no Windows workflow run | 2026-08-31 | VER-20260831-006/007 |
 | Release-closeout baseline | `8308da9` (tree `c1638c44`) | local linux + CI ubuntu + public Store | pass / constrained | local/origin exact; Quality 33451392582 green; exact AppX hash preserved; live $14.99 U.S. purchase path; private Store signal and HQ-03 unobserved | 2026-09-10 | VER-20260910-001 |
 | Release-closeout documentation Quality | `f284a90` (tree `1c6eecc8`) | CI ubuntu + trigger audit | pass | Quality 34458078633 green; exact verified tree; only Quality ran; no Windows workflow or artifact | 2026-09-10 | VER-20260910-003 |
+| Release-closeout evidence Quality | `c8ec3a3` (tree `3e092dc7`) | CI ubuntu + trigger audit | pass | Quality 34458468235 green; exact verified tree; only Quality ran; no Windows workflow or artifact | 2026-09-10 | VER-20260910-004 |
 | Evidence close local gate | working-tree:`f2d2a417`+dirty (21 docs/landing paths) | local linux | pass | full non-packaging suite; no package command; Windows-trigger exclusion checked separately | 2026-08-28 | VER-20260828-005 |
 | Evidence close Quality Gate | `ad9d22a` | CI ubuntu | pass | run 33177707087; notices, secrets, Store/landing validation, audit, lint, typecheck, tests, and build green; no Windows workflow triggered | 2026-08-28 | VER-20260828-006 |
 | Installed Windows pass | public Store build | physical Windows | ready / not observed | HQ-04 is complete; execute the scoped 15-minute HQ-03 pass without implying it preceded publication | — | — |
@@ -175,11 +176,11 @@ Paulatim candidate bytes. See store/WINDOWS-VALIDATION.md.
 
 | Surface | Ref / version | State | Last verified | Evidence | Drift |
 |---|---|---|---|---|---|
-| Working tree | exact closeout `f284a90`; evidence-close delta | dirty with intended evidence files plus preserved pre-existing `.gitignore`/`.claude` paths; certified bytes unchanged | 2026-09-10 | git status + fingerprints | pre-existing user work excluded from both closeout commits |
+| Working tree | evidence-only successor to exact `c8ec3a3` verification | only preserved pre-existing `.gitignore`/`.claude` paths dirty after close; certified bytes unchanged | 2026-09-10 | git status + fingerprints | no closeout path left uncommitted |
 | Local `cycle-2-shipped` | `246baac` | stale; behind current `main` | 2026-08-26 | git | historical branch |
-| Local `main` | `f284a90561099a1db0dbc2ff79ae8f44aac5b799` | synchronized with origin before this evidence-close delta; PAULATIM-001 source remains `f2d2a417` | 2026-09-10 | git; VER-20260910-003 | evidence row/history refresh uncommitted |
-| `origin/main` | `f284a90561099a1db0dbc2ff79ae8f44aac5b799` (tree `1c6eecc8d66037ade8c041ab2a40c1f2f247c7e9`) | public release-closeout documentation; no package input changed | 2026-09-10 | git + gh | evidence-close delta not yet pushed |
-| CI | PAULATIM-001 source `f2d2a417`; documentation head `f284a90` | candidate Quality/Windows green; Quality 34458078633 green; no Windows run after candidate | 2026-09-10 | VER-20260828-003; VER-20260910-003 | none |
+| Local `main` | evidence-only successor to `c8ec3a3d84065fb95b3a3e16154c6a90126ba716` | synchronized with origin after evidence close; PAULATIM-001 source remains `f2d2a417` | 2026-09-10 | git; VER-20260910-004 | re-derive mutable successor SHA |
+| `origin/main` | evidence-only successor to `c8ec3a3d84065fb95b3a3e16154c6a90126ba716` (tree `3e092dc7b43583013ed293a62b0b31e9a3debc64`) | public release-closeout evidence; no package input changed | 2026-09-10 | git + gh | re-derive mutable successor SHA |
+| CI | PAULATIM-001 source `f2d2a417`; exact verification commit `c8ec3a3` | candidate Quality/Windows green; Quality 34458468235 green; no Windows run after candidate | 2026-09-10 | VER-20260828-003; VER-20260910-004 | none |
 | Partner Center | Product `9PLRSZZMFPJH`; submission `1152921505701225649`; exact identity `ToledoTechnologies.Hearth`; only Paulatim name/package at certification | 2026-08-31 certification/publication evidence remains valid; current visible account has no Store workspace | 2026-09-10 | VER-20260831-001; VER-20260910-001 | private demand/revenue and HQ-08 state unobserved |
 | Microsoft Store live | `https://apps.microsoft.com/detail/9PLRSZZMFPJH` | public; active $14.99 USD Purchase action; generic links and four copy defects remain | 2026-09-10 | VER-20260910-001 | private sales metrics not observed |
 | Landing host | — | not deployed | — | landing/README.md | HQ-06 is an optional live-aware deployment; certification-time sequencing is moot |
@@ -194,6 +195,7 @@ tag exists because tags trigger the Release Build and the Store path is manual.
 |---|---|---|---|---|
 | 2026-09-10 | Re-derived exact git/CI/package/public Store state and recorded overdue signal gates without inventing private metrics | release-closeout baseline | VER-20260910-001 @ `8308da9` | HIST-20260910-001 |
 | 2026-09-10 | Published the release-closeout truth layer; exact-tree Quality passed and no Windows artifact was created | release-closeout documentation | VER-20260910-002/003 @ `f284a90` | HIST-20260910-002 |
+| 2026-09-10 | Closed the exact release verification/history record; second evidence-only Quality passed with no Windows artifact | release-closeout evidence | VER-20260910-004 @ `c8ec3a3` | HIST-20260910-003 |
 | 2026-08-31 | Reconciled U.S.-only availability, Microsoft-vs-Paulatim account wording, public/configured categories, Store URLs/copy, proposal state, payout uncertainty, and post-publication owner actions without changing package bytes | documentation truth audit | VER-20260831-006/007 @ `889100c` | HIST-20260831-005 |
 | 2026-08-31 | Microsoft certified exact PAULATIM-001; owner-authorized publication completed; signed-out Store page and $14.99 purchase action observed | HQ-04 / Bet A live | VER-20260831-001 | HIST-20260831-001 |
 | 2026-08-28 | Exact Paulatim candidate passed both CI gates; independently verified package/screenshots staged; listing saved; Hearth package/name removed; submission entered certification under manual publication hold | PAULATIM-001 + HQ-02/HQ-04 | VER-20260828-003/004 @ `f2d2a417` | HIST-20260828-002/003 |

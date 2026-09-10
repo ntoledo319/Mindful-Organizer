@@ -12,7 +12,7 @@ signed-out public Store record were re-derived for the publication close. Use
 above is retained as historical provenance._
 
 _Release-closeout correction 2026-09-10: current ref/CI/worktree truth is in
-`PROJECT_TRACKER.md` and VER-20260910-001/003; exact package continuity is in
+`PROJECT_TRACKER.md` and VER-20260910-001/003/004; exact package continuity is in
 `store/WINDOWS-VALIDATION.md`; public/private signal evidence is in the
 2026-09-10 `revenue/METRICS.md` entry. The Store remains publicly purchasable in
 the United States, but private demand/revenue was not observed, so the September
